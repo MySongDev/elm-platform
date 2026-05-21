@@ -1,0 +1,126 @@
+.shop-page {
+  height: 100%;
+}
+
+.shop-layout {
+  --nav-height: 50px;
+  --tab-height: 42px;
+  --safe-bottom: 72px;
+
+  height: 100vh;
+  max-height: 100dvh;
+  overflow: hidden;
+  position: relative;
+  background: #f6f6f6;
+}
+
+.outer-scroller {
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: contain;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+.header-zone {
+  padding-top: var(--nav-height);
+  background: #fff;
+}
+
+.sticky-nav {
+  position: sticky;
+  top: var(--nav-height);
+  z-index: 10;
+  height: var(--tab-height);
+  background: #fff;
+  display: flex;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.tab-item {
+  flex: 1;
+  line-height: var(--tab-height);
+  text-align: center;
+  font-size: 14px;
+  color: #666;
+  cursor: pointer;
+  position: relative;
+
+  &.active {
+    color: #111920;
+    font-weight: 700;
+
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: 5px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 20%;
+      height: 2px;
+      background: #111920;
+      border-radius: 1px;
+    }
+  }
+}
+
+.content-gate {
+  display: flex;
+  align-items: flex-start;
+  background: #fff;
+}
+
+.side-menu {
+  position: sticky;
+  top: calc(var(--nav-height) + var(--tab-height));
+  height: calc(100vh - var(--nav-height) - var(--tab-height));
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+.main-content {
+  flex: 1;
+  min-width: 0;
+  background: #fff;
+}
+
+.review-page {
+  flex: 1;
+  background: #fff;
+}
+
+.bottom-safe {
+  height: var(--safe-bottom);
+  flex-shrink: 0;
+}
+
+.fly-ball-layer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 0;
+  height: 0;
+  z-index: 9999;
+  pointer-events: none;
+}
+
+.fly-ball-outer {
+  position: fixed;
+  transition: transform 0.5s linear;
+}
+
+.fly-ball-inner {
+  width: 16px;
+  height: 16px;
+  margin-left: -8px;
+  margin-top: -8px;
+  border-radius: 50%;
+  background: #ff4d4f;
+  transition: transform 0.5s cubic-bezier(0.5, -0.3, 1, 1);
+}

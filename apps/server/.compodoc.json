@@ -1,0 +1,8 @@
+{
+  "name": "Vue3 Elm API 文档",
+  "output": "./documentation",
+  "tsconfig": "./tsconfig.json",
+  "serve": true,
+  "port": 8080,
+  "theme": "postmark"
+}

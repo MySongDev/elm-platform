@@ -1,0 +1,19 @@
+{
+  "name": "elm-platform",
+  "private": true,
+  "scripts": {
+    "dev": "pnpm --filter vue3-elm-node --filter elm-web-admin --filter vue3-elm-js --parallel run dev",
+    "dev:server": "pnpm --filter vue3-elm-node run start:dev",
+    "dev:admin": "pnpm --filter elm-web-admin run dev",
+    "dev:user": "pnpm --filter vue3-elm-js run dev",
+    "build": "pnpm --filter vue3-elm-node --filter elm-web-admin --filter vue3-elm-js run build",
+    "build:server": "pnpm --filter vue3-elm-node run build",
+    "build:admin": "pnpm --filter elm-web-admin run build",
+    "build:user": "pnpm --filter vue3-elm-js run build",
+    "lint": "pnpm -r run lint",
+    "clean": "pnpm -r exec rm -rf node_modules dist .turbo"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

@@ -1,0 +1,118 @@
+import { PrismaClient } from '@prisma/client';
+import * as bcrypt from 'bcryptjs';
+
+const prisma = new PrismaClient();
+
+async function main() {
+  console.log('开始初始化数据...');
+
+  // 创建测试用户（密码已加密）
+  const hashedPassword = bcrypt.hashSync('admin123', 10);
+  console.log('Generated hash:', hashedPassword);
+
+  const user = await prisma.user.upsert({
+    where: { username: 'admin' },
+    update: {
+      password: hashedPassword,
+      role: 'admin',
+      permissions: ['*:*:*'],
+    },
+    create: {
+      username: 'admin',
+      password: hashedPassword,
+      email: 'admin@example.com',
+      phone: '13800138000',
+      role: 'admin',
+      permissions: ['*:*:*'],
+    },
+  });
+
+  console.log('创建用户:', user);
+
+  await (prisma as any).role.upsert({
+    where: { code: 'admin' },
+    update: { name: '超级管理员', permissions: ['*:*:*'], status: 1 },
+    create: { name: '超级管理员', code: 'admin', permissions: ['*:*:*'], status: 1, remark: '拥有系统全部权限' },
+  });
+
+  await (prisma as any).role.upsert({
+    where: { code: 'user' },
+    update: { name: '普通用户', permissions: ['permission:page:view', 'permission:button:view'], status: 1 },
+    create: { name: '普通用户', code: 'user', permissions: ['permission:page:view', 'permission:button:view'], status: 1, remark: '拥有基础访问权限' },
+  });
+
+  await (prisma as any).dept.upsert({
+    where: { id: 1 },
+    update: { name: '总公司', leader: '管理员', status: 1 },
+    create: { id: 1, name: '总公司', leader: '管理员', phone: '13800138000', email: 'admin@example.com', sort: 1, status: 1 },
+  });
+
+  const menuSeeds = [
+    { id: 14, parentId: null, title: '仪表盘', path: '/dashboard', name: 'Dashboard', icon: 'dashboard', type: 'catalog', sort: 1, status: 1 },
+    { id: 15, parentId: 14, title: '仪表盘', path: '/dashboard/index', name: 'DashboardView', icon: 'dashboard', type: 'menu', sort: 1, status: 1 },
+    { id: 1, parentId: null, title: '权限管理', path: '/permission', name: 'Permission', icon: 'permission', type: 'catalog', sort: 20, status: 1 },
+    { id: 2, parentId: 1, title: '页面权限', path: '/permission/page', name: 'PagePermission', icon: 'permission', permission: 'permission:page:view', type: 'menu', sort: 1, status: 1 },
+    { id: 3, parentId: 1, title: '按钮权限', path: '/permission/button', name: 'ButtonPermission', icon: 'permission', permission: 'permission:button:view', type: 'menu', sort: 2, status: 1 },
+    { id: 4, parentId: null, title: '系统监控', path: '/monitor', name: 'Monitor', icon: 'monitor', type: 'catalog', sort: 30, status: 1 },
+    { id: 5, parentId: 4, title: '在线用户', path: '/monitor/online-user', name: 'OnlineUser', icon: 'monitor', permission: 'monitor:online:view', type: 'menu', sort: 1, status: 1 },
+    { id: 6, parentId: 4, title: '登录日志', path: '/monitor/login-logs', name: 'LoginLogs', icon: 'monitor', permission: 'log:login:view', type: 'menu', sort: 2, status: 1 },
+    { id: 7, parentId: 4, title: '操作日志', path: '/monitor/operation-logs', name: 'OperationLogs', icon: 'monitor', permission: 'log:operation:view', type: 'menu', sort: 3, status: 1 },
+    { id: 8, parentId: 4, title: '系统日志', path: '/monitor/system-logs', name: 'SystemLogs', icon: 'monitor', permission: 'log:system:view', type: 'menu', sort: 4, status: 1 },
+    { id: 9, parentId: null, title: '系统管理', path: '/system', name: 'System', icon: 'system', type: 'catalog', sort: 40, status: 1 },
+    { id: 10, parentId: 9, title: '用户管理', path: '/system/user', name: 'UserList', icon: 'user', permission: 'user:view', type: 'menu', sort: 1, status: 1 },
+    { id: 11, parentId: 9, title: '角色管理', path: '/system/role', name: 'RoleManagement', icon: 'role', permission: 'role:view', type: 'menu', sort: 2, status: 1 },
+    { id: 12, parentId: 9, title: '菜单管理', path: '/system/menu', name: 'MenuManagement', icon: 'menu', permission: 'menu:view', type: 'menu', sort: 3, status: 1 },
+    { id: 13, parentId: 9, title: '部门管理', path: '/system/dept', name: 'DeptManagement', icon: 'dept', permission: 'dept:view', type: 'menu', sort: 4, status: 1 },
+    { id: 20, parentId: null, title: '业务管理', path: '/commerce', name: 'Commerce', icon: 'document', type: 'catalog', sort: 35, status: 1 },
+    { id: 21, parentId: 20, title: '商家管理', path: '/commerce/restaurant', name: 'CommerceRestaurantView', icon: 'document', permission: 'commerce:restaurant:view', type: 'menu', sort: 1, status: 1 },
+    { id: 22, parentId: 20, title: '商品管理', path: '/commerce/food', name: 'CommerceFoodView', icon: 'document', permission: 'commerce:food:view', type: 'menu', sort: 2, status: 1 },
+    { id: 23, parentId: 20, title: '订单管理', path: '/commerce/order', name: 'CommerceOrderView', icon: 'document', permission: 'commerce:order:view', type: 'menu', sort: 3, status: 1 },
+    { id: 30, parentId: null, title: '多级菜单', path: '/nested', name: 'Nested', icon: 'nested', type: 'catalog', sort: 50, status: 1 },
+    { id: 31, parentId: 30, title: '菜单1', path: '/nested/menu1', name: 'NestedMenu1', icon: 'nested', type: 'catalog', sort: 1, status: 1 },
+    { id: 32, parentId: 31, title: '菜单1-1', path: '/nested/menu1/menu1-1', name: 'NestedMenu11View', icon: 'nested', type: 'menu', sort: 1, status: 1 },
+    { id: 33, parentId: 31, title: '菜单1-2', path: '/nested/menu1/menu1-2', name: 'NestedMenu12', icon: 'nested', type: 'catalog', sort: 2, status: 1 },
+    { id: 34, parentId: 33, title: '菜单1-2-1', path: '/nested/menu1/menu1-2/menu1-2-1', name: 'NestedMenu121View', icon: 'nested', type: 'menu', sort: 1, status: 1 },
+    { id: 35, parentId: 33, title: '菜单1-2-2', path: '/nested/menu1/menu1-2/menu1-2-2', name: 'NestedMenu122View', icon: 'nested', type: 'menu', sort: 2, status: 1 },
+    { id: 36, parentId: 31, title: '菜单1-3', path: '/nested/menu1/menu1-3', name: 'NestedMenu13View', icon: 'nested', type: 'menu', sort: 3, status: 1 },
+    { id: 37, parentId: 30, title: '菜单2', path: '/nested/menu2', name: 'NestedMenu2View', icon: 'nested', type: 'menu', sort: 2, status: 1 },
+    { id: 101, parentId: 5, title: '强制下线', path: '/monitor/online-user', permission: 'monitor:online:force-logout', type: 'button', sort: 1, status: 1 },
+    { id: 110, parentId: 10, title: '新增用户', path: '/system/user', permission: 'user:add', type: 'button', sort: 1, status: 1 },
+    { id: 111, parentId: 10, title: '编辑用户', path: '/system/user', permission: 'user:edit', type: 'button', sort: 2, status: 1 },
+    { id: 112, parentId: 10, title: '删除用户', path: '/system/user', permission: 'user:delete', type: 'button', sort: 3, status: 1 },
+    { id: 120, parentId: 11, title: '新增角色', path: '/system/role', permission: 'role:add', type: 'button', sort: 1, status: 1 },
+    { id: 121, parentId: 11, title: '编辑角色', path: '/system/role', permission: 'role:edit', type: 'button', sort: 2, status: 1 },
+    { id: 122, parentId: 11, title: '删除角色', path: '/system/role', permission: 'role:delete', type: 'button', sort: 3, status: 1 },
+    { id: 130, parentId: 12, title: '新增菜单', path: '/system/menu', permission: 'menu:add', type: 'button', sort: 1, status: 1 },
+    { id: 131, parentId: 12, title: '编辑菜单', path: '/system/menu', permission: 'menu:edit', type: 'button', sort: 2, status: 1 },
+    { id: 132, parentId: 12, title: '删除菜单', path: '/system/menu', permission: 'menu:delete', type: 'button', sort: 3, status: 1 },
+    { id: 140, parentId: 13, title: '新增部门', path: '/system/dept', permission: 'dept:add', type: 'button', sort: 1, status: 1 },
+    { id: 141, parentId: 13, title: '编辑部门', path: '/system/dept', permission: 'dept:edit', type: 'button', sort: 2, status: 1 },
+    { id: 142, parentId: 13, title: '删除部门', path: '/system/dept', permission: 'dept:delete', type: 'button', sort: 3, status: 1 },
+    { id: 150, parentId: 21, title: '新增商家', path: '/commerce/restaurant', permission: 'commerce:restaurant:add', type: 'button', sort: 1, status: 1 },
+    { id: 151, parentId: 21, title: '编辑商家', path: '/commerce/restaurant', permission: 'commerce:restaurant:edit', type: 'button', sort: 2, status: 1 },
+    { id: 152, parentId: 21, title: '删除商家', path: '/commerce/restaurant', permission: 'commerce:restaurant:delete', type: 'button', sort: 3, status: 1 },
+    { id: 160, parentId: 22, title: '新增商品', path: '/commerce/food', permission: 'commerce:food:add', type: 'button', sort: 1, status: 1 },
+    { id: 161, parentId: 22, title: '编辑商品', path: '/commerce/food', permission: 'commerce:food:edit', type: 'button', sort: 2, status: 1 },
+    { id: 162, parentId: 22, title: '删除商品', path: '/commerce/food', permission: 'commerce:food:delete', type: 'button', sort: 3, status: 1 },
+    { id: 170, parentId: 23, title: '编辑订单', path: '/commerce/order', permission: 'commerce:order:edit', type: 'button', sort: 1, status: 1 },
+  ];
+
+  for (const menu of menuSeeds) {
+    await (prisma as any).menu.upsert({
+      where: { id: menu.id },
+      update: menu,
+      create: menu,
+    });
+  }
+
+  console.log('数据初始化完成');
+}
+
+main()
+  .catch((e) => {
+    console.error('数据初始化失败:', e);
+    process.exit(1);
+  })
+  .finally(async () => {
+    await prisma.$disconnect();
+  });

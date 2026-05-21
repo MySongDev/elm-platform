@@ -1,0 +1,50 @@
+//多行省略号
+@mixin text-ellipsis{
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap; //强制不换行，一行显示
+}
+//元素居中，两边对齐
+// @mixin flex-center-between {
+//   display: flex;
+//   align-items: center; /* 垂直居中 */
+//   justify-content: space-between;
+// }
+@mixin flex-center($justify:center) {
+  display: flex;
+  align-items: center; /* 垂直居中 */
+  justify-content: $justify;
+  // flex-direction: $direction;
+}
+
+@mixin wh($width, $height){
+	width: $width;
+	height: $height;
+};
+
+@mixin  size-color ($size,$color){
+  font-size: $size;
+  color: $color;
+};
+
+//定位全屏
+@mixin allcover{
+	position:absolute;
+	top:0;
+	right:0;
+}
+
+@mixin borderRadius($radius) {
+    -webkit-border-radius: $radius;
+    -moz-border-radius: $radius;
+    -ms-border-radius: $radius;
+    -o-border-radius: $radius;
+    border-radius: $radius;
+}
+
+//定位左右居中
+@mixin cl {
+	position: absolute;
+	left: 50%;
+    transform: translateX(-50%);
+}

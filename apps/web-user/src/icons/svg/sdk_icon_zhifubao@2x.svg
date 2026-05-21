@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 72 72">
+<defs>
+          <path
+            d="M36 72c19.882 0 36-16.118 36-36S55.882 0 36 0 0 16.118 0 36s16.118 36 36 36z"
+            id="sdk_icon_zhifubao@2x_a"
+          ></path>
+        </defs>
+        <g fill="none" fill-rule="evenodd">
+          <mask id="sdk_icon_zhifubao@2x_b" fill="#fff">
+            <use xlink:href="#sdk_icon_zhifubao@2x_a"></use>
+          </mask>
+          <use fill="#00A1E9" xlink:href="#sdk_icon_zhifubao@2x_a"></use>
+          <path
+            d="M33 21v-5h7v5h14v3H40v4h12c-.202.048-.408 3.223-2 7-1.32 4.134-2.683 6.15-2 6l23.6 8c-.2-.285-.848 2.3-2 4-.775 2.013-2 5-2 5L44 46c.237.162-3.79 4.674-8 7-4.002 1.645-8.717 2.88-14 1-4.93-.56-8.554-3.867-8-10 .693-6.083 7.138-8.19 13-8 4.739-.19 14.796 3.29 15 3-.204.29.642-1.628 2-4 .283-2.015.518-3.777 0-4H22v-3h11v-4H20v-3h13zm-7 30c-7.407 0-9-3.593-9-6 0-2.761 1.576-5.57 8-6 6.484-.383 15.2 4.436 15 4 .2.436-6.238 8-14 8z"
+            fill="#FFF"
+            mask="url(#sdk_icon_zhifubao@2x_b)"
+          ></path>
+        </g>
+</svg>

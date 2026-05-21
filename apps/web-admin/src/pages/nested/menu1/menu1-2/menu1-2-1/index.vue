@@ -1,0 +1,13 @@
+<script setup lang="ts">
+import AdminTablePage from '@/shared/ui/AdminTablePage/index.vue'
+
+defineOptions({ name: 'NestedMenu121View' })
+
+const { t } = useI18n()
+</script>
+
+<template>
+  <AdminTablePage :title="t('route.menu121')">
+    <el-empty :description="t('nested.demoPage', { name: t('route.menu121') })" />
+  </AdminTablePage>
+</template>

@@ -1,0 +1,14 @@
+/* 修改进度条颜色和高度 */
+#nprogress .bar {
+  background: #ff6454 !important;
+  /* 自定义颜色 */
+  /* height: 3px !important; */
+  /* 自定义高度 */
+  box-shadow: 0 0 5px #ff6454;
+  /* 添加发光效果 */
+}
+
+/* 修改进度条光环效果 */
+#nprogress .peg {
+  box-shadow: 0 0 10px #ff6454, 0 0 5px #ff6454 !important;
+}
