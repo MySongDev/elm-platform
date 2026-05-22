@@ -17,4 +17,16 @@ export default () => ({
     password: process.env.REDIS_PASSWORD || undefined,
     db: parseInt(process.env.REDIS_DB || '0', 10),
   },
+
+  auth: {
+    customerLoginAutoRegister: process.env.CUSTOMER_LOGIN_AUTO_REGISTER !== 'false',
+  },
+
+  sms: {
+    provider: process.env.SMS_PROVIDER || 'mock',
+    mockCode: process.env.SMS_MOCK_CODE || undefined,
+    codeTtlSeconds: parseInt(process.env.SMS_CODE_TTL_SECONDS || '300', 10),
+    cooldownSeconds: parseInt(process.env.SMS_COOLDOWN_SECONDS || '60', 10),
+    dailyLimit: parseInt(process.env.SMS_DAILY_LIMIT || '10', 10),
+  },
 });

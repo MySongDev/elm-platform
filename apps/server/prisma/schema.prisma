@@ -29,6 +29,20 @@ model User {
   @@map("users")
 }
 
+model CustomerUser {
+  id          Int       @id @default(autoincrement())
+  phone       String    @unique
+  password    String?
+  nickname    String?
+  avatar      String?
+  status      Int       @default(1)
+  lastLoginAt DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@map("customer_users")
+}
+
 model LoginLog {
   id        Int      @id @default(autoincrement())
   userId    Int
