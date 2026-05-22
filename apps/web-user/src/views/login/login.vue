@@ -1,121 +1,242 @@
 <script setup>
-import { ref } from 'vue'
+import { computed, onBeforeUnmount, reactive, shallowRef } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
 import { showAlert } from '@/components/common/AlterTip/index'
-import { accountLogin, getCaptchas } from '@/services/api/'
+import { customerPasswordLogin, customerRegister, customerSmsLogin, sendCustomerSms } from '@/services/api/'
 import { useUserStore } from '@/stores/modules/store-user'
 
-defineOptions({
-  name: 'Login',
-})
-const { recordUserInfo } = useUserStore()
-const router = useRouter()
+defineOptions({ name: 'Login' })
+
+const tabs = [
+  { key: 'sms', label: '验证码登录' },
+  { key: 'password', label: '密码登录' },
+  { key: 'register', label: '注册' },
+]
+
+const phonePattern = /^1\d{10}$/
+const activeTab = shallowRef('sms')
+const loading = shallowRef(false)
+const countdown = shallowRef(0)
+let timer = null
+
 const route = useRoute()
+const router = useRouter()
+const { recordUserInfo } = useUserStore()
 
-const showPassword = ref(false)
-// 用户名
-const userAccount = ref('')
-// 密码
-const passWord = ref('')
-// 验证码
-const codeNumber = ref('')
-// 图片验证码
-const captchaCodeImg = ref('')
+const form = reactive({
+  phone: '',
+  smsCode: '',
+  password: '',
+  registerPassword: '',
+})
 
-const userInfo = ref({})
-// 更改密码状态
-function changePassWordType() {
-  showPassword.value = !showPassword.value
+const canSendSms = computed(() => countdown.value === 0 && phonePattern.test(form.phone))
+const smsScene = computed(() => (activeTab.value === 'register' ? 'register' : 'login'))
+const activeTabLabel = computed(() => tabs.find(tab => tab.key === activeTab.value)?.label || '登录')
+const smsButtonText = computed(() => (countdown.value > 0 ? `${countdown.value}s` : '获取验证码'))
+const submitText = computed(() => (loading.value ? '处理中...' : activeTabLabel.value))
+
+function setActiveTab(tab) {
+  activeTab.value = tab
 }
 
-// 获取图片验证码
-async function getCaptchaCode() {
+function validatePhone() {
+  if (!phonePattern.test(form.phone)) {
+    showAlert('请输入正确的手机号')
+    return false
+  }
+  return true
+}
+
+function getRedirectTarget() {
+  const redirect = route.query.redirect
+  return Array.isArray(redirect) ? redirect[0] || '/home' : redirect || '/home'
+}
+
+function clearTimer() {
+  if (!timer)
+    return
+
+  clearInterval(timer)
+  timer = null
+}
+
+function startCountdown() {
+  countdown.value = 60
+  clearTimer()
+  timer = setInterval(() => {
+    countdown.value -= 1
+    if (countdown.value <= 0) {
+      clearTimer()
+      countdown.value = 0
+    }
+  }, 1000)
+}
+
+async function sendSms() {
+  if (!validatePhone() || !canSendSms.value)
+    return
+
   try {
-    captchaCodeImg.value = await getCaptchas()
+    const result = await sendCustomerSms(form.phone, smsScene.value)
+    startCountdown()
+    if (result?.debugCode)
+      showAlert(`开发验证码：${result.debugCode}`)
   }
-  catch (error) {
-    if (!error?.code && !error?.response)
-      showAlert(error?.message || '验证码获取失败，请稍后重试')
+  catch {
+    countdown.value = 0
   }
 }
-// 登录
-async function mobileLogin() {
-  if (!userAccount.value.trim()) {
-    showAlert('请输入手机号/邮箱/用户名')
-    return
-  }
-  if (!passWord.value.trim()) {
-    showAlert('密码不能为空')
-    return
-  }
 
-  if (!codeNumber.value) {
+async function finishLogin(result) {
+  recordUserInfo(result)
+  await router.push(getRedirectTarget())
+}
+
+async function submitSmsLogin() {
+  if (!validatePhone())
+    return
+  if (!form.smsCode) {
     showAlert('请输入验证码')
     return
   }
 
+  loading.value = true
   try {
-    userInfo.value = await accountLogin(userAccount.value, passWord.value, codeNumber.value)
+    const result = await customerSmsLogin(form.phone, form.smsCode)
+    await finishLogin(result)
   }
-  catch (error) {
-    if (error?.isBusinessError) {
-      codeNumber.value = ''
-      getCaptchaCode()
-    }
+  finally {
+    loading.value = false
+  }
+}
+
+async function submitPasswordLogin() {
+  if (!validatePhone())
+    return
+  if (!form.password) {
+    showAlert('请输入密码')
     return
   }
 
-  // 记录用户信息
-  recordUserInfo(userInfo.value)
-  router.push(route.query.redirect || '/home')
+  loading.value = true
+  try {
+    const result = await customerPasswordLogin(form.phone, form.password)
+    await finishLogin(result)
+  }
+  finally {
+    loading.value = false
+  }
 }
 
-// 初始验证码
-getCaptchaCode()
+async function submitRegister() {
+  if (!validatePhone())
+    return
+  if (!form.smsCode) {
+    showAlert('请输入验证码')
+    return
+  }
+
+  loading.value = true
+  try {
+    const result = await customerRegister(form.phone, form.smsCode, form.registerPassword)
+    await finishLogin(result)
+  }
+  finally {
+    loading.value = false
+  }
+}
+
+function submit() {
+  if (loading.value)
+    return Promise.resolve()
+  if (activeTab.value === 'sms')
+    return submitSmsLogin()
+  if (activeTab.value === 'password')
+    return submitPasswordLogin()
+  return submitRegister()
+}
+
+onBeforeUnmount(() => {
+  clearTimer()
+})
 </script>
 
 <template>
   <div class="login_nav">
     <head-top />
-    <form class="login_form">
+
+    <div class="login_tabs">
+      <button
+        v-for="tab in tabs"
+        :key="tab.key"
+        type="button"
+        :class="{ active: activeTab === tab.key }"
+        @click="setActiveTab(tab.key)"
+      >
+        {{ tab.label }}
+      </button>
+    </div>
+
+    <form class="login_form" @submit.prevent="submit">
       <section class="input_container">
-        <input id="username" v-model.lazy="userAccount" type="text" placeholder="账号" maxlength="11">
+        <input v-model.trim="form.phone" type="tel" placeholder="手机号" maxlength="11" autocomplete="tel">
       </section>
 
-      <section class="input_container">
-        <input id="password" v-model="passWord" :type="showPassword ? 'text' : 'password'" placeholder="请输入密码">
-        <!-- <input type="text" v-show="true" placeholder="密码" /> -->
-        <div class="button_switch" :class="{ change_to_text: showPassword }">
-          <div class="circle_button" :class="{ change_to_right: showPassword }" @click="changePassWordType" />
-          <span>abc</span>
-          <span>.....</span>
-        </div>
+      <section v-if="activeTab !== 'password'" class="input_container sms_container">
+        <input v-model.trim="form.smsCode" type="text" placeholder="短信验证码" maxlength="6" inputmode="numeric">
+        <button type="button" :disabled="!canSendSms" @click="sendSms">
+          {{ smsButtonText }}
+        </button>
       </section>
-      <section class="input_container captcha_code_container">
-        <input v-model="codeNumber" type="text" placeholder="验证码" maxlength="4">
-        <div class="img_change_img">
-          <!-- <img src="@/components/icons/loading.gif" class="loding" v-if="showLoading" /> -->
-          <img v-show="captchaCodeImg" :src="captchaCodeImg">
-          <div class="change_img" @click="getCaptchaCode">
-            <p>看不清</p>
-            <p>换一张</p>
-          </div>
-        </div>
+
+      <section v-if="activeTab === 'password'" class="input_container">
+        <input v-model="form.password" type="password" placeholder="请输入密码" autocomplete="current-password">
+      </section>
+
+      <section v-if="activeTab === 'register'" class="input_container">
+        <input v-model="form.registerPassword" type="password" placeholder="设置密码（可选）" autocomplete="new-password">
       </section>
     </form>
 
-    <div class="login_container" @click="mobileLogin">
-      登录
-    </div>
+    <button class="login_container" type="button" :disabled="loading" @click="submit">
+      {{ submitText }}
+    </button>
     <router-link to="/forget" class="to_forget">
       重置密码？
     </router-link>
-    <!-- <alert-tip :alert-text="alertText" @close-alert="closeAlert"></alert-tip> -->
   </div>
 </template>
 
 <style lang="scss" scoped>
+.login_nav {
+  min-height: 100vh;
+  background: #f5f5f5;
+}
+
+.login_tabs {
+  display: flex;
+  gap: 2.6667vw;
+  padding: 4vw 4vw 2.6667vw;
+  background: $ff;
+
+  button {
+    flex: 1;
+    min-width: 0;
+    height: 9.6vw;
+    color: #666;
+    font-size: 3.7333vw;
+    background: #f5f5f5;
+    border-radius: 4.8vw;
+
+    &.active {
+      color: $ff;
+      background: #4cd964;
+    }
+  }
+}
+
 .login_form {
   width: 100%;
   background-color: $ff;
@@ -128,86 +249,51 @@ getCaptchaCode()
     border-bottom: 0.0267vw solid $e4;
 
     input {
-      width: 75%;
+      min-width: 0;
+      flex: 1;
       @include size-color(4.3733vw, #666);
     }
   }
 
-  .captcha_code_container {
-    .img_change_img {
-      @include flex-center();
+  .sms_container {
+    gap: 3.2vw;
 
-      .loding {
-        @include wh(8vw, 8vw);
-        margin-right: 4.5vw;
-      }
+    button {
+      flex: 0 0 24vw;
+      color: #3190e8;
+      font-size: 3.7333vw;
+      text-align: right;
 
-      img {
-        @include wh(14.9333vw, 9.3333vw);
-        margin-right: 1.6vw;
-      }
-
-      .change_img {
-        @include flex-center();
-        flex-direction: column;
-        flex-wrap: wrap;
-        width: 10.6667vw;
-
-        p {
-          @include size-color(3.2vw, #666);
-        }
-
-        p:nth-of-type(2) {
-          color: #3b95e9;
-          margin-top: 0.8533vw;
-        }
+      &:disabled {
+        color: #aaa;
       }
     }
   }
 }
 
-.button_switch {
-  @include wh(12.8vw, 4.3733vw);
-
-  background-color: $e4;
-  border-radius: 3.12vw;
-  @include flex-center();
-  position: relative;
-  margin-top: 1vw;
-  transition: background-color 0.75s ease; // 关键：添加背景色过渡
-
-  .circle_button {
-    @include wh(7.5vw, 7.5vw);
-    position: absolute;
-    border-radius: 50%;
-    background-color: #f1f1f1;
-    transition: transform 0.5s ease;
-    transform: translateX(-2.6667vw);
-  }
-
-  .change_to_right {
-    transform: translateX(4.5333vw);
-  }
-}
-
-.change_to_text {
-  background-color: #4cd964;
-}
-
 .login_container {
-  @include wh(95%, 13.3333vw);
-  margin: 2.6667vw 2.6667vw;
+  @include wh(94.6667vw, 13.3333vw);
+
+  display: block;
+  margin: 2.6667vw auto;
   color: $ff;
-  background-color: #4cd964;
-  border-radius: 2.6667vw;
+  font-size: 4.2667vw;
   line-height: 13.3333vw;
   text-align: center;
+  background-color: #4cd964;
+  border-radius: 2.6667vw;
+
+  &:disabled {
+    opacity: 0.7;
+  }
 }
 
 .to_forget {
   display: block;
-  width: 100%;
+  width: fit-content;
+  margin-left: auto;
+  padding: 1.3333vw 4vw;
   color: $blue;
-  padding-left: 75%;
+  font-size: 3.4667vw;
 }
 </style>
