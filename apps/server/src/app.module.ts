@@ -4,6 +4,7 @@ import { PrismaModule } from './prisma/prisma.module';
 import { RedisModule } from './redis/redis.module';
 import { UserModule } from './modules/user/user.module';
 import { AuthModule } from './modules/auth/auth.module';
+import { CustomerAuthModule } from './modules/customer-auth/customer-auth.module';
 import { AdminModule } from './modules/admin/admin.module';
 import { ElmModule } from './modules/elm/elm.module';
 import configuration from './config/configuration';
@@ -25,6 +26,7 @@ import configuration from './config/configuration';
     // 业务模块
     UserModule,
     AuthModule,
+    CustomerAuthModule,
     AdminModule,
     ElmModule,
   ],
