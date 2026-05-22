@@ -22,3 +22,19 @@ export function accountLogin(username, password, captcha_code) {
 export function sendLogin(code, mobile, validate_token) {
   return post(authEndpoints.loginByMobile, { code, mobile, validate_token })
 }
+
+export function sendCustomerSms(phone, scene) {
+  return post(authEndpoints.customerSmsSend, { phone, scene })
+}
+
+export function customerRegister(phone, smsCode, password) {
+  return post(authEndpoints.customerRegister, { phone, smsCode, password: password || undefined })
+}
+
+export function customerPasswordLogin(phone, password) {
+  return post(authEndpoints.customerPasswordLogin, { phone, password })
+}
+
+export function customerSmsLogin(phone, smsCode) {
+  return post(authEndpoints.customerSmsLogin, { phone, smsCode })
+}

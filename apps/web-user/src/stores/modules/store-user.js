@@ -11,6 +11,7 @@ export const useUserStore = defineStore('user', () => {
   const userId = ref('')
   const userName = ref('')
   const lastFetchTime = ref(0)
+  const customerToken = ref(getStore('customer_token') || '')
 
   // 计算属性
   const userAvatar = computed(() => userInfo.value.avatar || '')
@@ -22,22 +23,29 @@ export const useUserStore = defineStore('user', () => {
     userName.value = ''
     isLogin.value = false
     lastFetchTime.value = 0
+    customerToken.value = ''
     removeStore('user_id')
+    removeStore('customer_token')
   }
 
   /**
    * 记录用户信息并保存到本地存储
    */
   const recordUserInfo = (info) => {
-    const normalizedUserId = info.user_id == null ? '' : String(info.user_id)
+    const profile = info.user || info
+    if (info.token) {
+      customerToken.value = info.token
+      setStore('customer_token', info.token)
+    }
+    const normalizedUserId = profile.user_id == null ? String(profile.id || '') : String(profile.user_id)
 
     userInfo.value = {
-      ...info,
+      ...profile,
       user_id: normalizedUserId,
     }
     isLogin.value = true
     userId.value = normalizedUserId
-    userName.value = info.username || ''
+    userName.value = profile.username || profile.nickname || profile.mobile || profile.phone || ''
     setStore('user_id', normalizedUserId)
     lastFetchTime.value = Date.now()
   }
@@ -99,6 +107,7 @@ export const useUserStore = defineStore('user', () => {
     userName,
     userAvatar,
     isLogin,
+    customerToken,
     recordUserInfo,
     getUserInfo: fetchUserInfo,
     updateUserName,

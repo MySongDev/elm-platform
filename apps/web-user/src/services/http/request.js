@@ -2,6 +2,7 @@ import axios from 'axios'
 
 import { showAlert } from '@/components/common/AlterTip/index'
 import { API_BASE_URL } from '@/config'
+import { getStore } from '@/untils/storage'
 
 import { finishGlobalLoading, startGlobalLoading } from './loading'
 import {
@@ -59,6 +60,11 @@ request.interceptors.request.use(
 
     setupDedupe(config)
     attachLocation(config)
+    const token = getStore('customer_token')
+    if (token) {
+      config.headers = config.headers || {}
+      config.headers.Authorization = `Bearer ${token}`
+    }
     startGlobalLoading(config)
 
     return config
@@ -99,7 +105,6 @@ request.interceptors.response.use(
     if (error?.code === 'USE_CACHE') {
       return Promise.resolve(error.data)
     }
-
     const config = error?.config
     const meta = config ? getMeta(config) : {}
     const method = (config?.method || '').toLowerCase()
