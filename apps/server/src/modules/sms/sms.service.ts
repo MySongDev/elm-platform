@@ -1,8 +1,16 @@
-import { BadRequestException, HttpException, HttpStatus, Injectable, InternalServerErrorException } from '@nestjs/common';
+import {
+  BadRequestException,
+  HttpException,
+  HttpStatus,
+  Inject,
+  Injectable,
+  InternalServerErrorException,
+  Optional,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { createHash, randomInt } from 'crypto';
 import { RedisService } from '../../redis/redis.service';
-import { MockSmsProvider, SmsProvider, SmsScene } from './sms-provider';
+import { MockSmsProvider, SMS_PROVIDER, SmsProvider, SmsScene } from './sms-provider';
 
 type StoredSmsCode = {
   hash: string;
@@ -17,6 +25,8 @@ export class SmsService {
   constructor(
     private readonly redis: RedisService,
     private readonly config: ConfigService,
+    @Optional()
+    @Inject(SMS_PROVIDER)
     provider?: SmsProvider,
   ) {
     this.providerName = this.config.get<string>('sms.provider', 'mock');

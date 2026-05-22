@@ -1,4 +1,7 @@
 import { BadRequestException, HttpException, HttpStatus, InternalServerErrorException } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { Test } from '@nestjs/testing';
+import { RedisService } from '../../redis/redis.service';
 import { SmsService } from './sms.service';
 
 describe('SmsService', () => {
@@ -75,6 +78,18 @@ describe('SmsService', () => {
     );
     expect(store.get('sms:code:login:13800138000')).toContain('"hash"');
     expect(expirations.get('sms:cooldown:13800138000')).toBe(60);
+  });
+
+  it('can be resolved by Nest DI with the default mock provider', async () => {
+    const moduleRef = await Test.createTestingModule({
+      providers: [
+        SmsService,
+        { provide: RedisService, useValue: {} },
+        { provide: ConfigService, useValue: { get: jest.fn() } },
+      ],
+    }).compile();
+
+    expect(moduleRef.get(SmsService)).toBeInstanceOf(SmsService);
   });
 
   it('rejects invalid phone numbers', async () => {
