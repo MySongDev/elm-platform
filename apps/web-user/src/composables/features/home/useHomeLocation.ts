@@ -110,8 +110,7 @@ export function useHomeLocation(options: UseHomeLocationOptions = {}) {
         console.error('定位城市反查失败:', error)
         setLocationFailed()
       }
-    }, (error) => {
-      console.log(`定位失败: ${error.message}`)
+    }, () => {
       setLocationFailed()
     })
   }

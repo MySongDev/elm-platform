@@ -29,10 +29,9 @@ const fields = computed(() => createOrderStatusFields(t))
     v-model:visible="dialogVisible"
     v-model:model="form"
     :fields="fields"
-    :dialog-title="t('crud.editOrderStatus')"
     :saving="saving"
-    width="420px"
-    label-width="60px"
+    :dialog="{ dialogTitle: t('crud.editOrderStatus'), width: '420px' }"
+    :form-options="{ labelWidth: '60px' }"
     @submit="emit('submit')"
   />
 </template>

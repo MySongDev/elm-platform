@@ -66,7 +66,6 @@ async function mobileLogin() {
     return
   }
 
-  console.log(userInfo.value)
   // 记录用户信息
   recordUserInfo(userInfo.value)
   router.push(route.query.redirect || '/home')

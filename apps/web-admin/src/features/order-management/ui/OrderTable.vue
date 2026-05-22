@@ -27,7 +27,7 @@ const columns = computed(() => createOrderTableColumns(t))
 
 <template>
   <ConfigDataTable :loading="loading" :data="data" :columns="columns">
-    <CrudActionColumn width="120">
+    <CrudActionColumn :column="{ width: 120 }">
       <template #edit="{ row }">
         <el-button v-auth="Permissions.COMMERCE_ORDER_EDIT" type="primary" link :icon="IconEpEditPen"
           @click="$emit('editStatus', row)">

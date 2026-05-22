@@ -52,11 +52,16 @@ export class RolesGuard implements CanActivate {
     return rolePassed && permissionPassed;
   }
 
-  private hasPermissions(userPermissions: string[], requiredPermissions: string[]) {
-    if (userPermissions.includes('*:*:*')) {
+  private hasPermissions(
+    userPermissions: string[] | null | undefined,
+    requiredPermissions: string[],
+  ) {
+    const permissions = userPermissions ?? [];
+
+    if (permissions.includes('*:*:*')) {
       return true;
     }
 
-    return requiredPermissions.every((permission) => userPermissions.includes(permission));
+    return requiredPermissions.every((permission) => permissions.includes(permission));
   }
 }

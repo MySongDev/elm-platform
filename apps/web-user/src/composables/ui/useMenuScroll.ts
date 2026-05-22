@@ -62,7 +62,7 @@ export function useMenuScroll(options: UseMenuScrollOptions): UseMenuScrollRetur
       return
 
     if (root.scrollTop + root.clientHeight >= root.scrollHeight - 10) {
-      const lastId = (anchors[anchors.length - 1] as HTMLElement).dataset.categoryId
+      const lastId = (Array.from(anchors).at(-1) as HTMLElement | undefined)?.dataset.categoryId
       if (lastId)
         options.onActiveChange?.(lastId)
       return

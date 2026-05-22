@@ -1,11 +1,11 @@
-<script setup lang="ts">
+<script setup lang="ts" generic="Row extends object = object">
 import type { ConfigTableColumn } from '../../model/table'
 
 defineOptions({ name: 'ConfigTableCellTag' })
 
 const props = defineProps<{
-  column: ConfigTableColumn<any>
-  row: Record<string, any>
+  column: ConfigTableColumn<Row>
+  row: Row
 }>()
 
 const tag = computed(() => props.column.tag?.(props.row))

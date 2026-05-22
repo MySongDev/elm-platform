@@ -3,7 +3,7 @@ import { computed, ref } from 'vue'
 import SpecsSelector from '@/components/specs/SpecsSelector.vue'
 import { CAKE_SPECS_CONFIG } from '@/config/specsConfig.js'
 
-const props = defineProps({
+defineProps({
   productId: {
     type: [String, Number],
     required: true,
@@ -55,20 +55,23 @@ function handleSpecsChange(data) {
   currentPrice.value = data.price
 }
 
+function syncSpecsState(data) {
+  currentSelections.value = data?.selections ?? currentSelections.value
+  currentPrice.value = data?.price ?? currentPrice.value
+}
+
 /**
  * 加入购物车
  */
 function handleAddCart(data) {
-  console.log('加入购物车:', data)
-  // 调用购物车接口
+  syncSpecsState(data)
 }
 
 /**
  * 立即购买
  */
 function handleBuyNow(data) {
-  console.log('立即购买:', data)
-  // 跳转结算页
+  syncSpecsState(data)
 }
 </script>
 

@@ -1,33 +1,33 @@
 <script setup lang="ts">
-import type { FormRules } from 'element-plus'
-import type { ConfigFormField, ConfigFormModel } from '../../model/form'
+import type {
+  ActionOptions,
+  ConfigFormField,
+  ConfigFormModel,
+  DialogOptions,
+  FormOptions,
+} from '../../model/form'
+import {
+  DEFAULT_ACTION_OPTIONS,
+  DEFAULT_DIALOG_OPTIONS,
+  DEFAULT_FORM_OPTIONS,
+} from '../../model/form'
 import ConfigFormFields from './ConfigFormFields.vue'
 import CrudFormDialog from './CrudFormDialog.vue'
 
 defineOptions({ name: 'ConfigFormDialog' })
 
-withDefaults(defineProps<{
+const props = withDefaults(defineProps<{
   fields: ConfigFormField[]
-  title?: string
-  dialogTitle?: string
   isEdit?: boolean
   saving: boolean
-  rules?: FormRules
-  width?: string
-  labelWidth?: string
-  confirmText?: string
-  cancelText?: string
-  destroyOnClose?: boolean
+  dialog?: DialogOptions
+  formOptions?: FormOptions
+  action?: ActionOptions
 }>(), {
-  title: '',
-  dialogTitle: undefined,
   isEdit: false,
-  rules: undefined,
-  width: '620px',
-  labelWidth: '90px',
-  confirmText: undefined,
-  cancelText: undefined,
-  destroyOnClose: false,
+  dialog: undefined,
+  formOptions: undefined,
+  action: undefined,
 })
 
 const emit = defineEmits<{
@@ -36,22 +36,37 @@ const emit = defineEmits<{
 
 const visible = defineModel<boolean>('visible', { required: true })
 const model = defineModel<ConfigFormModel>('model', { required: true })
+
+const dialogOptions = computed<DialogOptions & typeof DEFAULT_DIALOG_OPTIONS>(() => ({
+  ...DEFAULT_DIALOG_OPTIONS,
+  ...props.dialog,
+}))
+
+const formOptions = computed<FormOptions & typeof DEFAULT_FORM_OPTIONS>(() => ({
+  ...DEFAULT_FORM_OPTIONS,
+  ...props.formOptions,
+}))
+
+const actionConfig = computed<ActionOptions & typeof DEFAULT_ACTION_OPTIONS>(() => ({
+  ...DEFAULT_ACTION_OPTIONS,
+  ...props.action,
+}))
 </script>
 
 <template>
   <CrudFormDialog
     v-model:visible="visible"
-    :title="title"
-    :dialog-title="dialogTitle"
+    :title="dialogOptions.title"
+    :dialog-title="dialogOptions.dialogTitle"
     :is-edit="isEdit"
     :saving="saving"
-    :width="width"
+    :width="dialogOptions.width"
     :model="model"
-    :rules="rules"
-    :label-width="labelWidth"
-    :confirm-text="confirmText"
-    :cancel-text="cancelText"
-    :destroy-on-close="destroyOnClose"
+    :rules="formOptions.rules"
+    :label-width="formOptions.labelWidth"
+    :confirm-text="actionConfig.confirmText"
+    :cancel-text="actionConfig.cancelText"
+    :destroy-on-close="dialogOptions.destroyOnClose"
     @submit="emit('submit')"
   >
     <ConfigFormFields v-model:model="model" :fields="fields">

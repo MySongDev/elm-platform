@@ -43,7 +43,7 @@ const optionStyle = computed(() => ({
 /**
  * 选项是否禁用
  */
-function isOptionDisabled(option) {
+function isOptionDisabled(_option) {
   // 可扩展：库存不足等情况
   return false
 }

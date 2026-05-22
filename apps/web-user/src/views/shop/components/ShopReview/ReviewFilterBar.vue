@@ -1,6 +1,6 @@
 <!-- components/ShopReview/ReviewFilterBar.vue -->
 <script setup>
-const props = defineProps({
+defineProps({
   filters: {
     type: Array,
     default: () => [],

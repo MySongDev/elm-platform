@@ -1,16 +1,22 @@
-<script setup lang="ts">
+<script setup lang="ts" generic="Row extends object = object">
 import type { ConfigTableColumn } from '../../model/table'
 import ConfigTableCellTag from './ConfigTableCellTag.vue'
 
 defineOptions({ name: 'ConfigTableColumns' })
 
 defineProps<{
-  columns: ConfigTableColumn<any>[]
+  columns: ConfigTableColumn<Row>[]
 }>()
 
-function getCellText(row: Record<string, any>, column: ConfigTableColumn<any>) {
+function normalizeCellText(value: unknown, emptyText?: string) {
+  if (value === null || value === undefined || value === '')
+    return emptyText ?? '-'
+  return typeof value === 'string' || typeof value === 'number' ? value : String(value)
+}
+
+function getCellText(row: Row, column: ConfigTableColumn<Row>) {
   const value = column.formatter ? column.formatter(row) : column.prop ? row[column.prop] : ''
-  return value === null || value === undefined || value === '' ? column.emptyText ?? '-' : value
+  return normalizeCellText(value, column.emptyText)
 }
 </script>
 

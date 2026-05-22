@@ -30,8 +30,11 @@ const columns = computed(() => createUserTableColumns(t))
 
 <template>
   <ConfigDataTable :loading="loading" :data="data" :columns="columns">
-    <CrudActionColumn :label="t('user.actions')" :edit-auth="Permissions.USER_EDIT" :edit-text="t('common.edit')"
-      @edit="$emit('edit', $event)">
+    <CrudActionColumn
+      :column="{ label: t('user.actions') }"
+      :edit-action="{ auth: Permissions.USER_EDIT, text: t('common.edit') }"
+      @edit="$emit('edit', $event as UserInfo)"
+    >
       <template #delete="{ row }">
         <el-button v-auth="Permissions.USER_DELETE" type="danger" link :icon="IconEpDelete" :disabled="isSelf(row)"
           @click="$emit('delete', row)">

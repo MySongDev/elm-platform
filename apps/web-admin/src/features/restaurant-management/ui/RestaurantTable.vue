@@ -28,10 +28,10 @@ const columns = computed(() => createRestaurantTableColumns(t))
 <template>
   <ConfigDataTable :loading="loading" :data="data" :columns="columns">
     <CrudActionColumn
-      :edit-auth="Permissions.COMMERCE_RESTAURANT_EDIT"
-      :delete-auth="Permissions.COMMERCE_RESTAURANT_DELETE"
-      @edit="$emit('edit', $event)"
-      @delete="$emit('delete', $event)"
+      :edit-action="{ auth: Permissions.COMMERCE_RESTAURANT_EDIT }"
+      :delete-action="{ auth: Permissions.COMMERCE_RESTAURANT_DELETE }"
+      @edit="$emit('edit', $event as RestaurantItem)"
+      @delete="$emit('delete', $event as RestaurantItem)"
     />
   </ConfigDataTable>
 </template>

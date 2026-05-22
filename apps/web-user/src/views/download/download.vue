@@ -5,46 +5,14 @@ import { getDeviceInfo } from '@/untils/device-detector'
 defineOptions({
   name: 'DownLoad',
 })
-console.log(getDeviceInfo())
-console.log(navigator)
-console.log(window.screen)
-/**
- * 检查URL是否可访问
- * @param {string} url - 要检查的URL
- * @returns {Promise<boolean>} - 是否可访问
- */
-// 检查链接是否可用
-/* async function checkUrlAccessible(url) {
-  try {
-    const response = await fetch(url, {
-      method: 'HEAD',
-      mode: 'no-cors', // 尝试绕过CORS限制
-      cache: 'no-cache'
-    });
-    // 关键修改：检查响应状态码
-    if (response.ok) { // 200-299 状态码
-      console.log('链接可访问，状态码:', response.status);
-      return true;
-    } else {
-      console.log(`链接不可访问，状态码: ${response.status} ${response.statusText}`);
-      return false;
-    }
-  } catch (error) {
-    console.error('URL检查失败:', error);
-    return false;
-  }
-} */
 
 async function downLoadApp() {
-  // console.log(getDeviceInfo().os === 'mac' || 'ios');
-
   if (getDeviceInfo().os === 'ios' || getDeviceInfo().os === 'mac') {
     return showAlert(`IOS用户请前往AppStore下载`)
   }
   else {
     try {
       const elemIF = document.createElement('iframe')
-      // console.log(await checkUrlAccessible('https://github.com/bia-pain-bache/BPB-Worker-Panel/releases/download/v4.1.3/worker.js'));
 
       elemIF.src = 'http://cangdu.org/files/elm.apk'
       elemIF.style.display = 'none'

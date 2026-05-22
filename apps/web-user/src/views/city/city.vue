@@ -26,8 +26,6 @@ const CityId = route.params.id
 const searchHistory = ref([])
 const citySearchHis = 'citySearchHis'
 
-console.log(searchHistory.value)
-
 // 获取搜索历史
 function history() {
   const his = getSearchHistory(citySearchHis)
@@ -79,7 +77,6 @@ function handleSearch() {
 
 // 去往外卖页面
 function ToMsite({ latitude, longitude, geohash }) {
-  console.log(latitude, longitude, geohash)
   // 存入位置信息
   useLocationStore().setLocation(latitude, longitude)
   useLocationStore().geohash = geohash
@@ -99,7 +96,6 @@ function ToMsite({ latitude, longitude, geohash }) {
 onBeforeMount(() => {
   if (route.query.cityname) {
     CityName.value = route.query.cityname
-    console.log(CityName.value)
   }
   else {
     getCityInfo(CityId).then((res) => {

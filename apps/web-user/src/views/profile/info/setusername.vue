@@ -26,7 +26,7 @@ watch(username, () => {
 function resetName() {
   if (!isValid.value)
     return
-  console.log('提交用户名：', username.value)
+
   updateUserName(username.value)
 }
 </script>

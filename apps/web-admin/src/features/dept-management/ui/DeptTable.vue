@@ -28,9 +28,14 @@ const columns = computed(() => createDeptTableColumns(t))
 </script>
 
 <template>
-  <ConfigDataTable :loading="loading" :data="data" :columns="columns" row-key="id" default-expand-all>
-    <CrudActionColumn width="210" :edit-auth="Permissions.DEPT_EDIT" :delete-auth="Permissions.DEPT_DELETE"
-      @edit="$emit('edit', $event)" @delete="$emit('delete', $event)">
+  <ConfigDataTable :loading="loading" :data="data" :columns="columns" :table="{ rowKey: 'id', defaultExpandAll: true }">
+    <CrudActionColumn
+      :column="{ width: 210 }"
+      :edit-action="{ auth: Permissions.DEPT_EDIT }"
+      :delete-action="{ auth: Permissions.DEPT_DELETE }"
+      @edit="$emit('edit', $event as DeptItem)"
+      @delete="$emit('delete', $event as DeptItem)"
+    >
       <template #prepend="{ row }">
         <el-button v-auth="Permissions.DEPT_ADD" type="primary" link :icon="IconEpPlus" @click="$emit('create', row)">
           {{ t('crud.add') }}

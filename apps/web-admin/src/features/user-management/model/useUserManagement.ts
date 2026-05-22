@@ -5,14 +5,16 @@
  */
 
 import type { FormRules } from 'element-plus'
-import type { CreateUserParams, UserInfo, UserListQuery } from '@/entities/user'
+import type { UserFormState } from './payload'
+import type { CreateUserParams, UpdateUserParams, UserInfo, UserListQuery } from '@/entities/user'
 import { ElMessage } from 'element-plus'
 import { getButtonPermissions } from '@/entities/permission'
 import { useAuthStore } from '@/entities/session'
 import { createUser, deleteUser, getUserList, updateUser } from '@/entities/user'
 import { createElementPlusCrudFeedback, useConfigCrud } from '@/shared/config-crud'
+import { toUserPayload } from './payload'
 
-export type UserFormState = CreateUserParams & { _userId?: number }
+export type { UserFormState } from './payload'
 
 const defaultForm: UserFormState = {
   username: '',
@@ -22,6 +24,7 @@ const defaultForm: UserFormState = {
   role: 'user',
   status: 1,
   permissions: [],
+  _userId: undefined,
 }
 
 /**
@@ -33,7 +36,7 @@ export function useUserManagement() {
   const authStore = useAuthStore()
   const permissionOptions = ref<{ label: string, value: string }[]>([])
 
-  const crud = useConfigCrud<UserInfo, UserListQuery, UserFormState, Partial<UserInfo>, number>({
+  const crud = useConfigCrud<UserInfo, UserListQuery, UserFormState, CreateUserParams | UpdateUserParams, number>({
     getDefaultQuery: () => ({ username: '', role: '' as UserListQuery['role'], status: '' as UserListQuery['status'] }),
     getDefaultForm: () => ({ ...defaultForm, permissions: [] }),
     fetchList: async () => {
@@ -73,12 +76,9 @@ export function useUserManagement() {
       permissions: [...row.permissions],
       _userId: row.id,
     }),
-    toPayload: (form) => {
-      const { password: _password, _userId, ...rest } = form as UserFormState & { _userId?: number }
-      return rest
-    },
+    toPayload: toUserPayload,
     deleteConfirm: row => t('user.deleteConfirm', { name: row.username }),
-    saveSuccessMessage: t('user.createSuccess'),
+    saveSuccessMessage: ({ isEdit }) => t(isEdit ? 'user.updateSuccess' : 'user.createSuccess'),
     deleteSuccessMessage: t('user.deleteSuccess'),
     feedback: createElementPlusCrudFeedback(),
   })

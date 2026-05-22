@@ -64,7 +64,9 @@ const { sentinel } = useInfiniteScroll({
     <!-- 底部加载状态 -->
     <div v-show="!isInitialLoading && reviews.length > 0" ref="sentinel" class="list-footer">
       <div v-if="loading" class="loading-status">
-        <van-loading size="16px">加载中...</van-loading>
+        <van-loading size="16px">
+          加载中...
+        </van-loading>
       </div>
       <div v-else-if="finished" class="finished-status">
         —— 到底了 ——

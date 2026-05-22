@@ -43,11 +43,10 @@ const headerRef = useTemplateRef('headerRef')
 const shopListRef = useTemplateRef('shopListRef')
 
 // 记录页面滚动位置（使用 msiteRef 作为滚动容器）
-const { scrollY, saveNow } = useScrollPosition(msiteRef)
+useScrollPosition(msiteRef)
 
 // ========== 滚动控制 ==========
 const isSticky = ref(false)
-const canListScroll = ref(false)
 
 // 计算吸顶临界点
 let stickyThreshold = 0
@@ -62,7 +61,24 @@ function updateThreshold() {
 function handleWindowScroll() {
   const scrollY = window.scrollY || msiteRef.value?.scrollTop || 0
   isSticky.value = scrollY >= stickyThreshold // 自动适配最新高度
-  // console.log(isSticky.value)
+}
+
+let isScrollListenerBound = false
+
+function bindScrollListener() {
+  if (!msiteRef.value || isScrollListenerBound)
+    return
+
+  msiteRef.value.addEventListener('scroll', handleWindowScroll, { passive: true })
+  isScrollListenerBound = true
+}
+
+function unbindScrollListener() {
+  if (!msiteRef.value || !isScrollListenerBound)
+    return
+
+  msiteRef.value.removeEventListener('scroll', handleWindowScroll)
+  isScrollListenerBound = false
 }
 
 function toShop(item) {
@@ -116,49 +132,23 @@ function extractIdFromUrl(url) {
 
 onMounted(() => {
   updateThreshold()
-
-  if (msiteRef.value) {
-    msiteRef.value.addEventListener('scroll', handleWindowScroll, { passive: true })
-    console.log('[Msite] msiteRef mounted, scrollHeight:', msiteRef.value.scrollHeight)
-    console.log('[Msite] msiteRef scrollTop:', msiteRef.value.scrollTop)
-    console.log('[Msite] msiteRef clientHeight:', msiteRef.value.clientHeight)
-
-    // 检查父元素是否可以滚动
-    const parent = msiteRef.value.parentElement
-    console.log('[Msite] Parent element:', parent?.className)
-    if (parent) {
-      console.log('[Msite] Parent scrollHeight:', parent.scrollHeight)
-      console.log('[Msite] Parent scrollTop:', parent.scrollTop)
-      console.log('[Msite] Parent can scroll:', parent.scrollHeight > parent.clientHeight)
-    }
-  }
+  bindScrollListener()
+  handleWindowScroll()
 })
 
 onBeforeUnmount(() => {
-  if (msiteRef.value) {
-    msiteRef.value.removeEventListener('scroll', handleWindowScroll)
-  }
+  unbindScrollListener()
 })
 
 onActivated(() => {
-  // 组件激活时重置吸顶状态
-  isSticky.value = false
-
-  // 重新绑定滚动监听器
-  if (msiteRef.value) {
-    msiteRef.value.addEventListener('scroll', handleWindowScroll, { passive: true })
-  }
+  updateThreshold()
+  bindScrollListener()
+  handleWindowScroll()
 })
 
 onDeactivated(() => {
-  // 组件停用时保存滚动位置（useScrollPosition 的 onBeforeRouteLeave 会自动保存）
-  // 不需要手动调用 saveNow()，避免重复保存
+  unbindScrollListener()
 })
-// onMounted(() => console.log('✅ mounted'))
-// onActivated(() => console.log('🔄 activated'))
-// onDeactivated(() => console.log('💤 deactivated'))
-// onBeforeUnmount(() => console.log('❌ beforeUnmount'))
-// onUnmounted(() => console.log('💀 unmounted'))
 </script>
 
 <template>

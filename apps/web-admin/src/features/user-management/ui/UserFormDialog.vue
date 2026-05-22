@@ -34,10 +34,10 @@ const fields = computed(() => createUserFormFields(t, props.permissionOptions, p
     v-model:visible="dialogVisible"
     v-model:model="form"
     :fields="fields"
-    :title="t('user.username')"
+    :dialog="{ title: t('user.username') }"
     :is-edit="isEdit"
     :saving="saving"
-    :rules="rules"
+    :form-options="{ rules }"
     @submit="emit('submit')"
   />
 </template>

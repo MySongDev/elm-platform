@@ -2,7 +2,7 @@
 <script setup>
 import { ref } from 'vue'
 
-const props = defineProps({
+defineProps({
   review: {
     type: Object,
     required: true,

@@ -76,6 +76,35 @@ describe('useConfigCrud feedback adapter', () => {
     }
   })
 
+  it('resolves save success messages from the current save mode', async () => {
+    const notifySaveSuccess = vi.fn()
+    const options = createCrudOptions({
+      saveSuccessMessage: ({ isEdit }) => isEdit ? '更新好了' : '创建好了',
+      feedback: {
+        notifySaveSuccess,
+      },
+    })
+
+    const { result: crud, dispose } = runInScope(() => useConfigCrud<Row, Query, FormState>(options))
+
+    try {
+      crud.form.name = 'Alice'
+      await crud.submitForm()
+
+      expect(options.createItem).toHaveBeenCalledWith(crud.form)
+      expect(notifySaveSuccess).toHaveBeenLastCalledWith('创建好了')
+
+      crud.openEditDialog({ id: 1, name: 'Alice' })
+      await crud.submitForm()
+
+      expect(options.updateItem).toHaveBeenCalledWith(1, crud.form)
+      expect(notifySaveSuccess).toHaveBeenLastCalledWith('更新好了')
+    }
+    finally {
+      dispose()
+    }
+  })
+
   it('lets injected feedback cancel delete before the delete action runs', async () => {
     const confirmDelete = vi.fn().mockResolvedValue(false)
     const notifyDeleteSuccess = vi.fn()

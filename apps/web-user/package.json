@@ -17,7 +17,7 @@
     "preview": "vite preview",
     "test": "vitest run",
     "test:watch": "vitest",
-    "lint": "eslint . --fix --cache",
+    "lint": "eslint \"src/**/*.{js,ts,vue}\" vite.config.js --fix --cache",
     "format": "prettier --write --experimental-cli src/"
   },
   "dependencies": {

@@ -28,10 +28,10 @@ const columns = computed(() => createRoleTableColumns(t))
 <template>
   <ConfigDataTable :loading="loading" :data="data" :columns="columns">
     <CrudActionColumn
-      :edit-auth="Permissions.ROLE_EDIT"
-      :delete-auth="Permissions.ROLE_DELETE"
-      @edit="$emit('edit', $event)"
-      @delete="$emit('delete', $event)"
+      :edit-action="{ auth: Permissions.ROLE_EDIT }"
+      :delete-action="{ auth: Permissions.ROLE_DELETE }"
+      @edit="$emit('edit', $event as RoleItem)"
+      @delete="$emit('delete', $event as RoleItem)"
     />
   </ConfigDataTable>
 </template>

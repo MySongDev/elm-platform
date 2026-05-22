@@ -13,10 +13,24 @@ export interface PaginationState {
   total: number
 }
 
+export interface SaveSuccessMessageContext<
+  Form,
+  Id extends CrudId = number,
+> {
+  form: Form
+  id: Id | 0 | '' | null | undefined
+  isEdit: boolean
+}
+
+export type SaveSuccessMessage<
+  Form,
+  Id extends CrudId = number,
+> = string | ((context: SaveSuccessMessageContext<Form, Id>) => string)
+
 export interface UseConfigCrudOptions<
   Row,
-  Query extends Record<string, any>,
-  Form extends Record<string, any>,
+  Query extends object,
+  Form extends object,
   Payload,
   Id extends CrudId = number,
 > {
@@ -34,7 +48,7 @@ export interface UseConfigCrudOptions<
   toForm?: (row: Row) => Partial<Form>
   toPayload?: (form: Form) => Payload
   deleteConfirm: (row: Row) => string
-  saveSuccessMessage?: string
+  saveSuccessMessage?: SaveSuccessMessage<Form, Id>
   deleteSuccessMessage?: string
   feedback?: ConfigCrudFeedback
 }

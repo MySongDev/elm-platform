@@ -8,8 +8,11 @@ export { default as ConfigFormDialog } from './components/ConfigFormDialog/index
 
 export { default as CrudActionColumn } from './components/CrudActionColumn/index.vue'
 export type {
+  ActionOptions,
   ConfigFieldOption,
   ConfigFormField,
+  DialogOptions,
+  FormOptions,
   Translate,
 } from './model/form'
 export {
@@ -20,6 +23,9 @@ export {
   getStatusText,
 } from './model/presets'
 export type {
+  ConfigDataTableOptions,
   ConfigTableColumn,
+  CrudActionColumnOptions,
+  CrudActionPreset,
 } from './model/table'
 export { useConfigCrud } from './model/useConfigCrud'

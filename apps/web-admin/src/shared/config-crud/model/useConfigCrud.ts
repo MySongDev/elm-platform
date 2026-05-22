@@ -15,8 +15,8 @@ import { createSilentCrudFeedback } from './feedback'
  */
 export function useConfigCrud<
   Row,
-  Query extends Record<string, any>,
-  Form extends Record<string, any>,
+  Query extends object,
+  Form extends object,
   Payload = Partial<Form>,
   Id extends CrudId = number,
 >(options: UseConfigCrudOptions<Row, Query, Form, Payload, Id>) {
@@ -113,6 +113,18 @@ export function useConfigCrud<
     fetchRows()
   }
 
+  function resolveSaveSuccessMessage(id: ReturnType<typeof options.getFormId>) {
+    const message = options.saveSuccessMessage ?? '保存成功'
+    if (typeof message === 'function') {
+      return message({
+        form,
+        id,
+        isEdit: Boolean(id),
+      })
+    }
+    return message
+  }
+
   async function submitForm() {
     saving.value = true
 
@@ -125,7 +137,7 @@ export function useConfigCrud<
       else
         await options.createItem(payload)
 
-      feedback.notifySaveSuccess(options.saveSuccessMessage ?? '保存成功')
+      feedback.notifySaveSuccess(resolveSaveSuccessMessage(id))
       dialogVisible.value = false
       await fetchRows()
     }

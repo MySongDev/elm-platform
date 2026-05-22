@@ -1,8 +1,8 @@
 <!-- components/ShopReview/ShopReview.vue -->
 <script setup>
 import { computed, ref } from 'vue'
-import { getShopRatings, getShopReviewFilters } from '@/services/api/api-shop'
 import { useLoadMore } from '@/composables/app'
+import { getShopRatings, getShopReviewFilters } from '@/services/api/api-shop'
 import ReviewFilterBar from './ReviewFilterBar.vue'
 import ReviewList from './ReviewList.vue'
 

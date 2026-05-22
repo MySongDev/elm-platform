@@ -3,7 +3,6 @@
 
 import { storeToRefs } from 'pinia'
 import { computed } from 'vue'
-// console.log(router);
 
 import { useRoute, useRouter } from 'vue-router'
 
@@ -64,7 +63,6 @@ function handleSearch() {
 const showHeaderBack = computed(() => {
   // 不在白名单中的页面显示返回按钮
   const noBackPages = ['/home', '/msite', '/profile', '/']
-  // console.log(noBackPages.includes(route.path));
 
   return props.showBack && !noBackPages.includes(route.path)
 })

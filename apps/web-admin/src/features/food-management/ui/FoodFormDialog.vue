@@ -32,10 +32,10 @@ const fields = computed(() => createFoodFormFields(t))
     v-model:visible="dialogVisible"
     v-model:model="form"
     :fields="fields"
-    :title="t('commerce.food.name')"
+    :dialog="{ title: t('commerce.food.name') }"
     :is-edit="isEdit"
     :saving="saving"
-    :rules="rules"
+    :form-options="{ rules }"
     @submit="emit('submit')"
   />
 </template>

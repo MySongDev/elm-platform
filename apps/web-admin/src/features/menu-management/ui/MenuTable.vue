@@ -32,15 +32,14 @@ const columns = computed(() => createMenuTableColumns(t))
     :loading="loading"
     :data="data"
     :columns="columns"
-    row-key="id"
-    default-expand-all
+    :table="{ rowKey: 'id', defaultExpandAll: true }"
   >
     <CrudActionColumn
-      width="210"
-      :edit-auth="Permissions.MENU_EDIT"
-      :delete-auth="Permissions.MENU_DELETE"
-      @edit="$emit('edit', $event)"
-      @delete="$emit('delete', $event)"
+      :column="{ width: 210 }"
+      :edit-action="{ auth: Permissions.MENU_EDIT }"
+      :delete-action="{ auth: Permissions.MENU_DELETE }"
+      @edit="$emit('edit', $event as MenuItem)"
+      @delete="$emit('delete', $event as MenuItem)"
     >
       <template #prepend="{ row }">
         <el-button v-auth="Permissions.MENU_ADD" type="primary" link :icon="IconEpPlus" @click="$emit('create', row)">

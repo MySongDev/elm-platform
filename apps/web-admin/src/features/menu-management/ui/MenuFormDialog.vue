@@ -30,6 +30,14 @@ const fields = computed(() => createMenuFormFields(t, props.parentOptions))
 </script>
 
 <template>
-  <ConfigFormDialog v-model:visible="dialogVisible" v-model:model="form" :fields="fields" :title="t('menu.menuType')"
-    :is-edit="isEdit" :saving="saving" :rules="rules" @submit="emit('submit')" />
+  <ConfigFormDialog
+    v-model:visible="dialogVisible"
+    v-model:model="form"
+    :fields="fields"
+    :dialog="{ title: t('menu.menuType') }"
+    :is-edit="isEdit"
+    :saving="saving"
+    :form-options="{ rules }"
+    @submit="emit('submit')"
+  />
 </template>

@@ -34,10 +34,10 @@ const fields = computed(() => createRoleFormFields(t, props.permissionOptions))
     v-model:visible="dialogVisible"
     v-model:model="form"
     :fields="fields"
-    :title="t('role.name')"
+    :dialog="{ title: t('role.name') }"
     :is-edit="isEdit"
     :saving="saving"
-    :rules="rules"
+    :form-options="{ rules }"
     @submit="emit('submit')"
   />
 </template>
