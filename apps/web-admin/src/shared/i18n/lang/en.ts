@@ -92,14 +92,15 @@ export default {
     pending: 'Pending',
   },
   login: {
-    username: 'Username',
+    username: 'Username / Phone',
     password: 'Password',
     login: 'Login',
-    usernamePlaceholder: 'Username',
+    usernamePlaceholder: 'Username / Phone',
     passwordPlaceholder: 'Password',
-    usernameRequired: 'Please enter username',
+    usernameRequired: 'Please enter username or phone',
     passwordRequired: 'Please enter password',
     passwordMin: 'Password must be at least 6 characters',
+    defaultCredentialHint: 'Default: admin / admin123, or 13800138000 / admin123',
   },
   dashboard: {
     totalUsers: 'Total Users',

@@ -38,7 +38,7 @@ export const useAuthStore = defineStore('auth', () => {
     return checkPermission(permissions.value, required)
   }
 
-  async function login(credentials: { username: string, password: string }) {
+  async function login(credentials: { account: string, password: string }) {
     const res = await request.post<LoginResult>('/auth/login', credentials)
     token.value = res.token
     userInfo.value = res.user

@@ -92,14 +92,15 @@ export default {
     pending: '待处理',
   },
   login: {
-    username: '用户名',
+    username: '用户名/手机号',
     password: '密码',
     login: '登录',
-    usernamePlaceholder: '用户名',
+    usernamePlaceholder: '用户名/手机号',
     passwordPlaceholder: '密码',
-    usernameRequired: '请输入用户名',
+    usernameRequired: '请输入用户名或手机号',
     passwordRequired: '请输入密码',
     passwordMin: '密码长度不少于6位',
+    defaultCredentialHint: '默认账号：admin / admin123，也可使用 13800138000 / admin123',
   },
   dashboard: {
     totalUsers: '用户总数',

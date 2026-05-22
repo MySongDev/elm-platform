@@ -15,12 +15,12 @@ const loginFormRef = ref<FormInstance>()
 const loading = ref(false)
 
 const loginForm = reactive({
-  username: '',
+  account: '',
   password: '',
 })
 
 const rules: FormRules = {
-  username: [{ required: true, message: t('login.usernameRequired'), trigger: 'blur' }],
+  account: [{ required: true, message: t('login.usernameRequired'), trigger: 'blur' }],
   password: [
     { required: true, message: t('login.passwordRequired'), trigger: 'blur' },
     { min: 6, message: t('login.passwordMin'), trigger: 'blur' },
@@ -53,9 +53,12 @@ async function handleLogin() {
   <main class="login-page">
     <section class="login-panel">
       <h1>Elm Admin</h1>
+      <p class="login-hint">
+        {{ t('login.defaultCredentialHint') }}
+      </p>
       <el-form ref="loginFormRef" :model="loginForm" :rules="rules" @keyup.enter="handleLogin">
-        <el-form-item prop="username">
-          <el-input v-model="loginForm.username" :placeholder="t('login.usernamePlaceholder')" :prefix-icon="IconEpUser"
+        <el-form-item prop="account">
+          <el-input v-model="loginForm.account" :placeholder="t('login.usernamePlaceholder')" :prefix-icon="IconEpUser"
             size="large" />
         </el-form-item>
         <el-form-item prop="password">
@@ -92,9 +95,16 @@ async function handleLogin() {
 }
 
 h1 {
-  margin: 0 0 28px;
+  margin: 0 0 20px;
   font-size: 24px;
   color: var(--app-text-primary);
+  text-align: center;
+}
+
+.login-hint {
+  margin: -8px 0 20px;
+  font-size: 13px;
+  color: var(--app-text-secondary);
   text-align: center;
 }
 
