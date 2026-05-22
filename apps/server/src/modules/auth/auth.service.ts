@@ -96,9 +96,13 @@ export class AuthService {
     return pruneEmptyCatalogs(sortAndClean(roots));
   }
 
-  async login(username: string, password: string, ip?: string, userAgent?: string) {
-    const user = await this.prisma.user.findUnique({
-      where: { username },
+  async login(account: string | undefined, password: string, ip?: string, userAgent?: string) {
+    if (!account) {
+      throw new UnauthorizedException('用户名或密码错误');
+    }
+
+    const user = await this.prisma.user.findFirst({
+      where: { OR: [{ username: account }, { phone: account }] },
     });
 
     if (!user) {
@@ -119,7 +123,7 @@ export class AuthService {
     await this.recordLoginLog(user.id, ip, userAgent, 1, '登录成功');
     await this.recordOnlineUser(user, ip, userAgent);
 
-    const payload = { sub: user.id, username: user.username, role: user.role };
+    const payload = { sub: user.id, username: user.username, role: user.role, subjectType: 'admin' };
     const token = this.jwtService.sign(payload);
 
     return {

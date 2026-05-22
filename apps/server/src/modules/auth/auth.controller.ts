@@ -14,7 +14,7 @@ import { ApiTags, ApiOperation, ApiBearerAuth, ApiQuery } from '@nestjs/swagger'
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { UpdateProfileDto } from './dto/update-profile.dto';
-import { JwtAuthGuard } from './guards/jwt-auth.guard';
+import { AdminAuthGuard } from './guards/admin-auth.guard';
 
 @ApiTags('认证管理')
 @Controller('auth')
@@ -26,11 +26,12 @@ export class AuthController {
   async login(@Body() loginDto: LoginDto, @Request() req: any) {
     const ip = req.ip || req.headers['x-forwarded-for'] || req.connection?.remoteAddress;
     const userAgent = req.headers['user-agent'];
-    return this.authService.login(loginDto.username, loginDto.password, ip, userAgent);
+    const account = loginDto.account || loginDto.username;
+    return this.authService.login(account, loginDto.password, ip, userAgent);
   }
 
   @Get('profile')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(AdminAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: '获取当前用户信息' })
   async getProfile(@Request() req: any) {
@@ -38,7 +39,7 @@ export class AuthController {
   }
 
   @Get('menus')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(AdminAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: '获取当前用户可访问的菜单树' })
   async getMenus(@Request() req: any) {
@@ -46,7 +47,7 @@ export class AuthController {
   }
 
   @Patch('profile')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(AdminAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: '更新当前用户信息' })
   async updateProfile(@Request() req: any, @Body() updateProfileDto: UpdateProfileDto) {
@@ -54,7 +55,7 @@ export class AuthController {
   }
 
   @Post('logout')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(AdminAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: '退出登录' })
   async logout(@Request() req: any) {
@@ -62,7 +63,7 @@ export class AuthController {
   }
 
   @Get('security-logs')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(AdminAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: '获取安全日志' })
   @ApiQuery({ name: 'page', required: false, type: Number, example: 1 })
