@@ -15,7 +15,7 @@
 | HTTP | Axios（自研策略层：重试 / 去重 / 缓存 / Loading） |
 | 样式 | SCSS + 全局 Mixin & Variables |
 | Mock | vite-plugin-mock + Mock.js |
-| 代码规范 | ESLint（@antfu/eslint-config）+ Prettier |
+| 代码规范 | ESLint（@antfu/eslint-config） |
 | 测试 | Vitest + happy-dom |
 | 包管理 | pnpm |
 
@@ -61,9 +61,6 @@ pnpm type-check
 
 # ESLint 检查并自动修复
 pnpm lint
-
-# Prettier 格式化
-pnpm format
 
 # 运行测试
 pnpm test
@@ -167,12 +164,12 @@ log.js         → 请求日志 & 敏感数据脱敏
 
 ```js
 get('/api/shops', params, {
-  cache: true,           // 启用内存缓存
-  cacheMaxAge: 60000,    // 缓存 60 秒
+  cache: true, // 启用内存缓存
+  cacheMaxAge: 60000, // 缓存 60 秒
   dedupe: 'cancelPrevious', // 取消前一个相同请求
-  retry: 3,             // 失败重试 3 次
-  loading: true,        // 显示全局 Loading
-  location: true,       // 注入经纬度
+  retry: 3, // 失败重试 3 次
+  loading: true, // 显示全局 Loading
+  location: true, // 注入经纬度
 })
 ```
 

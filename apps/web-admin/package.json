@@ -12,7 +12,7 @@
     "type-check": "vue-tsc --noEmit",
     "test:unit": "vitest run",
     "preview": "vite preview",
-    "lint": "eslint . --fix",
+    "lint": "eslint . --fix --cache",
     "lint:style": "stylelint \"src/**/*.{vue,scss}\" --fix"
   },
   "dependencies": {

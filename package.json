@@ -1,6 +1,9 @@
 {
   "name": "elm-platform",
   "private": true,
+  "engines": {
+    "node": ">=18"
+  },
   "scripts": {
     "dev": "pnpm --filter vue3-elm-node --filter elm-web-admin --filter vue3-elm-js --parallel run dev",
     "dev:server": "pnpm --filter vue3-elm-node run start:dev",
@@ -10,10 +13,13 @@
     "build:server": "pnpm --filter vue3-elm-node run build",
     "build:admin": "pnpm --filter elm-web-admin run build",
     "build:user": "pnpm --filter vue3-elm-js run build",
-    "lint": "pnpm -r run lint",
+    "lint": "eslint . --fix --cache",
     "clean": "pnpm -r exec rm -rf node_modules dist .turbo"
   },
-  "engines": {
-    "node": ">=18"
+  "devDependencies": {
+    "@antfu/eslint-config": "^7.7.3",
+    "eslint": "^9.39.2",
+    "globals": "^17.0.0",
+    "typescript": "^5.8.3"
   }
 }

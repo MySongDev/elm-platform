@@ -26,9 +26,6 @@ pnpm preview
 
 # Lint code with auto-fix
 pnpm lint
-
-# Format code with Prettier
-pnpm format
 ```
 
 ## Architecture
@@ -127,11 +124,6 @@ pnpm format
 - Ignores `dist/`, `dist-ssr/`, `coverage/` directories
 - Multi-word component names allowed (rule disabled)
 - No semicolons required
-
-### Prettier
-- No semicolons
-- Single quotes
-- 100 character line width
 
 ## Important Patterns
 

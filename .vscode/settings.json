@@ -3,6 +3,10 @@
     "source.fixAll.eslint": "always",
     "source.organizeImports": "never"
   },
+  "eslint.format.enable": true,
+  "[vue]": {
+    "editor.formatOnSave": false
+  },
   "eslint.validate": [
     "javascript",
     "javascriptreact",
@@ -12,12 +16,8 @@
   ],
   "eslint.workingDirectories": [
     {
-      "directory": "apps/web-user",
-      "changeProcessCWD": true
-    },
-    {
-      "directory": "apps/web-admin",
-      "changeProcessCWD": true
+      "mode": "auto"
     }
-  ]
+  ],
+  "liveServer.settings.port": 5633
 }

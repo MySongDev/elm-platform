@@ -29,7 +29,7 @@ elm-platform/
 - **UI 组件**: Element Plus
 - **状态管理**: Pinia
 - **构建工具**: Vite 7
-- **代码规范**: ESLint + Prettier
+- **代码规范**: ESLint
 
 ### 用户端 (web-user)
 - **框架**: Vue 3 + TypeScript
@@ -136,7 +136,7 @@ http://localhost:3000/api/docs
 ## 项目规范
 
 - 使用 TypeScript 进行类型检查
-- 遵循 ESLint + Prettier 代码规范
+- 遵循 ESLint 代码规范
 - 组件采用 Composition API + `<script setup>` 语法
 - 状态管理使用 Pinia
 - API 请求统一封装

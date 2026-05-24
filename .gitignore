@@ -38,6 +38,7 @@ yarn-error.log*
 
 # Testing
 coverage/
+.eslintcache
 
 # Prisma
 apps/server/prisma/*.db

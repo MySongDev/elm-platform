@@ -17,8 +17,7 @@
     "preview": "vite preview",
     "test": "vitest run",
     "test:watch": "vitest",
-    "lint": "eslint \"src/**/*.{js,ts,vue}\" vite.config.js --fix --cache",
-    "format": "prettier --write --experimental-cli src/"
+    "lint": "eslint . --fix --cache"
   },
   "dependencies": {
     "@vant/area-data": "^2.1.0",
@@ -45,7 +44,6 @@
     "globals": "^17.0.0",
     "happy-dom": "^20.9.0",
     "mockjs": "^1.1.0",
-    "prettier": "3.8.1",
     "sass-embedded": "^1.97.3",
     "typescript": "^5.8.3",
     "unplugin-auto-import": "^21.0.0",
