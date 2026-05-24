@@ -4,6 +4,7 @@ import { showAlert } from '@/components/common/AlterTip/index'
 import { API_BASE_URL } from '@/config'
 import { getStore } from '@/untils/storage'
 
+import { refreshCustomerToken } from './auth-refresh'
 import { finishGlobalLoading, startGlobalLoading } from './loading'
 import {
   addBusinessErrorLog,
@@ -130,6 +131,18 @@ request.interceptors.response.use(
       await new Promise(resolve => setTimeout(resolve, delay))
 
       return request(config)
+    }
+
+    if (status === 401 && config && !meta.skipAuthRefresh && !meta.authRetried) {
+      meta.authRetried = true
+      finishGlobalLoading(config)
+
+      const nextToken = await refreshCustomerToken(request).catch(() => null)
+      if (nextToken) {
+        config.headers = config.headers || {}
+        config.headers.Authorization = `Bearer ${nextToken}`
+        return request(config)
+      }
     }
 
     finishGlobalLoading(config)

@@ -13,7 +13,12 @@ const visibleFields = computed(() => props.fields.filter(field => !field.showWhe
 </script>
 
 <template>
-  <el-form-item v-for="field in visibleFields" :key="field.prop" :label="field.label" :prop="field.prop">
+  <el-form-item
+    v-for="field in visibleFields"
+    :key="field.prop"
+    :label="field.label"
+    :prop="field.prop"
+  >
     <slot :name="`field-${field.prop}`" :field="field" :model="model">
       <FormFieldRenderer v-model="model[field.prop]" :field="field" />
     </slot>

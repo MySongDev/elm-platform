@@ -6,7 +6,7 @@
 
 import type { DeptItem } from '@/entities/department'
 import type { ConfigFormField, ConfigTableColumn, Translate } from '@/shared/config-crud'
-import { createEnabledStatusOptions, createEnabledStatusSearchOptions, getEnabledStatusTag, getStatusText } from '@/shared/config-crud'
+import { createEnabledStatusOptions, createEnabledStatusSearchOptions, getEnabledStatusTag, getStatusText } from '@/shared/lib/admin-display'
 
 export function createDeptSearchFields(t: Translate) {
   return [

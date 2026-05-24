@@ -4,7 +4,7 @@
  * @description 为路由 meta 补充菜单、权限、缓存和标签页相关字段，约束动态路由与布局组件之间的协议。
  */
 
-import type { Role } from '@/shared/config/roles'
+import type { Role } from '@/shared/config/access'
 import 'vue-router'
 
 declare module 'vue-router' {

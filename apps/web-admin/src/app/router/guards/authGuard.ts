@@ -12,6 +12,7 @@ import { resetDynamicRoutes } from '../dynamic-routes'
 export function setupAuthGuard(router: Router) {
   router.beforeEach((to) => {
     const authStore = useAuthStore()
+    authStore.ensureSessionValid()
 
     if (!authStore.isLoggedIn) {
       resetDynamicRoutes()

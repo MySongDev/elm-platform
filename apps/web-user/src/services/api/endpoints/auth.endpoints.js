@@ -8,5 +8,7 @@ export const authEndpoints = {
   customerRegister: '/customer-auth/register',
   customerPasswordLogin: '/customer-auth/login/password',
   customerSmsLogin: '/customer-auth/login/sms',
+  customerRefresh: '/customer-auth/refresh',
+  customerLogout: '/customer-auth/logout',
   customerProfile: '/customer-auth/profile',
 }

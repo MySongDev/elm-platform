@@ -4,9 +4,10 @@
  * @description 定义菜单查询表单、树形表格列和编辑表单字段，父菜单选项由业务状态层传入。
  */
 
+import type { FormRules } from 'element-plus'
 import type { MenuItem } from '@/entities/system-menu'
 import type { ConfigFormField, ConfigTableColumn, Translate } from '@/shared/config-crud'
-import { createEnabledStatusOptions, createEnabledStatusSearchOptions, getEnabledStatusTag, getStatusText } from '@/shared/config-crud'
+import { createEnabledStatusOptions, createEnabledStatusSearchOptions, getEnabledStatusTag, getStatusText } from '@/shared/lib/admin-display'
 
 export function createMenuSearchFields(t: Translate) {
   return [
@@ -54,4 +55,11 @@ export function createMenuFormFields(t: Translate, parentOptions: MenuItem[]) {
     { prop: 'sort', label: t('menu.sort'), type: 'inputNumber', min: 0 },
     { prop: 'status', label: t('menu.status'), type: 'radio', options: createEnabledStatusOptions(getStatusText(t)) },
   ] satisfies ConfigFormField[]
+}
+
+export function createMenuFormRules(t: Translate): FormRules {
+  return {
+    title: [{ required: true, message: t('menu.titleRequired'), trigger: 'blur' }],
+    path: [{ required: true, message: t('menu.pathRequired'), trigger: 'blur' }],
+  }
 }

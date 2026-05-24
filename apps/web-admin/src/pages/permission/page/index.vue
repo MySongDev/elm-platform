@@ -36,26 +36,36 @@ const { loading, filteredData, query, fetchRows, resetQuery } = useReadonlyTable
           </el-form-item>
           <el-form-item>
             <el-button type="primary" :icon="IconEpSearch">
-{{ t('common.search') }}
-</el-button>
+              {{ t('common.search') }}
+            </el-button>
             <el-button @click="resetQuery">
-{{ t('common.reset') }}
-</el-button>
+              {{ t('common.reset') }}
+            </el-button>
           </el-form-item>
         </el-form>
       </template>
 
-      <el-table v-loading="loading" :data="filteredData" border stripe>
+      <el-table
+        v-loading="loading"
+        :data="filteredData"
+        border
+        stripe
+      >
         <el-table-column prop="title" :label="t('permission.page.pageName')" min-width="150" />
         <el-table-column prop="path" :label="t('permission.page.routePath')" min-width="180" />
         <el-table-column prop="name" :label="t('permission.page.routeName')" min-width="140">
           <template #default="{ row }">
-{{ row.name || '-' }}
-</template>
+            {{ row.name || '-' }}
+          </template>
         </el-table-column>
         <el-table-column :label="t('permission.page.roles')" min-width="160">
           <template #default="{ row }">
-            <el-tag v-for="role in row.roles" :key="role" class="tag-item" effect="plain">
+            <el-tag
+              v-for="role in row.roles"
+              :key="role"
+              class="tag-item"
+              effect="plain"
+            >
               {{ role }}
             </el-tag>
           </template>
@@ -63,7 +73,13 @@ const { loading, filteredData, query, fetchRows, resetQuery } = useReadonlyTable
         <el-table-column :label="t('permission.page.permissionCodes')" min-width="220">
           <template #default="{ row }">
             <template v-if="row.auths?.length">
-              <el-tag v-for="auth in row.auths" :key="auth" class="tag-item" type="success" effect="plain">
+              <el-tag
+                v-for="auth in row.auths"
+                :key="auth"
+                class="tag-item"
+                type="success"
+                effect="plain"
+              >
                 {{ auth }}
               </el-tag>
             </template>

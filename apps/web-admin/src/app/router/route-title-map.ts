@@ -1,7 +1,7 @@
 /**
  * @file 路由标题兜底映射
  * @domain router
- * @description 保留旧菜单 name 到 i18n key 的兼容映射；后端没有提供有效 title 时才使用。
+ * @description 保留旧菜单 name 到 i18n key 的兼容映射；已知内置菜单应优先保留 key，避免后端固定文案破坏语言切换。
  */
 
 const routeTitleKeyByName: Record<string, string> = {
@@ -39,6 +39,10 @@ function normalizeTitleSegment(path: string): string {
   return segment.replace(/-([a-z])/g, (_, char: string) => char.toUpperCase())
 }
 
+export function resolveKnownRouteTitleKey(name: string | undefined): string | undefined {
+  return routeTitleKeyByName[name ?? '']
+}
+
 /**
  * @description 根据历史 route name 映射或路径片段生成标题兜底值；只应在后端 title 缺失或空白时调用。
  * @param name 后端菜单 name，可为空。
@@ -46,5 +50,5 @@ function normalizeTitleSegment(path: string): string {
  * @returns 可写入 route meta.title 的 i18n key。
  */
 export function resolveRouteTitleFallback(name: string | undefined, path: string): string {
-  return routeTitleKeyByName[name ?? ''] ?? `route.${normalizeTitleSegment(path)}`
+  return resolveKnownRouteTitleKey(name) ?? `route.${normalizeTitleSegment(path)}`
 }

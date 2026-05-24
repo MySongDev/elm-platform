@@ -5,7 +5,7 @@
  */
 
 import type { RouteRecordRaw } from 'vue-router'
-import type { Role } from '@/shared/config/roles'
+import type { Role } from '@/shared/config/access'
 
 export interface RouteAccessUser {
   role?: Role

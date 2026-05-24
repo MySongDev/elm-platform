@@ -1,9 +1,10 @@
 import axios from 'axios'
 
+import { getStore } from '@/untils/storage'
 import { paymentEndpoints } from './endpoints/payment.endpoints'
 
 export const PAY_API_UNAVAILABLE_MESSAGE
-  = '本地支付服务未启动，请先运行 pnpm dev:pay，或在另一个终端运行 pnpm server:dev 后再重试。'
+  = '后端支付服务未启动或不可用，请先运行 pnpm --filter vue3-elm-node run dev 后再重试。'
 
 const paymentRequest = axios.create({
   baseURL: '/pay-api',
@@ -13,6 +14,15 @@ const paymentRequest = axios.create({
     'Content-Type': 'application/json',
   },
   withCredentials: true,
+})
+
+paymentRequest.interceptors.request.use((config) => {
+  const token = getStore('customer_token')
+  if (token) {
+    config.headers = config.headers || {}
+    config.headers.Authorization = `Bearer ${token}`
+  }
+  return config
 })
 
 paymentRequest.interceptors.response.use(
@@ -48,7 +58,7 @@ function isPayApiUnavailable(error) {
 
   return (
     [502, 503, 504].includes(status)
-    || (status === 500 && /proxy|ECONNREFUSED|127\.0\.0\.1:3001|pay-api/i.test(message))
+    || (status === 500 && /proxy|ECONNREFUSED|localhost:3000|127\.0\.0\.1:3000|pay-api/i.test(message))
   )
 }
 
@@ -77,6 +87,11 @@ function unwrapResponse(response) {
 
 export async function createAlipayWapPayment(payload) {
   const response = await paymentRequest.post(paymentEndpoints.createAlipayWap, payload)
+  return unwrapResponse(response)
+}
+
+export async function resumeAlipayWapPayment(payload) {
+  const response = await paymentRequest.post(paymentEndpoints.resumeAlipayWap, payload)
   return unwrapResponse(response)
 }
 

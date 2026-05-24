@@ -39,15 +39,29 @@ const router = createRouter({
 
 function isAuthenticated(): boolean {
   const userStore = useUserStore(pinia)
-  return Boolean(
-    userStore.isLogin
-    || userStore.userId,
-  )
+  return userStore.syncAuthSessionFromStorage()
+}
+
+function getFirstQueryValue(value: unknown) {
+  return Array.isArray(value) ? value[0] : value
+}
+
+function resolveLoginRedirect(redirect: unknown) {
+  const target = getFirstQueryValue(redirect)
+  if (typeof target !== 'string' || !target || target.startsWith('/login')) {
+    return '/home'
+  }
+  return target
 }
 
 router.beforeEach((to, _from, next) => {
   NProgress.start()
   document.title = to.meta.title as string
+
+  if (to.path === '/login' && isAuthenticated()) {
+    next(resolveLoginRedirect(to.query.redirect))
+    return
+  }
 
   if (to.meta.requiresAuth && !isAuthenticated()) {
     next({

@@ -7,9 +7,19 @@
 import type { FormRules } from 'element-plus'
 import type { ButtonPermission } from '@/entities/permission'
 import type { RoleItem } from '@/entities/role'
+import type { MenuItem } from '@/entities/system-menu'
+import { onScopeDispose } from 'vue'
 import { getButtonPermissions } from '@/entities/permission'
 import { createRole, deleteRole, getRoles, updateRole } from '@/entities/role'
+import { getMenus } from '@/entities/system-menu'
 import { createElementPlusCrudFeedback, useConfigCrud } from '@/shared/config-crud'
+import {
+  collectMenuPermissionCodes,
+  createRoleMenuPermissionTree,
+  mergeRoleMenuPermissions,
+  resolveCheckedMenuIdsByPermissions,
+  resolveSelectedMenuPermissionCodes,
+} from './permission-tree'
 
 interface RoleQuery {
   name: string
@@ -35,6 +45,9 @@ const defaultForm: RoleFormState = {
   permissions: [],
 }
 
+const PERMISSION_PANEL_TRANSITION_MS = 240
+const PERMISSION_PANEL_ENTER_DELAY_MS = 20
+
 /**
  * @description 有副作用：调用角色和按钮权限接口，维护角色表格/表单状态，并通过 CRUD feedback 触发确认与提示。
  * @returns 角色管理页面使用的 CRUD 状态、权限选项、校验规则和操作函数。
@@ -42,6 +55,16 @@ const defaultForm: RoleFormState = {
 export function useRoleManagement() {
   const { t } = useI18n()
   const permissionOptions = ref<ButtonPermission[]>([])
+  const menuSource = ref<MenuItem[]>([])
+  const permissionPanelRendered = shallowRef(false)
+  const permissionPanelVisible = shallowRef(false)
+  const selectedRole = shallowRef<RoleItem | null>(null)
+  const checkedMenuIds = ref<number[]>([])
+  const savingPermissions = shallowRef(false)
+  const feedback = createElementPlusCrudFeedback()
+  let openPanelTimer: ReturnType<typeof setTimeout> | null = null
+  let closePanelTimer: ReturnType<typeof setTimeout> | null = null
+
   const crud = useConfigCrud<RoleItem, RoleQuery, RoleFormState, Partial<RoleItem>>({
     getDefaultQuery: () => ({ name: '', code: '', status: '' }),
     getDefaultForm: () => ({ ...defaultForm, permissions: [] }),
@@ -68,8 +91,10 @@ export function useRoleManagement() {
     deleteConfirm: row => t('role.deleteConfirm', { name: row.name }),
     saveSuccessMessage: t('crud.saveSuccess'),
     deleteSuccessMessage: t('crud.deleteSuccess'),
-    feedback: createElementPlusCrudFeedback(),
+    feedback,
   })
+
+  const menuPermissionTree = computed(() => createRoleMenuPermissionTree(menuSource.value))
 
   const rules: FormRules = {
     name: [{ required: true, message: t('role.nameRequired'), trigger: 'blur' }],
@@ -80,11 +105,112 @@ export function useRoleManagement() {
     permissionOptions.value = await getButtonPermissions().catch(() => [])
   }
 
+  async function fetchMenuTree() {
+    menuSource.value = await getMenus().catch(() => [])
+  }
+
+  async function openPermissionPanel(row: RoleItem) {
+    clearClosePanelTimer()
+    clearOpenPanelTimer()
+
+    if (!menuSource.value.length)
+      await fetchMenuTree()
+
+    selectedRole.value = row
+    checkedMenuIds.value = resolveCheckedMenuIdsByPermissions(menuPermissionTree.value, row.permissions)
+    permissionPanelRendered.value = true
+
+    if (permissionPanelVisible.value)
+      return
+
+    permissionPanelVisible.value = false
+    openPanelTimer = setTimeout(() => {
+      openPanelTimer = null
+
+      if (!permissionPanelRendered.value)
+        return
+
+      permissionPanelVisible.value = true
+    }, PERMISSION_PANEL_ENTER_DELAY_MS)
+  }
+
+  function closePermissionPanel() {
+    clearOpenPanelTimer()
+    clearClosePanelTimer()
+    permissionPanelVisible.value = false
+    closePanelTimer = setTimeout(() => {
+      if (permissionPanelVisible.value)
+        return
+
+      permissionPanelRendered.value = false
+      selectedRole.value = null
+      checkedMenuIds.value = []
+      closePanelTimer = null
+    }, PERMISSION_PANEL_TRANSITION_MS)
+  }
+
+  function clearOpenPanelTimer() {
+    if (!openPanelTimer)
+      return
+
+    clearTimeout(openPanelTimer)
+    openPanelTimer = null
+  }
+
+  function clearClosePanelTimer() {
+    if (!closePanelTimer)
+      return
+
+    clearTimeout(closePanelTimer)
+    closePanelTimer = null
+  }
+
+  async function saveMenuPermissions(menuIds: number[]) {
+    if (!selectedRole.value)
+      return
+
+    savingPermissions.value = true
+    try {
+      const role = selectedRole.value
+      const selectedMenuPermissionCodes = resolveSelectedMenuPermissionCodes(menuPermissionTree.value, menuIds)
+      const menuPermissionCodes = collectMenuPermissionCodes(menuPermissionTree.value)
+      const permissions = mergeRoleMenuPermissions(
+        role.permissions,
+        selectedMenuPermissionCodes,
+        menuPermissionCodes,
+      )
+
+      await updateRole(role.id, { permissions })
+      role.permissions = permissions
+      checkedMenuIds.value = resolveCheckedMenuIdsByPermissions(menuPermissionTree.value, permissions)
+      feedback.notifySaveSuccess?.(t('role.permissionSaveSuccess'))
+      await crud.fetchRows()
+    }
+    finally {
+      savingPermissions.value = false
+    }
+  }
+
+  onScopeDispose(() => {
+    clearOpenPanelTimer()
+    clearClosePanelTimer()
+  })
+
   return {
     ...crud,
     permissionOptions,
+    menuPermissionTree,
+    permissionPanelRendered,
+    permissionPanelVisible,
+    selectedRole,
+    checkedMenuIds,
+    savingPermissions,
     rules,
     fetchRoles: crud.fetchRows,
     fetchPermissionOptions,
+    fetchMenuTree,
+    openPermissionPanel,
+    closePermissionPanel,
+    saveMenuPermissions,
   }
 }

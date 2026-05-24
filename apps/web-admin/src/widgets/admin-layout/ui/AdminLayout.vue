@@ -6,7 +6,7 @@ import TopNavigation from './TopNavigation/index.vue'
 
 defineOptions({ name: 'AdminLayout' })
 
-const isCollapse = ref(false)
+const isCollapse = shallowRef(false)
 
 function toggleCollapse() {
   isCollapse.value = !isCollapse.value
@@ -14,9 +14,9 @@ function toggleCollapse() {
 </script>
 
 <template>
-  <div class="app-wrapper">
+  <div class="app-wrapper" :class="{ collapse: isCollapse }">
     <Sidebar :collapse="isCollapse" @toggle-collapse="toggleCollapse" />
-    <div class="main-container" :class="{ collapse: isCollapse }">
+    <div class="main-container">
       <TopNavigation :collapse="isCollapse" @toggle-collapse="toggleCollapse" />
       <TabBar />
       <MainContent />
@@ -26,27 +26,29 @@ function toggleCollapse() {
 
 <style scoped lang="scss">
 .app-wrapper {
-  position: relative;
+  display: grid;
+  grid-template-columns: $sidebar-width minmax(0, 1fr);
   width: 100%;
-  height: 100%;
+  height: 100vh;
+  overflow: hidden;
+  transition: grid-template-columns 0.2s ease-out;
+
+  &.collapse {
+    grid-template-columns: $sidebar-collapsed-width minmax(0, 1fr);
+  }
 }
 
 .main-container {
   display: flex;
   flex-direction: column;
-  height: 100vh;
-  min-height: 100%;
-  margin-left: $sidebar-width;
+  min-width: 0;
+  min-height: 0;
   overflow: hidden;
-  transition: margin-left var(--app-transition-duration);
+  background: $bg-color;
 
   :deep(.el-scrollbar__wrap) {
     height: 100%;
     overflow: auto;
-  }
-
-  &.collapse {
-    margin-left: $sidebar-collapsed-width;
   }
 }
 </style>

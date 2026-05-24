@@ -113,39 +113,77 @@ watch(
 
 <template>
   <div class="tab-bar">
-    <button v-show="isOverflow" class="scroll-btn left" type="button" :class="{ disabled: !canScrollLeft }"
-      :disabled="!canScrollLeft" :aria-label="t('tabs.scrollLeft')" @click="scroll('left')">
+    <button
+      v-show="isOverflow"
+      class="scroll-btn left"
+      type="button"
+      :class="{ disabled: !canScrollLeft }"
+      :disabled="!canScrollLeft"
+      :aria-label="t('tabs.scrollLeft')"
+      @click="scroll('left')"
+    >
       <el-icon>
         <IconEpArrowLeft />
       </el-icon>
     </button>
 
     <div ref="scrollContainer" class="tab-scroll-container" @wheel="handleWheel">
-      <div ref="tabTrack" class="tab-track" role="tablist" :aria-label="t('tabs.openedPages')">
-        <TabBarItem v-for="tab in tabsStore.tabs" :key="tab.fullPath" :tab="tab"
-          :title="tabsStore.getTitle(tab, transformI18n)" :active="isActiveTab(tab.fullPath)"
+      <div
+        ref="tabTrack"
+        class="tab-track"
+        role="tablist"
+        :aria-label="t('tabs.openedPages')"
+      >
+        <TabBarItem
+          v-for="tab in tabsStore.tabs"
+          :key="tab.fullPath"
+          :tab="tab"
+          :title="tabsStore.getTitle(tab, transformI18n)"
+          :active="isActiveTab(tab.fullPath)"
           :closable="!isOnlyOneTab && isTabClosable(tab)"
-          @click="handleTabClick(tab.fullPath)" @contextmenu="openContextMenu($event, tab.fullPath)"
-          @close="handleCloseTab(tab.fullPath)" />
+          @click="handleTabClick(tab.fullPath)"
+          @contextmenu="openContextMenu($event, tab.fullPath)"
+          @close="handleCloseTab(tab.fullPath)"
+        />
       </div>
     </div>
 
-    <button v-show="isOverflow" class="scroll-btn right" type="button" :class="{ disabled: !canScrollRight }"
-      :disabled="!canScrollRight" :aria-label="t('tabs.scrollRight')" @click="scroll('right')">
+    <button
+      v-show="isOverflow"
+      class="scroll-btn right"
+      type="button"
+      :class="{ disabled: !canScrollRight }"
+      :disabled="!canScrollRight"
+      :aria-label="t('tabs.scrollRight')"
+      @click="scroll('right')"
+    >
       <el-icon>
         <IconEpArrowRight />
       </el-icon>
     </button>
 
-    <TabBarActions :current-fixed="isCurrentFixed" :current-closable="isCurrentClosable"
+    <TabBarActions
+      :current-fixed="isCurrentFixed"
+      :current-closable="isCurrentClosable"
       :first-non-fixed="isCurrentFirstNonFixed"
-      :last-non-fixed="isCurrentLastNonFixed" :only-one-tab="isOnlyOneTab" :closable-count="closableCount"
-      @command="handleDropdownCommand" />
+      :last-non-fixed="isCurrentLastNonFixed"
+      :only-one-tab="isOnlyOneTab"
+      :closable-count="closableCount"
+      @command="handleDropdownCommand"
+    />
 
-    <TabBarContextMenu :visible="contextMenu.visible" :x="contextMenu.x" :y="contextMenu.y" :target-tab="targetTab"
-      :target-closable="targetTab ? isTabClosable(targetTab) : false" :first-non-fixed="isFirstNonFixed"
-      :last-non-fixed="isLastNonFixed" :only-one-tab="isOnlyOneTab" :closable-count="closableCount"
-      @command="handleContextMenuCommand" />
+    <TabBarContextMenu
+      :visible="contextMenu.visible"
+      :x="contextMenu.x"
+      :y="contextMenu.y"
+      :target-tab="targetTab"
+      :target-closable="targetTab ? isTabClosable(targetTab) : false"
+      :first-non-fixed="isFirstNonFixed"
+      :last-non-fixed="isLastNonFixed"
+      :only-one-tab="isOnlyOneTab"
+      :closable-count="closableCount"
+      @command="handleContextMenuCommand"
+    />
   </div>
 </template>
 

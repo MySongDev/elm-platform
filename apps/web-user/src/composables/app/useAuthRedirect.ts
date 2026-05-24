@@ -9,7 +9,7 @@ export function useAuthRedirect() {
   const userStore = useUserStore()
 
   const isAuthenticated = computed(() =>
-    Boolean(userStore.isLogin || userStore.userId || (userStore.userInfo as any)?.user_id),
+    Boolean(userStore.hasRefreshSession && userStore.isLogin),
   )
 
   function redirectToLogin(redirect?: string) {
@@ -20,7 +20,7 @@ export function useAuthRedirect() {
   }
 
   function requireAuth(action?: () => void, redirect?: string): boolean {
-    if (!isAuthenticated.value) {
+    if (!userStore.syncAuthSessionFromStorage()) {
       redirectToLogin(redirect)
       return false
     }

@@ -36,7 +36,12 @@ onMounted(() => {
 </script>
 
 <template>
-  <el-popover placement="bottom-end" width="360" trigger="click" popper-class="notification-popover">
+  <el-popover
+    placement="bottom-end"
+    width="360"
+    trigger="click"
+    popper-class="notification-popover"
+  >
     <template #reference>
       <TopNavigationAction shape="circle" :aria-label="t('notification.title')">
         <el-badge :value="notificationStore.unreadCount" :hidden="notificationStore.unreadCount === 0" :max="99">
@@ -51,23 +56,43 @@ onMounted(() => {
       <div class="notification-panel__head">
         <strong>{{ t('notification.title') }}</strong>
         <div class="notification-panel__tools">
-          <el-button link type="primary" :icon="IconEpCheck" @click="markAllRead">
+          <el-button
+            link
+            type="primary"
+            :icon="IconEpCheck"
+            @click="markAllRead"
+          >
             {{ t('notification.markAllRead') }}
           </el-button>
-          <el-button link type="danger" :icon="IconEpDelete" @click="clearCurrent">
+          <el-button
+            link
+            type="danger"
+            :icon="IconEpDelete"
+            @click="clearCurrent"
+          >
             {{ t('notification.clear') }}
           </el-button>
         </div>
       </div>
 
       <el-tabs v-model="activeType" stretch>
-        <el-tab-pane v-for="item in tabs" :key="item.value"
-          :label="`${t(item.label)} (${notificationStore.unreadByType(item.value)})`" :name="item.value" />
+        <el-tab-pane
+          v-for="item in tabs"
+          :key="item.value"
+          :label="`${t(item.label)} (${notificationStore.unreadByType(item.value)})`"
+          :name="item.value"
+        />
       </el-tabs>
 
       <div v-if="currentList.length" class="notification-list">
-        <button v-for="item in currentList" :key="item.id" class="notification-item" :class="{ unread: !item.read }"
-          type="button" @click="notificationStore.markAsRead(item.id)">
+        <button
+          v-for="item in currentList"
+          :key="item.id"
+          class="notification-item"
+          :class="{ unread: !item.read }"
+          type="button"
+          @click="notificationStore.markAsRead(item.id)"
+        >
           <span class="notification-item__title">{{ item.title }}</span>
           <span class="notification-item__desc">{{ item.description || '-' }}</span>
           <span class="notification-item__time">{{ item.time }}</span>

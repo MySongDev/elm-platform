@@ -1,11 +1,11 @@
-import {
+import type {
   CityRecord,
   FoodRecord,
   RestaurantRecord,
   RestaurantSeedInput,
-} from '../types/elm.types';
+} from '../types/elm.types'
 
-export const nowIso = () => new Date().toISOString();
+export const nowIso = () => new Date().toISOString()
 
 export function createCity(
   id: number,
@@ -28,11 +28,11 @@ export function createCity(
     geohash: `${latitude},${longitude}`,
     is_map: true,
     pinyin,
-  };
+  }
 }
 
 export function createRestaurant(data: RestaurantSeedInput): RestaurantRecord {
-  const deliveryFee = 5;
+  const deliveryFee = 5
 
   return {
     ...data,
@@ -105,7 +105,7 @@ export function createRestaurant(data: RestaurantSeedInput): RestaurantRecord {
       },
     ],
     createdAt: nowIso(),
-  };
+  }
 }
 
 export function createFood(
@@ -117,7 +117,7 @@ export function createFood(
   imagePath: string,
   description: string,
 ): FoodRecord {
-  const monthSales = 120 + itemId * 8;
+  const monthSales = 120 + itemId * 8
 
   return {
     _id: `food-${itemId}`,
@@ -164,7 +164,7 @@ export function createFood(
       },
     ],
     createdAt: nowIso(),
-  };
+  }
 }
 
 export function createEntry(
@@ -176,7 +176,7 @@ export function createEntry(
 ) {
   const filterKey = encodeURIComponent(JSON.stringify({
     restaurant_category_id: { id: categoryId, name: title },
-  }));
+  }))
 
   return {
     id,
@@ -188,7 +188,7 @@ export function createEntry(
     icon_url: '',
     title_color: '',
     __v: 0,
-  };
+  }
 }
 
 export function createRestaurantCategory(id: number, name: string, subNames: string[]) {
@@ -206,5 +206,5 @@ export function createRestaurantCategory(id: number, name: string, subNames: str
       name: subName,
       _id: `category-${id}-${index}`,
     })),
-  };
+  }
 }

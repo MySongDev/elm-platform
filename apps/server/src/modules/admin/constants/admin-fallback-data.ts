@@ -1,9 +1,9 @@
-import type { DeptRecord, MenuRecord, RoleRecord } from '../model/admin-records';
+import type { DeptRecord, MenuRecord, RoleRecord } from '../model/admin-records'
 
 export const fallbackRoles: RoleRecord[] = [
   { id: 1, name: '超级管理员', code: 'admin', status: 1, remark: '拥有系统全部权限', permissions: ['*:*:*'], createdAt: new Date().toISOString() },
   { id: 2, name: '普通用户', code: 'user', status: 1, remark: '拥有基础访问权限', permissions: ['permission:page:view', 'permission:button:view'], createdAt: new Date().toISOString() },
-];
+]
 
 export const fallbackMenus: MenuRecord[] = [
   { id: 14, parentId: null, title: '仪表盘', path: '/dashboard', name: 'Dashboard', icon: 'dashboard', permission: null, type: 'catalog', sort: 1, status: 1 },
@@ -53,10 +53,10 @@ export const fallbackMenus: MenuRecord[] = [
   { id: 161, parentId: 22, title: '编辑商品', path: '/commerce/food', name: null, icon: null, permission: 'commerce:food:edit', type: 'button', sort: 2, status: 1 },
   { id: 162, parentId: 22, title: '删除商品', path: '/commerce/food', name: null, icon: null, permission: 'commerce:food:delete', type: 'button', sort: 3, status: 1 },
   { id: 170, parentId: 23, title: '编辑订单', path: '/commerce/order', name: null, icon: null, permission: 'commerce:order:edit', type: 'button', sort: 1, status: 1 },
-];
+]
 
 export const fallbackDepts: DeptRecord[] = [
   { id: 1, parentId: null, name: '总公司', leader: '管理员', phone: '13800138000', email: 'admin@example.com', sort: 1, status: 1 },
   { id: 2, parentId: 1, name: '研发部门', leader: '研发负责人', phone: '13800138001', email: 'rd@example.com', sort: 1, status: 1 },
   { id: 3, parentId: 1, name: '运营部门', leader: '运营负责人', phone: '13800138002', email: 'ops@example.com', sort: 2, status: 1 },
-];
+]

@@ -64,7 +64,12 @@ export function transformI18n(message: any = ''): string {
     return message[localeValue] ?? ''
   }
 
-  return (i18n.global.t as (key: string) => string)(message)
+  const key = String(message)
+  const exists = i18n.global.te as (key: string) => boolean
+  if (!exists(key))
+    return key
+
+  return (i18n.global.t as (key: string) => string)(key)
 }
 
 /**

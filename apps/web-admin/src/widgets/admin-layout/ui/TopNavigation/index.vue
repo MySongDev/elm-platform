@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import Breadcrumb from './Breadcrumb/index.vue'
-import Hamburger from './Hamburger/index.vue'
+import HeaderSidebarToggle from './HeaderSidebarToggle/index.vue'
 import LangSwitcher from './LangSwitcher/index.vue'
 import NotificationBell from './NotificationBell/index.vue'
 import SearchButton from './SearchButton/index.vue'
@@ -20,7 +20,10 @@ const emit = defineEmits<{
 <template>
   <header class="app-header">
     <div class="app-header__left">
-      <Hamburger :is-active="collapse" @toggle-click="emit('toggleCollapse')" />
+      <HeaderSidebarToggle
+        :collapsed="collapse"
+        @toggle-click="emit('toggleCollapse')"
+      />
       <Breadcrumb />
     </div>
 

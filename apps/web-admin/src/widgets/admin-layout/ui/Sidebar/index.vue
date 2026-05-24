@@ -18,8 +18,7 @@ const isSidebarHover = shallowRef(false)
 
 <template>
   <div
-    class="sidebar-container has-logo"
-    :class="{ collapse: props.collapse }"
+    class="sidebar-container"
     @mouseenter.prevent="isSidebarHover = true"
     @mouseleave.prevent="isSidebarHover = false"
   >
@@ -35,21 +34,15 @@ const isSidebarHover = shallowRef(false)
 
 <style scoped lang="scss">
 .sidebar-container {
-  position: fixed;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  z-index: 1001;
-  width: $sidebar-width !important;
-  height: 100%;
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  min-width: 0;
+  height: 100vh;
   overflow: visible;
   font-size: 0;
-  background: $sidebar-bg !important;
+  background: $sidebar-bg;
   border-right: 1px solid rgb(5 5 5 / 6%);
-  transition: width var(--app-transition-duration);
-
-  &.collapse {
-    width: $sidebar-collapsed-width !important;
-  }
+  user-select: none;
 }
 </style>

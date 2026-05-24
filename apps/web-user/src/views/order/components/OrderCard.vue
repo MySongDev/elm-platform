@@ -12,6 +12,12 @@ const props = defineProps({
   },
 })
 
+const emit = defineEmits({
+  'continue-payment': order => Boolean(order?.orderNo),
+})
+
+const canContinuePayment = computed(() => props.order.status === 'PENDING')
+
 const statusMap = {
   PAID: {
     label: '已支付',
@@ -84,6 +90,15 @@ const timeText = computed(() => {
         <span v-if="totalQty">共 {{ totalQty }} 件</span>
         <span v-if="order.tradeStatus">{{ order.tradeStatus }}</span>
       </div>
+      <button
+        v-if="canContinuePayment"
+        class="continue-button"
+        data-test="continue-payment"
+        type="button"
+        @click="emit('continue-payment', order)"
+      >
+        继续支付
+      </button>
     </div>
   </article>
 </template>
@@ -192,5 +207,17 @@ const timeText = computed(() => {
   color: #687080;
   font-size: 12px;
   line-height: 1.4;
+}
+
+.continue-button {
+  flex: 0 0 auto;
+  height: 32px;
+  border: 0;
+  border-radius: 16px;
+  padding: 0 14px;
+  background: #19be6b;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
 }
 </style>

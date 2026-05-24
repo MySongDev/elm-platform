@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import SidebarCenterCollapse from './SidebarCenterCollapse.vue'
-import SidebarLeftCollapse from './SidebarLeftCollapse.vue'
+import SidebarFooterCollapse from './SidebarFooterCollapse.vue'
 
 defineOptions({ name: 'SidebarCollapseControls' })
 
@@ -20,5 +20,8 @@ const emit = defineEmits<{
     :is-active="!props.collapse"
     @toggle-click="emit('toggleCollapse')"
   />
-  <SidebarLeftCollapse :is-active="!props.collapse" @toggle-click="emit('toggleCollapse')" />
+  <SidebarFooterCollapse
+    :collapsed="props.collapse"
+    @toggle-click="emit('toggleCollapse')"
+  />
 </template>

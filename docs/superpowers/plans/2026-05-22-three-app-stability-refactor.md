@@ -46,68 +46,68 @@
 Add `apps/server/src/modules/admin/model/admin-records.ts`:
 
 ```ts
-export type TreeNode<T> = T & { id: number; parentId: number | null; children?: TreeNode<T>[] };
+export type TreeNode<T> = T & { id: number, parentId: number | null, children?: TreeNode<T>[] }
 
-export type RoleRecord = {
-  id: number;
-  name: string;
-  code: string;
-  status: number;
-  remark: string | null;
-  permissions: string[];
-  createdAt: string;
-};
+export interface RoleRecord {
+  id: number
+  name: string
+  code: string
+  status: number
+  remark: string | null
+  permissions: string[]
+  createdAt: string
+}
 
-export type MenuRecord = {
-  id: number;
-  parentId: number | null;
-  title: string;
-  path: string;
-  name: string | null;
-  icon: string | null;
-  permission: string | null;
-  type: 'catalog' | 'menu' | 'button';
-  sort: number;
-  status: number;
-};
+export interface MenuRecord {
+  id: number
+  parentId: number | null
+  title: string
+  path: string
+  name: string | null
+  icon: string | null
+  permission: string | null
+  type: 'catalog' | 'menu' | 'button'
+  sort: number
+  status: number
+}
 
-export type DeptRecord = {
-  id: number;
-  parentId: number | null;
-  name: string;
-  leader: string | null;
-  phone: string | null;
-  email: string | null;
-  sort: number;
-  status: number;
-};
+export interface DeptRecord {
+  id: number
+  parentId: number | null
+  name: string
+  leader: string | null
+  phone: string | null
+  email: string | null
+  sort: number
+  status: number
+}
 
-export type LoginLogView = {
-  id: number;
-  userId: number;
-  username: string;
-  ip: string | null;
-  address: string | null;
-  browser: string | null;
-  os: string | null;
-  status: number;
-  message: string | null;
-  createdAt: Date;
-};
+export interface LoginLogView {
+  id: number
+  userId: number
+  username: string
+  ip: string | null
+  address: string | null
+  browser: string | null
+  os: string | null
+  status: number
+  message: string | null
+  createdAt: Date
+}
 
-export type ButtonPermissionRecord = {
-  code: string;
-  name: string;
-  group: string;
-};
+export interface ButtonPermissionRecord {
+  code: string
+  name: string
+  group: string
+}
 
-export type PagePermissionRecord = {
-  path: string;
-  name: string;
-  title: string;
-  roles: string[];
-  auths: string[];
-};
+export interface PagePermissionRecord {
+  path: string
+  name: string
+  title: string
+  roles: string[]
+  auths: string[]
+}
 ```
 
 - [ ] **Step 2: Create permission constants**
@@ -115,7 +115,7 @@ export type PagePermissionRecord = {
 Create `apps/server/src/modules/admin/constants/admin-permissions.ts` with the import below, then move the complete existing `buttonPermissions` and `pagePermissions` array literals from `admin.service.ts` into this file. Keep every record value the same and only add the exported type annotations.
 
 ```ts
-import type { ButtonPermissionRecord, PagePermissionRecord } from '../model/admin-records';
+import type { ButtonPermissionRecord, PagePermissionRecord } from '../model/admin-records'
 
 export const buttonPermissions: ButtonPermissionRecord[] = [
   { code: 'permission:page:view', name: '页面权限查看', group: '权限管理' },
@@ -151,7 +151,7 @@ export const buttonPermissions: ButtonPermissionRecord[] = [
   { code: 'log:login:view', name: '登录日志查看', group: '系统监控' },
   { code: 'log:operation:view', name: '操作日志查看', group: '系统监控' },
   { code: 'log:system:view', name: '系统日志查看', group: '系统监控' },
-];
+]
 
 export const pagePermissions: PagePermissionRecord[] = [
   { path: '/dashboard/index', name: 'DashboardView', title: '仪表盘', roles: ['admin', 'user'], auths: [] },
@@ -173,7 +173,7 @@ export const pagePermissions: PagePermissionRecord[] = [
   { path: '/nested/menu1/menu1-2/menu1-2-2', name: 'NestedMenu122View', title: '菜单1-2-2', roles: ['admin', 'user'], auths: [] },
   { path: '/nested/menu1/menu1-3', name: 'NestedMenu13View', title: '菜单1-3', roles: ['admin', 'user'], auths: [] },
   { path: '/nested/menu2', name: 'NestedMenu2View', title: '菜单2', roles: ['admin', 'user'], auths: [] },
-];
+]
 ```
 
 - [ ] **Step 3: Create fallback data constants**
@@ -181,12 +181,12 @@ export const pagePermissions: PagePermissionRecord[] = [
 Create `apps/server/src/modules/admin/constants/admin-fallback-data.ts` with the import below, then move the complete existing `fallbackRoles`, `fallbackMenus`, and `fallbackDepts` array literals from `admin.service.ts` into this file. Keep every record value the same and only add the exported type annotations.
 
 ```ts
-import type { DeptRecord, MenuRecord, RoleRecord } from '../model/admin-records';
+import type { DeptRecord, MenuRecord, RoleRecord } from '../model/admin-records'
 
 export const fallbackRoles: RoleRecord[] = [
   { id: 1, name: '超级管理员', code: 'admin', status: 1, remark: '拥有系统全部权限', permissions: ['*:*:*'], createdAt: new Date().toISOString() },
   { id: 2, name: '普通用户', code: 'user', status: 1, remark: '拥有基础访问权限', permissions: ['permission:page:view', 'permission:button:view'], createdAt: new Date().toISOString() },
-];
+]
 
 export const fallbackMenus: MenuRecord[] = [
   { id: 14, parentId: null, title: '仪表盘', path: '/dashboard', name: 'Dashboard', icon: 'dashboard', permission: null, type: 'catalog', sort: 1, status: 1 },
@@ -236,13 +236,13 @@ export const fallbackMenus: MenuRecord[] = [
   { id: 161, parentId: 22, title: '编辑商品', path: '/commerce/food', name: null, icon: null, permission: 'commerce:food:edit', type: 'button', sort: 2, status: 1 },
   { id: 162, parentId: 22, title: '删除商品', path: '/commerce/food', name: null, icon: null, permission: 'commerce:food:delete', type: 'button', sort: 3, status: 1 },
   { id: 170, parentId: 23, title: '编辑订单', path: '/commerce/order', name: null, icon: null, permission: 'commerce:order:edit', type: 'button', sort: 1, status: 1 },
-];
+]
 
 export const fallbackDepts: DeptRecord[] = [
   { id: 1, parentId: null, name: '总公司', leader: '管理员', phone: '13800138000', email: 'admin@example.com', sort: 1, status: 1 },
   { id: 2, parentId: 1, name: '研发部门', leader: '研发负责人', phone: '13800138001', email: 'rd@example.com', sort: 1, status: 1 },
   { id: 3, parentId: 1, name: '运营部门', leader: '运营负责人', phone: '13800138002', email: 'ops@example.com', sort: 2, status: 1 },
-];
+]
 ```
 
 - [ ] **Step 4: Modify AdminService imports**
@@ -250,13 +250,13 @@ export const fallbackDepts: DeptRecord[] = [
 At the top of `apps/server/src/modules/admin/admin.service.ts`, replace local type and constant declarations with:
 
 ```ts
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { PrismaService } from '../../prisma/prisma.service';
-import { RedisService } from '../../redis/redis.service';
-import { fallbackDepts, fallbackMenus, fallbackRoles } from './constants/admin-fallback-data';
-import { buttonPermissions, pagePermissions } from './constants/admin-permissions';
-import { UpsertDeptDto, UpsertMenuDto, UpsertRoleDto } from './dto/admin.dto';
-import type { LoginLogView, TreeNode } from './model/admin-records';
+import type { LoginLogView, TreeNode } from './model/admin-records'
+import { Injectable, NotFoundException } from '@nestjs/common'
+import { PrismaService } from '../../prisma/prisma.service'
+import { RedisService } from '../../redis/redis.service'
+import { fallbackDepts, fallbackMenus, fallbackRoles } from './constants/admin-fallback-data'
+import { buttonPermissions, pagePermissions } from './constants/admin-permissions'
+import { UpsertDeptDto, UpsertMenuDto, UpsertRoleDto } from './dto/admin.dto'
 ```
 
 Keep the `AdminService` class body behavior unchanged.
@@ -300,19 +300,23 @@ Ensure `elm-query.ts` keeps these parsing behaviors:
 
 ```ts
 export function toStringValue(value: unknown, fallback = '') {
-  const source = Array.isArray(value) ? value[0] : value;
-  if (typeof source === 'string') return source;
-  if (source === null || source === undefined) return fallback;
-  return String(source);
+  const source = Array.isArray(value) ? value[0] : value
+  if (typeof source === 'string')
+    return source
+  if (source === null || source === undefined)
+    return fallback
+  return String(source)
 }
 
 export function toNumberValue(value: unknown, fallback = 0) {
-  const source = Array.isArray(value) ? value[0] : value;
-  if (source === null || source === undefined) return fallback;
-  if (typeof source === 'string' && source.trim() === '') return fallback;
+  const source = Array.isArray(value) ? value[0] : value
+  if (source === null || source === undefined)
+    return fallback
+  if (typeof source === 'string' && source.trim() === '')
+    return fallback
 
-  const result = Number(source);
-  return Number.isFinite(result) ? result : fallback;
+  const result = Number(source)
+  return Number.isFinite(result) ? result : fallback
 }
 ```
 
@@ -349,15 +353,15 @@ Ensure `useConfigCrud.ts` resolves save messages through the current form id:
 
 ```ts
 function resolveSaveSuccessMessage(id: ReturnType<typeof options.getFormId>) {
-  const message = options.saveSuccessMessage ?? '保存成功';
+  const message = options.saveSuccessMessage ?? '保存成功'
   if (typeof message === 'function') {
     return message({
       form,
       id,
       isEdit: Boolean(id),
-    });
+    })
   }
-  return message;
+  return message
 }
 ```
 
@@ -386,20 +390,20 @@ Remove `console.log` calls from user-facing Vue views under `apps/web-user/src/v
 In `msite.vue`, replace direct add/remove calls with binding helpers:
 
 ```js
-let isScrollListenerBound = false;
+let isScrollListenerBound = false
 
 function bindScrollListener() {
   if (!msiteRef.value || isScrollListenerBound)
-    return;
-  msiteRef.value.addEventListener('scroll', handleWindowScroll, { passive: true });
-  isScrollListenerBound = true;
+    return
+  msiteRef.value.addEventListener('scroll', handleWindowScroll, { passive: true })
+  isScrollListenerBound = true
 }
 
 function unbindScrollListener() {
   if (!msiteRef.value || !isScrollListenerBound)
-    return;
-  msiteRef.value.removeEventListener('scroll', handleWindowScroll);
-  isScrollListenerBound = false;
+    return
+  msiteRef.value.removeEventListener('scroll', handleWindowScroll)
+  isScrollListenerBound = false
 }
 ```
 

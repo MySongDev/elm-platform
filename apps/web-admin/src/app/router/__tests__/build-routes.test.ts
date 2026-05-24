@@ -95,7 +95,7 @@ describe('buildRoutes', () => {
     expect(routes[0].children?.[0].redirect).toBe('/monitor/logs/login')
   })
 
-  it('preserves non-empty backend menu titles as route titles', () => {
+  it('uses known route title keys before non-empty backend menu titles', () => {
     const routes = buildRoutes([
       createMenu({
         title: '仪表盘',
@@ -111,7 +111,7 @@ describe('buildRoutes', () => {
     ])
 
     expect(routes.map(route => route.meta?.title)).toEqual([
-      '仪表盘',
+      'route.dashboard',
       'route.systemLog',
     ])
   })
@@ -127,6 +127,88 @@ describe('buildRoutes', () => {
     expect(routes).toHaveLength(1)
     expect(routes[0].path).toBe('/monitor/system-logs')
     expect(routes[0].meta?.title).toBe('route.systemLog')
+  })
+
+  it('uses local monitor page aliases for legacy backend monitor paths', () => {
+    const routes = buildRoutes([
+      createMenu({
+        title: '系统监控',
+        path: '/monitor',
+        type: 'catalog',
+        children: [
+          createMenu({
+            id: 2,
+            title: '在线用户',
+            path: '/monitor/online-user',
+            name: 'OnlineUser',
+          }),
+          createMenu({
+            id: 3,
+            title: '登录日志',
+            path: '/monitor/login-logs',
+            name: 'LoginLogs',
+          }),
+          createMenu({
+            id: 4,
+            title: '操作日志',
+            path: '/monitor/operation-logs',
+            name: 'OperationLogs',
+          }),
+          createMenu({
+            id: 5,
+            title: '系统日志',
+            path: '/monitor/system-logs',
+            name: 'SystemLogs',
+          }),
+        ],
+      }),
+    ])
+
+    expect(routes[0].children?.map(route => route.component)).toEqual([
+      { name: 'View:monitor/online' },
+      { name: 'View:monitor/logs/login' },
+      { name: 'View:monitor/logs/operation' },
+      { name: 'View:monitor/logs/system' },
+    ])
+  })
+
+  it('normalizes legacy explicit monitor component keys before resolving local pages', () => {
+    const routes = buildRoutes([
+      createMenu({
+        title: '系统监控',
+        path: '/monitor',
+        type: 'catalog',
+        children: [
+          createMenu({
+            id: 2,
+            title: '在线用户',
+            path: '/monitor/online-user',
+            name: 'OnlineUser',
+            component: 'monitor/online-user/index',
+          }),
+          createMenu({
+            id: 3,
+            title: '操作日志',
+            path: '/monitor/operation-logs',
+            name: 'OperationLogs',
+            component: '/monitor/operation-logs/',
+          }),
+          createMenu({
+            id: 4,
+            title: '系统日志',
+            path: '/monitor/system-logs',
+            name: 'SystemLogs',
+            component: 'monitor/system-logs/index.vue',
+          }),
+        ],
+      }),
+    ])
+
+    expect(routes[0].children?.map(route => route.component)).toEqual([
+      { name: 'View:monitor/online' },
+      { name: 'View:monitor/logs/operation' },
+      { name: 'View:monitor/logs/system' },
+    ])
   })
 
   it('drops invalid menu nodes before route construction', () => {
@@ -165,7 +247,7 @@ describe('adaptBackendMenusToRouteMenus', () => {
         path: '/system/user',
         name: 'UserList',
         component: 'system/user/index',
-        title: '用户列表',
+        title: 'route.userList',
         icon: 'user',
         order: 10,
         auths: ['system:user:list'],

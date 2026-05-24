@@ -27,6 +27,7 @@ const emit = defineEmits<{
       </div>
       <div class="admin-table-page__actions">
         <slot name="buttons" />
+
         <el-button :icon="IconEpRefresh" :loading="loading" @click="emit('refresh')">
           {{ $t('common.refresh') }}
         </el-button>

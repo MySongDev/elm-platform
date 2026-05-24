@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { AdminSearchField, AdminSearchFormModel } from './types'
 import { IconSearch as IconEpSearch } from '@iconify-prerendered/vue-ep'
-import AdminSearchFieldRenderer from './SearchField.vue'
+import FormFieldRenderer from '@/shared/ui/form/FieldRenderer/index.vue'
 
 defineOptions({ name: 'AdminSearchForm' })
 
@@ -47,18 +47,34 @@ function handleReset() {
 </script>
 
 <template>
-  <el-form class="admin-search-form" :model="model" :inline="inline" :label-width="labelWidth" :disabled="disabled"
-    @submit.prevent="handleSearch">
+  <el-form
+    class="admin-search-form"
+    :model="model"
+    :inline="inline"
+    :label-width="labelWidth"
+    :disabled="disabled"
+    @submit.prevent="handleSearch"
+  >
     <TransitionGroup name="admin-search-field" tag="div" class="admin-search-form__content">
-      <el-form-item v-for="field in visibleFields" :key="field.prop" :label="`${field.label}${labelSuffix}`"
-        :prop="field.prop" class="admin-search-form__item">
+      <el-form-item
+        v-for="field in visibleFields"
+        :key="field.prop"
+        :label="`${field.label}${labelSuffix}`"
+        :prop="field.prop"
+        class="admin-search-form__item"
+      >
         <slot :name="`field-${field.prop}`" :field="field" :model="model">
-          <AdminSearchFieldRenderer v-model="model[field.prop]" :field="field" />
+          <FormFieldRenderer v-model="model[field.prop]" :field="field" />
         </slot>
       </el-form-item>
 
       <el-form-item v-if="showActions" key="__actions" class="admin-search-form__actions">
-        <el-button type="primary" native-type="submit" :icon="IconEpSearch" :loading="loading">
+        <el-button
+          type="primary"
+          native-type="submit"
+          :icon="IconEpSearch"
+          :loading="loading"
+        >
           {{ resolvedSearchText }}
         </el-button>
         <el-button :disabled="loading" @click="handleReset">
@@ -85,9 +101,10 @@ function handleReset() {
 }
 
 .admin-search-form__item :deep(.el-input),
+.admin-search-form__item :deep(.el-input-number),
 .admin-search-form__item :deep(.el-select),
 .admin-search-form__item :deep(.el-date-editor) {
-  width: 220px;
+  width: var(--app-search-control-width);
 }
 
 .admin-search-form__actions {

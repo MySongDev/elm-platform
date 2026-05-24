@@ -8,7 +8,9 @@ import HeadTop from '@/components/header/head.vue'
 import SvgIcon from '@/components/SvgIcon/index.vue'
 import { setupMonitor } from '@/monitor'
 import router from '@/router'
+import { setUnauthorizedHandler } from '@/services/http/http'
 import { pinia, registStore } from '@/stores'
+import { useUserStore } from '@/stores/modules/store-user'
 
 import { setStore } from '@/untils/storage'
 import App from './App.vue'
@@ -23,6 +25,17 @@ setupMonitor(app, router)
 app.use(router)
 
 registStore(app)
+
+setUnauthorizedHandler(() => {
+  const userStore = useUserStore(pinia)
+  userStore.logout()
+  if (router.currentRoute.value.path !== '/login') {
+    router.push({
+      path: '/login',
+      query: { redirect: router.currentRoute.value.fullPath },
+    })
+  }
+})
 
 pinia.use(piniaPersist)
 pinia.use(({ store }) => {

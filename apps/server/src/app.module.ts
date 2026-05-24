@@ -1,19 +1,21 @@
-import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
-import { PrismaModule } from './prisma/prisma.module';
-import { RedisModule } from './redis/redis.module';
-import { UserModule } from './modules/user/user.module';
-import { AuthModule } from './modules/auth/auth.module';
-import { CustomerAuthModule } from './modules/customer-auth/customer-auth.module';
-import { AdminModule } from './modules/admin/admin.module';
-import { ElmModule } from './modules/elm/elm.module';
-import configuration from './config/configuration';
+import { Module } from '@nestjs/common'
+import { ConfigModule } from '@nestjs/config'
+import configuration from './config/configuration'
+import { AdminModule } from './modules/admin/admin.module'
+import { AuthModule } from './modules/auth/auth.module'
+import { CustomerAuthModule } from './modules/customer-auth/customer-auth.module'
+import { ElmModule } from './modules/elm/elm.module'
+import { PaymentModule } from './modules/payment/payment.module'
+import { UserModule } from './modules/user/user.module'
+import { PrismaModule } from './prisma/prisma.module'
+import { RedisModule } from './redis/redis.module'
 
 @Module({
   imports: [
     // 配置模块
     ConfigModule.forRoot({
       isGlobal: true,
+      envFilePath: ['apps/server/.env', '.env'],
       load: [configuration],
     }),
 
@@ -29,6 +31,7 @@ import configuration from './config/configuration';
     CustomerAuthModule,
     AdminModule,
     ElmModule,
+    PaymentModule,
   ],
 })
 export class AppModule {}

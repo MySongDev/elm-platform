@@ -43,6 +43,30 @@ model CustomerUser {
   @@map("customer_users")
 }
 
+model PaymentOrder {
+  id             Int      @id @default(autoincrement())
+  orderNo        String   @unique
+  userId         String
+  shopId         String?
+  shopName       String
+  status         String   @default("PENDING")
+  tradeStatus    String   @default("WAIT_BUYER_PAY")
+  tradeNo        String?
+  subject        String
+  goodsAmount    Decimal  @db.Decimal(10, 2)
+  deliveryFee    Decimal  @db.Decimal(10, 2)
+  payableAmount  Decimal  @db.Decimal(10, 2)
+  cartItems      Json
+  notifyPayload  Json?
+  queryPayload   Json?
+  buyerPayAmount Decimal? @db.Decimal(10, 2)
+  paidAt         DateTime?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@map("payment_orders")
+}
+
 model LoginLog {
   id        Int      @id @default(autoincrement())
   userId    Int

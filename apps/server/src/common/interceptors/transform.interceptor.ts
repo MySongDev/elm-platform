@@ -1,45 +1,46 @@
+import type {
+  CallHandler,
+  ExecutionContext,
+  NestInterceptor,
+} from '@nestjs/common'
+import type { Observable } from 'rxjs'
 import {
   Injectable,
-  NestInterceptor,
-  ExecutionContext,
-  CallHandler,
-} from '@nestjs/common';
-import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+} from '@nestjs/common'
+import { map } from 'rxjs/operators'
 
 export interface Response<T> {
-  code: number;
-  message: string;
-  data: T;
-  timestamp: string;
+  code: number
+  message: string
+  data: T
+  timestamp: string
 }
 
 export interface RawResponse<T> {
-  __rawResponse: true;
-  payload: T;
+  __rawResponse: true
+  payload: T
 }
 
 export function rawResponse<T>(payload: T): RawResponse<T> {
   return {
     __rawResponse: true,
     payload,
-  };
+  }
 }
 
 @Injectable()
 export class TransformInterceptor<T>
-  implements NestInterceptor<T, Response<T>>
-{
+implements NestInterceptor<T, Response<T>> {
   intercept(
     context: ExecutionContext,
     next: CallHandler,
   ): Observable<Response<T>> {
     return next.handle().pipe(
       map((data) => {
-        const maybeRaw = data as RawResponse<T>;
+        const maybeRaw = data as RawResponse<T>
 
         if (maybeRaw?.__rawResponse) {
-          return maybeRaw.payload as Response<T>;
+          return maybeRaw.payload as Response<T>
         }
 
         return {
@@ -47,8 +48,8 @@ export class TransformInterceptor<T>
           message: 'success',
           data,
           timestamp: new Date().toISOString(),
-        };
+        }
       }),
-    );
+    )
   }
 }

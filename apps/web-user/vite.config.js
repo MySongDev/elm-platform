@@ -27,7 +27,7 @@ export default defineConfig(({ command, mode }) => {
           rewrite: path => path.replace(/^\/ele-api/, '/api'),
         },
         '/pay-api': {
-          target: 'http://127.0.0.1:3001/api',
+          target: 'http://localhost:3000/api',
           changeOrigin: true,
           rewrite: path => path.replace(/^\/pay-api/, ''),
         },

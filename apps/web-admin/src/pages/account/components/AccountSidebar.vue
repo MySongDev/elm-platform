@@ -43,8 +43,14 @@ function backHome() {
     </div>
 
     <nav class="account-menu">
-      <button v-for="pane in panes" :key="pane.key" type="button" class="account-menu__item"
-        :class="{ active: pane.key === activeKey }" @click="emit('change', pane.key)">
+      <button
+        v-for="pane in panes"
+        :key="pane.key"
+        type="button"
+        class="account-menu__item"
+        :class="{ active: pane.key === activeKey }"
+        @click="emit('change', pane.key)"
+      >
         <SvgIcon :icon-name="pane.icon" />
         <span>{{ $t(pane.label) }}</span>
       </button>

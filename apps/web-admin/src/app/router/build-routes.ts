@@ -7,6 +7,7 @@
 import type { RouteRecordRaw } from 'vue-router'
 import type { RouteMenuNode } from './route-menu.types'
 import type { UserMenuNode } from '@/entities/session'
+import { resolveRouteComponentKey } from './component-key'
 import { layoutComponent, resolveComponent } from './component-map'
 import { adaptBackendMenusToRouteMenus } from './menu-adapter'
 import { normalizeMenuTree } from './menu-schema'
@@ -120,7 +121,7 @@ function buildRouteNode(
     return null
   }
 
-  const componentKey = menu.component ?? fullPath.replace(/^\//, '')
+  const componentKey = resolveRouteComponentKey(fullPath, menu.component)
   return {
     path: routePath,
     name: menu.name ?? undefined,

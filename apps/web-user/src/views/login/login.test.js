@@ -1,5 +1,5 @@
-import { createApp, nextTick } from 'vue'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { createApp, nextTick } from 'vue'
 
 import Login from './login.vue'
 
@@ -68,7 +68,7 @@ function submitButton(root) {
   return root.querySelector('.login_container')
 }
 
-describe('Login view', () => {
+describe('login view', () => {
   let wrapper
   let api
 

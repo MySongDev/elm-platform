@@ -8,13 +8,13 @@ const rootDir = path.resolve(__dirname, '..')
 const commands = [
   {
     name: 'pay-api',
-    color: '\x1b[36m',
+    color: '\x1B[36m',
     command: process.execPath,
     args: ['--watch', 'server/index.js'],
   },
   {
     name: 'web',
-    color: '\x1b[35m',
+    color: '\x1B[35m',
     command: process.execPath,
     args: [path.join(rootDir, 'node_modules/vite/bin/vite.js'), '--host'],
   },
@@ -26,20 +26,20 @@ let shuttingDown = false
 function writePrefixed(stream, name, color, output) {
   let buffer = ''
 
-  stream.on('data', chunk => {
+  stream.on('data', (chunk) => {
     buffer += chunk.toString()
     const lines = buffer.split(/\r?\n/)
     buffer = lines.pop() || ''
 
     for (const line of lines) {
       if (line)
-        output.write(`${color}[${name}]\x1b[0m ${line}\n`)
+        output.write(`${color}[${name}]\x1B[0m ${line}\n`)
     }
   })
 
   stream.on('end', () => {
     if (buffer)
-      output.write(`${color}[${name}]\x1b[0m ${buffer}\n`)
+      output.write(`${color}[${name}]\x1B[0m ${buffer}\n`)
   })
 }
 
@@ -68,7 +68,7 @@ for (const item of commands) {
   writePrefixed(child.stdout, item.name, item.color, process.stdout)
   writePrefixed(child.stderr, item.name, item.color, process.stderr)
 
-  child.on('error', error => {
+  child.on('error', (error) => {
     console.error(`[${item.name}] failed to start: ${error.message}`)
     stopAll(1)
   })

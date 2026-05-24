@@ -77,7 +77,7 @@ baseUrl: https://elm.cangdu.org
 
 ### 1、获取城市列表
 
-#### 请求URL:  
+#### 请求URL:
 ```
 https://elm.cangdu.org/v1/cities
 ```
@@ -85,7 +85,7 @@ https://elm.cangdu.org/v1/cities
 #### 示例：
  [https://elm.cangdu.org/v1/cities?type=guess](https://elm.cangdu.org/v1/cities?type=guess)
 
-#### 请求方式: 
+#### 请求方式:
 ```
 GET
 ```
@@ -256,26 +256,26 @@ GET
   {
     id: 1,
     is_in_serving: true,
-    description: "0元早餐0起送，每天都有新花样。",
-    title: "预订早餐",
-    link: "",
-    image_url: "/d/49/7757ff22e8ab28e7dfa5f7e2c2692jpeg.jpeg",
-    icon_url: "",
-    title_color: "",
+    description: '0元早餐0起送，每天都有新花样。',
+    title: '预订早餐',
+    link: '',
+    image_url: '/d/49/7757ff22e8ab28e7dfa5f7e2c2692jpeg.jpeg',
+    icon_url: '',
+    title_color: '',
     __v: 0
   },
   {
     id: 65,
     is_in_serving: true,
-    description: "",
-    title: "土豪推荐",
-    image_url: "/d/49/7757ff22e8ab28e7dfa5f7e2c2692jpeg.jpeg",
-    link: "",
-    icon_url: "",
-    title_color: "",
+    description: '',
+    title: '土豪推荐',
+    image_url: '/d/49/7757ff22e8ab28e7dfa5f7e2c2692jpeg.jpeg',
+    link: '',
+    icon_url: '',
+    title_color: '',
     __v: 0
   },
-  ... 共n条数据
+  ...共n条数据
 ]
 ```
 
@@ -644,10 +644,10 @@ GET
 ```javascript
 [
   {
-    color: "57A9FF",
+    color: '57A9FF',
     id: 1,
     is_solid: true,
-    text: "蜂鸟专送",
+    text: '蜂鸟专送',
     __v: 0
   }
 ]
@@ -680,11 +680,11 @@ GET
 ```javascript
 [
   {
-    description: "可使用支付宝、微信、手机QQ进行在线支付",
-    icon_color: "FF4E00",
-    icon_name: "付",
+    description: '可使用支付宝、微信、手机QQ进行在线支付',
+    icon_color: 'FF4E00',
+    icon_name: '付',
     id: 3,
-    name: "在线支付",
+    name: '在线支付',
     ranking_weight: 2,
     __v: 0
   },
@@ -821,14 +821,14 @@ GET
 
 ### 12、上传图片
 
-#### 请求URL:  
+#### 请求URL:
 ```
 https://elm.cangdu.org/v1/addimg/:type
 ```
 
 #### 示例：
 
-#### 请求方式: 
+#### 请求方式:
 ```
 POST
 ```
@@ -844,7 +844,7 @@ POST
 ```javascript
 {
   status: 1,
-  image_path: '15bfafa418322.jpeg'  
+  image_path: '15bfafa418322.jpeg'
   // 图片保存至七牛，图片全部地址为， https://elm.cangdu.org/img/15bfafa418322.jpeg
 }
 ```
@@ -998,36 +998,35 @@ GET
 #### 返回示例：
 
 ```javascript
-
 [
   {
-    name: "热销榜",
-    description: "大家喜欢吃，才叫真好吃。",
+    name: '热销榜',
+    description: '大家喜欢吃，才叫真好吃。',
     id: 1,
     restaurant_id: 3,
     foods: [
       {
-        name: "好似懂非",
-        image_path: "/img/food/15c1ab95e7620.jpg",
+        name: '好似懂非',
+        image_path: '/img/food/15c1ab95e7620.jpg',
         activity: {
-          image_text_color: "f1884f",
-          icon_color: "f07373",
-          image_text: "实行政策支持支持支持"
+          image_text_color: 'f1884f',
+          icon_color: 'f07373',
+          image_text: '实行政策支持支持支持'
         },
         restaurant_id: 3,
         category_id: 1,
         item_id: 1,
-        tips: "626评价 月售713份",
-        _id: "591d5ea243f73a7dbdc97c6b",
+        tips: '626评价 月售713份',
+        _id: '591d5ea243f73a7dbdc97c6b',
         specfoods: [
           {
-            name: "好似懂非",
+            name: '好似懂非',
             item_id: 1,
             sku_id: 1,
             food_id: 1,
             restaurant_id: 3,
-            _id: "591d5ea243f73a7dbdc97c6c",
-            specs: [ ],
+            _id: '591d5ea243f73a7dbdc97c6c',
+            specs: [],
             stock: 1000,
             checkout_mode: 1,
             is_essential: false,
@@ -1037,7 +1036,7 @@ GET
             promotion_stock: -1,
             recent_rating: 0.6,
             packing_fee: 1,
-            pinyin_name: "",
+            pinyin_name: '',
             original_price: 0
           }
         ],
@@ -1045,29 +1044,29 @@ GET
         satisfy_count: 461,
         attributes: [
           {
-            icon_color: "5ec452",
-            icon_name: "新"
+            icon_color: '5ec452',
+            icon_name: '新'
           },
           {
-            icon_color: "f07373",
-            icon_name: "招牌"
+            icon_color: 'f07373',
+            icon_name: '招牌'
           }
         ],
         is_essential: false,
-        server_utc: "2017-05-18T08:37:10.963Z",
-        specifications: [ ],
+        server_utc: '2017-05-18T08:37:10.963Z',
+        specifications: [],
         rating_count: 626,
         month_sales: 713,
-        description: "中小城镇创新政策中",
-        attrs: [ ],
-        display_times: [ ],
-        pinyin_name: "",
+        description: '中小城镇创新政策中',
+        attrs: [],
+        display_times: [],
+        pinyin_name: '',
         is_featured: 0,
         rating: 3.2
       }
     ],
     type: 1,
-    icon_url: "5da3872d782f707b4c82ce4607c73d1ajpeg",
+    icon_url: '5da3872d782f707b4c82ce4607c73d1ajpeg',
     is_selected: true,
     __v: 1
   },
@@ -1105,34 +1104,33 @@ GET
 #### 返回示例：
 
 ```javascript
-
 [
   {
-  rated_at: "2017-02-10",
-  rating_star: 5,
-  rating_text: "",
-  time_spent_desc: "按时送达",
-  _id: "591d5e5643f73a7dbdc97c66",
-  username: "4*******b",
-  tags: [ ],
-  item_ratings: [
-    {
-      food_id: 508807792,
-      food_name: "超级至尊比萨-铁盘",
-      _id: "591d5e5643f73a7dbdc97c68",
-      is_valid: 1,
-      image_hash: "dc864033625905f0a15a2d181d53a425jpeg"
-    },
-    {
-      food_id: 508808743,
-      food_name: "韩式浓情风味鸡（标准份）",
-      _id: "591d5e5643f73a7dbdc97c67",
-      is_valid: 1,
-      image_hash: "074e0e203f613deff4e456c31e4177d1jpeg"
-    }
-  ],
-  highlights: [ ],
-  avatar: ""
+    rated_at: '2017-02-10',
+    rating_star: 5,
+    rating_text: '',
+    time_spent_desc: '按时送达',
+    _id: '591d5e5643f73a7dbdc97c66',
+    username: '4*******b',
+    tags: [],
+    item_ratings: [
+      {
+        food_id: 508807792,
+        food_name: '超级至尊比萨-铁盘',
+        _id: '591d5e5643f73a7dbdc97c68',
+        is_valid: 1,
+        image_hash: 'dc864033625905f0a15a2d181d53a425jpeg'
+      },
+      {
+        food_id: 508808743,
+        food_name: '韩式浓情风味鸡（标准份）',
+        _id: '591d5e5643f73a7dbdc97c67',
+        is_valid: 1,
+        image_hash: '074e0e203f613deff4e456c31e4177d1jpeg'
+      }
+    ],
+    highlights: [],
+    avatar: ''
   },
 ]
 ```
@@ -1203,16 +1201,14 @@ GET
 #### 返回示例：
 
 ```javascript
-
 [
   {
-    name: "全部",
-    _id: "591d5e5643f73a7dbdc97c52",
+    name: '全部',
+    _id: '591d5e5643f73a7dbdc97c52',
     unsatisfied: false,
     count: 473
   },
 ]
-
 ```
 
 ### 20、加入购物车
@@ -1357,22 +1353,21 @@ GET
 #### 返回示例：
 
 ```javascript
-
 [
   {
     id: 297740202,
-    address: "桂平路680号33幢",
-    phone: "13683220505",
+    address: '桂平路680号33幢',
+    phone: '13683220505',
     is_valid: 1,
-    created_at: "2017-03-31T15:10:25+0800",
-    phone_bk: "",
-    name: "1231",
-    st_geohash: "wtw2dfyxb62",
-    address_detail: "123123",
+    created_at: '2017-03-31T15:10:25+0800',
+    phone_bk: '',
+    name: '1231',
+    st_geohash: 'wtw2dfyxb62',
+    address_detail: '123123',
     poi_type: 0,
     sex: 1,
     city_id: 1,
-    tag: "家",
+    tag: '家',
     agent_fee: 3,
     deliver_amount: 20,
     is_deliverable: true,
@@ -1724,13 +1719,12 @@ GET
 #### 返回示例：
 
 ```javascript
-
 [
   {
     restaurant_id: 6,
-    restaurant_image_url: "/img/shop/15c19349ebe12.jpg",
-    restaurant_name: "sdf",
-    formatted_created_at: "2017-05-21 42:34",
+    restaurant_image_url: '/img/shop/15c19349ebe12.jpg',
+    restaurant_name: 'sdf',
+    formatted_created_at: '2017-05-21 42:34',
     order_time: 1495298554692,
     time_pass: 55315,
     total_amount: 21,
@@ -1743,14 +1737,14 @@ GET
     top_show: 0,
     timeline_node: {
       in_processing: 0,
-      actions: [ ]
+      actions: []
     },
     status_code: 0,
     status_bar: {
-      color: "f60",
-      image_type: "",
-      sub_title: "15分钟内支付",
-      title: "支付超时"
+      color: 'f60',
+      image_type: '',
+      sub_title: '15分钟内支付',
+      title: '支付超时'
     },
     restaurant_type: 0,
     remind_reply_count: 0,
@@ -1766,36 +1760,36 @@ GET
     is_deletable: 1,
     is_brand: 0,
     basket: {
-      pindan_map: [ ],
+      pindan_map: [],
       packing_fee: {
         price: 0,
         quantity: 1,
-        name: "餐盒",
+        name: '餐盒',
         category_id: 1
       },
       group: [
         [
           {
-          name: "fsefsf",
-          price: 21,
-          quantity: 1,
-          _id: "592071f966867336d7f8bce6",
-          specs: [
-          ""
-          ],
-          new_specs: [ ],
-          attrs: [ ]
+            name: 'fsefsf',
+            price: 21,
+            quantity: 1,
+            _id: '592071f966867336d7f8bce6',
+            specs: [
+              ''
+            ],
+            new_specs: [],
+            attrs: []
           }
         ]
       ],
-      extra: [ ],
+      extra: [],
       deliver_fee: {
-      quantity: 1,
-      price: 4,
-      name: "配送费",
-      category_id: 2
+        quantity: 1,
+        price: 4,
+        name: '配送费',
+        category_id: 2
       },
-      abandoned_extra: [ ]
+      abandoned_extra: []
     }
   },
 ]
@@ -1949,9 +1943,8 @@ GET
 #### 返回示例：
 
 ```javascript
-
 {
-  
+
 }
 ```
 
@@ -1985,27 +1978,26 @@ GET
 #### 返回示例：
 
 ```javascript
-
 [
   {
     id: 7160761341773,
-    sn: "201705211244186655961161757573",
+    sn: '201705211244186655961161757573',
     user_id: 186655961,
     amount: 2,
     sum_condition: 40,
-    name: "分享红包",
-    phone: "13681711254",
-    begin_date: "2017-05-21",
-    end_date: "2017-05-23",
+    name: '分享红包',
+    phone: '13681711254',
+    begin_date: '2017-05-21',
+    end_date: '2017-05-23',
     status: 0,
     present_status: 1,
     share_status: 0,
     description_map: {
-      phone: "限收货手机号为 13681711254",
-      online_paid_only: "限在线支付使用",
-      validity_delta: "剩3日",
-      validity_periods: "2017-05-23到期",
-      sum_condition: "满 40 元可用"
+      phone: '限收货手机号为 13681711254',
+      online_paid_only: '限在线支付使用',
+      validity_delta: '剩3日',
+      validity_periods: '2017-05-23到期',
+      sum_condition: '满 40 元可用'
     },
     __v: 0
   },
@@ -2042,27 +2034,26 @@ GET
 #### 返回示例：
 
 ```javascript
-
 [
   {
     id: 7160761341773,
-    sn: "201705211244186655961161757573",
+    sn: '201705211244186655961161757573',
     user_id: 186655961,
     amount: 2,
     sum_condition: 40,
-    name: "分享红包",
-    phone: "13681711254",
-    begin_date: "2017-05-21",
-    end_date: "2017-05-23",
+    name: '分享红包',
+    phone: '13681711254',
+    begin_date: '2017-05-21',
+    end_date: '2017-05-23',
     status: 0,
     present_status: 4,
     share_status: 0,
     description_map: {
-      phone: "限收货手机号为 13681711254",
-      online_paid_only: "限在线支付使用",
-      validity_delta: "剩3日",
-      validity_periods: "2017-05-23到期",
-      sum_condition: "满 40 元可用"
+      phone: '限收货手机号为 13681711254',
+      online_paid_only: '限在线支付使用',
+      validity_delta: '剩3日',
+      validity_periods: '2017-05-23到期',
+      sum_condition: '满 40 元可用'
     },
     __v: 0
   },
@@ -2696,60 +2687,60 @@ GET
 ```javascript
 [
   {
-  name: "fdsf",
-  image_path: "15c545e4a705.png",
-  activity: {
-    image_text_color: "f1884f",
-    icon_color: "f07373",
-    image_text: "dsf"
-  },
-  restaurant_id: 2,
-  category_id: 1,
-  item_id: 2,
-  tips: "880评价 月售123份",
-  specfoods: [
-    {
-      specs_name: "默认",
-      name: "fdsf",
-      item_id: 2,
-      sku_id: 2,
-      food_id: 2,
-      restaurant_id: 2,
-      _id: "592c2063153b1136968e3393",
-      specs: [ ],
-      stock: 1000,
-      checkout_mode: 1,
-      is_essential: false,
-      recent_popularity: 254,
-      sold_out: false,
-      price: 20,
-      promotion_stock: -1,
-      recent_rating: 2.8,
-      packing_fee: 0,
-      pinyin_name: "",
-      original_price: 0
-    }
-  ],
-  satisfy_rate: 87,
-  satisfy_count: 803,
-  attributes: [
-    {
-      icon_color: "5ec452",
-      icon_name: "新"
-    }
-  ],
-  is_essential: false,
-  server_utc: "2017-05-29T05:53:51.103Z",
-  specifications: [ ],
-  rating_count: 880,
-  month_sales: 123,
-  description: "dfs",
-  attrs: [ ],
-  display_times: [ ],
-  pinyin_name: "",
-  is_featured: 0,
-  rating: 3.4,
-  __v: 0
+    name: 'fdsf',
+    image_path: '15c545e4a705.png',
+    activity: {
+      image_text_color: 'f1884f',
+      icon_color: 'f07373',
+      image_text: 'dsf'
+    },
+    restaurant_id: 2,
+    category_id: 1,
+    item_id: 2,
+    tips: '880评价 月售123份',
+    specfoods: [
+      {
+        specs_name: '默认',
+        name: 'fdsf',
+        item_id: 2,
+        sku_id: 2,
+        food_id: 2,
+        restaurant_id: 2,
+        _id: '592c2063153b1136968e3393',
+        specs: [],
+        stock: 1000,
+        checkout_mode: 1,
+        is_essential: false,
+        recent_popularity: 254,
+        sold_out: false,
+        price: 20,
+        promotion_stock: -1,
+        recent_rating: 2.8,
+        packing_fee: 0,
+        pinyin_name: '',
+        original_price: 0
+      }
+    ],
+    satisfy_rate: 87,
+    satisfy_count: 803,
+    attributes: [
+      {
+        icon_color: '5ec452',
+        icon_name: '新'
+      }
+    ],
+    is_essential: false,
+    server_utc: '2017-05-29T05:53:51.103Z',
+    specifications: [],
+    rating_count: 880,
+    month_sales: 123,
+    description: 'dfs',
+    attrs: [],
+    display_times: [],
+    pinyin_name: '',
+    is_featured: 0,
+    rating: 3.4,
+    __v: 0
   },
 ]
 ```
@@ -2999,7 +2990,7 @@ GET
 
 ```javascript
 [
-  
+
 ]
 ```
 
@@ -3032,7 +3023,7 @@ GET
 
 ```javascript
 [
-  
+
 ]
 ```
 

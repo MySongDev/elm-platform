@@ -38,7 +38,12 @@ function getLevelType(level: SystemLog['level']) {
       <template #search>
         <el-form :model="query" inline>
           <el-form-item :label="`${t('monitor.logs.system.level')}：`">
-            <el-select v-model="query.level" :placeholder="t('monitor.logs.system.levelPlaceholder')" clearable>
+            <el-select
+              v-model="query.level"
+              class="admin-search-control"
+              :placeholder="t('monitor.logs.system.levelPlaceholder')"
+              clearable
+            >
               <el-option label="Info" value="info" />
               <el-option label="Warn" value="warn" />
               <el-option label="Error" value="error" />
@@ -58,7 +63,12 @@ function getLevelType(level: SystemLog['level']) {
         </el-form>
       </template>
 
-      <el-table v-loading="loading" :data="filteredData" border stripe>
+      <el-table
+        v-loading="loading"
+        :data="filteredData"
+        border
+        stripe
+      >
         <el-table-column :label="t('monitor.logs.system.level')" width="100">
           <template #default="{ row }">
             <el-tag :type="getLevelType(row.level)">

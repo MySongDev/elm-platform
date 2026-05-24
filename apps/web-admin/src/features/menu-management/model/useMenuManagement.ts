@@ -4,11 +4,11 @@
  * @description 聚合系统菜单树 CRUD、父菜单选项和表单校验，是菜单管理页面的业务状态边界。
  */
 
-import type { FormRules } from 'element-plus'
 import type { MenuItem } from '@/entities/system-menu'
 import { createMenu, deleteMenu, getMenus, updateMenu } from '@/entities/system-menu'
 import { createElementPlusCrudFeedback, useConfigCrud } from '@/shared/config-crud'
 import { filterTree, flattenTree } from '@/shared/lib/tree'
+import { createMenuFormRules } from '../config/fields'
 
 interface MenuQuery {
   title: string
@@ -80,10 +80,7 @@ export function useMenuManagement() {
     feedback: createElementPlusCrudFeedback(),
   })
 
-  const rules: FormRules = {
-    title: [{ required: true, message: t('menu.titleRequired'), trigger: 'blur' }],
-    path: [{ required: true, message: t('menu.pathRequired'), trigger: 'blur' }],
-  }
+  const rules = computed(() => createMenuFormRules(t))
 
   const parentOptions = computed(() => flattenTree(crud.tableData.value).filter(item => item.id !== crud.form.id))
 
@@ -95,10 +92,25 @@ export function useMenuManagement() {
   }
 
   return {
-    ...crud,
+    loading: crud.loading,
+    saving: crud.saving,
+    dialogVisible: crud.dialogVisible,
+    tableData: crud.tableData,
+    query: crud.query,
+    form: crud.form,
+    isEdit: crud.isEdit,
+    filteredData: crud.filteredData,
+    pagination: crud.pagination,
+    resetQuery: crud.resetQuery,
+    resetForm: crud.resetForm,
+    openCreateDialog,
+    openEditDialog: crud.openEditDialog,
+    fetchMenus: crud.fetchRows,
+    submitForm: crud.submitForm,
+    handleDelete: crud.handleDelete,
+    handlePageChange: crud.handlePageChange,
+    handleSizeChange: crud.handleSizeChange,
     rules,
     parentOptions,
-    openCreateDialog,
-    fetchMenus: crud.fetchRows,
   }
 }

@@ -1,14 +1,14 @@
-import { PrismaClient } from '@prisma/client';
-import * as bcrypt from 'bcryptjs';
+import { PrismaClient } from '@prisma/client'
+import * as bcrypt from 'bcryptjs'
 
-const prisma = new PrismaClient();
+const prisma = new PrismaClient()
 
 async function main() {
-  console.log('开始初始化数据...');
+  console.log('开始初始化数据...')
 
   // 创建测试用户（密码已加密）
-  const hashedPassword = bcrypt.hashSync('admin123', 10);
-  console.log('Generated hash:', hashedPassword);
+  const hashedPassword = bcrypt.hashSync('admin123', 10)
+  console.log('Generated hash:', hashedPassword)
 
   const user = await prisma.user.upsert({
     where: { username: 'admin' },
@@ -30,27 +30,44 @@ async function main() {
       permissions: ['*:*:*'],
       status: 1,
     },
-  });
+  })
 
-  console.log('创建用户:', user);
+  console.log('创建用户:', user)
+
+  const customerPassword = bcrypt.hashSync('password123', 10)
+  const customerUser = await prisma.customerUser.upsert({
+    where: { phone: '13800138001' },
+    update: {
+      password: customerPassword,
+      status: 1,
+    },
+    create: {
+      phone: '13800138001',
+      password: customerPassword,
+      nickname: '测试用户',
+      status: 1,
+    },
+  })
+
+  console.log('创建用户端测试用户:', customerUser)
 
   await (prisma as any).role.upsert({
     where: { code: 'admin' },
     update: { name: '超级管理员', permissions: ['*:*:*'], status: 1 },
     create: { name: '超级管理员', code: 'admin', permissions: ['*:*:*'], status: 1, remark: '拥有系统全部权限' },
-  });
+  })
 
   await (prisma as any).role.upsert({
     where: { code: 'user' },
     update: { name: '普通用户', permissions: ['permission:page:view', 'permission:button:view'], status: 1 },
     create: { name: '普通用户', code: 'user', permissions: ['permission:page:view', 'permission:button:view'], status: 1, remark: '拥有基础访问权限' },
-  });
+  })
 
   await (prisma as any).dept.upsert({
     where: { id: 1 },
     update: { name: '总公司', leader: '管理员', status: 1 },
     create: { id: 1, name: '总公司', leader: '管理员', phone: '13800138000', email: 'admin@example.com', sort: 1, status: 1 },
-  });
+  })
 
   const menuSeeds = [
     { id: 14, parentId: null, title: '仪表盘', path: '/dashboard', name: 'Dashboard', icon: 'dashboard', type: 'catalog', sort: 1, status: 1 },
@@ -100,24 +117,24 @@ async function main() {
     { id: 161, parentId: 22, title: '编辑商品', path: '/commerce/food', permission: 'commerce:food:edit', type: 'button', sort: 2, status: 1 },
     { id: 162, parentId: 22, title: '删除商品', path: '/commerce/food', permission: 'commerce:food:delete', type: 'button', sort: 3, status: 1 },
     { id: 170, parentId: 23, title: '编辑订单', path: '/commerce/order', permission: 'commerce:order:edit', type: 'button', sort: 1, status: 1 },
-  ];
+  ]
 
   for (const menu of menuSeeds) {
     await (prisma as any).menu.upsert({
       where: { id: menu.id },
       update: menu,
       create: menu,
-    });
+    })
   }
 
-  console.log('数据初始化完成');
+  console.log('数据初始化完成')
 }
 
 main()
   .catch((e) => {
-    console.error('数据初始化失败:', e);
-    process.exit(1);
+    console.error('数据初始化失败:', e)
+    process.exit(1)
   })
   .finally(async () => {
-    await prisma.$disconnect();
-  });
+    await prisma.$disconnect()
+  })

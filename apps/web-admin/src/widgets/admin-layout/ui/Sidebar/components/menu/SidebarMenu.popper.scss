@@ -1,0 +1,27 @@
+.admin-sidebar-menu-popper {
+  overflow: visible;
+  background: #0f0303 !important;
+}
+
+.admin-sidebar-menu-popper .el-menu {
+  background: #0f0303 !important;
+}
+
+.admin-sidebar-menu-popper .el-menu-item,
+.admin-sidebar-menu-popper .el-sub-menu__title {
+  color: rgb(254 254 254 / 78%);
+  background: #0f0303 !important;
+
+  &:hover {
+    color: $white-color;
+    background: #160606 !important;
+  }
+}
+
+.admin-sidebar-menu-popper .el-menu-item.is-active {
+  color: $white-color !important;
+}
+
+.admin-sidebar-menu-popper .el-sub-menu.is-opened > .el-sub-menu__title .el-sub-menu__icon-arrow {
+  transform: rotate(90deg);
+}

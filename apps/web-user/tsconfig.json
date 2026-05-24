@@ -1,21 +1,21 @@
 {
   "compilerOptions": {
     "target": "ESNext",
+    "jsx": "preserve",
+    "lib": ["ESNext", "DOM", "DOM.Iterable"],
     "module": "ESNext",
     "moduleResolution": "bundler",
-    "strict": false,
-    "jsx": "preserve",
-    "resolveJsonModule": true,
-    "isolatedModules": true,
-    "esModuleInterop": true,
-    "lib": ["ESNext", "DOM", "DOM.Iterable"],
-    "skipLibCheck": true,
-    "noEmit": true,
-    "allowJs": true,
     "paths": {
       "@/*": ["./src/*"]
     },
-    "types": ["vite/client"]
+    "resolveJsonModule": true,
+    "types": ["vite/client"],
+    "allowJs": true,
+    "strict": false,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "isolatedModules": true,
+    "skipLibCheck": true
   },
   "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.vue", "src/**/*.js"],
   "exclude": ["node_modules", "dist"]

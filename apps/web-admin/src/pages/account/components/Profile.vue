@@ -66,7 +66,13 @@ async function handleSave() {
     <h3 class="section-title">
       {{ sectionTitle }}
     </h3>
-    <el-form ref="formRef" label-position="top" :model="form" :rules="rules" class="profile-form">
+    <el-form
+      ref="formRef"
+      label-position="top"
+      :model="form"
+      :rules="rules"
+      class="profile-form"
+    >
       <el-form-item :label="t('profile.avatar')">
         <el-avatar :size="80" :src="authStore.userInfo?.avatar ?? undefined">
           {{ authStore.userInfo?.username?.charAt(0)?.toUpperCase() || 'U' }}

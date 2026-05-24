@@ -55,7 +55,13 @@ onMounted(() => {
     <h3 class="section-title">
       {{ sectionTitle }}
     </h3>
-    <el-table v-loading="loading" :data="dataList" stripe border style="width: 100%">
+    <el-table
+      v-loading="loading"
+      :data="dataList"
+      stripe
+      border
+      style="width: 100%"
+    >
       <el-table-column :label="t('securityLog.detail')" prop="message" min-width="140" />
       <el-table-column :label="t('securityLog.ipAddress')" prop="ip" min-width="120" />
       <el-table-column :label="t('securityLog.os')" prop="os" min-width="100" />
@@ -74,9 +80,15 @@ onMounted(() => {
       </el-table-column>
     </el-table>
     <div class="pagination-wrapper">
-      <el-pagination v-model:current-page="pagination.currentPage" :page-size="pagination.pageSize"
-        :total="pagination.total" :disabled="loading" layout="total, prev, pager, next"
-        :background="pagination.background" @current-change="handleCurrentChange" />
+      <el-pagination
+        v-model:current-page="pagination.currentPage"
+        :page-size="pagination.pageSize"
+        :total="pagination.total"
+        :disabled="loading"
+        layout="total, prev, pager, next"
+        :background="pagination.background"
+        @current-change="handleCurrentChange"
+      />
     </div>
   </div>
 </template>

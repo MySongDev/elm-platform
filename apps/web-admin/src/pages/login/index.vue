@@ -17,6 +17,7 @@ const loading = ref(false)
 const loginForm = reactive({
   account: '',
   password: '',
+  rememberMe: false,
 })
 
 const rules: FormRules = {
@@ -56,16 +57,42 @@ async function handleLogin() {
       <p class="login-hint">
         {{ t('login.defaultCredentialHint') }}
       </p>
-      <el-form ref="loginFormRef" :model="loginForm" :rules="rules" @keyup.enter="handleLogin">
+      <el-form
+        ref="loginFormRef"
+        :model="loginForm"
+        :rules="rules"
+        @keyup.enter="handleLogin"
+      >
         <el-form-item prop="account">
-          <el-input v-model="loginForm.account" :placeholder="t('login.usernamePlaceholder')" :prefix-icon="IconEpUser"
-            size="large" />
+          <el-input
+            v-model="loginForm.account"
+            :placeholder="t('login.usernamePlaceholder')"
+            :prefix-icon="IconEpUser"
+            size="large"
+          />
         </el-form-item>
         <el-form-item prop="password">
-          <el-input v-model="loginForm.password" type="password" :placeholder="t('login.passwordPlaceholder')"
-            :prefix-icon="IconEpLock" size="large" show-password />
+          <el-input
+            v-model="loginForm.password"
+            type="password"
+            :placeholder="t('login.passwordPlaceholder')"
+            :prefix-icon="IconEpLock"
+            size="large"
+            show-password
+          />
         </el-form-item>
-        <el-button type="primary" size="large" :loading="loading" class="login-button" @click="handleLogin">
+        <div class="login-options">
+          <el-checkbox v-model="loginForm.rememberMe">
+            {{ t('login.rememberMe') }}
+          </el-checkbox>
+        </div>
+        <el-button
+          type="primary"
+          size="large"
+          :loading="loading"
+          class="login-button"
+          @click="handleLogin"
+        >
           {{ t('login.login') }}
         </el-button>
       </el-form>
@@ -110,5 +137,11 @@ h1 {
 
 .login-button {
   width: 100%;
+}
+
+.login-options {
+  display: flex;
+  justify-content: space-between;
+  margin: -4px 0 18px;
 }
 </style>

@@ -6,7 +6,7 @@
 
 import type { UserInfo } from '@/entities/user'
 import type { ConfigFieldOption, ConfigFormField, ConfigTableColumn, Translate } from '@/shared/config-crud'
-import { createEnabledStatusOptions, createEnabledStatusSearchOptions, formatDateTime, getEnabledStatusTag, getStatusText } from '@/shared/config-crud'
+import { createEnabledStatusOptions, createEnabledStatusSearchOptions, formatDateTime, getEnabledStatusTag, getStatusText } from '@/shared/lib/admin-display'
 
 export function createUserSearchFields(t: Translate) {
   return [

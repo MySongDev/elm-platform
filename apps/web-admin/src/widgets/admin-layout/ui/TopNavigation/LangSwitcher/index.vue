@@ -28,8 +28,12 @@ function handleCommand(command: string | number | object) {
     </TopNavigationAction>
     <template #dropdown>
       <el-dropdown-menu>
-        <el-dropdown-item v-for="item in langOptions" :key="item.value" :command="item.value"
-          :disabled="locale === item.value">
+        <el-dropdown-item
+          v-for="item in langOptions"
+          :key="item.value"
+          :command="item.value"
+          :disabled="locale === item.value"
+        >
           {{ item.label }}
         </el-dropdown-item>
       </el-dropdown-menu>

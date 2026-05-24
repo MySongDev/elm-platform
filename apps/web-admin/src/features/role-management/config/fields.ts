@@ -7,7 +7,7 @@
 import type { ButtonPermission } from '@/entities/permission'
 import type { RoleItem } from '@/entities/role'
 import type { ConfigFormField, ConfigTableColumn, Translate } from '@/shared/config-crud'
-import { createEnabledStatusOptions, createEnabledStatusSearchOptions, formatDateTime, getEnabledStatusTag, getStatusText } from '@/shared/config-crud'
+import { createEnabledStatusOptions, createEnabledStatusSearchOptions, formatDateTime, getEnabledStatusTag, getStatusText } from '@/shared/lib/admin-display'
 
 export function createRoleSearchFields(t: Translate) {
   return [

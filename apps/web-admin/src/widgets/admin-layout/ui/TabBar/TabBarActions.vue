@@ -48,8 +48,13 @@ function handleCommand(command: string | number | object) {
     </button>
     <template #dropdown>
       <el-dropdown-menu>
-        <el-dropdown-item v-for="item in commands" :key="item.command" :command="item.command" :divided="item.divided"
-          :disabled="item.disabled">
+        <el-dropdown-item
+          v-for="item in commands"
+          :key="item.command"
+          :command="item.command"
+          :divided="item.divided"
+          :disabled="item.disabled"
+        >
           <el-icon>
             <component :is="item.icon" />
           </el-icon>

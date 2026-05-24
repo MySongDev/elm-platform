@@ -1,3 +1,6 @@
+import type { AuthService } from './auth.service'
+import type { LoginDto } from './dto/login.dto'
+import type { UpdateProfileDto } from './dto/update-profile.dto'
 import {
   Body,
   Controller,
@@ -9,12 +12,9 @@ import {
   Query,
   Request,
   UseGuards,
-} from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
-import { AuthService } from './auth.service';
-import { LoginDto } from './dto/login.dto';
-import { UpdateProfileDto } from './dto/update-profile.dto';
-import { AdminAuthGuard } from './guards/admin-auth.guard';
+} from '@nestjs/common'
+import { ApiBearerAuth, ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger'
+import { AdminAuthGuard } from './guards/admin-auth.guard'
 
 @ApiTags('认证管理')
 @Controller('auth')
@@ -24,10 +24,10 @@ export class AuthController {
   @Post('login')
   @ApiOperation({ summary: '用户登录' })
   async login(@Body() loginDto: LoginDto, @Request() req: any) {
-    const ip = req.ip || req.headers['x-forwarded-for'] || req.connection?.remoteAddress;
-    const userAgent = req.headers['user-agent'];
-    const account = loginDto.account || loginDto.username;
-    return this.authService.login(account, loginDto.password, ip, userAgent);
+    const ip = req.ip || req.headers['x-forwarded-for'] || req.connection?.remoteAddress
+    const userAgent = req.headers['user-agent']
+    const account = loginDto.account || loginDto.username
+    return this.authService.login(account, loginDto.password, ip, userAgent, loginDto.rememberMe)
   }
 
   @Get('profile')
@@ -35,7 +35,7 @@ export class AuthController {
   @ApiBearerAuth()
   @ApiOperation({ summary: '获取当前用户信息' })
   async getProfile(@Request() req: any) {
-    return this.authService.getProfile(req.user.id);
+    return this.authService.getProfile(req.user.id)
   }
 
   @Get('menus')
@@ -43,7 +43,7 @@ export class AuthController {
   @ApiBearerAuth()
   @ApiOperation({ summary: '获取当前用户可访问的菜单树' })
   async getMenus(@Request() req: any) {
-    return this.authService.getUserMenus(req.user.id);
+    return this.authService.getUserMenus(req.user.id)
   }
 
   @Patch('profile')
@@ -51,7 +51,7 @@ export class AuthController {
   @ApiBearerAuth()
   @ApiOperation({ summary: '更新当前用户信息' })
   async updateProfile(@Request() req: any, @Body() updateProfileDto: UpdateProfileDto) {
-    return this.authService.updateProfile(req.user.id, updateProfileDto);
+    return this.authService.updateProfile(req.user.id, updateProfileDto)
   }
 
   @Post('logout')
@@ -59,7 +59,7 @@ export class AuthController {
   @ApiBearerAuth()
   @ApiOperation({ summary: '退出登录' })
   async logout(@Request() req: any) {
-    return this.authService.logout(req.user.id);
+    return this.authService.logout(req.user.id)
   }
 
   @Get('security-logs')
@@ -73,6 +73,6 @@ export class AuthController {
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
     @Query('pageSize', new DefaultValuePipe(10), ParseIntPipe) pageSize: number,
   ) {
-    return this.authService.getSecurityLogs(req.user.id, page, pageSize);
+    return this.authService.getSecurityLogs(req.user.id, page, pageSize)
   }
 }

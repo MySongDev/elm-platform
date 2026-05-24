@@ -14,7 +14,10 @@ const t = i18n.global.t as (key: string) => string
 
 export function setupHttpClient() {
   configureHttpClient({
-    getToken: () => useAuthStore().token,
+    getToken: () => {
+      const authStore = useAuthStore()
+      return authStore.ensureSessionValid() ? authStore.token : ''
+    },
     onUnauthorized: () => {
       const authStore = useAuthStore()
       authStore.resetToken()

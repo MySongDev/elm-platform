@@ -25,6 +25,8 @@ export {
 export type {
   ConfigDataTableOptions,
   ConfigTableColumn,
+  ConfigTableColumnTag,
+  ConfigTableColumnTagType,
   CrudActionColumnOptions,
   CrudActionPreset,
 } from './model/table'

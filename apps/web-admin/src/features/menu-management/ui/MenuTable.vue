@@ -8,7 +8,7 @@
 import type { MenuItem } from '@/entities/system-menu'
 import { IconPlus as IconEpPlus } from '@iconify-prerendered/vue-ep'
 import { ConfigDataTable, CrudActionColumn } from '@/shared/config-crud'
-import { Permissions } from '@/shared/config/roles'
+import { Permissions } from '@/shared/config/access'
 import { createMenuTableColumns } from '../config/fields'
 
 defineOptions({ name: 'MenuTable' })
@@ -42,7 +42,13 @@ const columns = computed(() => createMenuTableColumns(t))
       @delete="$emit('delete', $event as MenuItem)"
     >
       <template #prepend="{ row }">
-        <el-button v-auth="Permissions.MENU_ADD" type="primary" link :icon="IconEpPlus" @click="$emit('create', row)">
+        <el-button
+          v-auth="Permissions.MENU_ADD"
+          type="primary"
+          link
+          :icon="IconEpPlus"
+          @click="$emit('create', row)"
+        >
           {{ t('crud.add') }}
         </el-button>
       </template>

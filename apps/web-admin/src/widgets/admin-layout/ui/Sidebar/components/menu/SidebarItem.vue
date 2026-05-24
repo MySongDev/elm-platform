@@ -3,6 +3,7 @@ import type { RouteRecordRaw } from 'vue-router'
 import { useAuthStore } from '@/entities/session'
 import { transformI18n } from '@/shared/i18n'
 import { filterRoutesByAccess } from '@/shared/lib/permission'
+import { getSidebarMenuTitleClass } from './sidebarItemPresentation'
 import SidebarLinkItem from './SidebarLinkItem.vue'
 
 defineOptions({ name: 'SidebarItem' })
@@ -99,6 +100,20 @@ const leafIcon = computed(() => {
 const leafTitle = computed(() => {
   return getTitle(leafRoute.value.meta) || getTitle(props.route.meta)
 })
+
+const leafTitleClass = computed(() => {
+  return getSidebarMenuTitleClass({
+    collapse: props.collapse,
+    hideWhenCollapsed: false,
+  })
+})
+
+const submenuTitleClass = computed(() => {
+  return getSidebarMenuTitleClass({
+    collapse: props.collapse,
+    hideWhenCollapsed: true,
+  })
+})
 </script>
 
 <template>
@@ -119,7 +134,7 @@ const leafTitle = computed(() => {
           <SvgIcon :icon-name="leafIcon" />
         </div>
         <template #title>
-          <span class="menu-title" :class="{ 'is-collapse': props.collapse }">{{ leafTitle }}</span>
+          <span class="menu-title" :class="leafTitleClass">{{ leafTitle }}</span>
         </template>
       </el-menu-item>
     </SidebarLinkItem>
@@ -129,7 +144,7 @@ const leafTitle = computed(() => {
         <div v-if="route.meta?.icon" class="menu-icon" :class="{ 'is-collapse': props.collapse }">
           <SvgIcon :icon-name="route.meta.icon" />
         </div>
-        <span class="menu-title" :class="{ 'is-collapse': props.collapse }">{{ getTitle(route.meta) }}</span>
+        <span class="menu-title" :class="submenuTitleClass">{{ getTitle(route.meta) }}</span>
       </template>
       <SidebarItem
         v-for="child in visibleChildren"
@@ -159,10 +174,8 @@ const leafTitle = computed(() => {
   transition-delay: 0.15s;
 
   &.is-collapse {
-    width: 0;
-    min-width: 0;
-    margin: 0;
-    overflow: hidden;
+    position: absolute;
+    pointer-events: none;
     opacity: 0;
     transition-delay: 0s;
   }

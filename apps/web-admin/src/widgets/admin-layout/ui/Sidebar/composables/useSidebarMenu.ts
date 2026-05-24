@@ -10,7 +10,16 @@ function normalizePath(path: string): string {
   return path.replace(/\/+/g, '/')
 }
 
-function resolveOpenKeys(path: string, routes: RouteRecordRaw[], basePath = ''): string[] | null {
+function getVisibleChildren(routeItem: RouteRecordRaw): RouteRecordRaw[] {
+  return routeItem.children?.filter(child => !child.meta?.hidden) ?? []
+}
+
+function isRenderedAsSubMenu(routeItem: RouteRecordRaw): boolean {
+  const visibleChildren = getVisibleChildren(routeItem)
+  return visibleChildren.length > 1 || !!routeItem.meta?.alwaysShow
+}
+
+export function resolveSidebarOpenKeys(path: string, routes: RouteRecordRaw[], basePath = ''): string[] | null {
   for (const routeItem of routes) {
     const fullPath = routeItem.path.startsWith('/')
       ? routeItem.path
@@ -19,10 +28,11 @@ function resolveOpenKeys(path: string, routes: RouteRecordRaw[], basePath = ''):
     if (fullPath === path)
       return []
 
-    if (routeItem.children?.length) {
-      const childResult = resolveOpenKeys(path, routeItem.children, fullPath)
+    const visibleChildren = getVisibleChildren(routeItem)
+    if (visibleChildren.length) {
+      const childResult = resolveSidebarOpenKeys(path, visibleChildren, fullPath)
       if (childResult !== null)
-        return [fullPath, ...childResult]
+        return isRenderedAsSubMenu(routeItem) ? [fullPath, ...childResult] : childResult
     }
   }
 
@@ -78,7 +88,7 @@ export function useSidebarMenu(menuRef: Ref<MenuInstance | null | undefined>) {
   watch(
     () => [route.path, filteredRoutes.value] as const,
     ([newPath]) => {
-      const targetKeys = resolveOpenKeys(newPath, filteredRoutes.value) ?? []
+      const targetKeys = resolveSidebarOpenKeys(newPath, filteredRoutes.value) ?? []
       nextTick(() => syncOpenKeys(targetKeys))
     },
     { immediate: true },

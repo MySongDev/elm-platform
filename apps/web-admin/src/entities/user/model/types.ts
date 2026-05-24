@@ -1,4 +1,4 @@
-import type { Role } from '@/shared/config/roles'
+import type { Role } from '@/shared/config/access'
 
 export interface UserInfo {
   id: number

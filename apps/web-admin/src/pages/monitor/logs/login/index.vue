@@ -33,7 +33,12 @@ const { loading, filteredData, query, fetchRows, resetQuery } = useReadonlyTable
             <el-input v-model="query.username" :placeholder="t('monitor.logs.login.usernamePlaceholder')" clearable />
           </el-form-item>
           <el-form-item :label="`${t('monitor.logs.login.status')}：`">
-            <el-select v-model="query.status" :placeholder="t('monitor.logs.login.statusPlaceholder')" clearable>
+            <el-select
+              v-model="query.status"
+              class="admin-search-control"
+              :placeholder="t('monitor.logs.login.statusPlaceholder')"
+              clearable
+            >
               <el-option :label="t('monitor.logs.login.success')" value="1" />
               <el-option :label="t('monitor.logs.login.failed')" value="0" />
             </el-select>
@@ -49,7 +54,12 @@ const { loading, filteredData, query, fetchRows, resetQuery } = useReadonlyTable
         </el-form>
       </template>
 
-      <el-table v-loading="loading" :data="filteredData" border stripe>
+      <el-table
+        v-loading="loading"
+        :data="filteredData"
+        border
+        stripe
+      >
         <el-table-column prop="username" :label="t('monitor.logs.login.username')" min-width="120" />
         <el-table-column prop="ip" :label="t('monitor.logs.login.ip')" min-width="140">
           <template #default="{ row }">

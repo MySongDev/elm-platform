@@ -29,15 +29,29 @@ function handleKeydown(e: KeyboardEvent) {
 </script>
 
 <template>
-  <div class="tab-item" :class="{ 'is-active': active, 'is-fixed': tab.fixed }" role="tab" :aria-selected="active"
-    :title="title" tabindex="0" @click="emit('click', tab.fullPath)" @keydown="handleKeydown"
-    @contextmenu="emit('contextmenu', $event, tab.fullPath)">
+  <div
+    class="tab-item"
+    :class="{ 'is-active': active, 'is-fixed': tab.fixed }"
+    role="tab"
+    :aria-selected="active"
+    :title="title"
+    tabindex="0"
+    @click="emit('click', tab.fullPath)"
+    @keydown="handleKeydown"
+    @contextmenu="emit('contextmenu', $event, tab.fullPath)"
+  >
     <el-icon v-if="tab.icon" class="tab-icon">
       <SvgIcon :icon-name="tab.icon" />
     </el-icon>
     <span class="tab-title">{{ title }}</span>
-    <el-icon v-if="!tab.fixed && closable !== false" class="tab-close" role="button" tabindex="-1"
-      :aria-label="t('tabs.closeTab')" @click.stop="emit('close', tab.fullPath)">
+    <el-icon
+      v-if="!tab.fixed && closable !== false"
+      class="tab-close"
+      role="button"
+      tabindex="-1"
+      :aria-label="t('tabs.closeTab')"
+      @click.stop="emit('close', tab.fullPath)"
+    >
       <IconEpClose />
     </el-icon>
   </div>

@@ -6,7 +6,7 @@
 
 import type { BackendMenuNode } from './build-routes'
 import type { RouteMenuNode } from './route-menu.types'
-import { resolveRouteTitleFallback } from './route-title-map'
+import { resolveKnownRouteTitleKey, resolveRouteTitleFallback } from './route-title-map'
 
 /**
  * @description 将已清洗的后端菜单树适配为前端内部路由菜单；空白标题在这里回退到历史映射，兼容旧菜单数据。
@@ -19,7 +19,9 @@ export function adaptBackendMenusToRouteMenus(menus: BackendMenuNode[]): RouteMe
 }
 
 function adaptBackendMenuToRouteMenu(menu: BackendMenuNode): RouteMenuNode {
-  const title = menu.title?.trim() || resolveRouteTitleFallback(menu.name ?? undefined, menu.path)
+  const title = resolveKnownRouteTitleKey(menu.name ?? undefined)
+    ?? menu.title?.trim()
+    ?? resolveRouteTitleFallback(menu.name ?? undefined, menu.path)
 
   return {
     path: menu.path,

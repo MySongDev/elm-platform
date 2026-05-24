@@ -1,9 +1,11 @@
 <script setup>
 import { storeToRefs } from 'pinia'
-import { computed, onActivated, watch } from 'vue'
+import { computed, onActivated, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
+import { showAlert } from '@/components/common/AlterTip'
 import BaseState from '@/components/common/BaseState/BaseState.vue'
+import { getAlipayPaymentStatus, resumeAlipayWapPayment } from '@/services/api/api-payment'
 import { useUserStore } from '@/stores/modules/store-user'
 import { getStore } from '@/untils/storage'
 import OrderCard from './components/OrderCard.vue'
@@ -21,6 +23,7 @@ const { isLogin, userId } = storeToRefs(userStore)
 const currentUserId = computed(() => String(userId.value || getStore('user_id') || ''))
 const isAuthenticated = computed(() => Boolean(isLogin.value || currentUserId.value))
 const highlightedOrderNo = computed(() => String(route.query.orderNo || ''))
+const continuingOrderNo = ref('')
 
 const {
   orders,
@@ -58,6 +61,53 @@ function goMsite() {
 
 function retryFetch() {
   fetchOrders()
+}
+
+async function continuePayment(order) {
+  if (!currentUserId.value) {
+    goLogin()
+    return
+  }
+
+  if (!order?.orderNo || continuingOrderNo.value)
+    return
+
+  continuingOrderNo.value = order.orderNo
+
+  try {
+    const latest = await getAlipayPaymentStatus(order.orderNo, true)
+
+    if (latest?.status === 'PAID') {
+      showAlert('订单已支付')
+      await fetchOrders()
+      return
+    }
+
+    if (latest?.status === 'CLOSED') {
+      showAlert('订单已关闭，请重新下单')
+      await fetchOrders()
+      return
+    }
+
+    if (latest?.status !== 'PENDING') {
+      showAlert('当前订单状态不可继续支付')
+      await fetchOrders()
+      return
+    }
+
+    const { payUrl } = await resumeAlipayWapPayment({
+      orderNo: order.orderNo,
+      userId: currentUserId.value,
+    })
+
+    window.location.href = payUrl
+  }
+  catch (err) {
+    showAlert(err?.message || '继续支付失败，请稍后再试')
+  }
+  finally {
+    continuingOrderNo.value = ''
+  }
 }
 
 onActivated(() => {
@@ -144,6 +194,7 @@ watch(
             :key="order.orderNo"
             :order="order"
             :highlight="order.orderNo === highlightedOrderNo"
+            @continue-payment="continuePayment"
           />
         </div>
       </BaseState>

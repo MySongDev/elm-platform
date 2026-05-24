@@ -1,10 +1,10 @@
-import { BadRequestException, ConflictException, Injectable, UnauthorizedException } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import * as bcrypt from 'bcryptjs';
-import { PrismaService } from '../../prisma/prisma.service';
-import { SmsService } from '../sms/sms.service';
-import { CustomerPasswordLoginDto, CustomerRegisterDto, CustomerSmsLoginDto } from './dto/customer-auth.dto';
-import { CustomerTokenService } from './customer-token.service';
+import type { ConfigService } from '@nestjs/config'
+import type { PrismaService } from '../../prisma/prisma.service'
+import type { SmsService } from '../sms/sms.service'
+import type { CustomerTokenService } from './customer-token.service'
+import type { CustomerPasswordLoginDto, CustomerRegisterDto, CustomerSmsLoginDto } from './dto/customer-auth.dto'
+import { BadRequestException, ConflictException, Injectable, UnauthorizedException } from '@nestjs/common'
+import * as bcrypt from 'bcryptjs'
 
 @Injectable()
 export class CustomerAuthService {
@@ -16,12 +16,12 @@ export class CustomerAuthService {
   ) {}
 
   async register(dto: CustomerRegisterDto) {
-    const existing = await (this.prisma as any).customerUser.findUnique({ where: { phone: dto.phone } });
+    const existing = await (this.prisma as any).customerUser.findUnique({ where: { phone: dto.phone } })
     if (existing) {
-      throw new ConflictException('手机号已注册');
+      throw new ConflictException('手机号已注册')
     }
 
-    await this.sms.verifyCode(dto.phone, 'register', dto.smsCode);
+    await this.sms.verifyCode(dto.phone, 'register', dto.smsCode)
 
     const user = await (this.prisma as any).customerUser.create({
       data: {
@@ -29,68 +29,84 @@ export class CustomerAuthService {
         password: dto.password ? await bcrypt.hash(dto.password, 10) : null,
         status: 1,
       },
-    });
+    })
 
-    return this.tokens.sign(user);
+    return this.tokens.sign(user)
   }
 
   async loginByPassword(dto: CustomerPasswordLoginDto) {
-    const user = await (this.prisma as any).customerUser.findUnique({ where: { phone: dto.phone } });
+    const user = await (this.prisma as any).customerUser.findUnique({ where: { phone: dto.phone } })
     if (!user) {
-      throw new UnauthorizedException('手机号或密码错误');
+      throw new UnauthorizedException('手机号或密码错误')
     }
     if (user.status !== 1) {
-      throw new UnauthorizedException('账号已被禁用');
+      throw new UnauthorizedException('账号已被禁用')
     }
     if (!user.password) {
-      throw new BadRequestException('请使用验证码登录或先设置密码');
+      throw new BadRequestException('请使用验证码登录或先设置密码')
     }
 
-    const valid = await bcrypt.compare(dto.password, user.password);
+    const valid = await bcrypt.compare(dto.password, user.password)
     if (!valid) {
-      throw new UnauthorizedException('手机号或密码错误');
+      throw new UnauthorizedException('手机号或密码错误')
     }
 
     const updated = await (this.prisma as any).customerUser.update({
       where: { id: user.id },
       data: { lastLoginAt: new Date() },
-    });
+    })
 
-    return this.tokens.sign(updated);
+    return this.tokens.sign(updated)
   }
 
   async loginBySms(dto: CustomerSmsLoginDto) {
-    let user = await (this.prisma as any).customerUser.findUnique({ where: { phone: dto.phone } });
+    let user = await (this.prisma as any).customerUser.findUnique({ where: { phone: dto.phone } })
     if (!user) {
-      const autoRegister = this.config.get<boolean>('auth.customerLoginAutoRegister', true);
+      const autoRegister = this.config.get<boolean>('auth.customerLoginAutoRegister', true)
       if (!autoRegister) {
-        throw new UnauthorizedException('手机号未注册，请先注册');
+        throw new UnauthorizedException('手机号未注册，请先注册')
       }
-      await this.sms.verifyCode(dto.phone, 'login', dto.smsCode);
+      await this.sms.verifyCode(dto.phone, 'login', dto.smsCode)
       user = await (this.prisma as any).customerUser.create({
         data: { phone: dto.phone, status: 1 },
-      });
-    } else {
-      await this.sms.verifyCode(dto.phone, 'login', dto.smsCode);
+      })
+    }
+    else {
+      await this.sms.verifyCode(dto.phone, 'login', dto.smsCode)
     }
 
     if (user.status !== 1) {
-      throw new UnauthorizedException('账号已被禁用');
+      throw new UnauthorizedException('账号已被禁用')
     }
 
     const updated = await (this.prisma as any).customerUser.update({
       where: { id: user.id },
       data: { lastLoginAt: new Date() },
-    });
+    })
 
-    return this.tokens.sign(updated);
+    return this.tokens.sign(updated)
   }
 
   async getProfile(userId: number) {
-    const user = await (this.prisma as any).customerUser.findUnique({ where: { id: userId } });
+    const user = await (this.prisma as any).customerUser.findUnique({ where: { id: userId } })
     if (!user || user.status !== 1) {
-      throw new UnauthorizedException('用户不存在或已禁用');
+      throw new UnauthorizedException('用户不存在或已禁用')
     }
-    return this.tokens.toProfile(user);
+    return this.tokens.toProfile(user)
+  }
+
+  async refresh(refreshToken: string) {
+    const { userId } = await this.tokens.consumeRefreshToken(refreshToken)
+    const user = await (this.prisma as any).customerUser.findUnique({ where: { id: userId } })
+    if (!user || user.status !== 1) {
+      throw new UnauthorizedException('用户不存在或已禁用')
+    }
+
+    return this.tokens.sign(user)
+  }
+
+  async logout(refreshToken?: string) {
+    await this.tokens.revoke(refreshToken)
+    return { success: true }
   }
 }

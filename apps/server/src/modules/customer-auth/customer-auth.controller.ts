@@ -1,9 +1,16 @@
-import { Body, Controller, Get, Post, Request, UseGuards } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { SmsService } from '../sms/sms.service';
-import { CustomerAuthService } from './customer-auth.service';
-import { CustomerPasswordLoginDto, CustomerRegisterDto, CustomerSmsLoginDto, SendSmsDto } from './dto/customer-auth.dto';
-import { CustomerAuthGuard } from './guards/customer-auth.guard';
+import type { SmsService } from '../sms/sms.service'
+import type { CustomerAuthService } from './customer-auth.service'
+import type {
+  CustomerLogoutDto,
+  CustomerPasswordLoginDto,
+  CustomerRefreshTokenDto,
+  CustomerRegisterDto,
+  CustomerSmsLoginDto,
+  SendSmsDto,
+} from './dto/customer-auth.dto'
+import { Body, Controller, Get, Post, Request, UseGuards } from '@nestjs/common'
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger'
+import { CustomerAuthGuard } from './guards/customer-auth.guard'
 
 @ApiTags('用户端认证')
 @Controller('customer-auth')
@@ -16,25 +23,37 @@ export class CustomerAuthController {
   @Post('sms/send')
   @ApiOperation({ summary: '发送短信验证码' })
   sendSms(@Body() dto: SendSmsDto) {
-    return this.sms.sendCode(dto.phone, dto.scene);
+    return this.sms.sendCode(dto.phone, dto.scene)
   }
 
   @Post('register')
   @ApiOperation({ summary: '手机号注册' })
   register(@Body() dto: CustomerRegisterDto) {
-    return this.customerAuth.register(dto);
+    return this.customerAuth.register(dto)
   }
 
   @Post('login/password')
   @ApiOperation({ summary: '手机号密码登录' })
   loginByPassword(@Body() dto: CustomerPasswordLoginDto) {
-    return this.customerAuth.loginByPassword(dto);
+    return this.customerAuth.loginByPassword(dto)
   }
 
   @Post('login/sms')
   @ApiOperation({ summary: '手机号验证码登录' })
   loginBySms(@Body() dto: CustomerSmsLoginDto) {
-    return this.customerAuth.loginBySms(dto);
+    return this.customerAuth.loginBySms(dto)
+  }
+
+  @Post('refresh')
+  @ApiOperation({ summary: '刷新用户端访问令牌' })
+  refresh(@Body() dto: CustomerRefreshTokenDto) {
+    return this.customerAuth.refresh(dto.refreshToken)
+  }
+
+  @Post('logout')
+  @ApiOperation({ summary: '撤销用户端刷新令牌' })
+  logout(@Body() dto: CustomerLogoutDto) {
+    return this.customerAuth.logout(dto.refreshToken)
   }
 
   @Get('profile')
@@ -42,6 +61,6 @@ export class CustomerAuthController {
   @ApiBearerAuth()
   @ApiOperation({ summary: '获取普通用户信息' })
   getProfile(@Request() req: any) {
-    return this.customerAuth.getProfile(req.user.id);
+    return this.customerAuth.getProfile(req.user.id)
   }
 }

@@ -30,8 +30,11 @@ const { loading, filteredData, query, fetchRows, resetQuery } = useReadonlyTable
       <template #search>
         <el-form :model="query" inline>
           <el-form-item :label="`${t('monitor.logs.operation.username')}：`">
-            <el-input v-model="query.username" :placeholder="t('monitor.logs.operation.usernamePlaceholder')"
-              clearable />
+            <el-input
+              v-model="query.username"
+              :placeholder="t('monitor.logs.operation.usernamePlaceholder')"
+              clearable
+            />
           </el-form-item>
           <el-form-item :label="`${t('monitor.logs.operation.module')}：`">
             <el-input v-model="query.module" :placeholder="t('monitor.logs.operation.modulePlaceholder')" clearable />
@@ -47,7 +50,12 @@ const { loading, filteredData, query, fetchRows, resetQuery } = useReadonlyTable
         </el-form>
       </template>
 
-      <el-table v-loading="loading" :data="filteredData" border stripe>
+      <el-table
+        v-loading="loading"
+        :data="filteredData"
+        border
+        stripe
+      >
         <el-table-column prop="username" :label="t('monitor.logs.operation.username')" min-width="120" />
         <el-table-column prop="module" :label="t('monitor.logs.operation.module')" min-width="120" />
         <el-table-column prop="action" :label="t('monitor.logs.operation.action')" min-width="120" />

@@ -21,235 +21,32 @@ const {
 
 <template>
   <el-scrollbar wrap-class="sidebar-menu__scrollbar-wrapper" class="sidebar-menu-scrollbar">
-    <el-menu ref="menuRef" unique-opened mode="vertical" popper-class="sidebar-menu-popper"
-      class="sidebar-menu outer-most select-none" :default-active="activeMenu" :collapse="props.collapse"
-      :collapse-transition="false" background-color="#001529" text-color="rgb(254 254 254 / 65%)"
-      active-text-color="#fff" @open="handleOpen" @close="handleClose">
-      <SidebarItem v-for="routeItem in filteredRoutes" :key="routeItem.path" :route="routeItem"
-        :base-path="routeItem.path" :collapse="props.collapse" />
+    <el-menu
+      ref="menuRef"
+      unique-opened
+      mode="vertical"
+      popper-class="admin-sidebar-menu-popper"
+      class="sidebar-menu outer-most select-none"
+      :default-active="activeMenu"
+      :collapse="props.collapse"
+      :collapse-transition="false"
+      background-color="#001529"
+      text-color="rgb(254 254 254 / 65%)"
+      active-text-color="#fff"
+      @open="handleOpen"
+      @close="handleClose"
+    >
+      <SidebarItem
+        v-for="routeItem in filteredRoutes"
+        :key="routeItem.path"
+        :route="routeItem"
+        :base-path="routeItem.path"
+        :collapse="props.collapse"
+      />
     </el-menu>
   </el-scrollbar>
 </template>
 
-<style scoped lang="scss">
-.sidebar-menu-scrollbar {
-  height: calc(100% - 90px);
-  overflow-x: hidden;
+<style scoped lang="scss" src="./SidebarMenu.scss"></style>
 
-  :deep(.el-scrollbar__bar.is-vertical) {
-    right: 0;
-  }
-
-  :deep(.el-scrollbar__bar.is-horizontal) {
-    display: none;
-  }
-}
-
-:deep(.sidebar-menu__scrollbar-wrapper) {
-  overflow-x: hidden !important;
-}
-
-.sidebar-menu {
-  width: 100%;
-  height: 100%;
-  background-color: transparent !important;
-  border: none;
-
-  :deep(.el-sub-menu) {
-    overflow: hidden;
-  }
-
-  :deep(.el-menu-item),
-  :deep(.el-sub-menu__title) {
-    height: 50px;
-    color: $sidebar-text;
-    background-color: transparent !important;
-
-    &:hover {
-      color: $white-color !important;
-    }
-
-    .menu-icon,
-    .menu-title {
-      height: 50px;
-      line-height: 50px;
-    }
-  }
-
-  :deep(.submenu-title-noDropdown) {
-    display: flex;
-    align-items: center;
-    width: 100%;
-
-    &:hover {
-      background-color: transparent;
-    }
-  }
-
-  :deep(.is-active > .el-sub-menu__title),
-  :deep(.is-active.submenu-title-noDropdown) {
-    color: $sidebar-active-text !important;
-  }
-
-  :deep(.is-active) {
-    color: $sidebar-active-text !important;
-    transition: color 0.3s;
-  }
-
-  :deep(.el-sub-menu.is-opened > .el-sub-menu__title .el-sub-menu__icon-arrow) {
-    transform: rotate(90deg);
-  }
-
-  :deep(.el-menu--inline) {
-    padding: 10px 0 12px;
-    background: #0f0303;
-  }
-
-  :deep(.el-menu--inline .el-sub-menu__title),
-  :deep(.el-sub-menu .el-menu-item) {
-    min-width: $sidebar-width !important;
-    font-size: 14px;
-    background-color: #0f0303 !important;
-  }
-
-  :deep(.el-menu--inline .el-menu-item),
-  :deep(.el-menu--inline .el-sub-menu__title) {
-    height: 48px;
-    color: rgb(254 254 254 / 78%);
-    background: #0f0303 !important;
-
-    &:hover {
-      color: $white-color;
-      background: #160606 !important;
-    }
-  }
-
-  :deep(.el-menu-item) {
-    position: relative;
-    z-index: 0;
-    overflow: hidden;
-    background: transparent;
-
-    >* {
-      position: relative;
-      z-index: 1;
-    }
-
-    &:hover {
-      color: $white-color;
-      background: transparent;
-    }
-  }
-
-  :deep(.el-menu-item.is-active.nest-menu > *),
-  :deep(.is-active.submenu-title-noDropdown.outer-most > *),
-  :deep(.is-active.outer-most > .el-sub-menu__title > .menu-icon),
-  :deep(.is-active.outer-most > .el-sub-menu__title > .menu-title) {
-    z-index: 1;
-    color: $white-color;
-  }
-
-  :deep(.el-menu-item.is-active.nest-menu::before),
-  :deep(.is-active.submenu-title-noDropdown.outer-most::before),
-  :deep(.el-menu-item.is-active::before) {
-    position: absolute;
-    inset: 0 8px;
-    margin: 4px 0;
-    content: '';
-    background: var(--el-color-primary) !important;
-    border-radius: 3px;
-  }
-
-  :deep(.el-menu--inline .el-menu-item.is-active) {
-    margin: 0;
-    font-weight: 600;
-    color: $white-color;
-    background: transparent !important;
-  }
-
-  :deep(.el-menu--inline .el-menu-item.is-active:hover) {
-    color: $white-color;
-    background: transparent !important;
-  }
-
-  &.el-menu--collapse {
-    width: $sidebar-collapsed-width !important;
-    min-width: $sidebar-collapsed-width !important;
-
-    :deep(.el-menu-item),
-    :deep(.el-sub-menu__title) {
-      width: $sidebar-collapsed-width !important;
-      min-width: $sidebar-collapsed-width !important;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 0 !important;
-    }
-
-    :deep(.is-active.outer-most.el-sub-menu > .el-sub-menu__title::before) {
-      position: absolute;
-      inset: 0 auto auto 0;
-      width: 2px;
-      height: 100%;
-      margin: 0;
-      content: '';
-      background-color: var(--el-color-primary) !important;
-      border-radius: 0;
-      transition: all var(--app-transition-duration) ease-in-out;
-      transform: translateY(0);
-    }
-
-    :deep(.el-menu-item::before) {
-      position: absolute;
-      top: 50%;
-      left: 0;
-      width: 3px;
-      height: 0;
-      content: '';
-      transform: translateY(-50%);
-    }
-
-    :deep(.el-sub-menu__title) {
-      font-size: 14px;
-      background-color: transparent !important;
-    }
-  }
-
-  :deep(.outer-most .el-collapse-transition-leave-active),
-  :deep(.outer-most .el-collapse-transition-enter-active) {
-    transition: 0.2s all ease-in-out !important;
-  }
-
-  :deep(.horizontal-collapse-transition) {
-    transition: var(--app-transition-duration) all !important;
-  }
-}
-
-:global(.sidebar-menu-popper) {
-  overflow: visible;
-  background: #0f0303 !important;
-}
-
-:global(.sidebar-menu-popper .el-menu) {
-  background: #0f0303 !important;
-}
-
-:global(.sidebar-menu-popper .el-menu-item),
-:global(.sidebar-menu-popper .el-sub-menu__title) {
-  color: rgb(254 254 254 / 78%);
-  background: #0f0303 !important;
-
-  &:hover {
-    color: $white-color;
-    background: #160606 !important;
-  }
-}
-
-:global(.sidebar-menu-popper .el-menu-item.is-active) {
-  color: $white-color !important;
-}
-
-:global(.sidebar-menu-popper .el-sub-menu.is-opened > .el-sub-menu__title .el-sub-menu__icon-arrow) {
-  transform: rotate(90deg);
-}
-</style>
+<style lang="scss" src="./SidebarMenu.popper.scss"></style>

@@ -8,7 +8,7 @@
 import type { UserInfo } from '@/entities/user'
 import { IconDelete as IconEpDelete } from '@iconify-prerendered/vue-ep'
 import { ConfigDataTable, CrudActionColumn } from '@/shared/config-crud'
-import { Permissions } from '@/shared/config/roles'
+import { Permissions } from '@/shared/config/access'
 import { createUserTableColumns } from '../config/fields'
 
 defineOptions({ name: 'UserTable' })
@@ -36,8 +36,14 @@ const columns = computed(() => createUserTableColumns(t))
       @edit="$emit('edit', $event as UserInfo)"
     >
       <template #delete="{ row }">
-        <el-button v-auth="Permissions.USER_DELETE" type="danger" link :icon="IconEpDelete" :disabled="isSelf(row)"
-          @click="$emit('delete', row)">
+        <el-button
+          v-auth="Permissions.USER_DELETE"
+          type="danger"
+          link
+          :icon="IconEpDelete"
+          :disabled="isSelf(row)"
+          @click="$emit('delete', row)"
+        >
           {{ t('common.delete') }}
         </el-button>
       </template>

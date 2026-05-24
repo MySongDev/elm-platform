@@ -1,4 +1,4 @@
-import type { ButtonPermissionRecord, PagePermissionRecord } from '../model/admin-records';
+import type { ButtonPermissionRecord, PagePermissionRecord } from '../model/admin-records'
 
 export const buttonPermissions: ButtonPermissionRecord[] = [
   { code: 'permission:page:view', name: '页面权限查看', group: '权限管理' },
@@ -34,7 +34,7 @@ export const buttonPermissions: ButtonPermissionRecord[] = [
   { code: 'log:login:view', name: '登录日志查看', group: '系统监控' },
   { code: 'log:operation:view', name: '操作日志查看', group: '系统监控' },
   { code: 'log:system:view', name: '系统日志查看', group: '系统监控' },
-];
+]
 
 export const pagePermissions: PagePermissionRecord[] = [
   { path: '/dashboard/index', name: 'DashboardView', title: '仪表盘', roles: ['admin', 'user'], auths: [] },
@@ -56,4 +56,4 @@ export const pagePermissions: PagePermissionRecord[] = [
   { path: '/nested/menu1/menu1-2/menu1-2-2', name: 'NestedMenu122View', title: '菜单1-2-2', roles: ['admin', 'user'], auths: [] },
   { path: '/nested/menu1/menu1-3', name: 'NestedMenu13View', title: '菜单1-3', roles: ['admin', 'user'], auths: [] },
   { path: '/nested/menu2', name: 'NestedMenu2View', title: '菜单2', roles: ['admin', 'user'], auths: [] },
-];
+]

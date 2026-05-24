@@ -1,4 +1,3 @@
-import { createCity, createFood, createRestaurant, nowIso } from '../factories/elm.factories';
 import type {
   AddressRecord,
   CityRecord,
@@ -7,7 +6,8 @@ import type {
   MenuCategorySeed,
   OrderRecord,
   RestaurantRecord,
-} from '../types/elm.types';
+} from '../types/elm.types'
+import { createCity, createFood, createRestaurant, nowIso } from '../factories/elm.factories'
 
 export const seedCities: CityRecord[] = [
   createCity(1, '上海', 'SH', '021', 31.23037, 121.473701, 'shanghai', 1),
@@ -16,7 +16,7 @@ export const seedCities: CityRecord[] = [
   createCity(4, '深圳', 'SZ', '0755', 22.543099, 114.057868, 'shenzhen', 4),
   createCity(5, '广州', 'GZ', '020', 23.12911, 113.264385, 'guangzhou', 5),
   createCity(6, '南京', 'NJ', '025', 32.060255, 118.796877, 'nanjing', 6),
-];
+]
 
 export const seedUsers: ElmUserRecord[] = [
   {
@@ -33,7 +33,7 @@ export const seedUsers: ElmUserRecord[] = [
     registe_time: '2026-05-17 12:00',
     is_active: 1,
   },
-];
+]
 
 export const seedRestaurants: RestaurantRecord[] = [
   createRestaurant({
@@ -81,7 +81,7 @@ export const seedRestaurants: RestaurantRecord[] = [
     order_lead_time: '35分钟',
     description: '低脂轻食和鲜榨果汁',
   }),
-];
+]
 
 export const seedMenuCategories: MenuCategorySeed[] = [
   { id: 1, restaurant_id: 1, name: '热销榜', description: '大家喜欢吃，才叫真好吃。', type: 1, icon_url: '', is_selected: true },
@@ -89,7 +89,7 @@ export const seedMenuCategories: MenuCategorySeed[] = [
   { id: 3, restaurant_id: 2, name: '人气套餐', description: '多人套餐更划算', type: 1, icon_url: '', is_selected: true },
   { id: 4, restaurant_id: 2, name: '小食饮品', description: '炸物和饮品', type: 2, icon_url: '', is_selected: false },
   { id: 5, restaurant_id: 3, name: '轻食沙拉', description: '高蛋白低负担', type: 1, icon_url: '', is_selected: true },
-];
+]
 
 export const seedFoods: FoodRecord[] = [
   createFood(1, 1, 1, '玫瑰草莓蛋糕', 68, 'food/15c545e4a705.png', '玫瑰香气与草莓夹心'),
@@ -97,7 +97,7 @@ export const seedFoods: FoodRecord[] = [
   createFood(2, 3, 3, '经典香辣鸡腿堡套餐', 39, 'food/15c545e4a705.png', '汉堡、薯条、可乐'),
   createFood(2, 4, 4, '黄金鸡块', 18, 'food/15c545e4a705.png', '外脆里嫩小食'),
   createFood(3, 5, 5, '牛油果鸡胸沙拉', 42, 'food/15c545e4a705.png', '高蛋白轻食'),
-];
+]
 
 export const seedAddresses: AddressRecord[] = [
   {
@@ -114,7 +114,7 @@ export const seedAddresses: AddressRecord[] = [
     tag_type: 2,
     poi_type: 0,
   },
-];
+]
 
 export const seedOrders: OrderRecord[] = [
   {
@@ -127,4 +127,4 @@ export const seedOrders: OrderRecord[] = [
     status: 'paid',
     createdAt: nowIso(),
   },
-];
+]

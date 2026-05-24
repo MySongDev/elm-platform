@@ -10,7 +10,7 @@ export const getLegacyUserInfo = () => get(userEndpoints.info, { user_id: getSto
 
 /** 获取当前手机号用户信息 */
 export function getCustomerProfile() {
-  return get(authEndpoints.customerProfile)
+  return get(authEndpoints.customerProfile).then(res => (res?.data && res.code === 200 ? res.data : res))
 }
 
 /** 获取用户信息 */
@@ -22,7 +22,13 @@ export function changePassword(username, oldpassWord, newpassword, confirmpasswo
 }
 
 /** 退出登录 */
-export const signout = () => get(authEndpoints.signout)
+export function signout() {
+  return post(
+    authEndpoints.customerLogout,
+    { refreshToken: getStore('customer_refresh_token') },
+    { meta: { skipAuthRefresh: true } },
+  )
+}
 
 /** 上传用户头像 */
 export function uploadUserAvatar(userId, file) {
