@@ -54,7 +54,6 @@ async function pay() {
   try {
     isPaying.value = true
     const { payUrl } = await createAlipayWapPayment({
-      userId: currentUserId.value,
       shopId: draft.value.shopId,
       shopName: draft.value.shopName,
       deliveryFee: draft.value.deliveryFee,

@@ -21,7 +21,10 @@ async function mountOrderCard(props, listeners = {}) {
   const root = document.createElement('div')
   document.body.appendChild(root)
 
-  const app = createApp(OrderCard, { ...props, ...listeners })
+  const app = createApp(OrderCard, {
+    ...props,
+    ...listeners,
+  })
   app.mount(root)
   await nextTick()
 

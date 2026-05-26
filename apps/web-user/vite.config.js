@@ -13,21 +13,22 @@ import vueDevTools from 'vite-plugin-vue-devtools'
 export default defineConfig(({ command, mode }) => {
   const env = loadEnv(mode, cwd(), '')
   const useMock = command === 'serve' && (mode === 'mock' || env.VITE_USE_MOCK === 'true')
+  const localApiTarget = 'http://127.0.0.1:3000'
 
   return {
     server: {
       proxy: {
         '/api': {
-          target: 'http://localhost:3000',
+          target: localApiTarget,
           changeOrigin: true,
         },
         '/ele-api': {
-          target: 'http://localhost:3000',
+          target: localApiTarget,
           changeOrigin: true,
           rewrite: path => path.replace(/^\/ele-api/, '/api'),
         },
         '/pay-api': {
-          target: 'http://localhost:3000/api',
+          target: `${localApiTarget}/api`,
           changeOrigin: true,
           rewrite: path => path.replace(/^\/pay-api/, ''),
         },

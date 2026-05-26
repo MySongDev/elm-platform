@@ -40,6 +40,5 @@ export const adminEndpoints = {
     foods: '/admin/commerce/foods',
     foodDetail: (id: number) => `/admin/commerce/foods/${id}`,
     orders: '/admin/commerce/orders',
-    orderDetail: (id: number) => `/admin/commerce/orders/${id}`,
   },
 } as const

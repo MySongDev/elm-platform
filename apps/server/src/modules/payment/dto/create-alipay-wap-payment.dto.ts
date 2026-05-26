@@ -11,6 +11,14 @@ import {
 export class PaymentCartItemDto {
   @IsOptional()
   @IsString()
+  shopId?: string
+
+  @IsOptional()
+  @IsString()
+  shopName?: string
+
+  @IsOptional()
+  @IsString()
   itemId?: string
 
   @IsOptional()
@@ -41,9 +49,6 @@ export class PaymentCartItemDto {
 }
 
 export class CreateAlipayWapPaymentDto {
-  @IsString()
-  userId!: string
-
   @IsOptional()
   @IsString()
   shopId?: string

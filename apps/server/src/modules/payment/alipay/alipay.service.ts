@@ -1,5 +1,5 @@
-import type { ConfigService } from '@nestjs/config'
 import { Injectable, InternalServerErrorException } from '@nestjs/common'
+import { ConfigService } from '@nestjs/config'
 import AlipaySdk from 'alipay-sdk'
 
 interface AlipayConfig {
@@ -42,7 +42,7 @@ export class AlipayService {
         total_amount: order.payableAmount.toFixed(2),
         subject: order.subject,
         product_code: 'QUICK_WAP_WAY',
-        quit_url: `${config.returnUrl.replace('/payment/result', '/payment')}?orderNo=${order.orderNo}`,
+        quit_url: `${config.returnUrl.replace('/payment/result', '/order')}?orderNo=${order.orderNo}`,
       },
     })
   }

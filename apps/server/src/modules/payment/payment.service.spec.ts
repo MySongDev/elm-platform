@@ -15,7 +15,14 @@ function createOrder(overrides: Record<string, unknown> = {}) {
     goodsAmount: { toNumber: () => 24 },
     deliveryFee: { toNumber: () => 5 },
     payableAmount: { toNumber: () => 29 },
-    cartItems: [{ itemId: '1001', skuId: '1001', title: '商品', qty: 2, unitPrice: 12, totalPrice: 24 }],
+    cartItems: [{
+      itemId: '1001',
+      skuId: '1001',
+      title: '商品',
+      qty: 2,
+      unitPrice: 12,
+      totalPrice: 24,
+    }],
     notifyPayload: null,
     queryPayload: null,
     buyerPayAmount: null,
@@ -40,13 +47,22 @@ function createService() {
   const alipay = {
     hasConfig: jest.fn().mockReturnValue(true),
     createWapPayUrl: jest.fn().mockReturnValue('https://openapi-sandbox.dl.alipaydev.com/gateway.do?method=alipay.trade.wap.pay'),
-    queryTrade: jest.fn().mockResolvedValue({ trade_status: 'TRADE_SUCCESS', trade_no: '2026052322001400000500000001', buyer_pay_amount: '29.00' }),
+    queryTrade: jest.fn().mockResolvedValue({
+      trade_status: 'TRADE_SUCCESS',
+      trade_no: '2026052322001400000500000001',
+      buyer_pay_amount: '29.00',
+    }),
     verifyNotify: jest.fn().mockReturnValue(true),
     getAppId: jest.fn().mockReturnValue('app-id'),
     getSellerId: jest.fn().mockReturnValue('seller-id'),
   } as any
 
-  return { service: new PaymentService(prisma, alipay), prisma, alipay, order }
+  return {
+    service: new PaymentService(prisma, alipay),
+    prisma,
+    alipay,
+    order,
+  }
 }
 
 describe('paymentService', () => {
@@ -58,7 +74,13 @@ describe('paymentService', () => {
       shopId: '101',
       shopName: '示例商家',
       deliveryFee: 5,
-      cartItems: [{ itemId: '1001', skuId: '1001', title: '商品', qty: 2, unitPrice: 12 }],
+      cartItems: [{
+        itemId: '1001',
+        skuId: '1001',
+        title: '商品',
+        qty: 2,
+        unitPrice: 12,
+      }],
     })
 
     expect(prisma.paymentOrder.create).toHaveBeenCalledWith({
@@ -82,7 +104,11 @@ describe('paymentService', () => {
   it('rejects missing users', async () => {
     const { service } = createService()
 
-    await expect(service.createAlipayWapPayment({ userId: '', cartItems: [], deliveryFee: 0 } as any))
+    await expect(service.createAlipayWapPayment({
+      userId: '',
+      cartItems: [],
+      deliveryFee: 0,
+    } as any))
       .rejects
       .toThrow(UnauthorizedException)
   })
@@ -90,7 +116,11 @@ describe('paymentService', () => {
   it('rejects empty carts', async () => {
     const { service } = createService()
 
-    await expect(service.createAlipayWapPayment({ userId: '1', cartItems: [], deliveryFee: 0 }))
+    await expect(service.createAlipayWapPayment({
+      userId: '1',
+      cartItems: [],
+      deliveryFee: 0,
+    }))
       .rejects
       .toThrow(BadRequestException)
   })

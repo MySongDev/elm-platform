@@ -24,7 +24,7 @@ export function useUserOrders(userIdSource, options = {}) {
     error.value = ''
 
     try {
-      const result = await getUserPaymentOrders(userId, options.limit || 20)
+      const result = await getUserPaymentOrders(options.limit || 20)
       if (currentRequest !== requestSeq)
         return
 

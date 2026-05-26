@@ -1,5 +1,3 @@
-import type { PrismaService } from '../../prisma/prisma.service'
-import type { AlipayService } from './alipay/alipay.service'
 import type { CreateAlipayWapPaymentDto, PaymentCartItemDto } from './dto/create-alipay-wap-payment.dto'
 import type { ResumeAlipayWapPaymentDto } from './dto/resume-alipay-wap-payment.dto'
 import {
@@ -8,10 +6,20 @@ import {
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common'
+import { PrismaService } from '../../prisma/prisma.service'
+import { AlipayService } from './alipay/alipay.service'
 
 type PaymentStatus = 'PENDING' | 'PAID' | 'CLOSED'
 
 type PaymentOrderRecord = Record<string, any>
+
+interface CreateAlipayWapPaymentPayload extends CreateAlipayWapPaymentDto {
+  userId: string
+}
+
+interface ResumeAlipayWapPaymentPayload extends ResumeAlipayWapPaymentDto {
+  userId: string
+}
 
 function toPrice(value: unknown) {
   const decimalLike = value as { toNumber?: () => number }
@@ -41,7 +49,7 @@ export class PaymentService {
     private readonly alipay: AlipayService,
   ) {}
 
-  async createAlipayWapPayment(payload: CreateAlipayWapPaymentDto) {
+  async createAlipayWapPayment(payload: CreateAlipayWapPaymentPayload) {
     const summary = this.buildOrderPayload(payload)
 
     if (!summary.userId)
@@ -128,7 +136,7 @@ export class PaymentService {
     return orders.map((order: PaymentOrderRecord) => this.toOrderSummary(order))
   }
 
-  async resumeAlipayWapPayment(payload: ResumeAlipayWapPaymentDto) {
+  async resumeAlipayWapPayment(payload: ResumeAlipayWapPaymentPayload) {
     let order = await this.findOrder(payload.orderNo)
     this.ensureOrderOwner(order, payload.userId)
 
@@ -191,7 +199,7 @@ export class PaymentService {
     return true
   }
 
-  private buildOrderPayload(payload: CreateAlipayWapPaymentDto) {
+  private buildOrderPayload(payload: CreateAlipayWapPaymentPayload) {
     const cartItems = (payload.cartItems || [])
       .map(item => this.normalizeCartItem(item))
       .filter(item => item.itemId && item.qty > 0 && item.unitPrice > 0)

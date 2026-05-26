@@ -23,13 +23,11 @@ onMounted(fetchRows)
 </script>
 
 <template>
-  <div class="main">
-    <AdminTablePage :title="t('commerce.order.title')" :loading="loading" @refresh="fetchRows">
-      <template #search>
-        <AdminSearchForm v-model:model="query" :fields="searchFields" @reset="resetQuery" />
-      </template>
+  <AdminTablePage :title="t('commerce.order.title')" :loading="loading" @refresh="fetchRows">
+    <template #search>
+      <AdminSearchForm v-model:model="query" :fields="searchFields" @reset="resetQuery" />
+    </template>
 
-      <OrderTable :loading="loading" :data="filteredData" />
-    </AdminTablePage>
-  </div>
+    <OrderTable :loading="loading" :data="filteredData" />
+  </AdminTablePage>
 </template>

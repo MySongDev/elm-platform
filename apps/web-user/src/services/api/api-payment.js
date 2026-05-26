@@ -105,10 +105,9 @@ export async function getAlipayPaymentStatus(orderNo, refresh = true) {
   return unwrapResponse(response)
 }
 
-export async function getUserPaymentOrders(userId, limit = 20) {
+export async function getUserPaymentOrders(limit = 20) {
   const response = await paymentRequest.get(paymentEndpoints.orders, {
     params: {
-      userId,
       limit,
     },
   })

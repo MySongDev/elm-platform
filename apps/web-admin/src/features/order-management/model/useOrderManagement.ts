@@ -19,7 +19,10 @@ export function getOrderStatusType(status: OrderItem['status']) {
 
 export function useOrderManagement() {
   const table = useReadonlyTable<OrderItem, OrderQuery>({
-    queryDefaults: { orderNo: '', status: '' },
+    queryDefaults: {
+      orderNo: '',
+      status: '',
+    },
     fetchApi: () => getCommerceOrders(),
     filter: (data, query) => data.filter((item) => {
       const orderNoMatched = !query.orderNo || item.orderNo.includes(query.orderNo)
