@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { TabItem } from '@/entities/tab'
+import { IconClose as IconEpClose } from '@iconify-prerendered/vue-ep'
 
 defineOptions({ name: 'TabBarFromScratchItem' })
 
@@ -7,11 +8,13 @@ defineProps<{
   tab: TabItem
   title: string
   active: boolean
+  closable: boolean
   itemClass: Record<string, boolean>
 }>()
 
 const emit = defineEmits<{
   click: [fullPath: string]
+  close: [fullPath: string]
 }>()
 </script>
 
@@ -29,6 +32,16 @@ const emit = defineEmits<{
       <SvgIcon :icon-name="tab.icon" />
     </el-icon>
     <span class="tab-title">{{ title }}</span>
+    <el-icon
+      v-if="closable"
+      class="tab-close"
+      role="button"
+      tabindex="-1"
+      aria-label="关闭页签"
+      @click.stop="emit('close', tab.fullPath)"
+    >
+      <IconEpClose />
+    </el-icon>
   </button>
 </template>
 
@@ -91,5 +104,25 @@ const emit = defineEmits<{
 .tab-icon {
   flex-shrink: 0;
   font-size: 14px;
+}
+
+.tab-close {
+  flex-shrink: 0;
+  padding: 1px;
+  margin-left: 2px;
+  font-size: 15px;
+  border-radius: 50%;
+  transition:
+    color 0.2s,
+    background 0.2s;
+}
+
+.tab-close:hover {
+  color: #fff;
+  background: var(--app-color-primary);
+}
+
+.tab-close :deep(svg path) {
+  fill: currentcolor;
 }
 </style>

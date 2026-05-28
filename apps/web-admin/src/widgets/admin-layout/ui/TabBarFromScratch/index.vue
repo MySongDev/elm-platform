@@ -1,10 +1,15 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { useTabsStore } from '@/entities/tab'
+import { isTabClosable, useTabsStore } from '@/entities/tab'
 import { transformI18n } from '@/shared/i18n'
 import TabBarItem from './TabBarItem.vue'
-import { getTabItemClass, isActiveTab, shouldNavigateTab } from './tabPresentation'
+import {
+  getTabItemClass,
+  isActiveTab,
+  shouldNavigateTab,
+  shouldShowCloseButton,
+} from './tabPresentation'
 
 defineOptions({ name: 'TabBarFromScratch' })
 
@@ -19,6 +24,7 @@ const tabViews = computed(() =>
     return {
       tab,
       active,
+      closable: shouldShowCloseButton(isTabClosable(tab), tabsStore.tabs.length),
       title: tabsStore.getTitle(tab, transformI18n),
       itemClass: getTabItemClass({
         active,
@@ -34,6 +40,12 @@ function handleTabClick(fullPath: string) {
 
   router.push(fullPath)
 }
+
+function handleCloseTab(fullPath: string) {
+  const next = tabsStore.closeTab(fullPath)
+  if (next && shouldNavigateTab(next, route.fullPath))
+    router.push(next)
+}
 </script>
 
 <template>
@@ -45,8 +57,10 @@ function handleTabClick(fullPath: string) {
         :tab="item.tab"
         :title="item.title"
         :active="item.active"
+        :closable="item.closable"
         :item-class="item.itemClass"
         @click="handleTabClick"
+        @close="handleCloseTab"
       />
     </div>
   </div>
@@ -74,5 +88,4 @@ function handleTabClick(fullPath: string) {
   overflow: hidden;
   white-space: nowrap;
 }
-
 </style>
