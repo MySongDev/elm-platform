@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { getTabItemClass, isActiveTab } from '../tabPresentation'
+import { getTabItemClass, isActiveTab, shouldNavigateTab } from '../tabPresentation'
 
 describe('TabBarFromScratch presentation', () => {
   it('marks a tab active only when its fullPath matches the current route', () => {
@@ -18,5 +18,10 @@ describe('TabBarFromScratch presentation', () => {
       'is-active': false,
       'is-fixed': false,
     })
+  })
+
+  it('navigates only when the target tab is not already active', () => {
+    expect(shouldNavigateTab('/system/user', '/dashboard')).toBe(true)
+    expect(shouldNavigateTab('/dashboard', '/dashboard')).toBe(false)
   })
 })
