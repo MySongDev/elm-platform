@@ -3,9 +3,11 @@ import { getTabCommands } from '../tabCommands'
 
 describe('tabBarFromScratch commands', () => {
   it('only shows reload when there is a single tab', () => {
-    const commands = getTabCommands({
+    const commands = getTabCommands('dropdown', {
       currentFixed: false,
       currentClosable: false,
+      targetFixed: false,
+      targetClosable: false,
       firstNonFixed: true,
       lastNonFixed: true,
       onlyOneTab: true,
@@ -16,9 +18,11 @@ describe('tabBarFromScratch commands', () => {
   })
 
   it('disables close-current when the current tab is fixed or not closable', () => {
-    const fixedCurrent = getTabCommands({
+    const fixedCurrent = getTabCommands('dropdown', {
       currentFixed: true,
       currentClosable: false,
+      targetFixed: true,
+      targetClosable: false,
       firstNonFixed: true,
       lastNonFixed: false,
       onlyOneTab: false,
@@ -29,9 +33,11 @@ describe('tabBarFromScratch commands', () => {
   })
 
   it('disables close-others when there is only one closable tab', () => {
-    const closeOthers = getTabCommands({
+    const closeOthers = getTabCommands('dropdown', {
       currentFixed: false,
       currentClosable: true,
+      targetFixed: false,
+      targetClosable: true,
       firstNonFixed: true,
       lastNonFixed: true,
       onlyOneTab: false,
@@ -39,5 +45,20 @@ describe('tabBarFromScratch commands', () => {
     }).find(item => item.command === 'close-others')
 
     expect(closeOthers?.disabled).toBe(true)
+  })
+
+  it('hides close-left in context menu when there is no closable tab before target', () => {
+    const commands = getTabCommands('contextmenu', {
+      currentFixed: false,
+      currentClosable: true,
+      targetFixed: false,
+      targetClosable: true,
+      firstNonFixed: true,
+      lastNonFixed: false,
+      onlyOneTab: false,
+      closableCount: 2,
+    })
+
+    expect(commands.map(item => item.command)).not.toContain('close-left')
   })
 })

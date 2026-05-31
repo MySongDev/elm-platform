@@ -22,9 +22,11 @@ const emit = defineEmits<{
 const { t } = useI18n()
 
 const commands = computed(() =>
-  getTabCommands({
+  getTabCommands('dropdown', {
     currentFixed: props.currentFixed,
     currentClosable: props.currentClosable,
+    targetFixed: props.currentFixed,
+    targetClosable: props.currentClosable,
     firstNonFixed: props.firstNonFixed,
     lastNonFixed: props.lastNonFixed,
     onlyOneTab: props.onlyOneTab,

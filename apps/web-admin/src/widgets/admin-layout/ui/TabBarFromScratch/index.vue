@@ -8,12 +8,14 @@ import { useRoute, useRouter } from 'vue-router'
 import { isTabClosable, useTabsStore } from '@/entities/tab'
 import { transformI18n } from '@/shared/i18n'
 import TabBarActions from './TabBarActions.vue'
+import TabBarContextMenu from './TabBarContextMenu.vue'
 import TabBarItem from './TabBarItem.vue'
 import {
   getTabItemClass,
   isActiveTab,
   shouldShowCloseButton,
 } from './tabPresentation'
+import { useMenuManager } from './useMenu'
 import { useScrollManager } from './useScroll'
 import { useTabActions } from './useTabActions'
 
@@ -74,22 +76,38 @@ const {
 } = useScrollManager()
 
 const {
+  contextMenu,
+  targetTab,
+  isFirstNonFixed,
+  isLastNonFixed,
+  openContextMenu,
+  closeContextMenu,
+  setupMenuListeners,
+  cleanupMenuListeners,
+} = useMenuManager(tabsStore)
+
+const {
   handleTabClick,
   handleCloseTab,
   handleDropdownCommand,
+  handleContextMenuCommand,
 } = useTabActions({
   route,
   router,
   tabsStore,
+  contextMenu,
+  closeContextMenu,
 })
 
 onMounted(() => {
   setupScrollListeners(scrollContainer, tabTrack)
+  setupMenuListeners()
   scrollActiveIntoView()
 })
 
 onUnmounted(() => {
   cleanupScrollListeners()
+  cleanupMenuListeners()
 })
 
 watch(() => tabsStore.tabs.length, () => scrollActiveIntoView())
@@ -118,7 +136,12 @@ watch(
     </button>
 
     <div ref="scrollContainer" class="tab-scroll-container" @wheel="handleWheel">
-      <div ref="tabTrack" class="tab-track" role="tablist" :aria-label="t('tabs.openedPages')">
+      <div
+        ref="tabTrack"
+        class="tab-track"
+        role="tablist"
+        :aria-label="t('tabs.openedPages')"
+      >
         <TabBarItem
           v-for="item in tabViews"
           :key="item.tab.fullPath"
@@ -129,6 +152,7 @@ watch(
           :item-class="item.itemClass"
           @click="handleTabClick"
           @close="handleCloseTab"
+          @contextmenu="openContextMenu"
         />
       </div>
     </div>
@@ -155,6 +179,19 @@ watch(
       :only-one-tab="isOnlyOneTab"
       :closable-count="closableCount"
       @command="handleDropdownCommand"
+    />
+
+    <TabBarContextMenu
+      :visible="contextMenu.visible"
+      :x="contextMenu.x"
+      :y="contextMenu.y"
+      :target-tab="targetTab"
+      :target-closable="targetTab ? isTabClosable(targetTab) : false"
+      :first-non-fixed="isFirstNonFixed"
+      :last-non-fixed="isLastNonFixed"
+      :only-one-tab="isOnlyOneTab"
+      :closable-count="closableCount"
+      @command="handleContextMenuCommand"
     />
   </div>
 </template>

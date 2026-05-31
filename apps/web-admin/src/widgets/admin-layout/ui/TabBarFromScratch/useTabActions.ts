@@ -10,10 +10,16 @@ interface UseTabActionsOptions {
   route: RouteLocationNormalizedLoaded
   router: Router
   tabsStore: TabsStore
+  contextMenu?: {
+    visible: boolean
+    targetPath: string
+  }
+  closeContextMenu?: () => void
 }
 
 export function useTabActions(options: UseTabActionsOptions) {
   const { route, router, tabsStore } = options
+  const closeContextMenu = options.closeContextMenu ?? (() => {})
 
   function pushWhenNeeded(fullPath: string | null) {
     if (fullPath && shouldNavigateTab(fullPath, route.fullPath))
@@ -37,31 +43,37 @@ export function useTabActions(options: UseTabActionsOptions) {
 
   function reloadTab(fullPath: string) {
     tabsStore.reloadTab(fullPath)
+    closeContextMenu()
   }
 
   function closeTab(fullPath: string) {
     const next = tabsStore.closeTab(fullPath)
     pushWhenNeeded(next)
+    closeContextMenu()
   }
 
   function closeOtherTabs(fullPath: string) {
     tabsStore.closeOtherTabs(fullPath)
     pushWhenNeeded(fullPath)
+    closeContextMenu()
   }
 
   function closeLeftTabs(fullPath: string) {
     tabsStore.closeLeftTabs(fullPath)
     pushFallbackIfActiveClosed(fullPath)
+    closeContextMenu()
   }
 
   function closeRightTabs(fullPath: string) {
     tabsStore.closeRightTabs(fullPath)
     pushFallbackIfActiveClosed(fullPath)
+    closeContextMenu()
   }
 
   function closeAllTabs() {
     const next = tabsStore.closeAllTabs()
     pushWhenNeeded(next)
+    closeContextMenu()
   }
 
   function runCommand(command: TabCommand, fullPath: string) {
@@ -91,9 +103,14 @@ export function useTabActions(options: UseTabActionsOptions) {
     runCommand(command, route.fullPath)
   }
 
+  function handleContextMenuCommand(command: TabCommand) {
+    runCommand(command, options.contextMenu?.targetPath ?? route.fullPath)
+  }
+
   return {
     handleTabClick,
     handleCloseTab,
     handleDropdownCommand,
+    handleContextMenuCommand,
   }
 }

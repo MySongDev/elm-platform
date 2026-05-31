@@ -8,13 +8,21 @@ describe('tabBarFromScratch scroll helpers', () => {
   })
 
   it('derives overflow and edge availability from scroll metrics', () => {
-    expect(getScrollState({ scrollLeft: 0, scrollWidth: 900, clientWidth: 500 })).toEqual({
+    expect(getScrollState({
+      scrollLeft: 0,
+      scrollWidth: 900,
+      clientWidth: 500,
+    })).toEqual({
       isOverflow: true,
       canScrollLeft: false,
       canScrollRight: true,
     })
 
-    expect(getScrollState({ scrollLeft: 400, scrollWidth: 900, clientWidth: 500 })).toEqual({
+    expect(getScrollState({
+      scrollLeft: 400,
+      scrollWidth: 900,
+      clientWidth: 500,
+    })).toEqual({
       isOverflow: true,
       canScrollLeft: true,
       canScrollRight: false,

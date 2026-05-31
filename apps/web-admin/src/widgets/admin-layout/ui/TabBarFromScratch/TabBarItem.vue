@@ -15,6 +15,7 @@ defineProps<{
 const emit = defineEmits<{
   click: [fullPath: string]
   close: [fullPath: string]
+  contextmenu: [e: MouseEvent, fullPath: string]
 }>()
 </script>
 
@@ -27,6 +28,7 @@ const emit = defineEmits<{
     :aria-selected="active"
     :title="title"
     @click="emit('click', tab.fullPath)"
+    @contextmenu="emit('contextmenu', $event, tab.fullPath)"
   >
     <el-icon v-if="tab.icon" class="tab-icon">
       <SvgIcon :icon-name="tab.icon" />
