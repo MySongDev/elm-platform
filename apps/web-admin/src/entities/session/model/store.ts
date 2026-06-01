@@ -12,6 +12,7 @@ import { computed, ref, shallowRef } from 'vue'
 import request from '@/shared/api/request'
 import { hasPermission as checkPermission } from '@/shared/lib/permission'
 import { getUserMenus, updateProfile } from '../api'
+import { createDevMockLoginResult, createDevMockUserInfo, getDevMockUserMenus, isDevMockAuthEnabled } from './dev-auth'
 
 interface LoginResult {
   token: string
@@ -27,11 +28,16 @@ interface LoginCredentials {
 
 const DEFAULT_SESSION_TTL_SECONDS = 24 * 60 * 60
 
+function resolvePersistStorage(): Storage | undefined {
+  return typeof localStorage === 'undefined' ? undefined : localStorage
+}
+
 /**
  * @description 有副作用：创建 Pinia 会话 store，store action 会读写持久化 token、调用认证接口并维护动态路由状态。
  * @returns 认证、用户资料、菜单和权限判断相关的响应式状态与操作。
  */
 export const useAuthStore = defineStore('auth', () => {
+  // state
   const token = shallowRef('')
   const tokenExpiresAt = shallowRef(0)
   const userInfo = ref<UserInfo | null>(null)
@@ -40,6 +46,7 @@ export const useAuthStore = defineStore('auth', () => {
   const routesLoaded = shallowRef(false)
   let loadingMenusPromise: Promise<UserMenuNode[]> | null = null
 
+  // getters
   const isLoggedIn = computed(() => {
     if (!token.value)
       return false
@@ -48,6 +55,7 @@ export const useAuthStore = defineStore('auth', () => {
   const isAdmin = computed(() => userInfo.value?.role === 'admin')
   const permissions = computed(() => userInfo.value?.permissions ?? [])
 
+  // actions
   function hasPermission(required: string | string[]): boolean {
     return checkPermission(permissions.value, required)
   }
@@ -65,7 +73,9 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   async function login(credentials: LoginCredentials) {
-    const res = await request.post<LoginResult>('/auth/login', credentials)
+    const res = isDevMockAuthEnabled()
+      ? createDevMockLoginResult(credentials.account, credentials.rememberMe)
+      : await request.post<LoginResult>('/auth/login', credentials)
     token.value = res.token
     tokenExpiresAt.value = Date.now() + (res.expiresIn ?? DEFAULT_SESSION_TTL_SECONDS) * 1000
     userInfo.value = res.user
@@ -76,6 +86,10 @@ export const useAuthStore = defineStore('auth', () => {
   async function getUserInfo() {
     if (!token.value)
       return
+    if (isDevMockAuthEnabled()) {
+      userInfo.value = createDevMockUserInfo()
+      return
+    }
     try {
       userInfo.value = await request.get<UserInfo>('/auth/profile')
     }
@@ -102,7 +116,9 @@ export const useAuthStore = defineStore('auth', () => {
       return loadingMenusPromise
 
     loadingMenusPromise = (async () => {
-      const menuTree = await getUserMenus()
+      const menuTree = isDevMockAuthEnabled()
+        ? getDevMockUserMenus()
+        : await getUserMenus()
       menus.value = menuTree
       return menuTree
     })()
@@ -165,7 +181,7 @@ export const useAuthStore = defineStore('auth', () => {
 }, {
   persist: {
     key: 'elm-admin-auth',
-    storage: localStorage,
+    storage: resolvePersistStorage(),
     pick: ['token', 'tokenExpiresAt'],
   },
 })

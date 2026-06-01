@@ -1,17 +1,12 @@
 import { createPinia, setActivePinia } from 'pinia'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import request from '@/shared/api/request'
-import { useAuthStore } from './store'
 
-vi.mock('@/shared/api/request', () => ({
-  default: {
-    get: vi.fn(),
-    post: vi.fn(),
-  },
-}))
+let request: typeof import('@/shared/api/request').default
+let useAuthStore: typeof import('./store').useAuthStore
 
 describe('useAuthStore session expiry', () => {
-  beforeEach(() => {
+  beforeEach(async () => {
+    vi.resetModules()
     const storage = new Map<string, string>()
     vi.stubGlobal('localStorage', {
       getItem: vi.fn((key: string) => storage.get(key) ?? null),
@@ -23,11 +18,24 @@ describe('useAuthStore session expiry', () => {
     setActivePinia(createPinia())
     vi.useFakeTimers()
     vi.setSystemTime(new Date('2026-05-23T00:00:00.000Z'))
+    vi.doMock('@/shared/api/request', () => ({
+      default: {
+        get: vi.fn(),
+        post: vi.fn(),
+        patch: vi.fn(),
+      },
+    }))
+    ;({ default: request } = await import('@/shared/api/request'))
+    ;({ useAuthStore } = await import('./store'))
+    vi.mocked(request.get).mockReset()
     vi.mocked(request.post).mockReset()
   })
 
   afterEach(() => {
     vi.useRealTimers()
+    vi.unstubAllEnvs()
+    vi.unstubAllGlobals()
+    vi.doUnmock('@/shared/api/request')
   })
 
   it('rejects restored tokens that do not have an expiry timestamp', () => {
@@ -55,10 +63,53 @@ describe('useAuthStore session expiry', () => {
     })
 
     const store = useAuthStore()
-    await store.login({ account: 'admin', password: 'admin123', rememberMe: true })
+    await store.login({
+      account: 'admin',
+      password: 'admin123',
+      rememberMe: true,
+    })
 
     expect(store.token).toBe('remembered-token')
     expect(store.tokenExpiresAt).toBe(Date.now() + 7 * 24 * 60 * 60 * 1000)
     expect(store.isLoggedIn).toBe(true)
+  })
+
+  it('uses local mock auth without requesting the backend when enabled for development', async () => {
+    vi.stubEnv('VITE_ADMIN_MOCK_AUTH', 'true')
+
+    const store = useAuthStore()
+    const result = await store.login({
+      account: 'dev-admin',
+      password: 'admin123',
+    })
+
+    expect(request.post).not.toHaveBeenCalled()
+    expect(result.token).toBe('dev-mock-admin-token')
+    expect(store.token).toBe('dev-mock-admin-token')
+    expect(store.userInfo?.username).toBe('dev-admin')
+    expect(store.permissions).toContain('*:*:*')
+    expect(store.isLoggedIn).toBe(true)
+  })
+
+  it('loads profile and menus locally without backend requests when mock auth is enabled', async () => {
+    vi.stubEnv('VITE_ADMIN_MOCK_AUTH', 'true')
+
+    const store = useAuthStore()
+    store.token = 'dev-mock-admin-token'
+    store.tokenExpiresAt = Date.now() + 24 * 60 * 60 * 1000
+
+    await store.getUserInfo()
+    const menus = await store.loadUserMenus()
+
+    expect(request.get).not.toHaveBeenCalled()
+    expect(store.userInfo?.role).toBe('admin')
+    expect(menus[0]).toMatchObject({
+      path: '/dashboard',
+      children: [
+        expect.objectContaining({
+          path: '/dashboard/index',
+        }),
+      ],
+    })
   })
 })
