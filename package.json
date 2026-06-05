@@ -1,6 +1,7 @@
 {
   "name": "elm-platform",
   "private": true,
+  "packageManager": "pnpm@11.5.0",
   "engines": {
     "node": ">=18"
   },
@@ -14,12 +15,32 @@
     "build:admin": "pnpm --filter elm-web-admin run build",
     "build:user": "pnpm --filter vue3-elm-js run build",
     "lint": "eslint . --fix --cache",
-    "clean": "pnpm -r exec rm -rf node_modules dist .turbo"
+    "lint:style": "stylelint \"apps/{web-admin,web-user}/src/**/*.{vue,scss,css}\" --fix --config stylelint.config.mjs",
+    "lint:all": "pnpm lint && pnpm lint:style",
+    "test": "pnpm --filter vue3-elm-node run test && pnpm --filter elm-web-admin run test:unit && pnpm --filter vue3-elm-js run test",
+    "type-check": "pnpm --filter elm-web-admin run type-check && pnpm --filter vue3-elm-js run type-check",
+    "api:generate": "pnpm --filter @elm-platform/api-types run generate",
+    "clean": "pnpm -r exec rm -rf node_modules dist .turbo",
+    "prepare": "husky"
   },
   "devDependencies": {
     "@antfu/eslint-config": "^7.7.3",
+    "@commitlint/cli": "^19.8.1",
+    "@commitlint/config-conventional": "^19.8.1",
     "eslint": "^9.39.2",
     "globals": "^17.0.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^15.5.2",
+    "stylelint": "^16.21.0",
+    "stylelint-config-recess-order": "^5.0.1",
+    "stylelint-config-recommended-vue": "^1.6.1",
+    "stylelint-config-standard-scss": "^13.0.0",
+    "stylelint-order": "^6.0.4",
+    "stylelint-scss": "^6.0.0",
     "typescript": "^5.8.3"
+  },
+  "lint-staged": {
+    "*.{js,ts,vue}": "eslint --fix --cache",
+    "*.{vue,scss,css}": "stylelint --fix --config stylelint.config.mjs"
   }
 }
