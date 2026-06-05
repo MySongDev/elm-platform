@@ -1,0 +1,12 @@
+{
+  "name": "@elm-platform/tsconfig",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Shared TypeScript configurations for elm-platform monorepo",
+  "files": [
+    "base.json",
+    "node-nestjs.json",
+    "vue-app-strict.json",
+    "vue-app.json"
+  ]
+}
