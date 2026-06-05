@@ -1,3 +1,5 @@
+import { writeFileSync } from 'node:fs'
+import { resolve } from 'node:path'
 /**
  * Extract OpenAPI spec without starting the full server.
  * This uses NestJS SwaggerModule to generate the document at build time.
@@ -12,8 +14,6 @@
  *   2. Run: pnpm api:generate  (fetches from http://localhost:3000/api-docs-json)
  */
 import process from 'node:process'
-import { writeFileSync } from 'node:fs'
-import { resolve } from 'node:path'
 
 const SPEC_URL = 'http://localhost:3000/api-docs-json'
 const SPEC_FILE = resolve(import.meta.dirname, '../openapi.json')
