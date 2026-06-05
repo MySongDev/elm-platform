@@ -15,7 +15,7 @@
     "generate": "tsx scripts/generate.ts"
   },
   "devDependencies": {
-    "openapi-typescript": "^7.8.0",
-    "tsx": "^4.19.0"
+    "openapi-typescript": "catalog:",
+    "tsx": "catalog:"
   }
 }

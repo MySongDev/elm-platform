@@ -105,6 +105,8 @@ jobs:
 
       - name: Test server
         run: pnpm --filter vue3-elm-node run test
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/elm_test?schema=public
 
       - name: Test admin
         run: pnpm --filter elm-web-admin run test:unit
