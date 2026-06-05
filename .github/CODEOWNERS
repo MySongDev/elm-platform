@@ -1,0 +1,20 @@
+* @MySongDev
+
+# Shared packages
+/packages/tsconfig/ @MySongDev
+/packages/contracts/ @MySongDev
+/packages/vite-config/ @MySongDev
+/packages/api-types/ @MySongDev
+
+# Backend
+/apps/server/ @MySongDev
+
+# Frontend apps
+/apps/web-admin/ @MySongDev
+/apps/web-user/ @MySongDev
+
+# CI/CD and governance
+/.github/ @MySongDev
+/docker-compose.yml @MySongDev
+/commitlint.config.mjs @MySongDev
+/pnpm-workspace.yaml @MySongDev
