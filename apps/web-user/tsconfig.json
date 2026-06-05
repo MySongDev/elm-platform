@@ -1,21 +1,12 @@
 {
+  "extends": "@elm-platform/tsconfig/vue-app.json",
   "compilerOptions": {
-    "target": "ESNext",
-    "jsx": "preserve",
-    "lib": ["ESNext", "DOM", "DOM.Iterable"],
-    "module": "ESNext",
-    "moduleResolution": "bundler",
     "paths": {
       "@/*": ["./src/*"]
     },
-    "resolveJsonModule": true,
     "types": ["vite/client"],
     "allowJs": true,
-    "strict": false,
-    "noEmit": true,
-    "esModuleInterop": true,
-    "isolatedModules": true,
-    "skipLibCheck": true
+    "strict": false
   },
   "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.vue", "src/**/*.js"],
   "exclude": ["node_modules", "dist"]

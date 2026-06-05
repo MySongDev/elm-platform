@@ -17,7 +17,8 @@
     "preview": "vite preview",
     "test": "vitest run",
     "test:watch": "vitest",
-    "lint": "eslint . --fix --cache"
+    "lint": "eslint . --fix --cache",
+    "lint:style": "pnpm --dir ../.. exec stylelint \"apps/web-user/src/**/*.{vue,scss,css}\" --fix --config stylelint.config.mjs"
   },
   "dependencies": {
     "@vant/area-data": "^2.1.0",
@@ -35,26 +36,20 @@
     "vue-virtual-scroller": "2.0.0-beta.8"
   },
   "devDependencies": {
-    "@antfu/eslint-config": "^7.7.3",
-    "@eslint/js": "^10.0.1",
+    "@elm-platform/tsconfig": "workspace:*",
+    "@elm-platform/vite-config": "workspace:*",
     "@vant/auto-import-resolver": "^1.3.0",
     "@vitejs/plugin-vue": "^6.0.3",
-    "eslint": "^9.39.2",
-    "eslint-plugin-vue": "~10.7.0",
-    "globals": "^17.0.0",
     "happy-dom": "^20.9.0",
     "mockjs": "^1.1.0",
     "sass-embedded": "^1.97.3",
-    "typescript": "^5.8.3",
     "unplugin-auto-import": "^21.0.0",
     "unplugin-icons": "^23.0.1",
     "unplugin-vue-components": "^31.0.0",
     "vite": "^7.3.1",
     "vite-plugin-mock": "^3.0.2",
-    "vite-plugin-svg-icons": "^2.0.1",
     "vite-plugin-vue-devtools": "^8.0.5",
     "vitest": "^4.1.6",
-    "vue-eslint-parser": "^10.4.0",
     "vue-tsc": "^3.2.9"
   }
 }

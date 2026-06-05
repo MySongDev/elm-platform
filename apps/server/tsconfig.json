@@ -1,11 +1,7 @@
 {
+  "extends": "@elm-platform/tsconfig/node-nestjs.json",
   "compilerOptions": {
-    "incremental": true,
-    "target": "ES2021",
-    "emitDecoratorMetadata": true,
-    "experimentalDecorators": true,
     "baseUrl": "./",
-    "module": "commonjs",
     "paths": {
       "@/*": ["src/*"],
       "@common/*": ["src/common/*"],
@@ -13,16 +9,6 @@
       "@prisma/*": ["src/prisma/*"],
       "@redis/*": ["src/redis/*"]
     },
-    "strictBindCallApply": true,
-    "strictNullChecks": true,
-    "noFallthroughCasesInSwitch": true,
-    "noImplicitAny": true,
-    "declaration": true,
-    "outDir": "./dist",
-    "removeComments": true,
-    "sourceMap": true,
-    "allowSyntheticDefaultImports": true,
-    "forceConsistentCasingInFileNames": true,
-    "skipLibCheck": true
+    "outDir": "./dist"
   }
 }
