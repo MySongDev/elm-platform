@@ -1,13 +1,11 @@
-import path from 'node:path'
 import { cwd } from 'node:process'
-import { fileURLToPath, URL } from 'node:url'
+import { createApiProxy, createElmSvgIconsPlugin, createScssOptions, createSrcAlias } from '@elm-platform/vite-config'
 import { VantResolver } from '@vant/auto-import-resolver'
 import vue from '@vitejs/plugin-vue'
 import AutoImport from 'unplugin-auto-import/vite'
 import Components from 'unplugin-vue-components/vite'
 import { defineConfig, loadEnv } from 'vite'
 import { viteMockServe } from 'vite-plugin-mock'
-import { createSvgIconsPlugin } from 'vite-plugin-svg-icons'
 import vueDevTools from 'vite-plugin-vue-devtools'
 
 export default defineConfig(({ command, mode }) => {
@@ -17,22 +15,17 @@ export default defineConfig(({ command, mode }) => {
 
   return {
     server: {
-      proxy: {
-        '/api': {
-          target: localApiTarget,
-          changeOrigin: true,
+      proxy: createApiProxy({
+        prefixes: {
+          '/ele-api': {
+            rewrite: path => path.replace(/^\/ele-api/, '/api'),
+          },
+          '/pay-api': {
+            target: `${localApiTarget}/api`,
+            rewrite: path => path.replace(/^\/pay-api/, ''),
+          },
         },
-        '/ele-api': {
-          target: localApiTarget,
-          changeOrigin: true,
-          rewrite: path => path.replace(/^\/ele-api/, '/api'),
-        },
-        '/pay-api': {
-          target: `${localApiTarget}/api`,
-          changeOrigin: true,
-          rewrite: path => path.replace(/^\/pay-api/, ''),
-        },
-      },
+      }),
       middlewareMode: false,
     },
     plugins: [
@@ -54,49 +47,16 @@ export default defineConfig(({ command, mode }) => {
         dirs: ['src/components/common'],
         resolvers: [VantResolver()],
       }),
-      createSvgIconsPlugin({
-        iconDirs: [path.resolve(cwd(), 'src/icons/svg')],
-        symbolId: 'icon-[name]',
-        inject: 'body-last',
-        customDomId: '__svg__icons__dom__',
-        svgoOptions: {
-          plugins: [
-            {
-              name: 'preset-default',
-              params: {
-                overrides: {
-                  removeViewBox: false,
-                  // 禁用 preset 自带的 removeUselessStrokeAndFill，避免冲突
-                  removeUselessStrokeAndFill: false,
-                },
-              },
-            },
-            'removeDimensions',
-            {
-              name: 'removeAttrs',
-              params: {
-                attrs: ['fill', 'stroke', 'class', 'style', 'id'],
-              },
-            },
-          ],
-        },
-      }),
+      createElmSvgIconsPlugin('src/icons/svg'),
     ],
     css: {
-      preprocessorOptions: {
-        scss: {
-          additionalData: `
-          @use "@/assets/styles/mixins.scss" as *;
-          @use "@/assets/styles/variables.scss" as *;
-
-        `,
-        },
-      },
+      preprocessorOptions: createScssOptions({
+        mixinsPath: '@/assets/styles/mixins.scss',
+        variablesPath: '@/assets/styles/variables.scss',
+      }),
     },
     resolve: {
-      alias: {
-        '@': fileURLToPath(new URL('./src', import.meta.url)),
-      },
+      alias: createSrcAlias(import.meta.url),
     },
   }
 })
