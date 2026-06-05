@@ -1,0 +1,21 @@
+{
+  "name": "@elm-platform/api-types",
+  "type": "module",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Auto-generated API types from OpenAPI spec for elm-platform",
+  "exports": {
+    ".": {
+      "types": "./generated/index.d.ts"
+    }
+  },
+  "types": "./generated/index.d.ts",
+  "files": ["generated"],
+  "scripts": {
+    "generate": "tsx scripts/generate.ts"
+  },
+  "devDependencies": {
+    "openapi-typescript": "^7.8.0",
+    "tsx": "^4.19.0"
+  }
+}
