@@ -14,6 +14,7 @@
     "build:server": "pnpm --filter vue3-elm-node run build",
     "build:admin": "pnpm --filter elm-web-admin run build",
     "build:user": "pnpm --filter vue3-elm-js run build",
+    "bundle:report": "pnpm build:admin && pnpm build:user && node scripts/report-bundle-size.mjs",
     "lint": "eslint . --fix --cache",
     "lint:style": "stylelint \"apps/{web-admin,web-user}/src/**/*.{vue,scss,css}\" --fix --config stylelint.config.mjs",
     "lint:all": "pnpm lint && pnpm lint:style",
