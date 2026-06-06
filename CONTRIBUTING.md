@@ -107,6 +107,19 @@ PR 描述需要说明：
 - 如何验证
 - 是否有数据库 migration / API breaking change / 配置变更
 
+复杂改动建议先关联设计书和计划书：
+
+- 设计书：`docs/superpowers/specs/*.md`
+- 计划书：`docs/superpowers/plans/*.md`
+- ADR：重大架构决策后续放入 `docs/adr/`
+
+满足任一条件时，PR 描述应附设计书或计划书链接：
+
+- 涉及数据库 migration、权限、支付、认证、租户隔离或日志审计。
+- 改动跨越两个以上 app/package。
+- 引入新的工程化工具、CI job、部署配置或外部服务。
+- 改动 API 契约或前后端共享类型。
+
 ## 6. API 类型生成
 
 后端 Swagger 文档用于生成前端 API 类型：
