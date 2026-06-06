@@ -9,6 +9,14 @@ export default defineConfig({
     globals: true,
     include: ['src/**/*.test.{js,ts}'],
     setupFiles: ['src/test/setup.js'],
+    coverage: {
+      thresholds: {
+        branches: 32,
+        functions: 28,
+        lines: 36,
+        statements: 36,
+      },
+    },
   },
   resolve: {
     alias: {
