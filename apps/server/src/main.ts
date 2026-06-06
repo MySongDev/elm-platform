@@ -6,11 +6,14 @@ import { AppModule } from './app.module'
 import { AllExceptionsFilter } from './common/filters/http-exception.filter'
 import { LoggingInterceptor } from './common/interceptors/logging.interceptor'
 import { TransformInterceptor } from './common/interceptors/transform.interceptor'
+import { requestIdMiddleware } from './common/middleware/request-id.middleware'
 import { PrismaService } from './prisma/prisma.service'
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule)
   const configService = app.get(ConfigService)
+
+  app.use(requestIdMiddleware)
 
   // 全局前缀
   const prefix = configService.get<string>('APP_PREFIX', 'api')
