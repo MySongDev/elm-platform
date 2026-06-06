@@ -42,6 +42,7 @@ catalog:
   '@vant/area-data': ^2.1.0
   '@vant/auto-import-resolver': ^1.3.0
   '@vitejs/plugin-vue': ^6.0.7
+  '@vitest/coverage-v8': ^4.1.6
   '@vueuse/core': ^14.3.0
   alipay-sdk: ^3.6.2
   axios: ^1.13.3

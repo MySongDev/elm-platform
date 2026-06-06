@@ -18,6 +18,7 @@
     "lint:style": "stylelint \"apps/{web-admin,web-user}/src/**/*.{vue,scss,css}\" --fix --config stylelint.config.mjs",
     "lint:all": "pnpm lint && pnpm lint:style",
     "test": "pnpm --filter vue3-elm-node run test && pnpm --filter elm-web-admin run test:unit && pnpm --filter vue3-elm-js run test",
+    "test:cov": "pnpm --filter vue3-elm-node run test:cov && pnpm --filter elm-web-admin run test:coverage && pnpm --filter vue3-elm-js run test:coverage",
     "type-check": "pnpm --filter elm-web-admin run type-check && pnpm --filter vue3-elm-js run type-check",
     "api:generate": "pnpm --filter @elm-platform/api-types run generate",
     "clean": "pnpm -r exec rm -rf node_modules dist .turbo",
