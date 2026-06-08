@@ -183,7 +183,14 @@ Progress:
   - Backend: request compatibility, response shape, generic credential failure, and service/controller contract tests.
   - Frontend: `web-admin` session store consumes generated `@elm-platform/api-types` login response data.
   - Verification: focused backend Jest, focused web-admin Vitest, web-admin type-check, API generation, and focused ESLint passed.
-- Next requested slices: admin order detail, then payment resume.
+- 2026-06-08: Completed the admin order detail contract slice for `/api/admin/commerce/orders/:orderNo`.
+  - Backend: Swagger response DTO and Jest contract coverage for the admin order detail shape.
+  - Frontend: `web-admin` order detail adapter consumes generated API response data.
+  - Verification: focused backend Jest, focused web-admin Vitest, web-admin type-check, API generation, and focused ESLint passed.
+- 2026-06-08: Completed the payment resume contract slice for `/api/payments/alipay/wap/resume`.
+  - Backend: request DTO Swagger schema, raw response DTO, controller contract coverage, and `200` response contract.
+  - Frontend: `web-user` payment adapter consumes generated raw resume response data.
+  - Verification: focused backend payment Jest, focused web-user Vitest, web-user type-check, API generation, and focused ESLint passed.
 
 ---
 
@@ -193,7 +200,7 @@ Progress:
 - Create: `docs/release/feature-flags.md`
 - Modify: `.github/pull_request_template.md`
 
-- [ ] **Step 1: Create feature flag convention**
+- [x] **Step 1: Create feature flag convention**
 
 Create `docs/release/feature-flags.md`:
 
@@ -216,11 +223,11 @@ Defaults must be conservative and documented.
 - Cleanup condition.
 ```
 
-- [ ] **Step 2: Link from PR template**
+- [x] **Step 2: Link from PR template**
 
 Add a risk checklist item requiring rollout and cleanup notes for Feature Flags.
 
-- [ ] **Step 3: Commit feature flag docs**
+- [x] **Step 3: Commit feature flag docs**
 
 ```bash
 git add docs/release/feature-flags.md .github/pull_request_template.md
@@ -281,7 +288,7 @@ Start with web-admin and the least noisy boundary. Prefer warning/report mode or
 Run:
 
 ```bash
-pnpm --filter elm-web-admin run lint
+pnpm --filter @elm-platform/web-admin run lint
 ```
 
 Expected: either pass or show a small, intentional set of violations to fix in the same PR.
