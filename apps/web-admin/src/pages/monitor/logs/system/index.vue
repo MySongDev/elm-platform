@@ -12,10 +12,16 @@ const { t } = useI18n()
 
 const { loading, filteredData, query, fetchRows, resetQuery } = useReadonlyTable<
   SystemLog,
-  { level: string, source: string }
+  {
+    level: string
+    source: string
+  }
 >({
   fetchApi: getSystemLogs,
-  queryDefaults: { level: '', source: '' },
+  queryDefaults: {
+    level: '',
+    source: '',
+  },
   filter: (data, q) => data.filter((item) => {
     const levelMatched = !q.level || item.level === q.level
     const sourceMatched = !q.source || item.source.includes(q.source)

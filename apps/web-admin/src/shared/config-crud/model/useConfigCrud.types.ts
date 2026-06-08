@@ -36,7 +36,11 @@ export interface UseConfigCrudOptions<
 > {
   getDefaultQuery: () => Query
   getDefaultForm: () => Form
-  fetchList: (params?: { page: number, pageSize: number, query: Query }) => Promise<Row[] | PaginatedResult<Row>>
+  fetchList: (params?: {
+    page: number
+    pageSize: number
+    query: Query
+  }) => Promise<Row[] | PaginatedResult<Row>>
   createItem: (payload: Payload) => Promise<unknown>
   updateItem: (id: Id, payload: Payload) => Promise<unknown>
   deleteItem: (id: Id) => Promise<unknown>

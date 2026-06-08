@@ -25,6 +25,10 @@ defineEmits<{
 }>()
 const { t } = useI18n()
 const columns = computed(() => createMenuTableColumns(t))
+
+function asMenuItem(row: unknown) {
+  return row as MenuItem
+}
 </script>
 
 <template>
@@ -47,7 +51,7 @@ const columns = computed(() => createMenuTableColumns(t))
           type="primary"
           link
           :icon="IconEpPlus"
-          @click="$emit('create', row)"
+          @click="$emit('create', asMenuItem(row))"
         >
           {{ t('crud.add') }}
         </el-button>

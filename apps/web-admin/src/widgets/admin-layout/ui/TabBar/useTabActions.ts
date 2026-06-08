@@ -9,7 +9,10 @@ interface UseTabActionsOptions {
   route: RouteLocationNormalizedLoaded
   router: Router
   tabsStore: TabsStore
-  contextMenu: { visible: boolean, targetPath: string }
+  contextMenu: {
+    visible: boolean
+    targetPath: string
+  }
   closeContextMenu: () => void
 }
 

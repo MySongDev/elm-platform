@@ -6,6 +6,7 @@
 
 import type { FormRules } from 'element-plus'
 import type { RestaurantItem } from '@/entities/restaurant'
+import { ElMessage, ElMessageBox } from 'element-plus'
 import {
   createCommerceRestaurant,
   deleteCommerceRestaurant,
@@ -59,7 +60,10 @@ export function useRestaurantManagement() {
   const { t } = useI18n()
 
   const crud = useConfigCrud<RestaurantItem, RestaurantQuery, RestaurantFormState, Partial<RestaurantItem>>({
-    getDefaultQuery: () => ({ name: '', category: '' }),
+    getDefaultQuery: () => ({
+      name: '',
+      category: '',
+    }),
     getDefaultForm: () => ({ ...defaultForm }),
     fetchList: getCommerceRestaurants,
     createItem: createCommerceRestaurant,
@@ -79,13 +83,42 @@ export function useRestaurantManagement() {
   })
 
   const rules: FormRules = {
-    name: [{ required: true, message: t('commerce.restaurant.nameRequired'), trigger: 'blur' }],
-    address: [{ required: true, message: t('commerce.restaurant.addressRequired'), trigger: 'blur' }],
-    category: [{ required: true, message: t('commerce.restaurant.categoryRequired'), trigger: 'blur' }],
+    name: [{
+      required: true,
+      message: t('commerce.restaurant.nameRequired'),
+      trigger: 'blur',
+    }],
+    address: [{
+      required: true,
+      message: t('commerce.restaurant.addressRequired'),
+      trigger: 'blur',
+    }],
+    category: [{
+      required: true,
+      message: t('commerce.restaurant.categoryRequired'),
+      trigger: 'blur',
+    }],
+  }
+
+  async function batchDeleteRows(rows: RestaurantItem[]) {
+    if (rows.length === 0)
+      return
+
+    try {
+      await ElMessageBox.confirm(t('tableEnhance.batchDeleteConfirm', { count: rows.length }), t('common.tip'), { type: 'warning' })
+    }
+    catch {
+      return
+    }
+
+    await Promise.all(rows.map(row => deleteCommerceRestaurant(row.id)))
+    ElMessage.success(t('commerce.deleteSuccess'))
+    await crud.fetchRows()
   }
 
   return {
     ...crud,
     rules,
+    batchDeleteRows,
   }
 }

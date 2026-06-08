@@ -24,6 +24,8 @@ const routeTitleKeyByName: Record<string, string> = {
   CommerceRestaurantView: 'route.restaurantManagement',
   CommerceFoodView: 'route.foodManagement',
   CommerceOrderView: 'route.orderManagement',
+  Platform: 'route.platformManagement',
+  TenantListView: 'route.tenantManagement',
   Nested: 'route.nestedMenu',
   NestedMenu1: 'route.menu1',
   NestedMenu11View: 'route.menu11',

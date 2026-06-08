@@ -9,8 +9,14 @@ const { locale, t } = useI18n()
 const { setLocale } = useLocale()
 
 const langOptions = [
-  { label: '中文', value: 'zh-CN' },
-  { label: 'English', value: 'en' },
+  {
+    label: '中文',
+    value: 'zh-CN',
+  },
+  {
+    label: 'English',
+    value: 'en',
+  },
 ]
 
 function handleCommand(command: string | number | object) {

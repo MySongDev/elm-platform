@@ -16,14 +16,20 @@ function createTab(overrides: Partial<TabItem>): TabItem {
 describe('tab model lib', () => {
   it('treats the dashboard tab as not closable', () => {
     expect(isTabClosable(createTab({ fullPath: '/dashboard/index' }))).toBe(false)
-    expect(isTabClosable(createTab({ fullPath: '/system/user', fixed: true }))).toBe(false)
+    expect(isTabClosable(createTab({
+      fullPath: '/system/user',
+      fixed: true,
+    }))).toBe(false)
     expect(isTabClosable(createTab({ fullPath: '/system/user' }))).toBe(true)
   })
 
   it('keeps the dashboard tab as the first tab when it exists', () => {
     const tabs = [
       createTab({ fullPath: '/system/user' }),
-      createTab({ path: '/dashboard/index', fullPath: '/dashboard/index' }),
+      createTab({
+        path: '/dashboard/index',
+        fullPath: '/dashboard/index',
+      }),
       createTab({ fullPath: '/commerce/restaurant' }),
     ]
 

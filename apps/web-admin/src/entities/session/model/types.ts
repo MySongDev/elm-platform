@@ -17,8 +17,8 @@ export interface UserMenuNode {
 
 export interface UpdateProfileParams {
   username?: string
-  email?: string
-  phone?: string
+  email?: string | null
+  phone?: string | null
 }
 
 export interface SecurityLog {

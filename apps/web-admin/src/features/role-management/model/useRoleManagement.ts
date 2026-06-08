@@ -66,8 +66,15 @@ export function useRoleManagement() {
   let closePanelTimer: ReturnType<typeof setTimeout> | null = null
 
   const crud = useConfigCrud<RoleItem, RoleQuery, RoleFormState, Partial<RoleItem>>({
-    getDefaultQuery: () => ({ name: '', code: '', status: '' }),
-    getDefaultForm: () => ({ ...defaultForm, permissions: [] }),
+    getDefaultQuery: () => ({
+      name: '',
+      code: '',
+      status: '',
+    }),
+    getDefaultForm: () => ({
+      ...defaultForm,
+      permissions: [],
+    }),
     fetchList: getRoles,
     createItem: createRole,
     updateItem: updateRole,
@@ -97,8 +104,16 @@ export function useRoleManagement() {
   const menuPermissionTree = computed(() => createRoleMenuPermissionTree(menuSource.value))
 
   const rules: FormRules = {
-    name: [{ required: true, message: t('role.nameRequired'), trigger: 'blur' }],
-    code: [{ required: true, message: t('role.codeRequired'), trigger: 'blur' }],
+    name: [{
+      required: true,
+      message: t('role.nameRequired'),
+      trigger: 'blur',
+    }],
+    code: [{
+      required: true,
+      message: t('role.codeRequired'),
+      trigger: 'blur',
+    }],
   }
 
   async function fetchPermissionOptions() {

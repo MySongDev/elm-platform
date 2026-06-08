@@ -11,10 +11,16 @@ const { t } = useI18n()
 
 const { loading, filteredData, query, fetchRows, resetQuery } = useReadonlyTable<
   PagePermission,
-  { title: string, path: string }
+  {
+    title: string
+    path: string
+  }
 >({
   fetchApi: getPagePermissions,
-  queryDefaults: { title: '', path: '' },
+  queryDefaults: {
+    title: '',
+    path: '',
+  },
   filter: (data, q) => data.filter((item) => {
     const titleMatched = !q.title || item.title.includes(q.title)
     const pathMatched = !q.path || item.path.includes(q.path)

@@ -40,5 +40,28 @@ export const adminEndpoints = {
     foods: '/admin/commerce/foods',
     foodDetail: (id: number) => `/admin/commerce/foods/${id}`,
     orders: '/admin/commerce/orders',
+    orderDetail: (orderNo: string) => `/admin/commerce/orders/${orderNo}`,
+    orderAccept: (orderNo: string) => `/admin/commerce/orders/${orderNo}/accept`,
+    orderStartPreparing: (orderNo: string) => `/admin/commerce/orders/${orderNo}/start-preparing`,
+    orderStartDelivery: (orderNo: string) => `/admin/commerce/orders/${orderNo}/start-delivery`,
+    orderComplete: (orderNo: string) => `/admin/commerce/orders/${orderNo}/complete`,
+    orderRefundApprove: (orderNo: string) => `/admin/commerce/orders/${orderNo}/refund/approve`,
+    orderRefundReject: (orderNo: string) => `/admin/commerce/orders/${orderNo}/refund/reject`,
   },
+} as const
+
+export const tenantEndpoints = {
+  list: '/admin/tenants',
+  create: '/admin/tenants',
+  detail: (id: number) => `/admin/tenants/${id}`,
+  update: (id: number) => `/admin/tenants/${id}`,
+  transition: (id: number, event: string) => `/admin/tenants/${id}/events/${event}`,
+  actionLogs: (id: number) => `/admin/tenants/${id}/action-logs`,
+} as const
+
+export const merchantOnboardingEndpoints = {
+  list: '/admin/merchant-applications',
+  detail: (id: string) => `/admin/merchant-applications/${id}`,
+  review: (id: string) => `/admin/merchant-applications/${id}/review`,
+  actionLogs: (id: string) => `/admin/merchant-applications/${id}/action-logs`,
 } as const

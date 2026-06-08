@@ -27,8 +27,12 @@ const isOnlyOneTab = computed(() => tabsStore.tabs.length <= 1)
 const closableCount = computed(() => tabsStore.tabs.filter(isTabClosable).length)
 const currentTab = computed(() => tabsStore.tabs.find(t => t.fullPath === route.fullPath))
 const isCurrentFixed = computed(() => currentTab.value?.fixed ?? false)
-const isCurrentClosable = computed(() => currentTab.value ? isTabClosable(currentTab.value) : false)
-const currentTabIndex = computed(() => tabsStore.tabs.findIndex(tab => tab.fullPath === route.fullPath))
+const isCurrentClosable = computed(() =>
+  currentTab.value ? isTabClosable(currentTab.value) : false,
+)
+const currentTabIndex = computed(() =>
+  tabsStore.tabs.findIndex(tab => tab.fullPath === route.fullPath),
+)
 const isCurrentFirstNonFixed = computed(() => {
   const index = currentTabIndex.value
   return index <= 0 || tabsStore.tabs.slice(0, index).every(tab => !isTabClosable(tab))

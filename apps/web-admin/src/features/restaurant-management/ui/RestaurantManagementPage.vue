@@ -17,6 +17,7 @@ const tableColumns = computed(() => createRestaurantTableColumns(t))
 const {
   loading,
   saving,
+  error,
   dialogVisible,
   query,
   form,
@@ -29,7 +30,17 @@ const {
   fetchRows,
   submitForm,
   handleDelete,
+  batchDeleteRows,
 } = useRestaurantManagement()
+
+const hasSearchCondition = computed(() => Boolean(query.name.trim() || query.category.trim()))
+const emptyReason = computed(() => hasSearchCondition.value ? 'no-filter-result' : 'no-data')
+const isTableEmpty = computed(() => !loading.value && !error.value && filteredData.value.length === 0)
+
+function handleClearFilter() {
+  resetQuery()
+  fetchRows()
+}
 
 function handleEditRow(row: unknown) {
   openEditDialog(row as RestaurantItem)
@@ -39,12 +50,26 @@ function handleDeleteRow(row: unknown) {
   handleDelete(row as RestaurantItem)
 }
 
+function handleBatchAction(actionKey: string, rows: RestaurantItem[]) {
+  if (actionKey === 'delete')
+    batchDeleteRows(rows)
+}
+
 onMounted(fetchRows)
 </script>
 
 <template>
   <div class="main">
-    <AdminTablePage :title="t('commerce.restaurant.title')" :loading="loading" @refresh="fetchRows">
+    <AdminTablePage
+      :title="t('commerce.restaurant.title')"
+      :loading="loading"
+      :error="error"
+      :empty="isTableEmpty"
+      :empty-reason="emptyReason"
+      skeleton="table"
+      @refresh="fetchRows"
+      @clear-filter="handleClearFilter"
+    >
       <template #search>
         <AdminSearchForm v-model:model="query" :fields="searchFields" @reset="resetQuery" />
       </template>
@@ -60,7 +85,25 @@ onMounted(fetchRows)
         </el-button>
       </template>
 
-      <ConfigDataTable :loading="loading" :data="filteredData" :columns="tableColumns">
+      <ConfigDataTable
+        :loading="loading"
+        :data="filteredData"
+        :columns="tableColumns"
+        :table="{
+          selection: true,
+          batchActions: [{
+            key: 'delete',
+            text: t('tableEnhance.batchDelete'),
+            type: 'danger',
+            auth: Permissions.COMMERCE_RESTAURANT_DELETE,
+          }],
+          preferencesKey: 'commerce.restaurant.table',
+          density: 'default',
+          exportable: true,
+          exportFileName: 'restaurants.csv',
+        }"
+        @batch-action="handleBatchAction"
+      >
         <CrudActionColumn
           :edit-action="{ auth: Permissions.COMMERCE_RESTAURANT_EDIT }"
           :delete-action="{ auth: Permissions.COMMERCE_RESTAURANT_DELETE }"

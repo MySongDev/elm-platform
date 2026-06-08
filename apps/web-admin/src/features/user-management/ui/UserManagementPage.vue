@@ -21,6 +21,8 @@ const {
   filteredData,
   rules,
   permissionOptions,
+  tenantOptions,
+  shopOptions,
   isSelf,
   resetQuery,
   openCreateDialog,
@@ -29,6 +31,8 @@ const {
   submitForm,
   handleDelete,
   fetchPermissionOptions,
+  fetchTenantOptions,
+  fetchShopOptions,
 } = useUserManagement()
 
 const searchFields = computed(() => createUserSearchFields(t))
@@ -36,6 +40,8 @@ const searchFields = computed(() => createUserSearchFields(t))
 onMounted(() => {
   fetchUsers()
   fetchPermissionOptions()
+  fetchTenantOptions()
+  fetchShopOptions()
 })
 </script>
 
@@ -79,6 +85,8 @@ onMounted(() => {
       :is-edit="isEdit"
       :rules="rules"
       :permission-options="permissionOptions"
+      :tenant-options="tenantOptions"
+      :shop-options="shopOptions"
       @submit="submitForm"
     />
   </div>

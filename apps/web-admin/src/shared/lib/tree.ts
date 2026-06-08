@@ -32,8 +32,12 @@ export function filterTree<T extends TreeNode>(
   return items
     .map((item) => {
       const children = item.children ? filterTree(item.children as T[], predicate) : []
-      if (predicate(item) || children.length)
-        return { ...item, children: children.length ? children : item.children }
+      if (predicate(item) || children.length) {
+        return {
+          ...item,
+          children: children.length ? children : item.children,
+        }
+      }
       return null
     })
     .filter(Boolean) as T[]

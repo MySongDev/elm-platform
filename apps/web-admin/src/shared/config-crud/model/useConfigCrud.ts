@@ -22,6 +22,7 @@ export function useConfigCrud<
 >(options: UseConfigCrudOptions<Row, Query, Form, Payload, Id>) {
   const loading = shallowRef(false)
   const saving = shallowRef(false)
+  const error = shallowRef<unknown>(null)
   const dialogVisible = shallowRef(false)
   const tableData = shallowRef<Row[]>([])
   const query = reactive(options.getDefaultQuery()) as Query
@@ -78,10 +79,15 @@ export function useConfigCrud<
     fetchAbortController = controller
 
     loading.value = true
+    error.value = null
 
     try {
       const result = paginated
-        ? await options.fetchList({ page: pagination.page, pageSize: pagination.pageSize, query })
+        ? await options.fetchList({
+            page: pagination.page,
+            pageSize: pagination.pageSize,
+            query,
+          })
         : await options.fetchList()
 
       if (controller.signal.aborted)
@@ -95,6 +101,11 @@ export function useConfigCrud<
       else {
         tableData.value = result as Row[]
       }
+    }
+    catch (caughtError) {
+      if (!controller.signal.aborted)
+        error.value = caughtError
+      throw caughtError
     }
     finally {
       if (!controller.signal.aborted)
@@ -163,6 +174,7 @@ export function useConfigCrud<
   return {
     loading,
     saving,
+    error,
     dialogVisible,
     tableData,
     query,

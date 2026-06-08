@@ -21,10 +21,22 @@ const loginForm = reactive({
 })
 
 const rules: FormRules = {
-  account: [{ required: true, message: t('login.usernameRequired'), trigger: 'blur' }],
+  account: [{
+    required: true,
+    message: t('login.usernameRequired'),
+    trigger: 'blur',
+  }],
   password: [
-    { required: true, message: t('login.passwordRequired'), trigger: 'blur' },
-    { min: 6, message: t('login.passwordMin'), trigger: 'blur' },
+    {
+      required: true,
+      message: t('login.passwordRequired'),
+      trigger: 'blur',
+    },
+    {
+      min: 6,
+      message: t('login.passwordMin'),
+      trigger: 'blur',
+    },
   ],
 }
 

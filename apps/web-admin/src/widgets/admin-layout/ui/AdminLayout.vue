@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import MainContent from './MainContent/index.vue'
 import Sidebar from './Sidebar/index.vue'
-import TabBar from './TabBar/index.vue'
+import TabBar from './TabBarFromScratch/index.vue'
 import TopNavigation from './TopNavigation/index.vue'
 
 defineOptions({ name: 'AdminLayout' })

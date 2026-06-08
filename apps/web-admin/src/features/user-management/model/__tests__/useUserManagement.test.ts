@@ -61,6 +61,9 @@ function createForm(overrides: Partial<UserFormState> = {}): UserFormState {
     role: 'user',
     status: 1,
     permissions: [],
+    tenantId: null,
+    dataScope: 'ALL',
+    boundShopIds: [],
     ...overrides,
   }
 }
@@ -111,7 +114,10 @@ describe('toUserPayload', () => {
   })
 
   it('drops the password when updating a user', () => {
-    const payload = toUserPayload(createForm({ _userId: 1, password: 'ignored' }))
+    const payload = toUserPayload(createForm({
+      _userId: 1,
+      password: 'ignored',
+    }))
 
     expect(payload).not.toHaveProperty('password')
     expect(payload).not.toHaveProperty('_userId')
@@ -190,6 +196,9 @@ describe('useUserManagement save payloads', () => {
         role: 'user',
         status: 1,
         permissions: [],
+        tenantId: null,
+        dataScope: 'ALL',
+        boundShopIds: [],
       })
       expect(userApi.updateUser).not.toHaveBeenCalled()
     }
@@ -220,6 +229,9 @@ describe('useUserManagement save payloads', () => {
         role: 'user',
         status: 1,
         permissions: [],
+        tenantId: null,
+        dataScope: 'ALL',
+        boundShopIds: [],
       })
       expect(userApi.updateUser).not.toHaveBeenCalled()
       expect(crudFeedback.notifySaveSuccess).toHaveBeenCalledWith('user.createSuccess')
@@ -261,6 +273,9 @@ describe('useUserManagement save payloads', () => {
         role: 'admin',
         status: 1,
         permissions: ['user:view'],
+        tenantId: null,
+        dataScope: 'ALL',
+        boundShopIds: [],
       })
       expect(crudFeedback.notifySaveSuccess).toHaveBeenCalledWith('user.updateSuccess')
     }

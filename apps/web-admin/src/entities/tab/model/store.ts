@@ -16,15 +16,18 @@ import { getTabKey, isTabClosable, moveHomeTabFirst, routeToTab } from './lib'
  * @returns 页签集合、活动页签和页签操作函数。
  */
 export const useTabsStore = defineStore('tabs', () => {
+  // state
   const tabs = ref<TabItem[]>([])
   const activeTab = ref('')
 
+  // getters
   const cachedViews = computed(() =>
     tabs.value
       .map(t => t.cacheName || t.name)
       .filter((name): name is string => !!name),
   )
 
+  // actions
   function ensureHomeTabFirst() {
     const orderedTabs = moveHomeTabFirst(tabs.value)
     if (orderedTabs !== tabs.value)
@@ -50,8 +53,8 @@ export const useTabsStore = defineStore('tabs', () => {
     ensureHomeTabFirst()
   }
 
-  function shouldMoveActiveTab(tab: TabItem, fullPath: string) {
-    return activeTab.value === getTabKey(tab) || tab.fullPath === fullPath
+  function shouldMoveActiveTab(tab: TabItem) {
+    return activeTab.value === getTabKey(tab)
   }
 
   function getNextActiveTab(index: number) {
@@ -69,7 +72,7 @@ export const useTabsStore = defineStore('tabs', () => {
 
     tabs.value.splice(idx, 1)
 
-    if (shouldMoveActiveTab(tab, fullPath)) {
+    if (shouldMoveActiveTab(tab)) {
       const next = getNextActiveTab(idx)
       activeTab.value = next ? getTabKey(next) : DEFAULT_HOME_PATH
       return next?.fullPath ?? DEFAULT_HOME_PATH

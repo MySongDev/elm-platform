@@ -324,7 +324,11 @@ describe('validateMenuTree', () => {
 
   it('allows blank titles so adapters can apply fallback titles', () => {
     const issues = validateMenuTree([
-      createMenu({ title: '   ', path: '/monitor/system-logs', name: 'SystemLogs' }),
+      createMenu({
+        title: '   ',
+        path: '/monitor/system-logs',
+        name: 'SystemLogs',
+      }),
     ])
 
     expect(issues.filter(issue => issue.field === 'title')).toEqual([])
@@ -332,8 +336,15 @@ describe('validateMenuTree', () => {
 
   it('reports duplicate route names as warnings', () => {
     const issues = validateMenuTree([
-      createMenu({ name: 'SystemUser', path: '/system/user' }),
-      createMenu({ id: 2, name: 'SystemUser', path: '/system/user-copy' }),
+      createMenu({
+        name: 'SystemUser',
+        path: '/system/user',
+      }),
+      createMenu({
+        id: 2,
+        name: 'SystemUser',
+        path: '/system/user-copy',
+      }),
     ])
 
     expect(issues).toContainEqual(expect.objectContaining({

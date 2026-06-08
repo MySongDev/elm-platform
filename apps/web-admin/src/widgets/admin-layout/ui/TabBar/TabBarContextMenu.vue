@@ -37,7 +37,10 @@ const commands = computed(() =>
   }),
 )
 
-function handleCommand(item: { command: TabCommand, disabled: boolean }) {
+function handleCommand(item: {
+  command: TabCommand
+  disabled: boolean
+}) {
   if (!item.disabled)
     emit('command', item.command)
 }

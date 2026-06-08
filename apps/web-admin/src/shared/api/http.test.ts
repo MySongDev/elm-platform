@@ -48,12 +48,26 @@ describe('createHttpClient', () => {
   })
 
   it('returns unwrapped business data from typed methods', async () => {
-    axiosClient.get.mockResolvedValueOnce({ data: { code: 200, data: { id: 1, name: 'admin' } } })
+    axiosClient.get.mockResolvedValueOnce({
+      data: {
+        code: 200,
+        data: {
+          id: 1,
+          name: 'admin',
+        },
+      },
+    })
 
     const request = createHttpClient({})
-    const result = await request.get<{ id: number, name: string }>('/users/1')
+    const result = await request.get<{
+      id: number
+      name: string
+    }>('/users/1')
 
-    expect(result).toEqual({ id: 1, name: 'admin' })
+    expect(result).toEqual({
+      id: 1,
+      name: 'admin',
+    })
     expect(axiosClient.get).toHaveBeenCalledWith('/users/1', undefined)
   })
 })

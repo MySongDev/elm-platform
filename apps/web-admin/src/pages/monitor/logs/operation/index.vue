@@ -12,10 +12,16 @@ const { t } = useI18n()
 
 const { loading, filteredData, query, fetchRows, resetQuery } = useReadonlyTable<
   OperationLog,
-  { username: string, module: string }
+  {
+    username: string
+    module: string
+  }
 >({
   fetchApi: getOperationLogs,
-  queryDefaults: { username: '', module: '' },
+  queryDefaults: {
+    username: '',
+    module: '',
+  },
   filter: (data, q) => data.filter((item) => {
     const usernameMatched = !q.username || item.username.includes(q.username)
     const moduleMatched = !q.module || item.module.includes(q.module)

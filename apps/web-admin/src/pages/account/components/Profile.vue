@@ -4,6 +4,7 @@ import { ElMessage } from 'element-plus'
 import { useAuthStore } from '@/entities/session'
 import { transformI18n } from '@/shared/i18n'
 import { activePaneKey } from '../config'
+import { createProfileUpdatePayload } from '../model/profile'
 
 defineOptions({ name: 'AccountProfile' })
 
@@ -30,11 +31,23 @@ watch(() => authStore.userInfo, (info) => {
 
 const rules = computed<FormRules>(() => ({
   username: [
-    { required: true, message: t('profile.usernameRequired'), trigger: 'blur' },
-    { min: 2, message: t('profile.usernameMin'), trigger: 'blur' },
+    {
+      required: true,
+      message: t('profile.usernameRequired'),
+      trigger: 'blur',
+    },
+    {
+      min: 2,
+      message: t('profile.usernameMin'),
+      trigger: 'blur',
+    },
   ],
   email: [
-    { type: 'email', message: t('profile.emailInvalid'), trigger: 'blur' },
+    {
+      type: 'email',
+      message: t('profile.emailInvalid'),
+      trigger: 'blur',
+    },
   ],
 }))
 
@@ -45,11 +58,7 @@ async function handleSave() {
 
   loading.value = true
   try {
-    await authStore.updateUserInfo({
-      username: form.username,
-      email: form.email || undefined,
-      phone: form.phone || undefined,
-    })
+    await authStore.updateUserInfo(createProfileUpdatePayload(form))
     ElMessage.success(t('profile.updateSuccess'))
   }
   catch {

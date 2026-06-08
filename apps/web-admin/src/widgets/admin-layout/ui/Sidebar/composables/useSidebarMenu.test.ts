@@ -25,7 +25,10 @@ describe('resolveSidebarOpenKeys', () => {
     const routes: RouteRecordRaw[] = [
       {
         path: '/system',
-        meta: { title: 'route.system', alwaysShow: true },
+        meta: {
+          title: 'route.system',
+          alwaysShow: true,
+        },
         children: [
           {
             path: 'menu',

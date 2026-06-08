@@ -28,7 +28,10 @@ interface FormState {
 function createCrudOptions(overrides: Partial<Parameters<typeof useConfigCrud<Row, Query, FormState>>[0]> = {}) {
   return {
     getDefaultQuery: () => ({ name: '' }),
-    getDefaultForm: () => ({ id: 0, name: '' }),
+    getDefaultForm: () => ({
+      id: 0,
+      name: '',
+    }),
     fetchList: vi.fn<() => Promise<Row[]>>().mockResolvedValue([]),
     createItem: vi.fn<(payload: Partial<FormState>) => Promise<void>>().mockResolvedValue(undefined),
     updateItem: vi.fn<(id: number, payload: Partial<FormState>) => Promise<void>>().mockResolvedValue(undefined),
@@ -94,7 +97,10 @@ describe('useConfigCrud feedback adapter', () => {
       expect(options.createItem).toHaveBeenCalledWith(crud.form)
       expect(notifySaveSuccess).toHaveBeenLastCalledWith('创建好了')
 
-      crud.openEditDialog({ id: 1, name: 'Alice' })
+      crud.openEditDialog({
+        id: 1,
+        name: 'Alice',
+      })
       await crud.submitForm()
 
       expect(options.updateItem).toHaveBeenCalledWith(1, crud.form)
@@ -118,12 +124,47 @@ describe('useConfigCrud feedback adapter', () => {
     const { result: crud, dispose } = runInScope(() => useConfigCrud<Row, Query, FormState>(options))
 
     try {
-      await crud.handleDelete({ id: 1, name: 'Alice' })
+      await crud.handleDelete({
+        id: 1,
+        name: 'Alice',
+      })
       await nextTick()
 
       expect(confirmDelete).toHaveBeenCalledWith('删除 Alice?')
       expect(options.deleteItem).not.toHaveBeenCalled()
       expect(notifyDeleteSuccess).not.toHaveBeenCalled()
+    }
+    finally {
+      dispose()
+    }
+  })
+
+  it('records fetch errors and clears them before the next fetch', async () => {
+    const fetchError = new Error('fetch failed')
+    const options = createCrudOptions({
+      fetchList: vi.fn()
+        .mockRejectedValueOnce(fetchError)
+        .mockResolvedValueOnce([{
+          id: 1,
+          name: 'Alice',
+        }]),
+    })
+
+    const { result: crud, dispose } = runInScope(() => useConfigCrud<Row, Query, FormState>(options))
+
+    try {
+      await expect(crud.fetchRows()).rejects.toBe(fetchError)
+
+      expect(crud.error.value).toBe(fetchError)
+      expect(crud.loading.value).toBe(false)
+
+      await crud.fetchRows()
+
+      expect(crud.error.value).toBeNull()
+      expect(crud.tableData.value).toEqual([{
+        id: 1,
+        name: 'Alice',
+      }])
     }
     finally {
       dispose()

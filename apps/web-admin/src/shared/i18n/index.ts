@@ -13,8 +13,14 @@ import en from './lang/en'
 import zhCN from './lang/zh-CN'
 
 const localesConfigs = {
-  'zh-CN': { ...zhCN, ...zhLocale },
-  'en': { ...en, ...enLocale },
+  'zh-CN': {
+    ...zhCN,
+    ...zhLocale,
+  },
+  'en': {
+    ...en,
+    ...enLocale,
+  },
 }
 
 function getStoredLocale() {
@@ -89,7 +95,10 @@ export function useLocale() {
     return typeof currentLocale === 'string' ? currentLocale : currentLocale.value
   }
 
-  return { setLocale, getLocale }
+  return {
+    setLocale,
+    getLocale,
+  }
 }
 
 export default i18n

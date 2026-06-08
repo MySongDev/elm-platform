@@ -14,10 +14,22 @@ const { t } = useI18n()
 const notificationStore = useNotificationStore()
 const activeType = ref<NotificationItem['type']>('notification')
 
-const tabs: Array<{ label: string, value: NotificationItem['type'] }> = [
-  { label: 'notification.message', value: 'notification' },
-  { label: 'notification.message', value: 'message' },
-  { label: 'notification.todo', value: 'todo' },
+const tabs: Array<{
+  label: string
+  value: NotificationItem['type']
+}> = [
+  {
+    label: 'notification.message',
+    value: 'notification',
+  },
+  {
+    label: 'notification.message',
+    value: 'message',
+  },
+  {
+    label: 'notification.todo',
+    value: 'todo',
+  },
 ]
 
 const currentList = computed(() => notificationStore.getByType(activeType.value))

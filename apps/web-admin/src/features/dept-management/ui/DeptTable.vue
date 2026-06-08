@@ -25,6 +25,10 @@ defineEmits<{
 }>()
 const { t } = useI18n()
 const columns = computed(() => createDeptTableColumns(t))
+
+function asDeptItem(row: unknown) {
+  return row as DeptItem
+}
 </script>
 
 <template>
@@ -47,7 +51,7 @@ const columns = computed(() => createDeptTableColumns(t))
           type="primary"
           link
           :icon="IconEpPlus"
-          @click="$emit('create', row)"
+          @click="$emit('create', asDeptItem(row))"
         >
           {{ t('crud.add') }}
         </el-button>

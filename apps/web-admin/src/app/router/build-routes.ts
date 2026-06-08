@@ -97,7 +97,12 @@ function buildRouteNode(
   if (menu.children?.length) {
     const redirect = resolveFirstReachablePath(children ?? [], fullPath)
     const shouldAlwaysShow = (children?.length ?? 0) > 1 || children?.some(child => child.children?.length)
-    const catalogMeta = shouldAlwaysShow ? { ...meta, alwaysShow: true } : meta
+    const catalogMeta = shouldAlwaysShow
+      ? {
+          ...meta,
+          alwaysShow: true,
+        }
+      : meta
 
     if (!parentFullPath) {
       return {

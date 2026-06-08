@@ -70,7 +70,8 @@ a {
 
 .admin-search-control,
 .admin-search-control.el-select {
-  width: var(--app-search-control-width);
   --el-select-width: var(--app-search-control-width);
   --el-input-width: var(--app-search-control-width);
+
+  width: var(--app-search-control-width);
 }

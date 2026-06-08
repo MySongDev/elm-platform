@@ -14,10 +14,16 @@ const { t } = useI18n()
 
 const { loading, filteredData, query, fetchRows, resetQuery } = useReadonlyTable<
   OnlineUser,
-  { username: string, role: string }
+  {
+    username: string
+    role: string
+  }
 >({
   fetchApi: getOnlineUsers,
-  queryDefaults: { username: '', role: '' },
+  queryDefaults: {
+    username: '',
+    role: '',
+  },
   filter: (data, q) => data.filter((item) => {
     const usernameMatched = !q.username || item.username.includes(q.username)
     const roleMatched = !q.role || item.role === q.role
@@ -35,6 +41,10 @@ async function handleForceLogout(row: OnlineUser) {
   catch {
     // user cancelled or request error
   }
+}
+
+function asOnlineUser(row: unknown) {
+  return row as OnlineUser
 }
 </script>
 
@@ -114,7 +124,7 @@ async function handleForceLogout(row: OnlineUser) {
               type="danger"
               link
               :icon="IconEpSwitchButton"
-              @click="handleForceLogout(row)"
+              @click="handleForceLogout(asOnlineUser(row))"
             >
               {{ t('monitor.online.forceLogout') }}
             </el-button>

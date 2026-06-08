@@ -36,17 +36,6 @@ export function createDevMockLoginResult(account: string, rememberMe?: boolean) 
   }
 }
 
-export function getDevMockUserMenus(): UserMenuNode[] {
-  return cloneMenus(devMockUserMenus)
-}
-
-function cloneMenus(menus: UserMenuNode[]): UserMenuNode[] {
-  return menus.map(menu => ({
-    ...menu,
-    ...(menu.children ? { children: cloneMenus(menu.children) } : {}),
-  }))
-}
-
 const devMockUserMenus: UserMenuNode[] = [
   {
     id: 14,
@@ -236,6 +225,47 @@ const devMockUserMenus: UserMenuNode[] = [
         sort: 3,
         status: 1,
       },
+      {
+        id: 24,
+        parentId: 20,
+        title: '商家入驻审批',
+        path: '/commerce/merchant-onboarding',
+        name: 'MerchantOnboardingView',
+        icon: 'document',
+        permission: 'merchant:onboarding:view',
+        component: null,
+        type: 'menu',
+        sort: 4,
+        status: 1,
+      },
+    ],
+  },
+  {
+    id: 25,
+    parentId: null,
+    title: 'route.platformManagement',
+    path: '/platform',
+    name: 'Platform',
+    icon: 'system',
+    permission: null,
+    component: null,
+    type: 'catalog',
+    sort: 36,
+    status: 1,
+    children: [
+      {
+        id: 26,
+        parentId: 25,
+        title: 'route.tenantManagement',
+        path: '/platform/tenant',
+        name: 'TenantListView',
+        icon: 'system',
+        permission: 'platform:tenant:view',
+        component: null,
+        type: 'menu',
+        sort: 1,
+        status: 1,
+      },
     ],
   },
   {
@@ -416,3 +446,14 @@ const devMockUserMenus: UserMenuNode[] = [
     ],
   },
 ]
+
+export function getDevMockUserMenus(): UserMenuNode[] {
+  return cloneMenus(devMockUserMenus)
+}
+
+function cloneMenus(menus: UserMenuNode[]): UserMenuNode[] {
+  return menus.map(menu => ({
+    ...menu,
+    ...(menu.children ? { children: cloneMenus(menu.children) } : {}),
+  }))
+}

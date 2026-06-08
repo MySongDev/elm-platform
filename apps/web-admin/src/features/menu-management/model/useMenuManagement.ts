@@ -49,7 +49,10 @@ export function useMenuManagement() {
   const { t } = useI18n()
 
   const crud = useConfigCrud<MenuItem, MenuQuery, MenuFormState, Partial<MenuItem>>({
-    getDefaultQuery: () => ({ title: '', status: '' }),
+    getDefaultQuery: () => ({
+      title: '',
+      status: '',
+    }),
     getDefaultForm: () => ({ ...defaultForm }),
     fetchList: getMenus,
     createItem: createMenu,

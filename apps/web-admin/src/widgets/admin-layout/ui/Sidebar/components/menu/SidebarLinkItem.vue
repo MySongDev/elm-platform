@@ -19,7 +19,11 @@ const isExternalLink = computed(() => {
 const linkProps = computed(() => {
   if (typeof props.to === 'string') {
     return isExternalLink.value
-      ? { href: props.to, target: '_blank', rel: 'noopener' }
+      ? {
+          href: props.to,
+          target: '_blank',
+          rel: 'noopener',
+        }
       : { to: props.to }
   }
 
@@ -27,7 +31,11 @@ const linkProps = computed(() => {
     const href = typeof props.to.name === 'string' && HTTP_URL_RE.test(props.to.name)
       ? props.to.name
       : props.to.path
-    return { href, target: '_blank', rel: 'noopener' }
+    return {
+      href,
+      target: '_blank',
+      rel: 'noopener',
+    }
   }
 
   return { to: props.to.path }

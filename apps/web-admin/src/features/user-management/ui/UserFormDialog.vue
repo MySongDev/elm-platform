@@ -1,10 +1,4 @@
 <script setup lang="ts">
-/**
- * @file 用户表单弹窗
- * @domain features/user-management
- * @description 适配配置化表单弹窗，按新增/编辑状态生成用户字段并向父级提交保存事件。
- */
-
 import type { FormRules } from 'element-plus'
 import type { UserFormState } from '../model/useUserManagement'
 import type { ConfigFieldOption } from '@/shared/config-crud'
@@ -18,6 +12,8 @@ const props = defineProps<{
   isEdit: boolean
   rules: FormRules
   permissionOptions: ConfigFieldOption[]
+  tenantOptions: ConfigFieldOption[]
+  shopOptions: ConfigFieldOption[]
 }>()
 
 const emit = defineEmits<{
@@ -26,7 +22,7 @@ const emit = defineEmits<{
 const dialogVisible = defineModel<boolean>('visible', { required: true })
 const form = defineModel<UserFormState>('form', { required: true })
 const { t } = useI18n()
-const fields = computed(() => createUserFormFields(t, props.permissionOptions, props.isEdit))
+const fields = computed(() => createUserFormFields(t, props.permissionOptions, props.isEdit, props.tenantOptions, props.shopOptions))
 </script>
 
 <template>

@@ -1,5 +1,5 @@
 {
-  "name": "elm-web-admin",
+  "name": "@elm-platform/web-admin",
   "type": "module",
   "version": "0.1.0",
   "private": true,
@@ -48,3 +48,4 @@
     "vue-tsc": "catalog:"
   }
 }
+

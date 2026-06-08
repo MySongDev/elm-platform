@@ -61,7 +61,10 @@ export function useFoodManagement() {
   const { t } = useI18n()
 
   const crud = useConfigCrud<FoodItem, FoodQuery, FoodFormState, FoodPayload>({
-    getDefaultQuery: () => ({ name: '', restaurantId: '' }),
+    getDefaultQuery: () => ({
+      name: '',
+      restaurantId: '',
+    }),
     getDefaultForm: () => ({ ...defaultForm }),
     fetchList: getCommerceFoods,
     createItem: createCommerceFood,
@@ -114,8 +117,16 @@ export function useFoodManagement() {
   })
 
   const rules: FormRules = {
-    name: [{ required: true, message: t('commerce.food.nameRequired'), trigger: 'blur' }],
-    restaurant_id: [{ required: true, message: t('commerce.food.restaurantIdRequired'), trigger: 'blur' }],
+    name: [{
+      required: true,
+      message: t('commerce.food.nameRequired'),
+      trigger: 'blur',
+    }],
+    restaurant_id: [{
+      required: true,
+      message: t('commerce.food.restaurantIdRequired'),
+      trigger: 'blur',
+    }],
   }
 
   return {

@@ -10,7 +10,10 @@ import type { CreateUserParams, UpdateUserParams, UserInfo, UserListQuery } from
 import { ElMessage } from 'element-plus'
 import { getButtonPermissions } from '@/entities/permission'
 import { useAuthStore } from '@/entities/session'
+import { getTenantList } from '@/entities/tenant'
 import { createUser, deleteUser, getUserList, updateUser } from '@/entities/user'
+import { adminEndpoints } from '@/shared/api/endpoints'
+import request from '@/shared/api/request'
 import { createElementPlusCrudFeedback, useConfigCrud } from '@/shared/config-crud'
 import { toUserPayload } from './payload'
 
@@ -24,6 +27,9 @@ const defaultForm: UserFormState = {
   role: 'user',
   status: 1,
   permissions: [],
+  tenantId: null,
+  dataScope: 'ALL',
+  boundShopIds: [],
   _userId: undefined,
 }
 
@@ -34,11 +40,29 @@ const defaultForm: UserFormState = {
 export function useUserManagement() {
   const { t } = useI18n()
   const authStore = useAuthStore()
-  const permissionOptions = ref<{ label: string, value: string }[]>([])
+  const permissionOptions = ref<{
+    label: string
+    value: string
+  }[]>([])
+  const tenantOptions = ref<{
+    label: string
+    value: number
+  }[]>([])
+  const shopOptions = ref<{
+    label: string
+    value: string
+  }[]>([])
 
   const crud = useConfigCrud<UserInfo, UserListQuery, UserFormState, CreateUserParams | UpdateUserParams, number>({
-    getDefaultQuery: () => ({ username: '', role: '' as UserListQuery['role'], status: '' as UserListQuery['status'] }),
-    getDefaultForm: () => ({ ...defaultForm, permissions: [] }),
+    getDefaultQuery: () => ({
+      username: '',
+      role: '' as UserListQuery['role'],
+      status: '' as UserListQuery['status'],
+    }),
+    getDefaultForm: () => ({
+      ...defaultForm,
+      permissions: [],
+    }),
     fetchList: async () => {
       const list = await getUserList()
       return list.sort((a, b) => {
@@ -74,6 +98,9 @@ export function useUserManagement() {
       role: row.role,
       status: row.status,
       permissions: [...row.permissions],
+      tenantId: row.tenant?.id ?? null,
+      dataScope: row.dataScope || 'ALL',
+      boundShopIds: [...(row.boundShopIds || [])],
       _userId: row.id,
     }),
     toPayload: toUserPayload,
@@ -85,15 +112,35 @@ export function useUserManagement() {
 
   const rules = computed<FormRules>(() => ({
     username: [
-      { required: true, message: t('user.usernameRequired'), trigger: 'blur' },
-      { min: 2, message: t('user.usernameMin'), trigger: 'blur' },
+      {
+        required: true,
+        message: t('user.usernameRequired'),
+        trigger: 'blur',
+      },
+      {
+        min: 2,
+        message: t('user.usernameMin'),
+        trigger: 'blur',
+      },
     ],
     password: [
-      { required: !crud.isEdit.value, message: t('user.passwordRequired'), trigger: 'blur' },
-      { min: 6, message: t('user.passwordMin'), trigger: 'blur' },
+      {
+        required: !crud.isEdit.value,
+        message: t('user.passwordRequired'),
+        trigger: 'blur',
+      },
+      {
+        min: 6,
+        message: t('user.passwordMin'),
+        trigger: 'blur',
+      },
     ],
     email: [
-      { type: 'email', message: t('user.emailInvalid'), trigger: 'blur' },
+      {
+        type: 'email',
+        message: t('user.emailInvalid'),
+        trigger: 'blur',
+      },
     ],
   }))
 
@@ -111,16 +158,43 @@ export function useUserManagement() {
 
   async function fetchPermissionOptions() {
     const buttons = await getButtonPermissions().catch(() => [])
-    permissionOptions.value = buttons.map(item => ({ label: `${item.name}（${item.code}）`, value: item.code }))
+    permissionOptions.value = buttons.map(item => ({
+      label: `${item.name}（${item.code}）`,
+      value: item.code,
+    }))
+  }
+
+  async function fetchTenantOptions() {
+    const tenants = await getTenantList().catch(() => [])
+    tenantOptions.value = tenants.map(t => ({
+      label: `${t.name}（${t.code}）`,
+      value: t.id,
+    }))
+  }
+
+  async function fetchShopOptions() {
+    interface ShopItem {
+      id: number
+      name: string
+    }
+    const restaurants = await request.get<ShopItem[]>(adminEndpoints.commerce.restaurants).catch(() => [])
+    shopOptions.value = restaurants.map(r => ({
+      label: r.name,
+      value: String(r.id),
+    }))
   }
 
   return {
     ...crud,
     rules,
     permissionOptions,
+    tenantOptions,
+    shopOptions,
     isSelf,
     handleDelete,
     fetchUsers: crud.fetchRows,
     fetchPermissionOptions,
+    fetchTenantOptions,
+    fetchShopOptions,
   }
 }

@@ -10,7 +10,7 @@ import axios from 'axios'
 export interface HttpClientOptions {
   getToken?: () => string
   onUnauthorized?: () => void
-  onForbidden?: () => void
+  onForbidden?: (message?: string) => void
   onError?: (message: string) => void
 }
 
@@ -102,7 +102,7 @@ export function createHttpClient(options: HttpClientOptions): TypedHttpClient {
         options.onUnauthorized?.()
       }
       else if (status === 403) {
-        options.onForbidden?.()
+        options.onForbidden?.(getErrorMessage(error, ''))
       }
       else {
         options.onError?.(getErrorMessage(error, '网络异常'))

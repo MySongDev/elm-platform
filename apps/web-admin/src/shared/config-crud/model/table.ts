@@ -6,6 +6,7 @@ export interface ConfigTableColumnTag {
 }
 
 export interface ConfigTableColumn<Row extends object = object> {
+  key?: string
   prop?: keyof Row & string
   label: string
   width?: string | number
@@ -13,15 +14,34 @@ export interface ConfigTableColumn<Row extends object = object> {
   fixed?: boolean | 'left' | 'right'
   showOverflowTooltip?: boolean
   emptyText?: string
+  hideable?: boolean
+  defaultVisible?: boolean
+  exportable?: boolean
   formatter?: (row: Row) => string | number | null | undefined
   tag?: (row: Row) => ConfigTableColumnTag
 }
 
-export interface ConfigDataTableOptions {
+export type ConfigTableDensity = 'default' | 'comfortable' | 'compact'
+
+export interface ConfigTableBatchAction<Row extends object = object> {
+  key: string
+  text: string
+  type?: 'primary' | 'success' | 'warning' | 'danger' | 'info'
+  auth?: string | string[]
+  disabled?: (rows: Row[]) => boolean
+}
+
+export interface ConfigDataTableOptions<Row extends object = object> {
   rowKey?: string
   border?: boolean
   stripe?: boolean
   defaultExpandAll?: boolean
+  selection?: boolean
+  batchActions?: ConfigTableBatchAction<Row>[]
+  preferencesKey?: string
+  density?: ConfigTableDensity
+  exportable?: boolean
+  exportFileName?: string
 }
 
 export const DEFAULT_CONFIG_DATA_TABLE_OPTIONS: Required<
@@ -29,6 +49,7 @@ export const DEFAULT_CONFIG_DATA_TABLE_OPTIONS: Required<
 > = {
   border: true,
   stripe: true,
+  // 是否展开所有表格行
   defaultExpandAll: false,
 }
 

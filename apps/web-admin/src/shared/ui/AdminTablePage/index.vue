@@ -1,17 +1,29 @@
 <script setup lang="ts">
+import type { AdminEmptyReason, AdminSkeletonVariant } from '@/shared/ui/state'
 import { IconRefresh as IconEpRefresh } from '@iconify-prerendered/vue-ep'
+import { AdminStateView } from '@/shared/ui/state'
 
 defineOptions({ name: 'AdminTablePage' })
 
 withDefaults(defineProps<{
   title: string
   loading?: boolean
+  error?: unknown | string
+  empty?: boolean
+  emptyReason?: AdminEmptyReason
+  forbidden?: boolean
+  skeleton?: AdminSkeletonVariant | false
 }>(), {
   loading: false,
+  error: undefined,
+  empty: false,
+  emptyReason: 'no-data',
+  forbidden: false,
 })
 
 const emit = defineEmits<{
   refresh: []
+  clearFilter: []
 }>()
 </script>
 
@@ -35,7 +47,18 @@ const emit = defineEmits<{
     </div>
 
     <div class="admin-table-page__body">
-      <slot />
+      <AdminStateView
+        :loading="loading"
+        :error="error"
+        :empty="empty"
+        :empty-reason="emptyReason"
+        :forbidden="forbidden"
+        :skeleton="skeleton ?? false"
+        @retry="emit('refresh')"
+        @clear-filter="emit('clearFilter')"
+      >
+        <slot />
+      </AdminStateView>
     </div>
   </div>
 </template>

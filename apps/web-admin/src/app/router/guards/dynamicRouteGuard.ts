@@ -24,25 +24,39 @@ export function setupDynamicRouteGuard(router: Router) {
       if (!authStore.userInfo)
         await authStore.getUserInfo()
 
-      if (!authStore.isLoggedIn)
-        return { path: LOGIN_PATH, query: { redirect: to.fullPath } }
+      if (!authStore.isLoggedIn) {
+        return {
+          path: LOGIN_PATH,
+          query: { redirect: to.fullPath },
+        }
+      }
 
       if (!authStore.routesLoaded) {
         const menus = await authStore.loadUserMenus()
         const routes = buildRoutes(menus)
         authStore.setMenuRoutes(routes)
         registerDynamicRoutes(router, routes)
-        return { path: to.fullPath, replace: true }
+        return {
+          path: to.fullPath,
+          replace: true,
+        }
       }
     }
     catch {
       if (!authStore.isLoggedIn) {
         resetDynamicRoutes()
-        return { path: LOGIN_PATH, query: { redirect: to.fullPath } }
+        return {
+          path: LOGIN_PATH,
+          query: { redirect: to.fullPath },
+        }
       }
       if (authStore.routesLoaded)
         return true
-      return { path: SERVER_ERROR_PATH, query: { redirect: to.fullPath }, replace: true }
+      return {
+        path: SERVER_ERROR_PATH,
+        query: { redirect: to.fullPath },
+        replace: true,
+      }
     }
 
     return true

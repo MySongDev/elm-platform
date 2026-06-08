@@ -33,7 +33,10 @@ export function filterRoutesByRole(routes: RouteRecordRaw[], role: Role | undefi
     })
     .map((r) => {
       if (r.children) {
-        return { ...r, children: filterRoutesByRole(r.children, role) }
+        return {
+          ...r,
+          children: filterRoutesByRole(r.children, role),
+        }
       }
       return r
     })
@@ -57,12 +60,18 @@ export function filterRoutesByAccess(
   role: Role | undefined,
   userPermissions: string[],
 ): RouteRecordRaw[] {
-  const user: RouteAccessUser = { role, permissions: userPermissions }
+  const user: RouteAccessUser = {
+    role,
+    permissions: userPermissions,
+  }
   return routes
     .filter(route => canAccessRoute(route, user))
     .map((r) => {
       if (r.children) {
-        return { ...r, children: filterRoutesByAccess(r.children, role, userPermissions) }
+        return {
+          ...r,
+          children: filterRoutesByAccess(r.children, role, userPermissions),
+        }
       }
       return r
     })

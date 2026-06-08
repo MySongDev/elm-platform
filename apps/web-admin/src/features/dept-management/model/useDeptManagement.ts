@@ -45,7 +45,10 @@ export function useDeptManagement() {
   const { t } = useI18n()
 
   const crud = useConfigCrud<DeptItem, DeptQuery, DeptFormState, Partial<DeptItem>>({
-    getDefaultQuery: () => ({ name: '', status: '' }),
+    getDefaultQuery: () => ({
+      name: '',
+      status: '',
+    }),
     getDefaultForm: () => ({ ...defaultForm }),
     fetchList: getDepts,
     createItem: createDept,
@@ -75,7 +78,11 @@ export function useDeptManagement() {
   })
 
   const rules: FormRules = {
-    name: [{ required: true, message: t('dept.nameRequired'), trigger: 'blur' }],
+    name: [{
+      required: true,
+      message: t('dept.nameRequired'),
+      trigger: 'blur',
+    }],
   }
 
   const parentOptions = computed(() => flattenTree(crud.tableData.value).filter(item => item.id !== crud.form.id))

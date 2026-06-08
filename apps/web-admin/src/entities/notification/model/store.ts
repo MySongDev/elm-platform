@@ -13,8 +13,10 @@ import { computed, ref } from 'vue'
  * @returns 通知集合、未读统计和通知操作函数。
  */
 export const useNotificationStore = defineStore('notification', () => {
+  // state
   const notifications = ref<NotificationItem[]>([])
 
+  // getters
   const unreadCount = computed(() =>
     notifications.value.filter(n => !n.read).length,
   )
@@ -29,6 +31,7 @@ export const useNotificationStore = defineStore('notification', () => {
       notifications.value.filter(n => n.type === type && !n.read).length
   })
 
+  // actions
   function addNotification(item: Omit<NotificationItem, 'id' | 'read'>) {
     notifications.value.unshift({
       ...item,

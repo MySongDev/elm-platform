@@ -41,8 +41,8 @@ const isSidebarHover = shallowRef(false)
   height: 100vh;
   overflow: visible;
   font-size: 0;
+  user-select: none;
   background: $sidebar-bg;
   border-right: 1px solid rgb(5 5 5 / 6%);
-  user-select: none;
 }
 </style>

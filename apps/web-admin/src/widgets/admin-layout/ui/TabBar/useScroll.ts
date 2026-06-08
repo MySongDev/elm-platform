@@ -32,7 +32,10 @@ export function useScrollManager() {
     if (!el)
       return
     const distance = Math.max(MIN_SCROLL_DISTANCE, Math.floor(el.clientWidth * SCROLL_DISTANCE_RATIO))
-    el.scrollBy({ left: direction === 'left' ? -distance : distance, behavior: 'smooth' })
+    el.scrollBy({
+      left: direction === 'left' ? -distance : distance,
+      behavior: 'smooth',
+    })
   }
 
   function handleWheel(e: WheelEvent) {
@@ -42,13 +45,20 @@ export function useScrollManager() {
 
     e.preventDefault()
     const offset = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY
-    el.scrollBy({ left: offset, behavior: 'auto' })
+    el.scrollBy({
+      left: offset,
+      behavior: 'auto',
+    })
   }
 
   function scrollActiveIntoView(selector = '.tab-item.is-active') {
     nextTick(() => {
       const activeEl = scrollContainer.value?.querySelector(selector)
-      activeEl?.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'nearest' })
+      activeEl?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'nearest',
+        inline: 'nearest',
+      })
       updateScrollState()
     })
   }

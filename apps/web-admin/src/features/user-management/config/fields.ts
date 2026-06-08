@@ -10,15 +10,26 @@ import { createEnabledStatusOptions, createEnabledStatusSearchOptions, formatDat
 
 export function createUserSearchFields(t: Translate) {
   return [
-    { prop: 'username', label: t('user.username'), type: 'input', placeholder: t('user.usernamePlaceholder') },
+    {
+      prop: 'username',
+      label: t('user.username'),
+      type: 'input',
+      placeholder: t('user.usernamePlaceholder'),
+    },
     {
       prop: 'role',
       label: t('user.role'),
       type: 'select',
       placeholder: t('user.role'),
       options: [
-        { label: t('common.admin'), value: 'admin' },
-        { label: t('common.user'), value: 'user' },
+        {
+          label: t('common.admin'),
+          value: 'admin',
+        },
+        {
+          label: t('common.user'),
+          value: 'user',
+        },
       ],
     },
     {
@@ -33,40 +44,143 @@ export function createUserSearchFields(t: Translate) {
 
 export function createUserTableColumns(t: Translate) {
   return [
-    { prop: 'id', label: 'ID', width: 80 },
-    { prop: 'username', label: t('user.username'), minWidth: 120 },
+    {
+      prop: 'id',
+      label: 'ID',
+      width: 80,
+    },
+    {
+      prop: 'username',
+      label: t('user.username'),
+      minWidth: 120,
+    },
     {
       label: t('user.role'),
       width: 130,
       tag: row => row.role === 'admin'
-        ? { label: t('common.admin'), type: 'danger' as const }
-        : { label: t('common.user'), type: 'info' as const },
+        ? {
+            label: t('common.admin'),
+            type: 'danger' as const,
+          }
+        : {
+            label: t('common.user'),
+            type: 'info' as const,
+          },
     },
-    { prop: 'email', label: t('user.email'), minWidth: 180 },
-    { prop: 'phone', label: t('user.phone'), minWidth: 140 },
-    { label: t('user.status'), width: 100, tag: row => getEnabledStatusTag(row.status, getStatusText(t)) },
-    { label: t('user.createdAt'), minWidth: 180, formatter: row => formatDateTime(row.createdAt) },
+    {
+      prop: 'email',
+      label: t('user.email'),
+      minWidth: 180,
+    },
+    {
+      prop: 'phone',
+      label: t('user.phone'),
+      minWidth: 140,
+    },
+    {
+      label: t('user.status'),
+      width: 100,
+      tag: row => getEnabledStatusTag(row.status, getStatusText(t)),
+    },
+    {
+      label: t('user.createdAt'),
+      minWidth: 180,
+      formatter: row => formatDateTime(row.createdAt),
+    },
   ] satisfies ConfigTableColumn<UserInfo>[]
 }
 
-export function createUserFormFields(t: Translate, permissionOptions: ConfigFieldOption[], isEdit: boolean) {
+export function createUserFormFields(t: Translate, permissionOptions: ConfigFieldOption[], isEdit: boolean, tenantOptions: ConfigFieldOption[] = [], shopOptions: ConfigFieldOption[] = []) {
   return [
-    { prop: 'username', label: t('user.username'), type: 'input', placeholder: t('user.usernamePlaceholder') },
+    {
+      prop: 'username',
+      label: t('user.username'),
+      type: 'input',
+      placeholder: t('user.usernamePlaceholder'),
+    },
     ...(!isEdit
-      ? [{ prop: 'password', label: t('login.password'), type: 'password' as const, placeholder: t('user.passwordPlaceholder'), showPassword: true }]
+      ? [{
+          prop: 'password',
+          label: t('login.password'),
+          type: 'password' as const,
+          placeholder: t('user.passwordPlaceholder'),
+          showPassword: true,
+        }]
       : []),
     {
       prop: 'role',
       label: t('user.role'),
       type: 'radio',
       options: [
-        { label: t('common.admin'), value: 'admin' },
-        { label: t('common.user'), value: 'user' },
+        {
+          label: t('common.admin'),
+          value: 'admin',
+        },
+        {
+          label: t('common.user'),
+          value: 'user',
+        },
       ],
     },
-    { prop: 'status', label: t('user.status'), type: 'radio', options: createEnabledStatusOptions(getStatusText(t)) },
-    { prop: 'email', label: t('user.email'), type: 'input', placeholder: t('user.emailPlaceholder') },
-    { prop: 'phone', label: t('user.phone'), type: 'input', placeholder: t('user.phonePlaceholder') },
+    {
+      prop: 'dataScope',
+      label: '数据范围',
+      type: 'select',
+      placeholder: '请选择数据范围',
+      options: [
+        {
+          label: '全部（平台管理员）',
+          value: 'ALL',
+        },
+        {
+          label: '租户',
+          value: 'TENANT',
+        },
+        {
+          label: '店铺',
+          value: 'SHOP',
+        },
+      ],
+    },
+    {
+      prop: 'tenantId',
+      label: '所属租户',
+      type: 'select',
+      placeholder: '请选择租户',
+      filterable: true,
+      options: tenantOptions,
+      showWhen: (model: Record<string, unknown>) => model.dataScope !== 'ALL',
+    },
+    {
+      prop: 'boundShopIds',
+      label: '绑定店铺',
+      type: 'select',
+      placeholder: '请选择绑定店铺',
+      multiple: true,
+      filterable: true,
+      collapseTags: true,
+      collapseTagsTooltip: true,
+      options: shopOptions,
+      showWhen: (model: Record<string, unknown>) => model.dataScope === 'SHOP',
+    },
+    {
+      prop: 'status',
+      label: t('user.status'),
+      type: 'radio',
+      options: createEnabledStatusOptions(getStatusText(t)),
+    },
+    {
+      prop: 'email',
+      label: t('user.email'),
+      type: 'input',
+      placeholder: t('user.emailPlaceholder'),
+    },
+    {
+      prop: 'phone',
+      label: t('user.phone'),
+      type: 'input',
+      placeholder: t('user.phonePlaceholder'),
+    },
     {
       prop: 'permissions',
       label: t('user.permissions'),

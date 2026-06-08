@@ -26,6 +26,10 @@ defineEmits<{
 
 const { t } = useI18n()
 const columns = computed(() => createUserTableColumns(t))
+
+function asUserInfo(row: unknown) {
+  return row as UserInfo
+}
 </script>
 
 <template>
@@ -41,8 +45,8 @@ const columns = computed(() => createUserTableColumns(t))
           type="danger"
           link
           :icon="IconEpDelete"
-          :disabled="isSelf(row)"
-          @click="$emit('delete', row)"
+          :disabled="isSelf(asUserInfo(row))"
+          @click="$emit('delete', asUserInfo(row))"
         >
           {{ t('common.delete') }}
         </el-button>

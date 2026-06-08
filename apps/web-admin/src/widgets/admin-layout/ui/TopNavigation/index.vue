@@ -4,6 +4,7 @@ import HeaderSidebarToggle from './HeaderSidebarToggle/index.vue'
 import LangSwitcher from './LangSwitcher/index.vue'
 import NotificationBell from './NotificationBell/index.vue'
 import SearchButton from './SearchButton/index.vue'
+import TenantContextBadge from './TenantContextBadge/index.vue'
 import UserMenu from './UserMenu/index.vue'
 
 defineOptions({ name: 'TopNavigation' })
@@ -28,6 +29,7 @@ const emit = defineEmits<{
     </div>
 
     <div class="app-header__right">
+      <TenantContextBadge />
       <SearchButton />
       <NotificationBell />
       <LangSwitcher />

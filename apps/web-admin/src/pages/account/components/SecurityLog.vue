@@ -1,9 +1,8 @@
 <script setup lang="ts">
-import type { SecurityLog } from '@/entities/session'
-import { getSecurityLogs } from '@/entities/session'
 import { transformI18n } from '@/shared/i18n'
 import { formatDateTime } from '@/shared/lib/format'
 import { activePaneKey } from '../config'
+import { securityLogPageSizes, useSecurityLogTable } from '../model/security-log'
 
 defineOptions({ name: 'AccountSecurityLog' })
 
@@ -11,39 +10,14 @@ const { t } = useI18n()
 const activePaneInfo = inject(activePaneKey)
 const sectionTitle = computed(() => activePaneInfo?.value ? transformI18n(activePaneInfo.value.label) : '')
 
-const loading = ref(true)
-const dataList = ref<SecurityLog[]>([])
-const pagination = reactive({
-  total: 0,
-  pageSize: 10,
-  currentPage: 1,
-  background: true,
-})
-
-async function fetchData() {
-  loading.value = true
-  try {
-    const res = await getSecurityLogs({
-      page: pagination.currentPage,
-      pageSize: pagination.pageSize,
-    })
-    dataList.value = res.list
-    pagination.total = res.total
-    pagination.currentPage = res.page
-    pagination.pageSize = res.pageSize
-  }
-  catch {
-    // error handled by request interceptor
-  }
-  finally {
-    loading.value = false
-  }
-}
-
-function handleCurrentChange(page: number) {
-  pagination.currentPage = page
-  fetchData()
-}
+const {
+  loading,
+  dataList,
+  pagination,
+  fetchData,
+  handleCurrentChange,
+  handleSizeChange,
+} = useSecurityLogTable()
 
 onMounted(() => {
   fetchData()
@@ -82,11 +56,13 @@ onMounted(() => {
     <div class="pagination-wrapper">
       <el-pagination
         v-model:current-page="pagination.currentPage"
-        :page-size="pagination.pageSize"
+        v-model:page-size="pagination.pageSize"
+        :page-sizes="securityLogPageSizes"
         :total="pagination.total"
         :disabled="loading"
-        layout="total, prev, pager, next"
+        layout="total, sizes, prev, pager, next"
         :background="pagination.background"
+        @size-change="handleSizeChange"
         @current-change="handleCurrentChange"
       />
     </div>

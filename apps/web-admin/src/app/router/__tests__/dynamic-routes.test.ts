@@ -1,5 +1,9 @@
 import type { Router, RouteRecordRaw } from 'vue-router'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { createMemoryHistory, createRouter } from 'vue-router'
+import { getDevMockUserMenus } from '@/entities/session/model/dev-auth'
+import { getDashboardOverview } from '@/features/dashboard/api/dashboard'
+import { buildRoutes } from '../build-routes'
 import { registerDynamicRoutes, resetDynamicRoutes } from '../dynamic-routes'
 
 vi.mock('@/locales', () => ({
@@ -29,8 +33,14 @@ describe('dynamic routes', () => {
   it('registers dynamic routes and the not-found route', () => {
     const { router, addRoute, addedRoutes } = createRouterStub()
     const routes: RouteRecordRaw[] = [
-      { path: '/system', component: {} },
-      { path: '/monitor', component: {} },
+      {
+        path: '/system',
+        component: {},
+      },
+      {
+        path: '/monitor',
+        component: {},
+      },
     ]
 
     registerDynamicRoutes(router, routes)
@@ -53,8 +63,14 @@ describe('dynamic routes', () => {
       .mockReturnValue(vi.fn())
     const router = { addRoute } as unknown as Router
 
-    registerDynamicRoutes(router, [{ path: '/first', component: {} }])
-    registerDynamicRoutes(router, [{ path: '/second', component: {} }])
+    registerDynamicRoutes(router, [{
+      path: '/first',
+      component: {},
+    }])
+    registerDynamicRoutes(router, [{
+      path: '/second',
+      component: {},
+    }])
 
     expect(firstRemove).toHaveBeenCalledTimes(1)
     expect(secondRemove).toHaveBeenCalledTimes(1)
@@ -68,10 +84,38 @@ describe('dynamic routes', () => {
       .mockReturnValueOnce(notFoundRemove)
     const router = { addRoute } as unknown as Router
 
-    registerDynamicRoutes(router, [{ path: '/system', component: {} }])
+    registerDynamicRoutes(router, [{
+      path: '/system',
+      component: {},
+    }])
     resetDynamicRoutes()
 
     expect(routeRemove).toHaveBeenCalledTimes(1)
     expect(notFoundRemove).toHaveBeenCalledTimes(1)
+  })
+
+  it('registers dev mock routes used by dashboard pending work navigation', async () => {
+    const router = createRouter({
+      history: createMemoryHistory(),
+      routes: [],
+    })
+    const routes = buildRoutes(getDevMockUserMenus())
+    const overview = await getDashboardOverview()
+
+    registerDynamicRoutes(router, routes)
+
+    const pendingRouteNames = overview.pendingItems
+      .map(item => item.routeName)
+      .filter((name): name is string => Boolean(name))
+
+    expect(pendingRouteNames).toContain('TenantListView')
+    expect(
+      pendingRouteNames.map(name => router.resolve({ name }).path),
+    ).toEqual([
+      '/commerce/order',
+      '/commerce/order',
+      '/platform/tenant',
+      '/monitor/system-logs',
+    ])
   })
 })

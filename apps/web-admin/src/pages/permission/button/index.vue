@@ -11,10 +11,18 @@ const { t } = useI18n()
 
 const { loading, filteredData, query, fetchRows, resetQuery } = useReadonlyTable<
   ButtonPermission,
-  { name: string, code: string, group: string }
+  {
+    name: string
+    code: string
+    group: string
+  }
 >({
   fetchApi: getButtonPermissions,
-  queryDefaults: { name: '', code: '', group: '' },
+  queryDefaults: {
+    name: '',
+    code: '',
+    group: '',
+  },
   filter: (data, q) => data.filter((item) => {
     const nameMatched = !q.name || item.name.includes(q.name)
     const codeMatched = !q.code || item.code.includes(q.code)

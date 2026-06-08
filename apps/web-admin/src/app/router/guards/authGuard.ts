@@ -17,8 +17,12 @@ export function setupAuthGuard(router: Router) {
     if (!authStore.isLoggedIn) {
       resetDynamicRoutes()
       authStore.resetRouteState()
-      if (to.meta.requiresAuth !== false)
-        return { path: LOGIN_PATH, query: { redirect: to.fullPath } }
+      if (to.meta.requiresAuth !== false) {
+        return {
+          path: LOGIN_PATH,
+          query: { redirect: to.fullPath },
+        }
+      }
       return true
     }
 

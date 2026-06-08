@@ -71,6 +71,28 @@ describe('tabs store dashboard ordering', () => {
     ])
   })
 
+  it('keeps the active tab when closing a non-active tab on the left', async () => {
+    const { useTabsStore } = await import('../store')
+    const store = useTabsStore()
+
+    store.addTab(createRoute('/a'))
+    store.addTab(createRoute('/b'))
+    store.addTab(createRoute('/c'))
+    store.addTab(createRoute('/d'))
+    store.addTab(createRoute('/e'))
+
+    expect(store.activeTab).toBe('/e')
+
+    expect(store.closeTab('/b')).toBeNull()
+    expect(store.activeTab).toBe('/e')
+    expect(store.tabs.map(tab => tab.fullPath)).toEqual([
+      '/a',
+      '/c',
+      '/d',
+      '/e',
+    ])
+  })
+
   it('keeps the dashboard tab when closing other or all tabs', async () => {
     const { useTabsStore } = await import('../store')
     const store = useTabsStore()

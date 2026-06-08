@@ -11,26 +11,72 @@ import { createEnabledStatusOptions, createEnabledStatusSearchOptions, formatDat
 
 export function createRoleSearchFields(t: Translate) {
   return [
-    { prop: 'name', label: t('role.name'), type: 'input', placeholder: t('role.namePlaceholder') },
-    { prop: 'code', label: t('role.code'), type: 'input', placeholder: t('role.codePlaceholder') },
-    { prop: 'status', label: t('role.status'), type: 'select', placeholder: t('common.search'), options: createEnabledStatusSearchOptions(getStatusText(t)) },
+    {
+      prop: 'name',
+      label: t('role.name'),
+      type: 'input',
+      placeholder: t('role.namePlaceholder'),
+    },
+    {
+      prop: 'code',
+      label: t('role.code'),
+      type: 'input',
+      placeholder: t('role.codePlaceholder'),
+    },
+    {
+      prop: 'status',
+      label: t('role.status'),
+      type: 'select',
+      placeholder: t('common.search'),
+      options: createEnabledStatusSearchOptions(getStatusText(t)),
+    },
   ] satisfies ConfigFormField[]
 }
 
 export function createRoleTableColumns(t: Translate) {
   return [
-    { prop: 'name', label: t('role.name'), minWidth: 140 },
-    { prop: 'code', label: t('role.code'), minWidth: 140 },
-    { label: t('role.status'), width: 100, tag: row => getEnabledStatusTag(row.status, getStatusText(t)) },
-    { prop: 'remark', label: t('role.remark'), minWidth: 180 },
-    { label: t('role.createdAt'), minWidth: 180, formatter: row => formatDateTime(row.createdAt) },
+    {
+      prop: 'name',
+      label: t('role.name'),
+      minWidth: 140,
+    },
+    {
+      prop: 'code',
+      label: t('role.code'),
+      minWidth: 140,
+    },
+    {
+      label: t('role.status'),
+      width: 100,
+      tag: row => getEnabledStatusTag(row.status, getStatusText(t)),
+    },
+    {
+      prop: 'remark',
+      label: t('role.remark'),
+      minWidth: 180,
+    },
+    {
+      label: t('role.createdAt'),
+      minWidth: 180,
+      formatter: row => formatDateTime(row.createdAt),
+    },
   ] satisfies ConfigTableColumn<RoleItem>[]
 }
 
 export function createRoleFormFields(t: Translate, permissionOptions: ButtonPermission[]) {
   return [
-    { prop: 'name', label: t('role.name'), type: 'input', placeholder: t('role.namePlaceholder') },
-    { prop: 'code', label: t('role.code'), type: 'input', placeholder: t('role.codePlaceholder') },
+    {
+      prop: 'name',
+      label: t('role.name'),
+      type: 'input',
+      placeholder: t('role.namePlaceholder'),
+    },
+    {
+      prop: 'code',
+      label: t('role.code'),
+      type: 'input',
+      placeholder: t('role.codePlaceholder'),
+    },
     {
       prop: 'permissions',
       label: t('role.permissions'),
@@ -40,9 +86,23 @@ export function createRoleFormFields(t: Translate, permissionOptions: ButtonPerm
       filterable: true,
       collapseTags: true,
       collapseTagsTooltip: true,
-      options: permissionOptions.map(item => ({ label: `${item.name}（${item.code}）`, value: item.code })),
+      options: permissionOptions.map(item => ({
+        label: `${item.name}（${item.code}）`,
+        value: item.code,
+      })),
     },
-    { prop: 'status', label: t('role.status'), type: 'radio', options: createEnabledStatusOptions(getStatusText(t)) },
-    { prop: 'remark', label: t('role.remark'), type: 'textarea', placeholder: t('role.remarkPlaceholder'), rows: 3 },
+    {
+      prop: 'status',
+      label: t('role.status'),
+      type: 'radio',
+      options: createEnabledStatusOptions(getStatusText(t)),
+    },
+    {
+      prop: 'remark',
+      label: t('role.remark'),
+      type: 'textarea',
+      placeholder: t('role.remarkPlaceholder'),
+      rows: 3,
+    },
   ] satisfies ConfigFormField[]
 }
