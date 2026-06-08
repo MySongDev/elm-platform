@@ -1,9 +1,12 @@
-import { Body, Controller, Get, Param, Post, Query, Request, UseGuards } from '@nestjs/common'
-import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger'
+import { Body, Controller, Get, HttpCode, Param, Post, Query, Request, UseGuards } from '@nestjs/common'
+import { ApiBearerAuth, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger'
 import { rawResponse } from '../../common/interceptors/transform.interceptor'
 import { CustomerAuthGuard } from '../customer-auth/guards/customer-auth.guard'
 import { CreateAlipayWapPaymentDto } from './dto/create-alipay-wap-payment.dto'
-import { ResumeAlipayWapPaymentDto } from './dto/resume-alipay-wap-payment.dto'
+import {
+  ResumeAlipayWapPaymentDto,
+  ResumeAlipayWapPaymentResponseDto,
+} from './dto/resume-alipay-wap-payment.dto'
 import { PaymentService } from './payment.service'
 
 @ApiTags('支付')
@@ -26,6 +29,8 @@ export class PaymentController {
   @Post('payments/alipay/wap/resume')
   @UseGuards(CustomerAuthGuard)
   @ApiBearerAuth()
+  @ApiOkResponse({ type: ResumeAlipayWapPaymentResponseDto })
+  @HttpCode(200)
   @ApiOperation({ summary: '继续支付宝 WAP 支付单' })
   async resumeAlipayWapPayment(@Body() dto: ResumeAlipayWapPaymentDto, @Request() req: any) {
     const result = await this.paymentService.resumeAlipayWapPayment({

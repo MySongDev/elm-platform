@@ -1961,7 +1961,30 @@ export interface components {
         ApproveRefundDto: Record<string, never>;
         RejectRefundDto: Record<string, never>;
         CreateAlipayWapPaymentDto: Record<string, never>;
-        ResumeAlipayWapPaymentDto: Record<string, never>;
+        ResumeAlipayWapPaymentDto: {
+            /**
+             * @description Payment order number to resume.
+             * @example ELMALI202605241200000001
+             */
+            orderNo: string;
+        };
+        ResumeAlipayWapPaymentResponseDto: {
+            /**
+             * @description Payment order number.
+             * @example ELMALI202605241200000001
+             */
+            orderNo: string;
+            /**
+             * @description Redirect URL for continuing the Alipay WAP payment.
+             * @example https://openapi-sandbox.dl.alipaydev.com/gateway.do?method=alipay.trade.wap.pay
+             */
+            payUrl: string;
+            /**
+             * @description Amount still payable by the customer.
+             * @example 29
+             */
+            payableAmount: number;
+        };
         RequestRefundDto: Record<string, never>;
     };
     responses: never;
@@ -3906,11 +3929,13 @@ export interface operations {
             };
         };
         responses: {
-            201: {
+            200: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["ResumeAlipayWapPaymentResponseDto"];
+                };
             };
         };
     };

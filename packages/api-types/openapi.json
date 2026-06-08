@@ -2398,8 +2398,15 @@
           }
         },
         "responses": {
-          "201": {
-            "description": ""
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResumeAlipayWapPaymentResponseDto"
+                }
+              }
+            }
           }
         },
         "tags": [
@@ -3490,7 +3497,41 @@
       },
       "ResumeAlipayWapPaymentDto": {
         "type": "object",
-        "properties": {}
+        "properties": {
+          "orderNo": {
+            "type": "string",
+            "description": "Payment order number to resume.",
+            "example": "ELMALI202605241200000001"
+          }
+        },
+        "required": [
+          "orderNo"
+        ]
+      },
+      "ResumeAlipayWapPaymentResponseDto": {
+        "type": "object",
+        "properties": {
+          "orderNo": {
+            "type": "string",
+            "description": "Payment order number.",
+            "example": "ELMALI202605241200000001"
+          },
+          "payUrl": {
+            "type": "string",
+            "description": "Redirect URL for continuing the Alipay WAP payment.",
+            "example": "https://openapi-sandbox.dl.alipaydev.com/gateway.do?method=alipay.trade.wap.pay"
+          },
+          "payableAmount": {
+            "type": "number",
+            "description": "Amount still payable by the customer.",
+            "example": 29
+          }
+        },
+        "required": [
+          "orderNo",
+          "payUrl",
+          "payableAmount"
+        ]
       },
       "RequestRefundDto": {
         "type": "object",

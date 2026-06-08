@@ -37,6 +37,7 @@
     "vue-virtual-scroller": "catalog:"
   },
   "devDependencies": {
+    "@elm-platform/api-types": "workspace:*",
     "@elm-platform/tsconfig": "workspace:*",
     "@elm-platform/vite-config": "workspace:*",
     "@vant/auto-import-resolver": "catalog:",
