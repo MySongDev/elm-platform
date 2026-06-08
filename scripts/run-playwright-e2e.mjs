@@ -1,5 +1,6 @@
 import { spawn } from 'node:child_process'
 import { createRequire } from 'node:module'
+import { Socket } from 'node:net'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
@@ -13,6 +14,9 @@ const playwrightArgs = process.argv.slice(2)
 const serverUrl = 'http://127.0.0.1:3000'
 const adminUrl = 'http://127.0.0.1:5173'
 const userUrl = 'http://127.0.0.1:5174'
+const databaseUrl = process.env.DATABASE_URL ?? 'postgresql://postgres:postgres@127.0.0.1:5432/elm_dev?schema=public'
+const redisHost = process.env.REDIS_HOST ?? '127.0.0.1'
+const redisPort = Number(process.env.REDIS_PORT ?? '6379')
 
 const services = [
   {
@@ -22,9 +26,9 @@ const services = [
     env: {
       APP_PORT: '3000',
       APP_PREFIX: 'api',
-      DATABASE_URL: process.env.DATABASE_URL ?? 'postgresql://postgres:postgres@127.0.0.1:5432/elm_dev?schema=public',
-      REDIS_HOST: process.env.REDIS_HOST ?? '127.0.0.1',
-      REDIS_PORT: process.env.REDIS_PORT ?? '6379',
+      DATABASE_URL: databaseUrl,
+      REDIS_HOST: redisHost,
+      REDIS_PORT: String(redisPort),
     },
   },
   {
@@ -43,6 +47,58 @@ const startedProcesses = []
 
 function log(message) {
   process.stdout.write(`[e2e] ${message}\n`)
+}
+
+function parseDatabaseEndpoint() {
+  const url = new URL(databaseUrl)
+  return {
+    host: url.hostname,
+    name: 'Postgres',
+    port: Number(url.port || '5432'),
+  }
+}
+
+async function canConnect(host, port, timeoutMs = 1500) {
+  return await new Promise((resolve) => {
+    const socket = new Socket()
+    const finish = (result) => {
+      socket.destroy()
+      resolve(result)
+    }
+
+    socket.setTimeout(timeoutMs)
+    socket.once('connect', () => finish(true))
+    socket.once('timeout', () => finish(false))
+    socket.once('error', () => finish(false))
+    socket.connect(port, host)
+  })
+}
+
+async function verifyTcpDependency(dependency) {
+  if (await canConnect(dependency.host, dependency.port)) {
+    return
+  }
+
+  throw new Error(
+    `${dependency.name} is not reachable at ${dependency.host}:${dependency.port}. `
+    + 'Start local dependencies with "docker compose up -d postgres redis" or set DATABASE_URL/REDIS_HOST/REDIS_PORT.',
+  )
+}
+
+async function verifyDependencies() {
+  if (process.env.PLAYWRIGHT_SKIP_DEPENDENCY_CHECK === '1') {
+    log('Skipping dependency preflight')
+    return
+  }
+
+  await Promise.all([
+    verifyTcpDependency(parseDatabaseEndpoint()),
+    verifyTcpDependency({
+      host: redisHost,
+      name: 'Redis',
+      port: redisPort,
+    }),
+  ])
 }
 
 function spawnProcess(name, args, options = {}) {
@@ -154,6 +210,8 @@ async function runPlaywright() {
 }
 
 try {
+  await verifyDependencies()
+
   for (const service of services) {
     if (await isReady(service.readyUrl)) {
       log(`Reusing ${service.name} at ${service.readyUrl}`)
