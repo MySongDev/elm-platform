@@ -242,19 +242,19 @@ git commit -m "docs: define feature flag conventions"
 - Modify: `package.json`
 - Create: `docs/release/changelog.md`
 
-- [ ] **Step 1: Choose changelog tool**
+- [x] **Step 1: Choose changelog tool**
 
 Prefer a low-maintenance Conventional Commits tool that can run locally and in CI. Document the selected command before adding release automation.
 
-- [ ] **Step 2: Add changelog docs**
+- [x] **Step 2: Add changelog docs**
 
 Create `docs/release/changelog.md` with the chosen command and release notes workflow.
 
-- [ ] **Step 3: Verify command**
+- [x] **Step 3: Verify command**
 
 Run the changelog command locally.
 
-- [ ] **Step 4: Commit changelog workflow**
+- [x] **Step 4: Commit changelog workflow**
 
 ```bash
 git add package.json pnpm-lock.yaml docs/release/changelog.md
@@ -269,7 +269,7 @@ git commit -m "docs: add changelog workflow"
 - Modify: `eslint.config.mjs`
 - Potentially modify: `apps/web-admin/src/**` only if new rules expose small, safe fixes.
 
-- [ ] **Step 1: Inspect current imports**
+- [x] **Step 1: Inspect current imports**
 
 Run:
 
@@ -279,11 +279,11 @@ rg "@/entities|@/features|@/pages|@/widgets|@/shared" apps/web-admin/src -n
 
 Expected: understand current dependency direction before adding rules.
 
-- [ ] **Step 2: Add report-only or narrow boundary rule**
+- [x] **Step 2: Add report-only or narrow boundary rule**
 
 Start with web-admin and the least noisy boundary. Prefer warning/report mode or a single high-confidence forbidden direction.
 
-- [ ] **Step 3: Run ESLint**
+- [x] **Step 3: Run ESLint**
 
 Run:
 
