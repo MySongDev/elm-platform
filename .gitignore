@@ -4,7 +4,13 @@ node_modules/
 
 # Claude Code
 .claude/
+.agents/
 .angents/
+
+# Tooling scratch / analysis artifacts
+.superpowers/
+.understand-anything/
+**/.understand-anything/
 
 # Embedded git repos
 apps/*/.git
@@ -39,6 +45,8 @@ yarn-error.log*
 # Testing
 coverage/
 .eslintcache
+test-results/
+playwright-report/
 
 # Prisma
 apps/server/prisma/*.db
