@@ -8,6 +8,16 @@ const sharedRules = {
   'e18e/prefer-static-regex': 'off',
   'style/max-statements-per-line': 'off',
   'style/no-mixed-operators': 'off',
+  'antfu/consistent-list-newline': ['error', {
+    ObjectExpression: false,
+  }],
+  'style/object-curly-newline': ['error', {
+    consistent: true,
+    multiline: true,
+  }],
+  'style/object-property-newline': ['error', {
+    allowAllPropertiesOnSameLine: false,
+  }],
   'unused-imports/no-unused-vars': ['warn', {
     args: 'after-used',
     argsIgnorePattern: '^_',
@@ -46,7 +56,8 @@ export default antfu(
   },
   {
     files: [
-      'eslint.config.mjs',
+      '*.{js,ts,mjs,cjs}', // 根目录所有脚本文件均为 Node 环境
+      'scripts/**/*.{js,ts,mjs,cjs}',
       'apps/server/**/*.{js,ts}',
       'apps/web-admin/*.{js,ts}',
       'apps/web-admin/{vite,vitest}.config.ts',
@@ -68,6 +79,12 @@ export default antfu(
     },
   },
   {
+    files: ['apps/server/**/*.ts'],
+    rules: {
+      'ts/consistent-type-imports': 'off',
+    },
+  },
+  {
     files: [
       'apps/server/**/*.spec.ts',
       'apps/server/test/**/*.ts',
@@ -78,6 +95,9 @@ export default antfu(
       },
     },
   },
+  // web-admin FSD import boundaries (shared < entities < features < widgets < pages < app).
+  // Currently 'warn' only — reporting, not blocking. Promotion to 'error' is staged;
+  // see docs/architecture/import-boundaries.md. Use `pnpm lint:boundaries` for a focused report.
   {
     files: ['apps/web-admin/**/*.{js,ts,tsx,vue}'],
     rules: {

@@ -1,7 +1,10 @@
 <script setup lang="ts">
+import { DataScopeHint } from '@/entities/session'
 import {
   createOrderSearchFields,
+  OrderDetailDrawer,
   OrderTable,
+  RefundRejectDialog,
   useOrderManagement,
 } from '@/features/order-management'
 import AdminSearchForm from '@/shared/ui/AdminSearchForm/index.vue'
@@ -17,6 +20,14 @@ const {
   filteredData,
   resetQuery,
   fetchRows,
+  detailVisible,
+  rejectVisible,
+  detailLoading,
+  actionSaving,
+  selectedOrder,
+  openDetail,
+  executeAction,
+  submitReject,
 } = useOrderManagement()
 
 onMounted(fetchRows)
@@ -25,9 +36,27 @@ onMounted(fetchRows)
 <template>
   <AdminTablePage :title="t('commerce.order.title')" :loading="loading" @refresh="fetchRows">
     <template #search>
+      <DataScopeHint />
       <AdminSearchForm v-model:model="query" :fields="searchFields" @reset="resetQuery" />
     </template>
 
-    <OrderTable :loading="loading" :data="filteredData" />
+    <OrderTable
+      :loading="loading"
+      :data="filteredData"
+      @detail="openDetail"
+      @action="executeAction"
+    />
+
+    <OrderDetailDrawer
+      v-model:visible="detailVisible"
+      :loading="detailLoading"
+      :order="selectedOrder"
+    />
+
+    <RefundRejectDialog
+      v-model:visible="rejectVisible"
+      :saving="actionSaving"
+      @submit="submitReject"
+    />
   </AdminTablePage>
 </template>
