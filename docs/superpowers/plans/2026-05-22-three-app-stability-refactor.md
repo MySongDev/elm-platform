@@ -1,4 +1,4 @@
-# Three App Stability Refactor Implementation Plan
+﻿# Three App Stability Refactor Implementation Plan
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
@@ -154,7 +154,7 @@ export const buttonPermissions: ButtonPermissionRecord[] = [
 ]
 
 export const pagePermissions: PagePermissionRecord[] = [
-  { path: '/dashboard/index', name: 'DashboardView', title: '仪表盘', roles: ['admin', 'user'], auths: [] },
+  { path: '/dashboard/index', name: 'DashboardView', title: '仪表�?, roles: ['admin', 'user'], auths: [] },
   { path: '/permission/page', name: 'PagePermission', title: '页面权限', roles: ['admin', 'user'], auths: ['permission:page:view'] },
   { path: '/permission/button', name: 'ButtonPermission', title: '按钮权限', roles: ['admin', 'user'], auths: ['permission:button:view'] },
   { path: '/monitor/online-user', name: 'OnlineUser', title: '在线用户', roles: ['admin'], auths: ['monitor:online:view'] },
@@ -184,13 +184,13 @@ Create `apps/server/src/modules/admin/constants/admin-fallback-data.ts` with the
 import type { DeptRecord, MenuRecord, RoleRecord } from '../model/admin-records'
 
 export const fallbackRoles: RoleRecord[] = [
-  { id: 1, name: '超级管理员', code: 'admin', status: 1, remark: '拥有系统全部权限', permissions: ['*:*:*'], createdAt: new Date().toISOString() },
-  { id: 2, name: '普通用户', code: 'user', status: 1, remark: '拥有基础访问权限', permissions: ['permission:page:view', 'permission:button:view'], createdAt: new Date().toISOString() },
+  { id: 1, name: '超级管理�?, code: 'admin', status: 1, remark: '拥有系统全部权限', permissions: ['*:*:*'], createdAt: new Date().toISOString() },
+  { id: 2, name: '普通用�?, code: 'user', status: 1, remark: '拥有基础访问权限', permissions: ['permission:page:view', 'permission:button:view'], createdAt: new Date().toISOString() },
 ]
 
 export const fallbackMenus: MenuRecord[] = [
-  { id: 14, parentId: null, title: '仪表盘', path: '/dashboard', name: 'Dashboard', icon: 'dashboard', permission: null, type: 'catalog', sort: 1, status: 1 },
-  { id: 15, parentId: 14, title: '仪表盘', path: '/dashboard/index', name: 'DashboardView', icon: 'dashboard', permission: null, type: 'menu', sort: 1, status: 1 },
+  { id: 14, parentId: null, title: '仪表�?, path: '/dashboard', name: 'Dashboard', icon: 'dashboard', permission: null, type: 'catalog', sort: 1, status: 1 },
+  { id: 15, parentId: 14, title: '仪表�?, path: '/dashboard/index', name: 'DashboardView', icon: 'dashboard', permission: null, type: 'menu', sort: 1, status: 1 },
   { id: 1, parentId: null, title: '权限管理', path: '/permission', name: 'Permission', icon: 'permission', permission: null, type: 'catalog', sort: 20, status: 1 },
   { id: 2, parentId: 1, title: '页面权限', path: '/permission/page', name: 'PagePermission', icon: 'permission', permission: 'permission:page:view', type: 'menu', sort: 1, status: 1 },
   { id: 3, parentId: 1, title: '按钮权限', path: '/permission/button', name: 'ButtonPermission', icon: 'permission', permission: 'permission:button:view', type: 'menu', sort: 2, status: 1 },
@@ -239,9 +239,9 @@ export const fallbackMenus: MenuRecord[] = [
 ]
 
 export const fallbackDepts: DeptRecord[] = [
-  { id: 1, parentId: null, name: '总公司', leader: '管理员', phone: '13800138000', email: 'admin@example.com', sort: 1, status: 1 },
-  { id: 2, parentId: 1, name: '研发部门', leader: '研发负责人', phone: '13800138001', email: 'rd@example.com', sort: 1, status: 1 },
-  { id: 3, parentId: 1, name: '运营部门', leader: '运营负责人', phone: '13800138002', email: 'ops@example.com', sort: 2, status: 1 },
+  { id: 1, parentId: null, name: '总公�?, leader: '管理�?, phone: '13800138000', email: 'admin@example.com', sort: 1, status: 1 },
+  { id: 2, parentId: 1, name: '研发部门', leader: '研发负责�?, phone: '13800138001', email: 'rd@example.com', sort: 1, status: 1 },
+  { id: 3, parentId: 1, name: '运营部门', leader: '运营负责�?, phone: '13800138002', email: 'ops@example.com', sort: 2, status: 1 },
 ]
 ```
 
@@ -263,7 +263,7 @@ Keep the `AdminService` class body behavior unchanged.
 
 - [ ] **Step 5: Verify backend extraction**
 
-Run: `pnpm --filter vue3-elm-node run test -- roles.guard.spec.ts elm-query.spec.ts transform.interceptor.spec.ts`
+Run: `pnpm --filter @elm-platform/server run test -- roles.guard.spec.ts elm-query.spec.ts transform.interceptor.spec.ts`
 
 Expected: Jest exits with passing tests for the focused backend specs.
 
@@ -322,7 +322,7 @@ export function toNumberValue(value: unknown, fallback = 0) {
 
 - [ ] **Step 3: Verify backend focused tests**
 
-Run: `pnpm --filter vue3-elm-node run test -- roles.guard.spec.ts elm-query.spec.ts transform.interceptor.spec.ts`
+Run: `pnpm --filter @elm-platform/server run test -- roles.guard.spec.ts elm-query.spec.ts transform.interceptor.spec.ts`
 
 Expected: PASS.
 
@@ -367,7 +367,7 @@ function resolveSaveSuccessMessage(id: ReturnType<typeof options.getFormId>) {
 
 - [ ] **Step 4: Verify admin focused tests**
 
-Run: `pnpm --filter elm-web-admin run test:unit -- src/shared/config-crud/model/__tests__/useConfigCrud.test.ts src/shared/config-crud/model/__tests__/table.test.ts src/features/user-management/model/__tests__/useUserManagement.test.ts`
+Run: `pnpm --filter @elm-platform/web-admin run test:unit -- src/shared/config-crud/model/__tests__/useConfigCrud.test.ts src/shared/config-crud/model/__tests__/table.test.ts src/features/user-management/model/__tests__/useUserManagement.test.ts`
 
 Expected: Vitest exits with passing tests for the focused admin specs.
 
@@ -411,7 +411,7 @@ Use `bindScrollListener()` in `onMounted` and `onActivated`, and `unbindScrollLi
 
 - [ ] **Step 3: Verify user focused tests**
 
-Run: `pnpm --filter vue3-elm-js run test -- src/services/http/policies.test.js src/composables/features/home/useHomeLocation.test.ts src/stores/modules/store-locations.test.js`
+Run: `pnpm --filter @elm-platform/web-user run test -- src/services/http/policies.test.js src/composables/features/home/useHomeLocation.test.ts src/stores/modules/store-locations.test.js`
 
 Expected: Vitest exits with passing tests for the focused user specs.
 
@@ -437,3 +437,4 @@ Expected: all three apps build successfully. If build fails because of pre-exist
 Run: `git diff --stat`
 
 Expected: changed files match the approved A+C scope: backend static extraction/stability, admin config-crud stabilization, user debug/scroll cleanup, and this plan file.
+

@@ -1,4 +1,4 @@
-# Phase 2B-1 RequestId Structured Logging Implementation Plan
+﻿# Phase 2B-1 RequestId Structured Logging Implementation Plan
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
@@ -12,11 +12,11 @@
 
 ## File Structure
 
-- `apps/server/src/common/middleware/request-id.middleware.ts` — requestId middleware and lightweight request/response interfaces.
-- `apps/server/src/common/middleware/request-id.middleware.spec.ts` — unit tests for header reuse, UUID generation, and response header propagation.
-- `apps/server/src/main.ts` — registers the middleware before filters/interceptors.
-- `apps/server/src/common/interceptors/logging.interceptor.ts` — reads requestId and includes it in logs and system log detail.
-- `apps/server/src/common/interceptors/logging.interceptor.spec.ts` — verifies requestId is preserved in system log detail and log output.
+- `apps/server/src/common/middleware/request-id.middleware.ts` 鈥?requestId middleware and lightweight request/response interfaces.
+- `apps/server/src/common/middleware/request-id.middleware.spec.ts` 鈥?unit tests for header reuse, UUID generation, and response header propagation.
+- `apps/server/src/main.ts` 鈥?registers the middleware before filters/interceptors.
+- `apps/server/src/common/interceptors/logging.interceptor.ts` 鈥?reads requestId and includes it in logs and system log detail.
+- `apps/server/src/common/interceptors/logging.interceptor.spec.ts` 鈥?verifies requestId is preserved in system log detail and log output.
 
 ---
 
@@ -112,7 +112,7 @@ describe('requestIdMiddleware', () => {
 Run:
 
 ```bash
-pnpm --filter vue3-elm-node run test -- request-id.middleware.spec.ts
+pnpm --filter @elm-platform/server run test -- request-id.middleware.spec.ts
 ```
 
 Expected: FAIL because `./request-id.middleware` does not exist.
@@ -169,7 +169,7 @@ function resolveRequestId(value: string | string[] | undefined): string {
 Run:
 
 ```bash
-pnpm --filter vue3-elm-node run test -- request-id.middleware.spec.ts
+pnpm --filter @elm-platform/server run test -- request-id.middleware.spec.ts
 ```
 
 Expected: PASS.
@@ -230,7 +230,7 @@ const configService = app.get(ConfigService)
 
 app.use(requestIdMiddleware)
 
-// 全局前缀
+// 鍏ㄥ眬鍓嶇紑
 const prefix = configService.get<string>('APP_PREFIX', 'api')
 ```
 
@@ -239,7 +239,7 @@ const prefix = configService.get<string>('APP_PREFIX', 'api')
 Run:
 
 ```bash
-pnpm --filter vue3-elm-node run build
+pnpm --filter @elm-platform/server run build
 ```
 
 Expected: PASS.
@@ -333,7 +333,7 @@ Then add this test inside the same describe block:
 Run:
 
 ```bash
-pnpm --filter vue3-elm-node run test -- logging.interceptor.spec.ts
+pnpm --filter @elm-platform/server run test -- logging.interceptor.spec.ts
 ```
 
 Expected: FAIL because interceptor does not include requestId yet.
@@ -459,7 +459,7 @@ Add these private methods near `resolvePath`:
 Run:
 
 ```bash
-pnpm --filter vue3-elm-node run test -- logging.interceptor.spec.ts
+pnpm --filter @elm-platform/server run test -- logging.interceptor.spec.ts
 ```
 
 Expected: PASS.
@@ -483,8 +483,8 @@ git commit -m "feat(server): include request id in logging interceptor"
 Run:
 
 ```bash
-pnpm --filter vue3-elm-node run test -- request-id.middleware.spec.ts
-pnpm --filter vue3-elm-node run test -- logging.interceptor.spec.ts
+pnpm --filter @elm-platform/server run test -- request-id.middleware.spec.ts
+pnpm --filter @elm-platform/server run test -- logging.interceptor.spec.ts
 ```
 
 Expected: both PASS.
@@ -494,13 +494,13 @@ Expected: both PASS.
 Run:
 
 ```bash
-DATABASE_URL='postgresql://postgres:postgres@localhost:5432/elm_test?schema=public' pnpm --filter vue3-elm-node run test
+DATABASE_URL='postgresql://postgres:postgres@localhost:5432/elm_test?schema=public' pnpm --filter @elm-platform/server run test
 ```
 
 PowerShell:
 
 ```powershell
-$env:DATABASE_URL = 'postgresql://postgres:postgres@localhost:5432/elm_test?schema=public'; pnpm --filter vue3-elm-node run test
+$env:DATABASE_URL = 'postgresql://postgres:postgres@localhost:5432/elm_test?schema=public'; pnpm --filter @elm-platform/server run test
 ```
 
 Expected: PASS.
@@ -510,7 +510,7 @@ Expected: PASS.
 Run:
 
 ```bash
-pnpm --filter vue3-elm-node run build
+pnpm --filter @elm-platform/server run build
 ```
 
 Expected: PASS.
@@ -551,3 +551,4 @@ Placeholder scan:
 Type consistency:
 - `requestId` property is consistently used on `HttpRequestLike` and `RequestIdRequestLike`.
 - Header name is consistently lowercase `x-request-id`, matching Node/Express normalized headers.
+

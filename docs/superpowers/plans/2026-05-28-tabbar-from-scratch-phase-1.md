@@ -1,41 +1,28 @@
-# TabBarFromScratch Phase 1 Implementation Plan
+﻿# TabBarFromScratch Phase 1 Implementation Plan
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** 新建 `TabBarFromScratch` 的最小可用版本：能读取现有 tabs store、渲染页签、高亮当前路由，并点击切换路由。
-
-**Architecture:** 阶段 1 不替换现有 `TabBar`，也不实现关闭、滚动、右键菜单。新增一个纯展示辅助函数文件承载可测试逻辑，新增一个 Vue SFC 承载最小 UI；数据仍来自 `entities/tab`，导航仍通过 Vue Router。
-
-**Tech Stack:** Vue 3 `<script setup lang="ts">`、Vue Router 4、Pinia、Element Plus 全局组件、Vitest、vue-tsc。
-
+**Goal:** 新建 `TabBarFromScratch` 的最小可用版本：能读取现�?tabs store、渲染页签、高亮当前路由，并点击切换路由�?
+**Architecture:** 阶段 1 不替换现�?`TabBar`，也不实现关闭、滚动、右键菜单。新增一个纯展示辅助函数文件承载可测试逻辑，新增一�?Vue SFC 承载最�?UI；数据仍来自 `entities/tab`，导航仍通过 Vue Router�?
+**Tech Stack:** Vue 3 `<script setup lang="ts">`、Vue Router 4、Pinia、Element Plus 全局组件、Vitest、vue-tsc�?
 ---
 
 ## Scope
 
-本计划只覆盖阶段 1。阶段 2 会抽出 `TabBarItem.vue`，阶段 3 会加入关闭页签，阶段 4 会加入滚动、右键菜单和批量操作。
-
-阶段 1 不修改 `apps/web-admin/src/widgets/admin-layout/ui/AdminLayout.vue` 的正式 import；需要肉眼验证时，只做临时切换并在验证后改回。
-
+本计划只覆盖阶段 1。阶�?2 会抽�?`TabBarItem.vue`，阶�?3 会加入关闭页签，阶段 4 会加入滚动、右键菜单和批量操作�?
+阶段 1 不修�?`apps/web-admin/src/widgets/admin-layout/ui/AdminLayout.vue` 的正�?import；需要肉眼验证时，只做临时切换并在验证后改回�?
 ## File Structure
 
 - Create: `apps/web-admin/src/widgets/admin-layout/ui/TabBarFromScratch/tabPresentation.ts`
-  - 负责纯展示判断：当前 tab 是否 active、tab 根节点 class 如何生成。
-- Create: `apps/web-admin/src/widgets/admin-layout/ui/TabBarFromScratch/__tests__/tabPresentation.test.ts`
-  - 覆盖阶段 1 的纯逻辑，适配当前 `vitest.config.ts` 的 `node` 环境。
-- Create: `apps/web-admin/src/widgets/admin-layout/ui/TabBarFromScratch/index.vue`
-  - 阶段 1 的最小页签栏组件：读取 store、渲染 tabs、点击时 `router.push()`。
-
+  - 负责纯展示判断：当前 tab 是否 active、tab 根节�?class 如何生成�?- Create: `apps/web-admin/src/widgets/admin-layout/ui/TabBarFromScratch/__tests__/tabPresentation.test.ts`
+  - 覆盖阶段 1 的纯逻辑，适配当前 `vitest.config.ts` �?`node` 环境�?- Create: `apps/web-admin/src/widgets/admin-layout/ui/TabBarFromScratch/index.vue`
+  - 阶段 1 的最小页签栏组件：读�?store、渲�?tabs、点击时 `router.push()`�?
 ## Component Map
 
 - `TabBarFromScratch/index.vue`
-  - 单一职责：把现有 `tabsStore.tabs` 渲染成可点击页签列表。
-  - 依赖：`useTabsStore()`、`useRoute()`、`useRouter()`、`transformI18n()`、`tabPresentation.ts`。
-  - 不接收 props，不发出 emits，因为它是 layout 内部组件。
-
+  - 单一职责：把现有 `tabsStore.tabs` 渲染成可点击页签列表�?  - 依赖：`useTabsStore()`、`useRoute()`、`useRouter()`、`transformI18n()`、`tabPresentation.ts`�?  - 不接�?props，不发出 emits，因为它�?layout 内部组件�?
 - `tabPresentation.ts`
-  - 单一职责：保存不依赖 Vue runtime 的展示判断，方便用 Vitest 先测后写。
-  - 不导入 Vue，不导入 router，不导入 store。
-
+  - 单一职责：保存不依赖 Vue runtime 的展示判断，方便�?Vitest 先测后写�?  - 不导�?Vue，不导入 router，不导入 store�?
 ## Task 1: Write Failing Presentation Tests
 
 **Files:**
@@ -73,11 +60,10 @@ describe('TabBarFromScratch presentation', () => {
 Run:
 
 ```bash
-pnpm --filter elm-web-admin exec vitest run src/widgets/admin-layout/ui/TabBarFromScratch/__tests__/tabPresentation.test.ts
+pnpm --filter @elm-platform/web-admin exec vitest run src/widgets/admin-layout/ui/TabBarFromScratch/__tests__/tabPresentation.test.ts
 ```
 
-Expected: FAIL，错误信息包含 `tabPresentation`，因为实现文件还不存在。
-
+Expected: FAIL，错误信息包�?`tabPresentation`，因为实现文件还不存在�?
 ## Task 2: Implement Presentation Helpers
 
 **Files:**
@@ -109,11 +95,10 @@ export function getTabItemClass(options: TabItemClassOptions) {
 Run:
 
 ```bash
-pnpm --filter elm-web-admin exec vitest run src/widgets/admin-layout/ui/TabBarFromScratch/__tests__/tabPresentation.test.ts
+pnpm --filter @elm-platform/web-admin exec vitest run src/widgets/admin-layout/ui/TabBarFromScratch/__tests__/tabPresentation.test.ts
 ```
 
-Expected: PASS，`2 tests` 通过。
-
+Expected: PASS，`2 tests` 通过�?
 - [ ] **Step 3: Commit the tested helper**
 
 Run:
@@ -123,8 +108,7 @@ git add apps/web-admin/src/widgets/admin-layout/ui/TabBarFromScratch/tabPresenta
 git commit -m "test: add tabbar from scratch presentation helpers"
 ```
 
-Expected: commit 只包含 `TabBarFromScratch` 下的 helper 和 test。
-
+Expected: commit 只包�?`TabBarFromScratch` 下的 helper �?test�?
 ## Task 3: Create the Minimal Vue Component
 
 **Files:**
@@ -276,21 +260,19 @@ function handleTabClick(fullPath: string) {
 Run:
 
 ```bash
-pnpm --filter elm-web-admin run type-check
+pnpm --filter @elm-platform/web-admin run type-check
 ```
 
-Expected: PASS，`vue-tsc --noEmit` 完成且退出码为 `0`。
-
+Expected: PASS，`vue-tsc --noEmit` 完成且退出码�?`0`�?
 - [ ] **Step 3: Run the focused helper test again**
 
 Run:
 
 ```bash
-pnpm --filter elm-web-admin exec vitest run src/widgets/admin-layout/ui/TabBarFromScratch/__tests__/tabPresentation.test.ts
+pnpm --filter @elm-platform/web-admin exec vitest run src/widgets/admin-layout/ui/TabBarFromScratch/__tests__/tabPresentation.test.ts
 ```
 
-Expected: PASS，`2 tests` 通过。
-
+Expected: PASS，`2 tests` 通过�?
 - [ ] **Step 4: Commit the minimal component**
 
 Run:
@@ -300,8 +282,7 @@ git add apps/web-admin/src/widgets/admin-layout/ui/TabBarFromScratch/index.vue
 git commit -m "feat: add tabbar from scratch basic view"
 ```
 
-Expected: commit 只包含 `TabBarFromScratch/index.vue`。
-
+Expected: commit 只包�?`TabBarFromScratch/index.vue`�?
 ## Task 4: Optional Manual Integration Check
 
 **Files:**
@@ -327,7 +308,7 @@ import TabBar from './TabBarFromScratch/index.vue'
 Run:
 
 ```bash
-pnpm --filter elm-web-admin run dev
+pnpm --filter @elm-platform/web-admin run dev
 ```
 
 Expected: Vite prints a local URL, usually `http://localhost:5173/` or the next available port.
@@ -362,8 +343,8 @@ Expected: no output.
 
 ## Verification Before Moving To Phase 2
 
-- [ ] `pnpm --filter elm-web-admin exec vitest run src/widgets/admin-layout/ui/TabBarFromScratch/__tests__/tabPresentation.test.ts` passes.
-- [ ] `pnpm --filter elm-web-admin run type-check` passes.
+- [ ] `pnpm --filter @elm-platform/web-admin exec vitest run src/widgets/admin-layout/ui/TabBarFromScratch/__tests__/tabPresentation.test.ts` passes.
+- [ ] `pnpm --filter @elm-platform/web-admin run type-check` passes.
 - [ ] `apps/web-admin/src/widgets/admin-layout/ui/AdminLayout.vue` has no committed diff.
 - [ ] Phase 1 commits only contain files under `apps/web-admin/src/widgets/admin-layout/ui/TabBarFromScratch/`.
 
@@ -372,3 +353,4 @@ Expected: no output.
 - Spec coverage: this plan covers the phase 1 requirements from `docs/superpowers/specs/2026-05-28-tabbar-teaching-rewrite-design.md`: render tabs, active state, click routing, and no enhanced UI.
 - Placeholder scan: all code and command steps are concrete; later-stage functions are outside this phase 1 scope.
 - Type consistency: `TabItem`, `useTabsStore`, `transformI18n`, `route.fullPath`, and `router.push()` match the existing admin app APIs.
+

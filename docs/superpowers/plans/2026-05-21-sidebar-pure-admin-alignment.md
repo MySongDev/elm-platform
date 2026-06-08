@@ -1,4 +1,4 @@
-# Sidebar Pure Admin Alignment Implementation Plan
+﻿# Sidebar Pure Admin Alignment Implementation Plan
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
@@ -172,7 +172,7 @@ defineEmits<{
 </script>
 
 <template>
-  <el-tooltip :content="isActive ? '点击折叠' : '点击展开'" placement="right">
+  <el-tooltip :content="isActive ? '鐐瑰嚮鎶樺彔' : '鐐瑰嚮灞曞紑'" placement="right">
     <button class="center-collapse" type="button" @click="$emit('toggleClick')">
       <el-icon :size="16" :style="{ transform: isActive ? 'none' : 'rotateY(180deg)' }">
         <IconEpArrowLeft />
@@ -232,7 +232,7 @@ defineEmits<{
 
 <template>
   <div class="left-collapse">
-    <el-tooltip :content="isActive ? '点击折叠' : '点击展开'" placement="right">
+    <el-tooltip :content="isActive ? '鐐瑰嚮鎶樺彔' : '鐐瑰嚮灞曞紑'" placement="right">
       <button class="left-collapse__button" type="button" @click="$emit('toggleClick')">
         <el-icon :size="18" :style="{ transform: isActive ? 'none' : 'rotateY(180deg)' }">
           <IconEpFold />
@@ -815,7 +815,7 @@ Expected:
 Run the dev server if visual verification is needed:
 
 ```bash
-pnpm --filter elm-web-admin dev
+pnpm --filter @elm-platform/web-admin dev
 ```
 
 Expected:
@@ -841,3 +841,4 @@ Expected: commit only contains cleanup found during final verification.
 - Spec coverage: The plan covers route filtering, active path, open key synchronization, one-child flattening, hidden routes, external links, collapse controls, scroll sizing, active styles, popup styles, and build verification.
 - Placeholder scan: The plan contains no deferred placeholders; each task names concrete files, code snippets, commands, and expected results.
 - Type consistency: Event names are `toggleCollapse` in script contracts and `@toggle-collapse` in templates; collapse control emits are `toggleClick` in script contracts and `@toggle-click` in templates; route item props remain `route`, `basePath`, and `isNest`.
+

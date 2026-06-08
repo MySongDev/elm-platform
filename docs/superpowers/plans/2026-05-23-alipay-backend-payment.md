@@ -1,4 +1,4 @@
-# Alipay Backend Payment Implementation Plan
+﻿# Alipay Backend Payment Implementation Plan
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
@@ -14,22 +14,22 @@
 
 Create:
 
-- `apps/server/src/modules/payment/payment.module.ts` — registers controller and services.
-- `apps/server/src/modules/payment/payment.controller.ts` — exposes payment/order endpoints.
-- `apps/server/src/modules/payment/payment.service.ts` — owns order creation, status mapping, persistence, notify processing.
-- `apps/server/src/modules/payment/payment.service.spec.ts` — unit tests for create/status/notify behavior.
-- `apps/server/src/modules/payment/dto/create-alipay-wap-payment.dto.ts` — validates current frontend payload.
-- `apps/server/src/modules/payment/alipay/alipay.service.ts` — wraps `alipay-sdk` and config parsing.
-- `apps/server/prisma/migrations/<timestamp>_add_payment_orders/migration.sql` — creates `payment_orders` table.
+- `apps/server/src/modules/payment/payment.module.ts` �?registers controller and services.
+- `apps/server/src/modules/payment/payment.controller.ts` �?exposes payment/order endpoints.
+- `apps/server/src/modules/payment/payment.service.ts` �?owns order creation, status mapping, persistence, notify processing.
+- `apps/server/src/modules/payment/payment.service.spec.ts` �?unit tests for create/status/notify behavior.
+- `apps/server/src/modules/payment/dto/create-alipay-wap-payment.dto.ts` �?validates current frontend payload.
+- `apps/server/src/modules/payment/alipay/alipay.service.ts` �?wraps `alipay-sdk` and config parsing.
+- `apps/server/prisma/migrations/<timestamp>_add_payment_orders/migration.sql` �?creates `payment_orders` table.
 
 Modify:
 
-- `apps/server/package.json` — add `alipay-sdk` dependency.
-- `apps/server/prisma/schema.prisma` — add `PaymentOrder` model.
-- `apps/server/src/config/configuration.ts` — add `alipay` config block.
-- `apps/server/src/app.module.ts` — import `PaymentModule`.
-- `apps/web-user/vite.config.js` — point `/pay-api` to `http://localhost:3000/api`.
-- `apps/web-user/src/services/api/api-payment.js` — update unavailable error copy and proxy-unavailable detection text.
+- `apps/server/package.json` �?add `alipay-sdk` dependency.
+- `apps/server/prisma/schema.prisma` �?add `PaymentOrder` model.
+- `apps/server/src/config/configuration.ts` �?add `alipay` config block.
+- `apps/server/src/app.module.ts` �?import `PaymentModule`.
+- `apps/web-user/vite.config.js` �?point `/pay-api` to `http://localhost:3000/api`.
+- `apps/web-user/src/services/api/api-payment.js` �?update unavailable error copy and proxy-unavailable detection text.
 
 ---
 
@@ -112,7 +112,7 @@ CREATE UNIQUE INDEX "payment_orders_orderNo_key" ON "payment_orders"("orderNo");
 Run:
 
 ```bash
-pnpm --filter vue3-elm-node prisma:generate
+pnpm --filter @elm-platform/server prisma:generate
 ```
 
 Expected: command exits 0 and Prisma Client is generated.
@@ -130,7 +130,7 @@ Expected: command exits 0 and Prisma Client is generated.
 Run:
 
 ```bash
-pnpm --filter vue3-elm-node add alipay-sdk
+pnpm --filter @elm-platform/server add alipay-sdk
 ```
 
 Expected: `apps/server/package.json` contains `"alipay-sdk"` in `dependencies`, and lockfile updates.
@@ -190,7 +190,7 @@ export default () => ({
 Run:
 
 ```bash
-pnpm --filter vue3-elm-node build
+pnpm --filter @elm-platform/server build
 ```
 
 Expected: build succeeds or only fails on missing payment module not yet added if this task is executed after app import changes. If it fails earlier, fix the TypeScript syntax before continuing.
@@ -392,7 +392,7 @@ export class AlipayService {
 Run:
 
 ```bash
-pnpm --filter vue3-elm-node build
+pnpm --filter @elm-platform/server build
 ```
 
 Expected: TypeScript compiles once the dependency is installed. If `alipay-sdk` types differ, adjust only `AlipayService` to match the installed package API.
@@ -562,7 +562,7 @@ describe('PaymentService', () => {
 Run:
 
 ```bash
-pnpm --filter vue3-elm-node test -- payment.service.spec.ts
+pnpm --filter @elm-platform/server test -- payment.service.spec.ts
 ```
 
 Expected: FAIL because `payment.service.ts` does not exist.
@@ -615,9 +615,9 @@ export class PaymentService {
     const summary = this.buildOrderPayload(payload)
 
     if (!summary.userId)
-      throw new UnauthorizedException('请登录后再支付')
+      throw new UnauthorizedException('请登录后再支�?)
     if (!summary.cartItems.length)
-      throw new BadRequestException('购物车为空，无法创建支付单')
+      throw new BadRequestException('购物车为空，无法创建支付�?)
     if (summary.payableAmount <= 0)
       throw new BadRequestException('订单金额异常，无法创建支付单')
 
@@ -733,7 +733,7 @@ export class PaymentService {
     return {
       userId: String(payload.userId || ''),
       shopId: payload.shopId ? String(payload.shopId) : null,
-      shopName: String(payload.shopName || '饿了么订单'),
+      shopName: String(payload.shopName || '饿了么订�?),
       cartItems,
       goodsAmount,
       deliveryFee,
@@ -758,7 +758,7 @@ export class PaymentService {
   private async findOrder(orderNo: string) {
     const order = await this.prisma.paymentOrder.findUnique({ where: { orderNo } })
     if (!order)
-      throw new NotFoundException('订单不存在')
+      throw new NotFoundException('订单不存�?)
     return order as PaymentOrderRecord
   }
 
@@ -810,7 +810,7 @@ export class PaymentService {
 Run:
 
 ```bash
-pnpm --filter vue3-elm-node test -- payment.service.spec.ts
+pnpm --filter @elm-platform/server test -- payment.service.spec.ts
 ```
 
 Expected: PASS.
@@ -841,13 +841,13 @@ export class PaymentController {
   constructor(private readonly paymentService: PaymentService) {}
 
   @Post('payments/alipay/wap/create')
-  @ApiOperation({ summary: '创建支付宝 WAP 支付单' })
+  @ApiOperation({ summary: '创建支付�?WAP 支付�? })
   createAlipayWapPayment(@Body() dto: CreateAlipayWapPaymentDto) {
     return rawResponse(this.paymentService.createAlipayWapPayment(dto))
   }
 
   @Get('payments/alipay/status/:orderNo')
-  @ApiOperation({ summary: '查询支付宝支付状态' })
+  @ApiOperation({ summary: '查询支付宝支付状�? })
   getAlipayPaymentStatus(
     @Param('orderNo') orderNo: string,
     @Query('refresh') refresh?: string,
@@ -929,7 +929,7 @@ export class AppModule {}
 Run:
 
 ```bash
-pnpm --filter vue3-elm-node build
+pnpm --filter @elm-platform/server build
 ```
 
 Expected: PASS.
@@ -960,7 +960,7 @@ Modify `apps/web-user/src/services/api/api-payment.js`:
 
 ```js
 export const PAY_API_UNAVAILABLE_MESSAGE
-  = '后端支付服务未启动或不可用，请先运行 pnpm --filter vue3-elm-node run dev 后再重试。'
+  = '后端支付服务未启动或不可用，请先运行 pnpm --filter @elm-platform/server run dev 后再重试�?
 ```
 
 Also update the proxy detection regex to include port 3000:
@@ -977,7 +977,7 @@ return (
 Run:
 
 ```bash
-pnpm --filter vue3-elm-js run type-check
+pnpm --filter @elm-platform/web-user run type-check
 ```
 
 Expected: PASS.
@@ -994,7 +994,7 @@ Expected: PASS.
 Run:
 
 ```bash
-pnpm --filter vue3-elm-node prisma:migrate
+pnpm --filter @elm-platform/server prisma:migrate
 ```
 
 Expected: migration applies and `payment_orders` exists. If this fails because PostgreSQL or `DATABASE_URL` is unavailable, stop and ask the user to start the database or provide the correct environment.
@@ -1004,7 +1004,7 @@ Expected: migration applies and `payment_orders` exists. If this fails because P
 Run:
 
 ```bash
-pnpm --filter vue3-elm-node test -- payment.service.spec.ts
+pnpm --filter @elm-platform/server test -- payment.service.spec.ts
 ```
 
 Expected: PASS.
@@ -1014,7 +1014,7 @@ Expected: PASS.
 Run:
 
 ```bash
-pnpm --filter vue3-elm-node build
+pnpm --filter @elm-platform/server build
 ```
 
 Expected: PASS.
@@ -1024,7 +1024,7 @@ Expected: PASS.
 Run:
 
 ```bash
-pnpm --filter vue3-elm-js run type-check
+pnpm --filter @elm-platform/web-user run type-check
 ```
 
 Expected: PASS.
@@ -1034,13 +1034,13 @@ Expected: PASS.
 Start backend:
 
 ```bash
-pnpm --filter vue3-elm-node run dev
+pnpm --filter @elm-platform/server run dev
 ```
 
 In another terminal, start frontend:
 
 ```bash
-pnpm --filter vue3-elm-js run dev
+pnpm --filter @elm-platform/web-user run dev
 ```
 
 Expected before real Alipay config is provided: creating a payment returns a readable backend error saying Alipay config is missing, and the frontend no longer references the old 3001 demo server.
@@ -1062,7 +1062,7 @@ ALIPAY_SELLER_ID=your-sandbox-seller-id
 Then run the flow:
 
 ```text
-登录 -> 商家页加购 -> 结算 -> /payment -> 确认支付 -> 支付宝沙箱 -> /payment/result
+登录 -> 商家页加�?-> 结算 -> /payment -> 确认支付 -> 支付宝沙�?-> /payment/result
 ```
 
 Expected: the app redirects to Alipay, returns to `/payment/result?orderNo=...`, calls `/pay-api/payments/alipay/status/:orderNo?refresh=1`, and displays paid status after Alipay query succeeds.
@@ -1074,3 +1074,4 @@ Expected: the app redirects to Alipay, returns to `/payment/result?orderNo=...`,
 - Spec coverage: covered backend module, Prisma model/migration, Alipay SDK dependency, compatible API routes, frontend proxy, config migration, create/status/notify/list data flow, and validation commands.
 - Placeholder scan: no `TBD`, `TODO`, or unspecified implementation steps remain. Environment examples use explicit `your-*` values because secrets must come from the user's sandbox account.
 - Type consistency: the plan consistently uses `PaymentOrder`, `PaymentService`, `AlipayService`, `CreateAlipayWapPaymentDto`, `orderNo`, `tradeStatus`, `payableAmount`, and the route names from the spec.
+

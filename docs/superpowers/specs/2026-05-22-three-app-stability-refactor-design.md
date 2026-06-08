@@ -1,4 +1,4 @@
-# Three App Stability Refactor Design
+﻿# Three App Stability Refactor Design
 
 ## Background
 
@@ -92,9 +92,9 @@ The user app should receive light structural cleanup only:
 
 Run focused tests after implementation:
 
-- Backend: `pnpm --filter vue3-elm-node run test -- roles.guard.spec.ts elm-query.spec.ts transform.interceptor.spec.ts`
-- Admin: `pnpm --filter elm-web-admin run test:unit -- src/shared/config-crud/model/__tests__/useConfigCrud.test.ts src/shared/config-crud/model/__tests__/table.test.ts src/features/user-management/model/__tests__/useUserManagement.test.ts`
-- User: `pnpm --filter vue3-elm-js run test -- src/services/http/policies.test.js src/composables/features/home/useHomeLocation.test.ts src/stores/modules/store-locations.test.js`
+- Backend: `pnpm --filter @elm-platform/server run test -- roles.guard.spec.ts elm-query.spec.ts transform.interceptor.spec.ts`
+- Admin: `pnpm --filter @elm-platform/web-admin run test:unit -- src/shared/config-crud/model/__tests__/useConfigCrud.test.ts src/shared/config-crud/model/__tests__/table.test.ts src/features/user-management/model/__tests__/useUserManagement.test.ts`
+- User: `pnpm --filter @elm-platform/web-user run test -- src/services/http/policies.test.js src/composables/features/home/useHomeLocation.test.ts src/stores/modules/store-locations.test.js`
 
 If those pass, run broader verification as time allows:
 
@@ -114,3 +114,4 @@ If those pass, run broader verification as time allows:
 3. Admin shared CRUD tests cover dynamic save messages and default option helpers.
 4. User mobile app no longer emits page-level debug logs in production-facing views touched by this pass.
 5. Focused tests for changed areas pass, or any inability to run them is explicitly reported.
+

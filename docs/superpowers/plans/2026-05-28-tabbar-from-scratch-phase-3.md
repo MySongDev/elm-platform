@@ -1,28 +1,20 @@
-# TabBarFromScratch Phase 3 Implementation Plan
+﻿# TabBarFromScratch Phase 3 Implementation Plan
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** 为 `TabBarFromScratch` 添加关闭页签能力：可关闭 tab 显示关闭按钮，点击关闭时调用 `tabsStore.closeTab()`，关闭当前页时跳转到 store 返回的下一个页签。
-
-**Architecture:** `index.vue` 继续拥有 tabs store 和 router 操作；`TabBarItem.vue` 只显示关闭按钮并发出 `close(fullPath)` 事件。关闭按钮是否显示由父组件根据 `isTabClosable(tab)` 和 tab 数量计算，避免子组件理解业务规则。
-
-**Tech Stack:** Vue 3 `<script setup lang="ts">`、Pinia tabs store、Vue Router、Element Plus/Iconify close icon、Vitest、vue-tsc。
-
+**Goal:** �?`TabBarFromScratch` 添加关闭页签能力：可关闭 tab 显示关闭按钮，点击关闭时调用 `tabsStore.closeTab()`，关闭当前页时跳转到 store 返回的下一个页签�?
+**Architecture:** `index.vue` 继续拥有 tabs store �?router 操作；`TabBarItem.vue` 只显示关闭按钮并发出 `close(fullPath)` 事件。关闭按钮是否显示由父组件根�?`isTabClosable(tab)` �?tab 数量计算，避免子组件理解业务规则�?
+**Tech Stack:** Vue 3 `<script setup lang="ts">`、Pinia tabs store、Vue Router、Element Plus/Iconify close icon、Vitest、vue-tsc�?
 ---
 
 ## File Structure
 
 - Modify: `apps/web-admin/src/widgets/admin-layout/ui/TabBarFromScratch/tabPresentation.ts`
-  - 新增 `shouldShowCloseButton(tabClosable, totalTabs)` 纯函数。
-- Modify: `apps/web-admin/src/widgets/admin-layout/ui/TabBarFromScratch/__tests__/tabPresentation.test.ts`
-  - 覆盖关闭按钮展示规则。
-- Modify: `apps/web-admin/src/widgets/admin-layout/ui/TabBarFromScratch/TabBarItem.vue`
-  - 新增 `closable` prop、关闭按钮、`close(fullPath)` emit。
-- Modify: `apps/web-admin/src/widgets/admin-layout/ui/TabBarFromScratch/index.vue`
-  - 计算每个 tab 是否可关闭；新增 `handleCloseTab()` 调 store 并按返回路径跳转。
-- Keep unstaged: `apps/web-admin/src/widgets/admin-layout/ui/AdminLayout.vue`
-  - 继续作为手动验证用临时接入，不提交。
-
+  - 新增 `shouldShowCloseButton(tabClosable, totalTabs)` 纯函数�?- Modify: `apps/web-admin/src/widgets/admin-layout/ui/TabBarFromScratch/__tests__/tabPresentation.test.ts`
+  - 覆盖关闭按钮展示规则�?- Modify: `apps/web-admin/src/widgets/admin-layout/ui/TabBarFromScratch/TabBarItem.vue`
+  - 新增 `closable` prop、关闭按钮、`close(fullPath)` emit�?- Modify: `apps/web-admin/src/widgets/admin-layout/ui/TabBarFromScratch/index.vue`
+  - 计算每个 tab 是否可关闭；新增 `handleCloseTab()` �?store 并按返回路径跳转�?- Keep unstaged: `apps/web-admin/src/widgets/admin-layout/ui/AdminLayout.vue`
+  - 继续作为手动验证用临时接入，不提交�?
 ## Task 1: Add Failing Close Visibility Test
 
 - [ ] **Step 1: Extend the focused helper test**
@@ -36,7 +28,7 @@ expect(shouldShowCloseButton(false, 3)).toBe(false)
 - [ ] **Step 2: Run focused test**
 
 ```bash
-pnpm --filter elm-web-admin exec vitest run src/widgets/admin-layout/ui/TabBarFromScratch/__tests__/tabPresentation.test.ts
+pnpm --filter @elm-platform/web-admin exec vitest run src/widgets/admin-layout/ui/TabBarFromScratch/__tests__/tabPresentation.test.ts
 ```
 
 Expected: FAIL because `shouldShowCloseButton` is not implemented yet.
@@ -54,7 +46,7 @@ export function shouldShowCloseButton(tabClosable: boolean, totalTabs: number): 
 - [ ] **Step 2: Run focused test**
 
 ```bash
-pnpm --filter elm-web-admin exec vitest run src/widgets/admin-layout/ui/TabBarFromScratch/__tests__/tabPresentation.test.ts
+pnpm --filter @elm-platform/web-admin exec vitest run src/widgets/admin-layout/ui/TabBarFromScratch/__tests__/tabPresentation.test.ts
 ```
 
 Expected: PASS.
@@ -136,7 +128,7 @@ function handleCloseTab(fullPath: string) {
 - [ ] **Step 1: Type-check**
 
 ```bash
-pnpm --filter elm-web-admin run type-check
+pnpm --filter @elm-platform/web-admin run type-check
 ```
 
 Expected: PASS.
@@ -144,7 +136,7 @@ Expected: PASS.
 - [ ] **Step 2: Focused test**
 
 ```bash
-pnpm --filter elm-web-admin exec vitest run src/widgets/admin-layout/ui/TabBarFromScratch/__tests__/tabPresentation.test.ts
+pnpm --filter @elm-platform/web-admin exec vitest run src/widgets/admin-layout/ui/TabBarFromScratch/__tests__/tabPresentation.test.ts
 ```
 
 Expected: PASS.
@@ -173,3 +165,4 @@ Do not stage `apps/web-admin/src/widgets/admin-layout/ui/AdminLayout.vue`.
 ```bash
 git commit -m "feat: add tabbar from scratch close action"
 ```
+

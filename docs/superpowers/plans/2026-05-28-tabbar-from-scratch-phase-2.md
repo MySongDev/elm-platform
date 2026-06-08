@@ -1,24 +1,18 @@
-# TabBarFromScratch Phase 2 Implementation Plan
+﻿# TabBarFromScratch Phase 2 Implementation Plan
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** 将阶段 1 里单个 tab 的模板、样式和事件边界抽成 `TabBarItem.vue`，保持现有渲染与点击切换行为不变。
-
-**Architecture:** `TabBarFromScratch/index.vue` 继续负责读取 `tabsStore`、计算 `tabViews`、调用 `router.push()`；`TabBarItem.vue` 只负责展示一个 tab，并通过 emits 把点击事件交还给父组件。当前 `AdminLayout.vue` 的临时接入仅用于手动验证，不纳入本阶段提交。
-
-**Tech Stack:** Vue 3 `<script setup lang="ts">`、typed `defineProps`/`defineEmits`、Vitest、vue-tsc。
-
+**Goal:** 将阶�?1 里单�?tab 的模板、样式和事件边界抽成 `TabBarItem.vue`，保持现有渲染与点击切换行为不变�?
+**Architecture:** `TabBarFromScratch/index.vue` 继续负责读取 `tabsStore`、计�?`tabViews`、调�?`router.push()`；`TabBarItem.vue` 只负责展示一�?tab，并通过 emits 把点击事件交还给父组件。当�?`AdminLayout.vue` 的临时接入仅用于手动验证，不纳入本阶段提交�?
+**Tech Stack:** Vue 3 `<script setup lang="ts">`、typed `defineProps`/`defineEmits`、Vitest、vue-tsc�?
 ---
 
 ## File Structure
 
 - Create: `apps/web-admin/src/widgets/admin-layout/ui/TabBarFromScratch/TabBarItem.vue`
-  - 单个页签按钮，接收 `tab`、`title`、`active`、`itemClass`，发出 `click(fullPath)`。
-- Modify: `apps/web-admin/src/widgets/admin-layout/ui/TabBarFromScratch/index.vue`
-  - 引入 `TabBarItem`，用组件替换内联 button 模板。
-- Keep unstaged: `apps/web-admin/src/widgets/admin-layout/ui/AdminLayout.vue`
-  - 保持临时指向 `TabBarFromScratch`，方便浏览器热更新验证；不要提交。
-
+  - 单个页签按钮，接�?`tab`、`title`、`active`、`itemClass`，发�?`click(fullPath)`�?- Modify: `apps/web-admin/src/widgets/admin-layout/ui/TabBarFromScratch/index.vue`
+  - 引入 `TabBarItem`，用组件替换内联 button 模板�?- Keep unstaged: `apps/web-admin/src/widgets/admin-layout/ui/AdminLayout.vue`
+  - 保持临时指向 `TabBarFromScratch`，方便浏览器热更新验证；不要提交�?
 ## Component Contract
 
 `TabBarItem.vue`:
@@ -115,7 +109,7 @@ import TabBarItem from './TabBarItem.vue'
 - [ ] **Step 1: Run type-check**
 
 ```bash
-pnpm --filter elm-web-admin run type-check
+pnpm --filter @elm-platform/web-admin run type-check
 ```
 
 Expected: PASS.
@@ -123,7 +117,7 @@ Expected: PASS.
 - [ ] **Step 2: Run focused tests**
 
 ```bash
-pnpm --filter elm-web-admin exec vitest run src/widgets/admin-layout/ui/TabBarFromScratch/__tests__/tabPresentation.test.ts
+pnpm --filter @elm-platform/web-admin exec vitest run src/widgets/admin-layout/ui/TabBarFromScratch/__tests__/tabPresentation.test.ts
 ```
 
 Expected: PASS.
@@ -151,3 +145,4 @@ Do not stage `apps/web-admin/src/widgets/admin-layout/ui/AdminLayout.vue`.
 ```bash
 git commit -m "refactor: extract tabbar from scratch item"
 ```
+

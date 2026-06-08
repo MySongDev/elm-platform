@@ -1,4 +1,4 @@
-# Phase 2A Quality Gate Implementation Plan
+﻿# Phase 2A Quality Gate Implementation Plan
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
@@ -12,12 +12,12 @@
 
 ## File Structure
 
-- `.husky/pre-push` — lightweight local push guard that runs root `pnpm type-check`.
-- `package.json` — adds root `test:cov` script to orchestrate server/admin/user coverage reports.
-- `apps/web-admin/package.json` — adds `test:coverage` script using Vitest coverage.
-- `apps/web-user/package.json` — adds `test:coverage` script using Vitest coverage.
-- `pnpm-workspace.yaml` — adds the Vitest coverage provider package to catalog if Vitest requires it.
-- `.github/workflows/ci.yml` — adds non-blocking `coverage` and `security-audit` jobs.
+- `.husky/pre-push` 鈥?lightweight local push guard that runs root `pnpm type-check`.
+- `package.json` 鈥?adds root `test:cov` script to orchestrate server/admin/user coverage reports.
+- `apps/web-admin/package.json` 鈥?adds `test:coverage` script using Vitest coverage.
+- `apps/web-user/package.json` 鈥?adds `test:coverage` script using Vitest coverage.
+- `pnpm-workspace.yaml` 鈥?adds the Vitest coverage provider package to catalog if Vitest requires it.
+- `.github/workflows/ci.yml` 鈥?adds non-blocking `coverage` and `security-audit` jobs.
 
 No business files should be changed.
 
@@ -67,15 +67,15 @@ git commit -m "chore(ci): add pre-push type-check hook"
 In root `package.json`, inside `scripts`, add:
 
 ```json
-"test:cov": "pnpm --filter vue3-elm-node run test:cov && pnpm --filter elm-web-admin run test:coverage && pnpm --filter vue3-elm-js run test:coverage"
+"test:cov": "pnpm --filter @elm-platform/server run test:cov && pnpm --filter @elm-platform/web-admin run test:coverage && pnpm --filter @elm-platform/web-user run test:coverage"
 ```
 
 Place it near the existing `test` script:
 
 ```json
-"test": "pnpm --filter vue3-elm-node run test && pnpm --filter elm-web-admin run test:unit && pnpm --filter vue3-elm-js run test",
-"test:cov": "pnpm --filter vue3-elm-node run test:cov && pnpm --filter elm-web-admin run test:coverage && pnpm --filter vue3-elm-js run test:coverage",
-"type-check": "pnpm --filter elm-web-admin run type-check && pnpm --filter vue3-elm-js run type-check"
+"test": "pnpm --filter @elm-platform/server run test && pnpm --filter @elm-platform/web-admin run test:unit && pnpm --filter @elm-platform/web-user run test",
+"test:cov": "pnpm --filter @elm-platform/server run test:cov && pnpm --filter @elm-platform/web-admin run test:coverage && pnpm --filter @elm-platform/web-user run test:coverage",
+"type-check": "pnpm --filter @elm-platform/web-admin run type-check && pnpm --filter @elm-platform/web-user run type-check"
 ```
 
 - [ ] **Step 2: Add admin coverage script**
@@ -115,8 +115,8 @@ Expected nearby scripts:
 Run:
 
 ```bash
-pnpm --filter elm-web-admin run test:coverage
-pnpm --filter vue3-elm-js run test:coverage
+pnpm --filter @elm-platform/web-admin run test:coverage
+pnpm --filter @elm-platform/web-user run test:coverage
 ```
 
 Expected: If Vitest asks for a coverage provider package (commonly `@vitest/coverage-v8`), install it in the relevant workspace/root catalog in Task 3. If it runs successfully, Task 3 can still add the explicit provider dependency for reproducibility.
@@ -175,8 +175,8 @@ Expected: lockfile updates cleanly.
 Run:
 
 ```bash
-pnpm --filter elm-web-admin run test:coverage
-pnpm --filter vue3-elm-js run test:coverage
+pnpm --filter @elm-platform/web-admin run test:coverage
+pnpm --filter @elm-platform/web-user run test:coverage
 ```
 
 Expected: both commands pass and generate coverage output. No threshold should be configured, so low coverage must not fail the command.
@@ -239,7 +239,7 @@ Add this job after `build-and-test` and before `api-drift`:
         run: pnpm --filter @elm-platform/contracts run build && pnpm --filter @elm-platform/vite-config run build
 
       - name: Generate Prisma client
-        run: pnpm --filter vue3-elm-node run prisma:generate
+        run: pnpm --filter @elm-platform/server run prisma:generate
 
       - name: Generate coverage reports
         run: pnpm test:cov
@@ -378,3 +378,4 @@ Placeholder scan:
 Type consistency:
 - Script names match existing package naming: server `test:cov`, admin/user `test:coverage`, root `test:cov`.
 - CI uses existing shared package build commands and DATABASE_URL pattern already used in current workflow.
+

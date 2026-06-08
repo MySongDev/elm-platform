@@ -1,36 +1,15 @@
-# Order Management Payment Implementation Plan
+﻿# Order Management Payment Implementation Plan
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** 管理端订单管理读取真实支付订单状态，用户端待支付订单支持复用原订单号继续支付。
-
-**Architecture:** 后端 `PaymentService` 继续作为 `payment_orders` 的唯一支付状态边界，新增管理端只读列表与 resume 支付 URL 能力。管理端订单页改为只读真实支付订单表格；用户端订单页在 `PENDING` 订单上先刷新状态再继续支付。
-
-**Tech Stack:** NestJS 10、Prisma、Jest、Vue 3、TypeScript、Vant、Element Plus、Vitest、pnpm workspace。
-
+**Goal:** 管理端订单管理读取真实支付订单状态，用户端待支付订单支持复用原订单号继续支付�?
+**Architecture:** 后端 `PaymentService` 继续作为 `payment_orders` 的唯一支付状态边界，新增管理端只读列表与 resume 支付 URL 能力。管理端订单页改为只读真实支付订单表格；用户端订单页�?`PENDING` 订单上先刷新状态再继续支付�?
+**Tech Stack:** NestJS 10、Prisma、Jest、Vue 3、TypeScript、Vant、Element Plus、Vitest、pnpm workspace�?
 ---
 
 ## File Structure
 
-- Modify: `apps/server/src/modules/payment/payment.service.ts` — 增加 `listAdminOrders()` 与 `resumeAlipayWapPayment()`，复用现有订单摘要转换。
-- Modify: `apps/server/src/modules/payment/payment.controller.ts` — 增加用户端 resume 接口。
-- Create: `apps/server/src/modules/payment/dto/resume-alipay-wap-payment.dto.ts` — resume 入参 DTO。
-- Modify: `apps/server/src/modules/elm/controllers/elm-admin.controller.ts` — 管理端订单列表改读 `PaymentService`，移除状态更新端点或让页面不再使用它。
-- Modify: `apps/server/src/modules/elm/elm.module.ts` — 确保 `ElmAdminController` 能注入 `PaymentService`；若 `PaymentModule` 未导出服务，则同步调整。
-- Modify: `apps/server/src/modules/payment/payment.service.spec.ts` — 覆盖 resume 与管理端列表摘要。
-- Modify: `apps/web-admin/src/entities/order/model/types.ts` — 改为真实支付订单类型。
-- Modify: `apps/web-admin/src/entities/order/api/index.ts` — 改读真实支付订单接口，删除更新状态调用。
-- Modify: `apps/web-admin/src/features/order-management/model/useOrderManagement.ts` — 只保留列表、查询和刷新状态，不再维护状态编辑弹窗。
-- Modify: `apps/web-admin/src/features/order-management/config/fields.ts` — 状态枚举改为 `PENDING/PAID/CLOSED`，表格字段改为真实支付订单字段。
-- Modify: `apps/web-admin/src/features/order-management/ui/OrderTable.vue` — 删除编辑状态操作列。
-- Modify: `apps/web-admin/src/features/order-management/index.ts` — 移除状态弹窗相关导出。
-- Modify: `apps/web-admin/src/pages/commerce/order/index.vue` — 删除状态弹窗接入。
-- Modify: `apps/web-user/src/services/api/endpoints/payment.endpoints.js` — 增加 resume endpoint。
-- Modify: `apps/web-user/src/services/api/api-payment.js` — 增加 `resumeAlipayWapPayment()`。
-- Modify: `apps/web-user/src/views/order/components/OrderCard.vue` — `PENDING` 订单显示继续支付按钮并 emit 事件。
-- Modify: `apps/web-user/src/views/order/order.vue` — 实现点击继续支付流程。
-- Create: `apps/web-user/src/views/order/components/OrderCard.test.js` — 验证按钮显示与事件。
-
+- Modify: `apps/server/src/modules/payment/payment.service.ts` �?增加 `listAdminOrders()` �?`resumeAlipayWapPayment()`，复用现有订单摘要转换�?- Modify: `apps/server/src/modules/payment/payment.controller.ts` �?增加用户�?resume 接口�?- Create: `apps/server/src/modules/payment/dto/resume-alipay-wap-payment.dto.ts` �?resume 入参 DTO�?- Modify: `apps/server/src/modules/elm/controllers/elm-admin.controller.ts` �?管理端订单列表改�?`PaymentService`，移除状态更新端点或让页面不再使用它�?- Modify: `apps/server/src/modules/elm/elm.module.ts` �?确保 `ElmAdminController` 能注�?`PaymentService`；若 `PaymentModule` 未导出服务，则同步调整�?- Modify: `apps/server/src/modules/payment/payment.service.spec.ts` �?覆盖 resume 与管理端列表摘要�?- Modify: `apps/web-admin/src/entities/order/model/types.ts` �?改为真实支付订单类型�?- Modify: `apps/web-admin/src/entities/order/api/index.ts` �?改读真实支付订单接口，删除更新状态调用�?- Modify: `apps/web-admin/src/features/order-management/model/useOrderManagement.ts` �?只保留列表、查询和刷新状态，不再维护状态编辑弹窗�?- Modify: `apps/web-admin/src/features/order-management/config/fields.ts` �?状态枚举改�?`PENDING/PAID/CLOSED`，表格字段改为真实支付订单字段�?- Modify: `apps/web-admin/src/features/order-management/ui/OrderTable.vue` �?删除编辑状态操作列�?- Modify: `apps/web-admin/src/features/order-management/index.ts` �?移除状态弹窗相关导出�?- Modify: `apps/web-admin/src/pages/commerce/order/index.vue` �?删除状态弹窗接入�?- Modify: `apps/web-user/src/services/api/endpoints/payment.endpoints.js` �?增加 resume endpoint�?- Modify: `apps/web-user/src/services/api/api-payment.js` �?增加 `resumeAlipayWapPayment()`�?- Modify: `apps/web-user/src/views/order/components/OrderCard.vue` �?`PENDING` 订单显示继续支付按钮�?emit 事件�?- Modify: `apps/web-user/src/views/order/order.vue` �?实现点击继续支付流程�?- Create: `apps/web-user/src/views/order/components/OrderCard.test.js` �?验证按钮显示与事件�?
 ---
 
 ### Task 1: Backend resume DTO and service tests
@@ -140,7 +119,7 @@ it('rejects resume when the order is closed', async () => {
 Run:
 
 ```bash
-pnpm --filter vue3-elm-node run test -- payment.service.spec.ts
+pnpm --filter @elm-platform/server run test -- payment.service.spec.ts
 ```
 
 Expected: FAIL because `listAdminOrders` and `resumeAlipayWapPayment` are not implemented.
@@ -186,11 +165,11 @@ Inside `PaymentService`, add these public methods after `listOrders()`:
     const order = await this.findOrder(payload.orderNo);
 
     if (String(order.userId) !== String(payload.userId)) {
-      throw new UnauthorizedException('无权继续支付该订单');
+      throw new UnauthorizedException('无权继续支付该订�?);
     }
 
     if (order.status !== 'PENDING') {
-      throw new BadRequestException('当前订单状态不可继续支付');
+      throw new BadRequestException('当前订单状态不可继续支�?);
     }
 
     const payUrl = this.alipay.createWapPayUrl({
@@ -212,7 +191,7 @@ Inside `PaymentService`, add these public methods after `listOrders()`:
 Run:
 
 ```bash
-pnpm --filter vue3-elm-node run test -- payment.service.spec.ts
+pnpm --filter @elm-platform/server run test -- payment.service.spec.ts
 ```
 
 Expected: PASS.
@@ -245,7 +224,7 @@ Add this method after `createAlipayWapPayment()`:
 
 ```ts
   @Post('payments/alipay/wap/resume')
-  @ApiOperation({ summary: '继续支付宝 WAP 支付单' })
+  @ApiOperation({ summary: '继续支付�?WAP 支付�? })
   resumeAlipayWapPayment(@Body() dto: ResumeAlipayWapPaymentDto) {
     return rawResponse(this.paymentService.resumeAlipayWapPayment(dto));
   }
@@ -275,7 +254,7 @@ Change `getOrders()` to return true payment orders:
 ```ts
   @Get('orders')
   @Roles('admin')
-  @ApiOperation({ summary: '管理端真实支付订单列表' })
+  @ApiOperation({ summary: '管理端真实支付订单列�? })
   getOrders() {
     return this.paymentService.listAdminOrders();
   }
@@ -325,8 +304,8 @@ export class PaymentModule {}
 Run:
 
 ```bash
-pnpm --filter vue3-elm-node run test -- payment.service.spec.ts
-pnpm --filter vue3-elm-node run build
+pnpm --filter @elm-platform/server run test -- payment.service.spec.ts
+pnpm --filter @elm-platform/server run build
 ```
 
 Expected: both PASS.
@@ -445,7 +424,7 @@ import { useReadonlyTable } from '@/shared/lib/useReadonlyTable'
 Run:
 
 ```bash
-pnpm --filter elm-web-admin run type-check
+pnpm --filter @elm-platform/web-admin run type-check
 ```
 
 Expected: FAIL only in files that still reference removed status editing fields.
@@ -494,7 +473,7 @@ export function createOrderTableColumns(t: Translate) {
     { prop: 'userId', label: t('commerce.order.userId'), width: 110 },
     { label: t('commerce.order.amount'), width: 110, formatter: row => `¥${Number(row.payableAmount || 0).toFixed(2)}` },
     { label: t('commerce.order.status'), width: 110, tag: row => ({ label: row.status, type: getOrderStatusType(row.status) }) },
-    { prop: 'tradeStatus', label: '支付宝状态', minWidth: 150 },
+    { prop: 'tradeStatus', label: '支付宝状�?, minWidth: 150 },
     { label: '支付时间', minWidth: 180, formatter: row => row.paidAt ? formatDateTime(row.paidAt) : '-' },
     { label: t('commerce.order.createdAt'), minWidth: 180, formatter: row => formatDateTime(row.createdAt) },
   ] satisfies ConfigTableColumn<OrderItem>[]
@@ -595,7 +574,7 @@ onMounted(fetchRows)
 Run:
 
 ```bash
-pnpm --filter elm-web-admin run type-check
+pnpm --filter @elm-platform/web-admin run type-check
 ```
 
 Expected: PASS.
@@ -644,7 +623,7 @@ export async function resumeAlipayWapPayment(payload) {
 Run:
 
 ```bash
-pnpm --filter vue3-elm-js run test -- src/services/http/policies.test.js
+pnpm --filter @elm-platform/web-user run test -- src/services/http/policies.test.js
 ```
 
 Expected: PASS.
@@ -727,7 +706,7 @@ describe('OrderCard', () => {
 Run:
 
 ```bash
-pnpm --filter vue3-elm-js exec vitest run src/views/order/components/OrderCard.test.js
+pnpm --filter @elm-platform/web-user exec vitest run src/views/order/components/OrderCard.test.js
 ```
 
 Expected: FAIL because button is not implemented.
@@ -779,7 +758,7 @@ Add CSS before `</style>`:
 Run:
 
 ```bash
-pnpm --filter vue3-elm-js exec vitest run src/views/order/components/OrderCard.test.js
+pnpm --filter @elm-platform/web-user exec vitest run src/views/order/components/OrderCard.test.js
 ```
 
 Expected: PASS.
@@ -839,19 +818,19 @@ async function continuePayment(order) {
     const latest = await getAlipayPaymentStatus(order.orderNo, true)
 
     if (latest?.status === 'PAID') {
-      showAlert('订单已支付')
+      showAlert('订单已支�?)
       await fetchOrders()
       return
     }
 
     if (latest?.status === 'CLOSED') {
-      showAlert('订单已关闭，请重新下单')
+      showAlert('订单已关闭，请重新下�?)
       await fetchOrders()
       return
     }
 
     if (latest?.status !== 'PENDING') {
-      showAlert('当前订单状态不可继续支付')
+      showAlert('当前订单状态不可继续支�?)
       await fetchOrders()
       return
     }
@@ -891,8 +870,8 @@ Update `OrderCard` usage:
 Run:
 
 ```bash
-pnpm --filter vue3-elm-js run type-check
-pnpm --filter vue3-elm-js exec vitest run src/views/order/components/OrderCard.test.js
+pnpm --filter @elm-platform/web-user run type-check
+pnpm --filter @elm-platform/web-user exec vitest run src/views/order/components/OrderCard.test.js
 ```
 
 Expected: PASS.
@@ -914,7 +893,7 @@ git commit -m "feat: resume pending orders from user page"
 - [ ] **Step 1: Run focused backend tests**
 
 ```bash
-pnpm --filter vue3-elm-node run test -- payment.service.spec.ts
+pnpm --filter @elm-platform/server run test -- payment.service.spec.ts
 ```
 
 Expected: PASS.
@@ -922,7 +901,7 @@ Expected: PASS.
 - [ ] **Step 2: Run admin validation**
 
 ```bash
-pnpm --filter elm-web-admin run type-check
+pnpm --filter @elm-platform/web-admin run type-check
 ```
 
 Expected: PASS.
@@ -930,8 +909,8 @@ Expected: PASS.
 - [ ] **Step 3: Run user validation**
 
 ```bash
-pnpm --filter vue3-elm-js exec vitest run src/views/order/components/OrderCard.test.js
-pnpm --filter vue3-elm-js run type-check
+pnpm --filter @elm-platform/web-user exec vitest run src/views/order/components/OrderCard.test.js
+pnpm --filter @elm-platform/web-user run type-check
 ```
 
 Expected: PASS.
@@ -949,8 +928,8 @@ pnpm dev:user
 Verify in browser:
 
 1. Create a user-side payment order but do not complete payment.
-2. Open user order page and confirm the order shows `待支付` plus “继续支付”.
-3. Click “继续支付” and confirm it redirects to an Alipay WAP URL.
+2. Open user order page and confirm the order shows `待支付` plus “继续支付�?
+3. Click “继续支付�?and confirm it redirects to an Alipay WAP URL.
 4. Open admin order page and confirm the same `orderNo`, user ID, shop name, amount, and `PENDING` status are visible.
 5. Refresh payment status after payment success or closure and confirm both apps show the updated state.
 
@@ -972,3 +951,4 @@ If no fixes were needed, do not create an empty commit.
 - Spec coverage: management platform real order state, read-only admin status, original `orderNo` resume payment, pre-resume status refresh, error handling, and validation are covered by Tasks 1-9.
 - Placeholder scan: no `TBD`, `TODO`, or unspecified implementation steps remain.
 - Type consistency: backend uses `orderNo`, `userId`, `PENDING`, `PAID`, `CLOSED`; admin `OrderItem` and user order flow use the same property names returned by `PaymentService.toOrderSummary()`.
+

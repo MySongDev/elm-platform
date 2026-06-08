@@ -1,31 +1,17 @@
-# 支付宝后端支付接入设计
-
+﻿# 支付宝后端支付接入设�?
 ## 目标
 
-将 `apps/web-user` 当前依赖 `apps/web-user/server` Express demo 服务的支付宝支付流程迁入现有 NestJS 后端 `apps/server`，由后端负责支付单创建、支付宝 WAP 支付 URL 生成、交易状态查询、异步通知验签和支付订单持久化。
-
+�?`apps/web-user` 当前依赖 `apps/web-user/server` Express demo 服务的支付宝支付流程迁入现有 NestJS 后端 `apps/server`，由后端负责支付单创建、支付宝 WAP 支付 URL 生成、交易状态查询、异步通知验签和支付订单持久化�?
 ## 范围
 
-本次实现包含：
-
-- 在 `apps/server` 新增 `PaymentModule`。
-- 新增 Prisma `PaymentOrder` 模型并生成迁移。
-- 为 `apps/server` 新增 `alipay-sdk` 依赖。
-- 后端提供与现有前端兼容的支付接口。
-- 前端 `/pay-api` 代理改为指向 `apps/server` 的 `/api`。
-- 支付配置迁移到 `apps/server` 环境变量。
-
+本次实现包含�?
+- �?`apps/server` 新增 `PaymentModule`�?- 新增 Prisma `PaymentOrder` 模型并生成迁移�?- �?`apps/server` 新增 `alipay-sdk` 依赖�?- 后端提供与现有前端兼容的支付接口�?- 前端 `/pay-api` 代理改为指向 `apps/server` �?`/api`�?- 支付配置迁移�?`apps/server` 环境变量�?
 本次不包含：
 
-- 商品价格防篡改的完整后端商品库校验。
-- 管理后台支付订单页面。
-- 生产级公网 notify 部署。
-- 关闭或删除 `apps/web-user/server` demo 服务。
-
+- 商品价格防篡改的完整后端商品库校验�?- 管理后台支付订单页面�?- 生产级公�?notify 部署�?- 关闭或删�?`apps/web-user/server` demo 服务�?
 ## 后端架构
 
-新增目录：
-
+新增目录�?
 ```text
 apps/server/src/modules/payment/
   payment.module.ts
@@ -37,19 +23,11 @@ apps/server/src/modules/payment/
     alipay.service.ts
 ```
 
-职责：
-
-- `PaymentController`：暴露前端 REST API。
-- `PaymentService`：创建支付订单、保存订单、查询订单状态、处理回调状态更新。
-- `AlipayService`：封装 `alipay-sdk`，负责创建 WAP 支付 URL、交易查询、notify 验签。
-- `PrismaService`：持久化 `payment_orders`。
-
-`AppModule` 引入 `PaymentModule`。
-
-## 数据库设计
-
-新增 Prisma model：
-
+职责�?
+- `PaymentController`：暴露前�?REST API�?- `PaymentService`：创建支付订单、保存订单、查询订单状态、处理回调状态更新�?- `AlipayService`：封�?`alipay-sdk`，负责创�?WAP 支付 URL、交易查询、notify 验签�?- `PrismaService`：持久化 `payment_orders`�?
+`AppModule` 引入 `PaymentModule`�?
+## 数据库设�?
+新增 Prisma model�?
 ```prisma
 model PaymentOrder {
   id             Int      @id @default(autoincrement())
@@ -82,8 +60,7 @@ model PaymentOrder {
 - `PAID`
 - `CLOSED`
 
-支付宝交易状态保存原始值，例如：
-
+支付宝交易状态保存原始值，例如�?
 - `WAIT_BUYER_PAY`
 - `TRADE_SUCCESS`
 - `TRADE_FINISHED`
@@ -91,8 +68,7 @@ model PaymentOrder {
 
 ## API 设计
 
-后端接口保持现有前端调用语义：
-
+后端接口保持现有前端调用语义�?
 ```text
 POST /api/payments/alipay/wap/create
 GET  /api/payments/alipay/status/:orderNo
@@ -102,8 +78,7 @@ GET  /api/orders
 
 ### 创建 WAP 支付
 
-请求：
-
+请求�?
 ```text
 POST /api/payments/alipay/wap/create
 ```
@@ -128,8 +103,7 @@ POST /api/payments/alipay/wap/create
 }
 ```
 
-响应：
-
+响应�?
 ```json
 {
   "orderNo": "ELMALI202605231234560001",
@@ -138,18 +112,14 @@ POST /api/payments/alipay/wap/create
 }
 ```
 
-### 查询支付状态
-
-请求：
-
+### 查询支付状�?
+请求�?
 ```text
 GET /api/payments/alipay/status/:orderNo?refresh=1
 ```
 
-当 `refresh=1` 且支付宝配置完整时，后端调用 `alipay.trade.query` 并更新数据库。
-
-响应返回订单摘要：
-
+�?`refresh=1` 且支付宝配置完整时，后端调用 `alipay.trade.query` 并更新数据库�?
+响应返回订单摘要�?
 ```json
 {
   "orderNo": "ELMALI202605231234560001",
@@ -171,24 +141,16 @@ GET /api/payments/alipay/status/:orderNo?refresh=1
 
 ### 支付宝异步通知
 
-请求：
-
+请求�?
 ```text
 POST /api/payments/alipay/notify
 ```
 
-处理步骤：
-
-1. 使用 `alipay-sdk` 验签。
-2. 根据 `out_trade_no` 查询 `PaymentOrder`。
-3. 校验 `app_id`、可选 `seller_id`、`total_amount`。
-4. 更新 `tradeNo`、`tradeStatus`、`status`、`notifyPayload`、`paidAt`。
-5. 成功返回 `success`，失败返回 `failure`。
-
+处理步骤�?
+1. 使用 `alipay-sdk` 验签�?2. 根据 `out_trade_no` 查询 `PaymentOrder`�?3. 校验 `app_id`、可�?`seller_id`、`total_amount`�?4. 更新 `tradeNo`、`tradeStatus`、`status`、`notifyPayload`、`paidAt`�?5. 成功返回 `success`，失败返�?`failure`�?
 ## 配置设计
 
-`apps/server/src/config/configuration.ts` 新增：
-
+`apps/server/src/config/configuration.ts` 新增�?
 ```ts
 alipay: {
   gateway: string
@@ -201,8 +163,7 @@ alipay: {
 }
 ```
 
-环境变量：
-
+环境变量�?
 ```env
 ALIPAY_GATEWAY=https://openapi-sandbox.dl.alipaydev.com/gateway.do
 ALIPAY_APP_ID=your-sandbox-app-id
@@ -213,37 +174,30 @@ ALIPAY_RETURN_URL=http://127.0.0.1:5173/#/payment/result
 ALIPAY_SELLER_ID=your-sandbox-seller-id
 ```
 
-私钥和支付宝公钥允许使用 `\n` 表示换行，后端读取时转换为真实换行。
-
+私钥和支付宝公钥允许使用 `\n` 表示换行，后端读取时转换为真实换行�?
 ## 前端改动
 
-`apps/web-user/vite.config.js` 中 `/pay-api` 代理从：
+`apps/web-user/vite.config.js` �?`/pay-api` 代理从：
 
 ```text
 http://127.0.0.1:3001/api
 ```
 
-改为：
-
+改为�?
 ```text
 http://localhost:3000/api
 ```
 
-`apps/web-user/src/services/api/api-payment.js` 保持调用路径不变，但错误文案从“本地支付服务未启动”调整为“后端支付服务未启动或不可用”。
-
-## 数据流
-
-### 创建支付单
-
+`apps/web-user/src/services/api/api-payment.js` 保持调用路径不变，但错误文案从“本地支付服务未启动”调整为“后端支付服务未启动或不可用”�?
+## 数据�?
+### 创建支付�?
 ```text
 /payment 页面
   -> POST /pay-api/payments/alipay/wap/create
-  -> Vite proxy 到 apps/server /api/payments/alipay/wap/create
-  -> PaymentService 校验并计算金额
-  -> 写入 payment_orders
+  -> Vite proxy �?apps/server /api/payments/alipay/wap/create
+  -> PaymentService 校验并计算金�?  -> 写入 payment_orders
   -> AlipayService 生成 WAP 支付 URL
-  -> 前端跳转支付宝
-```
+  -> 前端跳转支付�?```
 
 ### 查询支付结果
 
@@ -252,51 +206,31 @@ http://localhost:3000/api
   -> GET /pay-api/payments/alipay/status/:orderNo?refresh=1
   -> 后端读取 payment_orders
   -> 可选调用支付宝交易查询
-  -> 更新并返回支付状态
-```
+  -> 更新并返回支付状�?```
 
 ### notify 回调
 
 ```text
 支付宝服务器
   -> POST /api/payments/alipay/notify
-  -> 后端验签和校验金额
-  -> 更新 payment_orders
+  -> 后端验签和校验金�?  -> 更新 payment_orders
   -> 返回 success
 ```
 
 ## 错误处理
 
-- 缺少 `userId`：返回 401，消息为“请登录后再支付”。
-- 购物车为空：返回 400，消息为“购物车为空，无法创建支付单”。
-- 金额异常：返回 400，消息为“订单金额异常，无法创建支付单”。
-- 支付宝配置缺失：返回 500，消息提示缺少支付宝配置。
-- 订单不存在：返回 404，消息为“订单不存在”。
-- notify 验签或金额校验失败：返回 `failure`。
-
-## 测试与验证
-
+- 缺少 `userId`：返�?401，消息为“请登录后再支付”�?- 购物车为空：返回 400，消息为“购物车为空，无法创建支付单”�?- 金额异常：返�?400，消息为“订单金额异常，无法创建支付单”�?- 支付宝配置缺失：返回 500，消息提示缺少支付宝配置�?- 订单不存在：返回 404，消息为“订单不存在”�?- notify 验签或金额校验失败：返回 `failure`�?
+## 测试与验�?
 实现后执行：
 
 ```text
-pnpm --filter vue3-elm-node prisma:generate
-pnpm --filter vue3-elm-node prisma:migrate
-pnpm --filter vue3-elm-node build
-pnpm --filter vue3-elm-js run type-check
+pnpm --filter @elm-platform/server prisma:generate
+pnpm --filter @elm-platform/server prisma:migrate
+pnpm --filter @elm-platform/server build
+pnpm --filter @elm-platform/web-user run type-check
 ```
 
-手动验证：
-
-1. 配置 `apps/server` 的支付宝环境变量。
-2. 启动 `apps/server`。
-3. 启动 `apps/web-user`。
-4. 登录用户。
-5. 商家页添加商品并结算。
-6. 在 `/payment` 点击确认支付。
-7. 跳转支付宝沙箱收银台。
-8. 支付完成后回到 `/payment/result`。
-9. 结果页通过主动查询展示支付成功。
-
-## 本地开发限制
-
-默认 `ALIPAY_NOTIFY_URL` 指向本机时，支付宝服务器无法访问本机回调。开发环境主要依赖结果页主动查询状态跑通支付成功。若要验证 notify，需要将后端 3000 端口暴露为公网 HTTPS 地址，并配置 `ALIPAY_NOTIFY_URL`。
+手动验证�?
+1. 配置 `apps/server` 的支付宝环境变量�?2. 启动 `apps/server`�?3. 启动 `apps/web-user`�?4. 登录用户�?5. 商家页添加商品并结算�?6. �?`/payment` 点击确认支付�?7. 跳转支付宝沙箱收银台�?8. 支付完成后回�?`/payment/result`�?9. 结果页通过主动查询展示支付成功�?
+## 本地开发限�?
+默认 `ALIPAY_NOTIFY_URL` 指向本机时，支付宝服务器无法访问本机回调。开发环境主要依赖结果页主动查询状态跑通支付成功。若要验�?notify，需要将后端 3000 端口暴露为公�?HTTPS 地址，并配置 `ALIPAY_NOTIFY_URL`�?
