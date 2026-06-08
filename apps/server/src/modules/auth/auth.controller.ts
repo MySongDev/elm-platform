@@ -1,11 +1,9 @@
-import type { AuthService } from './auth.service'
-import type { LoginDto } from './dto/login.dto'
-import type { UpdateProfileDto } from './dto/update-profile.dto'
 import {
   Body,
   Controller,
   DefaultValuePipe,
   Get,
+  HttpCode,
   ParseIntPipe,
   Patch,
   Post,
@@ -13,7 +11,10 @@ import {
   Request,
   UseGuards,
 } from '@nestjs/common'
-import { ApiBearerAuth, ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger'
+import { ApiBearerAuth, ApiOkResponse, ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger'
+import { AuthService } from './auth.service'
+import { LoginDto, LoginHttpResponseDto } from './dto/login.dto'
+import { UpdateProfileDto } from './dto/update-profile.dto'
 import { AdminAuthGuard } from './guards/admin-auth.guard'
 
 @ApiTags('认证管理')
@@ -22,7 +23,12 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('login')
+  @HttpCode(200)
   @ApiOperation({ summary: '用户登录' })
+  @ApiOkResponse({
+    description: 'Admin login response envelope',
+    type: LoginHttpResponseDto,
+  })
   async login(@Body() loginDto: LoginDto, @Request() req: any) {
     const ip = req.ip || req.headers['x-forwarded-for'] || req.connection?.remoteAddress
     const userAgent = req.headers['user-agent']
@@ -66,8 +72,18 @@ export class AuthController {
   @UseGuards(AdminAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: '获取安全日志' })
-  @ApiQuery({ name: 'page', required: false, type: Number, example: 1 })
-  @ApiQuery({ name: 'pageSize', required: false, type: Number, example: 10 })
+  @ApiQuery({
+    name: 'page',
+    required: false,
+    type: Number,
+    example: 1,
+  })
+  @ApiQuery({
+    name: 'pageSize',
+    required: false,
+    type: Number,
+    example: 10,
+  })
   async getSecurityLogs(
     @Request() req: any,
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,

@@ -4,27 +4,24 @@
  * @description 管理登录 token、用户资料、后端菜单和动态路由加载状态，是权限系统的前端状态边界。
  */
 
+import type { paths } from '@elm-platform/api-types'
 import type { RouteRecordRaw } from 'vue-router'
 import type { UpdateProfileParams, UserMenuNode } from './types'
 import type { UserInfo } from '@/entities/user'
 import { defineStore } from 'pinia'
 import { computed, ref, shallowRef } from 'vue'
+import { authEndpoints } from '@/shared/api/endpoints'
 import request from '@/shared/api/request'
 import { hasPermission as checkPermission } from '@/shared/lib/permission'
 import { getUserMenus, updateProfile } from '../api'
 import { createDevMockLoginResult, createDevMockUserInfo, getDevMockUserMenus, isDevMockAuthEnabled } from './dev-auth'
 
-interface LoginResult {
-  token: string
-  expiresIn?: number
-  user: UserInfo
-}
+type ApiEnvelopeData<T> = T extends { data: infer Data } ? Data : never
+type AdminLoginOperation = paths['/api/auth/login']['post']
+type AdminLoginResponseBody = AdminLoginOperation['responses'][200]['content']['application/json']
 
-interface LoginCredentials {
-  account: string
-  password: string
-  rememberMe?: boolean
-}
+export type LoginResult = ApiEnvelopeData<AdminLoginResponseBody>
+export type LoginCredentials = AdminLoginOperation['requestBody']['content']['application/json']
 
 const DEFAULT_SESSION_TTL_SECONDS = 24 * 60 * 60
 
@@ -75,7 +72,7 @@ export const useAuthStore = defineStore('auth', () => {
   async function login(credentials: LoginCredentials) {
     const res = isDevMockAuthEnabled()
       ? createDevMockLoginResult(credentials.account, credentials.rememberMe)
-      : await request.post<LoginResult>('/auth/login', credentials)
+      : await request.post<LoginResult>(authEndpoints.login, credentials)
     token.value = res.token
     tokenExpiresAt.value = Date.now() + (res.expiresIn ?? DEFAULT_SESSION_TTL_SECONDS) * 1000
     userInfo.value = res.user

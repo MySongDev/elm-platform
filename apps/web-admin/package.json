@@ -32,6 +32,7 @@
     "vue-router": "catalog:"
   },
   "devDependencies": {
+    "@elm-platform/api-types": "workspace:*",
     "@elm-platform/tsconfig": "workspace:*",
     "@elm-platform/vite-config": "workspace:*",
     "@iconify-prerendered/vue-ep": "catalog:",

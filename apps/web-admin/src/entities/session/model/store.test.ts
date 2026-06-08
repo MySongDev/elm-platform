@@ -1,5 +1,7 @@
+import type { LoginResult } from './store'
 import { createPinia, setActivePinia } from 'pinia'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { authEndpoints } from '@/shared/api/endpoints'
 
 let request: typeof import('@/shared/api/request').default
 let useAuthStore: typeof import('./store').useAuthStore
@@ -50,7 +52,7 @@ describe('useAuthStore session expiry', () => {
   })
 
   it('uses the backend expiry seconds when rememberMe changes the session ttl', async () => {
-    vi.mocked(request.post).mockResolvedValueOnce({
+    const loginResult = {
       token: 'remembered-token',
       expiresIn: 7 * 24 * 60 * 60,
       user: {
@@ -59,18 +61,45 @@ describe('useAuthStore session expiry', () => {
         role: 'admin',
         status: 1,
         permissions: ['*:*:*'],
+        email: 'admin@example.com',
+        phone: '13800138000',
+        avatar: null,
+        tenant: {
+          id: 10,
+          code: 'default',
+          name: 'Default Tenant',
+          status: 'ACTIVE',
+        },
+        dataScope: 'SHOP',
+        boundShopIds: ['shop-1'],
       },
-    })
+    } satisfies LoginResult
+
+    vi.mocked(request.post).mockResolvedValueOnce(loginResult)
 
     const store = useAuthStore()
-    await store.login({
+    const result = await store.login({
       account: 'admin',
       password: 'admin123',
       rememberMe: true,
     })
 
+    expect(request.post).toHaveBeenCalledWith(authEndpoints.login, {
+      account: 'admin',
+      password: 'admin123',
+      rememberMe: true,
+    })
+    expect(result).toBe(loginResult)
     expect(store.token).toBe('remembered-token')
     expect(store.tokenExpiresAt).toBe(Date.now() + 7 * 24 * 60 * 60 * 1000)
+    expect(store.userInfo).toMatchObject({
+      boundShopIds: ['shop-1'],
+      dataScope: 'SHOP',
+      tenant: {
+        code: 'default',
+        status: 'ACTIVE',
+      },
+    })
     expect(store.isLoggedIn).toBe(true)
   })
 

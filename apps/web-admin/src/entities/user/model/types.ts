@@ -1,5 +1,12 @@
 import type { Role } from '@/shared/config/access'
 
+export interface UserTenantInfo {
+  id: number
+  code: string
+  name: string
+  status: string
+}
+
 export interface UserInfo {
   id: number
   username: string
@@ -9,8 +16,11 @@ export interface UserInfo {
   status: number
   role: Role
   permissions: string[]
-  createdAt: string
-  updatedAt: string
+  tenant?: UserTenantInfo | null
+  dataScope?: string
+  boundShopIds?: string[]
+  createdAt?: string
+  updatedAt?: string
 }
 
 export interface CreateUserParams {
@@ -21,6 +31,9 @@ export interface CreateUserParams {
   role?: Role
   status?: number
   permissions?: string[]
+  tenantId?: number | null
+  dataScope?: string
+  boundShopIds?: string[]
 }
 
 export interface UpdateUserParams {
@@ -30,6 +43,9 @@ export interface UpdateUserParams {
   status?: number
   role?: Role
   permissions?: string[]
+  tenantId?: number | null
+  dataScope?: string
+  boundShopIds?: string[]
 }
 
 export interface UserListQuery {

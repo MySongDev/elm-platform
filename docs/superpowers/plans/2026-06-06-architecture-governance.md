@@ -154,28 +154,36 @@ git commit -m "docs: add database migration checklist"
 **Files:**
 - Modify or create focused backend/frontend tests after selecting one critical API.
 
-- [ ] **Step 1: Select one critical contract**
+- [x] **Step 1: Select one critical contract**
 
 Start with an existing high-value API such as login, order detail, tenant transition, or payment resume. Avoid broad contract coverage in the first PR.
 
-- [ ] **Step 2: Add backend contract test**
+- [x] **Step 2: Add backend contract test**
 
 Add a Jest test that asserts DTO validation and response shape for the selected API.
 
-- [ ] **Step 3: Add frontend contract usage test**
+- [x] **Step 3: Add frontend contract usage test**
 
 Add a Vitest/Jest test in the consumer app verifying the API adapter expects the same shape.
 
-- [ ] **Step 4: Run focused tests**
+- [x] **Step 4: Run focused tests**
 
 Run the exact tests added or modified.
 
-- [ ] **Step 5: Commit contract tests**
+- [x] **Step 5: Commit contract tests**
 
 ```bash
 git add apps/server apps/web-admin apps/web-user packages
 git commit -m "test: add focused api contract tests"
 ```
+
+Progress:
+
+- 2026-06-08: Completed the admin login contract slice for `/api/auth/login`.
+  - Backend: request compatibility, response shape, generic credential failure, and service/controller contract tests.
+  - Frontend: `web-admin` session store consumes generated `@elm-platform/api-types` login response data.
+  - Verification: focused backend Jest, focused web-admin Vitest, web-admin type-check, API generation, and focused ESLint passed.
+- Next requested slices: admin order detail, then payment resume.
 
 ---
 

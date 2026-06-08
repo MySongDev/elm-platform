@@ -1653,6 +1653,66 @@ export interface components {
              */
             rememberMe?: boolean;
         };
+        LoginTenantDto: {
+            /** @example 1 */
+            id: number;
+            /** @example default */
+            code: string;
+            /** @example Default Tenant */
+            name: string;
+            /** @example ACTIVE */
+            status: string;
+        };
+        LoginUserDto: {
+            /** @example 1 */
+            id: number;
+            /** @example admin */
+            username: string;
+            /** @example admin@example.com */
+            email: string | null;
+            /** @example 13800138000 */
+            phone: string | null;
+            /** @example null */
+            avatar: string | null;
+            /** @example 1 */
+            status: number;
+            /**
+             * @example admin
+             * @enum {string}
+             */
+            role: "admin" | "user";
+            /**
+             * @example [
+             *       "*:*:*"
+             *     ]
+             */
+            permissions: string[];
+            tenant: components["schemas"]["LoginTenantDto"] | null;
+            /** @example ALL */
+            dataScope: string;
+            /**
+             * @example [
+             *       "shop-1"
+             *     ]
+             */
+            boundShopIds: string[];
+        };
+        LoginResponseDto: {
+            /** @example jwt-token */
+            token: string;
+            /** @example 86400 */
+            expiresIn: number;
+            user: components["schemas"]["LoginUserDto"];
+        };
+        LoginHttpResponseDto: {
+            /** @example 200 */
+            code: number;
+            /** @example success */
+            message: string;
+            data: components["schemas"]["LoginResponseDto"];
+            /** @example 2026-06-08T00:00:00.000Z */
+            timestamp: string;
+        };
         UpdateProfileDto: {
             /**
              * @description 用户名
@@ -1967,11 +2027,14 @@ export interface operations {
             };
         };
         responses: {
-            201: {
+            /** @description Admin login response envelope */
+            200: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["LoginHttpResponseDto"];
+                };
             };
         };
     };
