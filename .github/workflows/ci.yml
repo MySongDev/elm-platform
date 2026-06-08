@@ -52,11 +52,11 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: ESLint
-        run: pnpm lint
+      - name: Validate workspace metadata
+        run: pnpm ci:workspace
 
-      - name: Stylelint
-        run: pnpm lint:style
+      - name: Lint workspace
+        run: pnpm ci:lint
 
   build-and-test:
     runs-on: ubuntu-latest
@@ -91,37 +91,34 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Build shared packages
-        run: pnpm --filter @elm-platform/contracts run build && pnpm --filter @elm-platform/vite-config run build
+      - name: Build workspace packages
+        run: pnpm build:packages
 
       - name: Generate Prisma client
-        run: pnpm --filter vue3-elm-node run prisma:generate
+        run: pnpm --filter @elm-platform/server run prisma:generate
 
-      - name: Type check admin
-        run: pnpm --filter elm-web-admin run type-check
-
-      - name: Type check user
-        run: pnpm --filter vue3-elm-js run type-check
+      - name: Type check workspace
+        run: pnpm ci:type-check
 
       - name: Test server
-        run: pnpm --filter vue3-elm-node run test
+        run: pnpm --filter @elm-platform/server run test
         env:
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/elm_test?schema=public
 
       - name: Test admin
-        run: pnpm --filter elm-web-admin run test:unit
+        run: pnpm --filter @elm-platform/web-admin run test:unit
 
       - name: Test user
-        run: pnpm --filter vue3-elm-js run test
+        run: pnpm --filter @elm-platform/web-user run test
 
       - name: Build server
-        run: pnpm --filter vue3-elm-node run build
+        run: pnpm --filter @elm-platform/server run build
 
       - name: Build admin
-        run: pnpm --filter elm-web-admin run build
+        run: pnpm --filter @elm-platform/web-admin run build
 
       - name: Build user
-        run: pnpm --filter vue3-elm-js run build
+        run: pnpm --filter @elm-platform/web-user run build
 
   coverage:
     runs-on: ubuntu-latest
@@ -156,14 +153,14 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Build shared packages
-        run: pnpm --filter @elm-platform/contracts run build && pnpm --filter @elm-platform/vite-config run build
+      - name: Build workspace packages
+        run: pnpm build:packages
 
       - name: Generate Prisma client
-        run: pnpm --filter vue3-elm-node run prisma:generate
+        run: pnpm --filter @elm-platform/server run prisma:generate
 
       - name: Generate coverage reports
-        run: pnpm test:cov
+        run: pnpm ci:coverage
         env:
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/elm_test?schema=public
 
@@ -233,8 +230,8 @@ jobs:
       - name: Install Playwright browser
         run: pnpm exec playwright install --with-deps chromium
 
-      - name: Build shared packages
-        run: pnpm --filter @elm-platform/contracts run build && pnpm --filter @elm-platform/vite-config run build
+      - name: Build workspace packages
+        run: pnpm build:packages
 
       - name: Run Playwright smoke
         run: pnpm test:e2e
@@ -277,19 +274,19 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Build shared packages
-        run: pnpm --filter @elm-platform/contracts run build && pnpm --filter @elm-platform/vite-config run build
+      - name: Build workspace packages
+        run: pnpm build:packages
 
       - name: Generate Prisma client
-        run: pnpm --filter vue3-elm-node run prisma:generate
+        run: pnpm --filter @elm-platform/server run prisma:generate
 
       - name: Run database migrations
-        run: pnpm --filter vue3-elm-node run prisma:migrate
+        run: pnpm --filter @elm-platform/server run prisma:migrate
         env:
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/elm_test?schema=public
 
       - name: Start server
-        run: pnpm --filter vue3-elm-node run start &
+        run: pnpm --filter @elm-platform/server run start &
         env:
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/elm_test?schema=public
           APP_PORT: 3000
@@ -303,13 +300,52 @@ jobs:
           done
 
       - name: Generate API types
-        run: pnpm api:generate
+        run: pnpm ci:api-drift
 
       - name: Check for API drift
         run: |
           if ! git diff --quiet packages/api-types/; then
-            echo "❌ API types are out of date. Run 'pnpm api:generate' and commit the changes."
+            echo "API types are out of date. Run 'pnpm api:generate' and commit the changes."
             git diff packages/api-types/
             exit 1
           fi
-          echo "✅ API types are up to date."
+          echo "API types are up to date."
+
+  affected-pilot:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    # Non-blocking Turborepo affected pilot. Reports the affected build/lint
+    # scope relative to the PR base without gating merges. Promote to a
+    # blocking job only after the Turborepo pilot is confirmed stable.
+    continue-on-error: true
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build workspace packages
+        run: pnpm build:packages
+
+      - name: Report affected build scope
+        env:
+          TURBO_SCM_BASE: ${{ github.event.pull_request.base.sha }}
+        run: pnpm turbo:affected:build
+
+      - name: Report affected lint scope
+        env:
+          TURBO_SCM_BASE: ${{ github.event.pull_request.base.sha }}
+        run: pnpm turbo:affected:lint
+
