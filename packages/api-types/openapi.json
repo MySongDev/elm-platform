@@ -1,0 +1,2970 @@
+{
+  "openapi": "3.0.0",
+  "paths": {
+    "/api/health": {
+      "get": {
+        "operationId": "HealthController_check",
+        "summary": "服务健康检查",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "健康检查"
+        ]
+      }
+    },
+    "/api/users": {
+      "post": {
+        "operationId": "UserController_create",
+        "summary": "创建用户",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateUserDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "创建成功"
+          },
+          "409": {
+            "description": "用户名已存在"
+          }
+        },
+        "tags": [
+          "用户管理"
+        ]
+      },
+      "get": {
+        "operationId": "UserController_findAll",
+        "summary": "获取所有用户",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "获取成功"
+          }
+        },
+        "tags": [
+          "用户管理"
+        ]
+      }
+    },
+    "/api/users/{id}": {
+      "get": {
+        "operationId": "UserController_findOne",
+        "summary": "根据 ID 获取用户",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "用户 ID",
+            "schema": {
+              "example": 1,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "获取成功"
+          },
+          "404": {
+            "description": "用户不存在"
+          }
+        },
+        "tags": [
+          "用户管理"
+        ]
+      },
+      "patch": {
+        "operationId": "UserController_update",
+        "summary": "更新用户",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "用户 ID",
+            "schema": {
+              "example": 1,
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateUserDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "更新成功"
+          },
+          "404": {
+            "description": "用户不存在"
+          }
+        },
+        "tags": [
+          "用户管理"
+        ]
+      },
+      "delete": {
+        "operationId": "UserController_remove",
+        "summary": "删除用户",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "用户 ID",
+            "schema": {
+              "example": 1,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "删除成功"
+          },
+          "404": {
+            "description": "用户不存在"
+          }
+        },
+        "tags": [
+          "用户管理"
+        ]
+      }
+    },
+    "/api/auth/login": {
+      "post": {
+        "operationId": "AuthController_login",
+        "summary": "用户登录",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "认证管理"
+        ]
+      }
+    },
+    "/api/auth/profile": {
+      "get": {
+        "operationId": "AuthController_getProfile",
+        "summary": "获取当前用户信息",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "认证管理"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      },
+      "patch": {
+        "operationId": "AuthController_updateProfile",
+        "summary": "更新当前用户信息",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateProfileDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "认证管理"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/api/auth/menus": {
+      "get": {
+        "operationId": "AuthController_getMenus",
+        "summary": "获取当前用户可访问的菜单树",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "认证管理"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/api/auth/logout": {
+      "post": {
+        "operationId": "AuthController_logout",
+        "summary": "退出登录",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "认证管理"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/api/auth/security-logs": {
+      "get": {
+        "operationId": "AuthController_getSecurityLogs",
+        "summary": "获取安全日志",
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "example": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "pageSize",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "example": 10,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "认证管理"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/api/admin/tenants": {
+      "get": {
+        "operationId": "TenantController_listTenants",
+        "summary": "租户列表",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "租户管理"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      },
+      "post": {
+        "operationId": "TenantController_createTenant",
+        "summary": "创建租户",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateTenantDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "租户管理"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/api/admin/tenants/{id}": {
+      "get": {
+        "operationId": "TenantController_getTenantDetail",
+        "summary": "租户详情",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "租户管理"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      },
+      "patch": {
+        "operationId": "TenantController_updateTenant",
+        "summary": "更新租户",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateTenantDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "租户管理"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/api/admin/tenants/{id}/events/{event}": {
+      "post": {
+        "operationId": "TenantController_transitionTenant",
+        "summary": "触发租户状态事件",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TenantTransitionDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "租户管理"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/api/admin/tenants/{id}/action-logs": {
+      "get": {
+        "operationId": "TenantController_getTenantActionLogs",
+        "summary": "租户状态动作日志",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "租户管理"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/api/customer-auth/sms/send": {
+      "post": {
+        "operationId": "CustomerAuthController_sendSms",
+        "summary": "发送短信验证码",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SendSmsDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "用户端认证"
+        ]
+      }
+    },
+    "/api/customer-auth/register": {
+      "post": {
+        "operationId": "CustomerAuthController_register",
+        "summary": "手机号注册",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CustomerRegisterDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "用户端认证"
+        ]
+      }
+    },
+    "/api/customer-auth/login/password": {
+      "post": {
+        "operationId": "CustomerAuthController_loginByPassword",
+        "summary": "手机号密码登录",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CustomerPasswordLoginDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "用户端认证"
+        ]
+      }
+    },
+    "/api/customer-auth/login/sms": {
+      "post": {
+        "operationId": "CustomerAuthController_loginBySms",
+        "summary": "手机号验证码登录",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CustomerSmsLoginDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "用户端认证"
+        ]
+      }
+    },
+    "/api/customer-auth/refresh": {
+      "post": {
+        "operationId": "CustomerAuthController_refresh",
+        "summary": "刷新用户端访问令牌",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CustomerRefreshTokenDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "用户端认证"
+        ]
+      }
+    },
+    "/api/customer-auth/logout": {
+      "post": {
+        "operationId": "CustomerAuthController_logout",
+        "summary": "撤销用户端刷新令牌",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CustomerLogoutDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "用户端认证"
+        ]
+      }
+    },
+    "/api/customer-auth/profile": {
+      "get": {
+        "operationId": "CustomerAuthController_getProfile",
+        "summary": "获取普通用户信息",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "用户端认证"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/api/admin/permissions/pages": {
+      "get": {
+        "operationId": "AdminController_getPagePermissions",
+        "summary": "页面权限列表",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "后台管理"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/api/admin/permissions/buttons": {
+      "get": {
+        "operationId": "AdminController_getButtonPermissions",
+        "summary": "按钮权限列表",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "后台管理"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/api/admin/monitor/online-users": {
+      "get": {
+        "operationId": "AdminController_getOnlineUsers",
+        "summary": "在线用户列表",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "后台管理"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/api/admin/monitor/online-users/{id}/force-logout": {
+      "post": {
+        "operationId": "AdminController_forceLogout",
+        "summary": "强制用户下线",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "后台管理"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/api/admin/monitor/login-logs": {
+      "get": {
+        "operationId": "AdminController_getLoginLogs",
+        "summary": "登录日志",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "后台管理"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/api/admin/monitor/operation-logs": {
+      "get": {
+        "operationId": "AdminController_getOperationLogs",
+        "summary": "操作日志",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "后台管理"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/api/admin/monitor/system-logs": {
+      "get": {
+        "operationId": "AdminController_getSystemLogs",
+        "summary": "系统日志",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "后台管理"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/api/admin/system/roles": {
+      "get": {
+        "operationId": "AdminController_getRoles",
+        "summary": "角色列表",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "后台管理"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      },
+      "post": {
+        "operationId": "AdminController_createRole",
+        "summary": "创建角色",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpsertRoleDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "后台管理"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/api/admin/system/roles/{id}": {
+      "patch": {
+        "operationId": "AdminController_updateRole",
+        "summary": "更新角色",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpsertRoleDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "后台管理"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      },
+      "delete": {
+        "operationId": "AdminController_deleteRole",
+        "summary": "删除角色",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "后台管理"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/api/admin/system/menus": {
+      "get": {
+        "operationId": "AdminController_getMenus",
+        "summary": "菜单列表",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "后台管理"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      },
+      "post": {
+        "operationId": "AdminController_createMenu",
+        "summary": "创建菜单",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpsertMenuDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "后台管理"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/api/admin/system/menus/{id}": {
+      "patch": {
+        "operationId": "AdminController_updateMenu",
+        "summary": "更新菜单",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpsertMenuDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "后台管理"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      },
+      "delete": {
+        "operationId": "AdminController_deleteMenu",
+        "summary": "删除菜单",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "后台管理"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/api/admin/system/depts": {
+      "get": {
+        "operationId": "AdminController_getDepts",
+        "summary": "部门列表",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "后台管理"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      },
+      "post": {
+        "operationId": "AdminController_createDept",
+        "summary": "创建部门",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpsertDeptDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "后台管理"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/api/admin/system/depts/{id}": {
+      "patch": {
+        "operationId": "AdminController_updateDept",
+        "summary": "更新部门",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpsertDeptDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "后台管理"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      },
+      "delete": {
+        "operationId": "AdminController_deleteDept",
+        "summary": "删除部门",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "后台管理"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/cities": {
+      "get": {
+        "operationId": "ElmLocationController_getCities",
+        "summary": "获取城市列表",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Elm 兼容接口 - 城市定位"
+        ]
+      }
+    },
+    "/api/v1/cities/{id}": {
+      "get": {
+        "operationId": "ElmLocationController_getCity",
+        "summary": "获取城市信息",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Elm 兼容接口 - 城市定位"
+        ]
+      }
+    },
+    "/api/v1/pois": {
+      "get": {
+        "operationId": "ElmLocationController_searchPois",
+        "summary": "搜索地址",
+        "parameters": [
+          {
+            "name": "city_id",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Elm 兼容接口 - 城市定位"
+        ]
+      }
+    },
+    "/api/v2/pois": {
+      "get": {
+        "operationId": "ElmLocationController_getPoiByQuery",
+        "summary": "根据经纬度详细定位（query）",
+        "parameters": [
+          {
+            "name": "geohash",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Elm 兼容接口 - 城市定位"
+        ]
+      }
+    },
+    "/api/v2/pois/{geohash}": {
+      "get": {
+        "operationId": "ElmLocationController_getPoiByParam",
+        "summary": "根据经纬度详细定位（param）",
+        "parameters": [
+          {
+            "name": "geohash",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Elm 兼容接口 - 城市定位"
+        ]
+      }
+    },
+    "/api/restapi/bgs/poi/reverse_geo_coding": {
+      "get": {
+        "operationId": "ElmLocationController_reverseGeoCoding",
+        "summary": "逆地理编码兼容接口",
+        "parameters": [
+          {
+            "name": "latitude",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "longitude",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Elm 兼容接口 - 城市定位"
+        ]
+      }
+    },
+    "/api/v2/index_entry": {
+      "get": {
+        "operationId": "ElmLocationController_getIndexEntry",
+        "summary": "食品分类列表",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Elm 兼容接口 - 城市定位"
+        ]
+      }
+    },
+    "/api/shopping/restaurants": {
+      "get": {
+        "operationId": "ElmRestaurantPublicController_getRestaurants",
+        "summary": "获取商铺列表",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Elm 兼容接口 - 商家"
+        ]
+      }
+    },
+    "/api/shopping/restaurants/count": {
+      "get": {
+        "operationId": "ElmRestaurantPublicController_getRestaurantCount",
+        "summary": "获取餐馆数量",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Elm 兼容接口 - 商家"
+        ]
+      }
+    },
+    "/api/v4/restaurants": {
+      "get": {
+        "operationId": "ElmRestaurantPublicController_searchRestaurants",
+        "summary": "搜索餐馆",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Elm 兼容接口 - 商家"
+        ]
+      }
+    },
+    "/api/shopping/v2/restaurant/category": {
+      "get": {
+        "operationId": "ElmRestaurantPublicController_getRestaurantCategories",
+        "summary": "商铺分类列表",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Elm 兼容接口 - 商家"
+        ]
+      }
+    },
+    "/api/shopping/v1/restaurants/delivery_modes": {
+      "get": {
+        "operationId": "ElmRestaurantPublicController_getDeliveryModes",
+        "summary": "配送方式列表",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Elm 兼容接口 - 商家"
+        ]
+      }
+    },
+    "/api/shopping/v1/restaurants/activity_attributes": {
+      "get": {
+        "operationId": "ElmRestaurantPublicController_getActivityAttributes",
+        "summary": "商家属性活动列表",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Elm 兼容接口 - 商家"
+        ]
+      }
+    },
+    "/api/shopping/restaurant/{shopId}": {
+      "get": {
+        "operationId": "ElmRestaurantPublicController_getRestaurant",
+        "summary": "餐馆详情",
+        "parameters": [
+          {
+            "name": "shopId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Elm 兼容接口 - 商家"
+        ]
+      }
+    },
+    "/api/shopping/addshop": {
+      "post": {
+        "operationId": "ElmRestaurantPublicController_addRestaurant",
+        "summary": "添加餐馆",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Elm 兼容接口 - 商家"
+        ]
+      }
+    },
+    "/api/shopping/updateshop": {
+      "post": {
+        "operationId": "ElmRestaurantPublicController_updateRestaurant",
+        "summary": "更新餐馆",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Elm 兼容接口 - 商家"
+        ]
+      }
+    },
+    "/api/shopping/restaurant/{restaurantId}": {
+      "delete": {
+        "operationId": "ElmRestaurantPublicController_deleteRestaurant",
+        "summary": "删除餐馆",
+        "parameters": [
+          {
+            "name": "restaurantId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Elm 兼容接口 - 商家"
+        ]
+      }
+    },
+    "/api/shopping/v2/menu": {
+      "get": {
+        "operationId": "ElmFoodPublicController_getMenu",
+        "summary": "获取菜单列表",
+        "parameters": [
+          {
+            "name": "restaurant_id",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Elm 兼容接口 - 商品"
+        ]
+      }
+    },
+    "/api/shopping/getcategory/{restaurantId}": {
+      "get": {
+        "operationId": "ElmFoodPublicController_getFoodCategories",
+        "summary": "获取店铺食品种类",
+        "parameters": [
+          {
+            "name": "restaurantId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Elm 兼容接口 - 商品"
+        ]
+      }
+    },
+    "/api/shopping/v2/menu/{categoryId}": {
+      "get": {
+        "operationId": "ElmFoodPublicController_getFoodCategoryDetail",
+        "summary": "获取食品种类详情",
+        "parameters": [
+          {
+            "name": "categoryId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Elm 兼容接口 - 商品"
+        ]
+      }
+    },
+    "/api/shopping/v2/foods": {
+      "get": {
+        "operationId": "ElmFoodPublicController_getFoods",
+        "summary": "获取食品列表",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Elm 兼容接口 - 商品"
+        ]
+      }
+    },
+    "/api/shopping/v2/foods/count": {
+      "get": {
+        "operationId": "ElmFoodPublicController_getFoodCount",
+        "summary": "获取食品数量",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Elm 兼容接口 - 商品"
+        ]
+      }
+    },
+    "/api/shopping/v2/addfood": {
+      "post": {
+        "operationId": "ElmFoodPublicController_addFood",
+        "summary": "添加食品",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Elm 兼容接口 - 商品"
+        ]
+      }
+    },
+    "/api/shopping/v2/updatefood": {
+      "post": {
+        "operationId": "ElmFoodPublicController_updateFood",
+        "summary": "更新食品",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Elm 兼容接口 - 商品"
+        ]
+      }
+    },
+    "/api/shopping/v2/food/{foodId}": {
+      "delete": {
+        "operationId": "ElmFoodPublicController_deleteFood",
+        "summary": "删除食品",
+        "parameters": [
+          {
+            "name": "foodId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Elm 兼容接口 - 商品"
+        ]
+      }
+    },
+    "/api/ugc/v2/restaurants/{restaurantId}/ratings/tags": {
+      "get": {
+        "operationId": "ElmFoodPublicController_getRatingTags",
+        "summary": "评价分类",
+        "parameters": [
+          {
+            "name": "restaurantId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Elm 兼容接口 - 商品"
+        ]
+      }
+    },
+    "/api/ugc/v2/restaurants/{restaurantId}/ratings": {
+      "get": {
+        "operationId": "ElmFoodPublicController_getRatings",
+        "summary": "评价列表",
+        "parameters": [
+          {
+            "name": "restaurantId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Elm 兼容接口 - 商品"
+        ]
+      }
+    },
+    "/api/v1/captchas": {
+      "post": {
+        "operationId": "ElmUserPublicController_getCaptchas",
+        "summary": "获取验证码",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Elm 兼容接口 - 用户"
+        ]
+      }
+    },
+    "/api/v2/login": {
+      "post": {
+        "operationId": "ElmUserPublicController_login",
+        "summary": "账号密码登录",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Elm 兼容接口 - 用户"
+        ]
+      }
+    },
+    "/api/v1/login/app_mobile": {
+      "post": {
+        "operationId": "ElmUserPublicController_mobileLogin",
+        "summary": "手机号登录",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Elm 兼容接口 - 用户"
+        ]
+      }
+    },
+    "/api/v1/user": {
+      "get": {
+        "operationId": "ElmUserPublicController_getUser",
+        "summary": "获取用户信息",
+        "parameters": [
+          {
+            "name": "user_id",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Elm 兼容接口 - 用户"
+        ]
+      }
+    },
+    "/api/v2/changepassword": {
+      "post": {
+        "operationId": "ElmUserPublicController_changePassword",
+        "summary": "修改密码",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Elm 兼容接口 - 用户"
+        ]
+      }
+    },
+    "/api/v2/signout": {
+      "get": {
+        "operationId": "ElmUserPublicController_signout",
+        "summary": "退出登录",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Elm 兼容接口 - 用户"
+        ]
+      }
+    },
+    "/api/v1/users/{userId}/addresses": {
+      "get": {
+        "operationId": "ElmUserPublicController_getAddresses",
+        "summary": "获取收货地址列表",
+        "parameters": [
+          {
+            "name": "userId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Elm 兼容接口 - 用户"
+        ]
+      },
+      "post": {
+        "operationId": "ElmUserPublicController_addAddress",
+        "summary": "新增收货地址",
+        "parameters": [
+          {
+            "name": "userId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Elm 兼容接口 - 用户"
+        ]
+      }
+    },
+    "/api/v1/users/{userId}/addresses/{addressId}": {
+      "delete": {
+        "operationId": "ElmUserPublicController_deleteAddress",
+        "summary": "删除收货地址",
+        "parameters": [
+          {
+            "name": "userId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "addressId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Elm 兼容接口 - 用户"
+        ]
+      }
+    },
+    "/api/eus/v1/users/{userId}/avatar": {
+      "post": {
+        "operationId": "ElmUserPublicController_uploadAvatar",
+        "summary": "上传用户头像",
+        "parameters": [
+          {
+            "name": "userId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Elm 兼容接口 - 用户"
+        ]
+      }
+    },
+    "/api/bos/orders": {
+      "get": {
+        "operationId": "ElmOrderPublicController_getOrders",
+        "summary": "订单列表",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Elm 兼容接口 - 订单"
+        ]
+      }
+    },
+    "/api/bos/orders/count": {
+      "get": {
+        "operationId": "ElmOrderPublicController_getOrderCount",
+        "summary": "订单数量",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Elm 兼容接口 - 订单"
+        ]
+      }
+    },
+    "/api/admin/commerce/restaurants": {
+      "get": {
+        "operationId": "ElmAdminController_getRestaurants",
+        "summary": "管理端餐馆列表",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "业务管理"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      },
+      "post": {
+        "operationId": "ElmAdminController_createRestaurant",
+        "summary": "管理端创建餐馆",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "业务管理"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/api/admin/commerce/restaurants/{id}": {
+      "patch": {
+        "operationId": "ElmAdminController_updateRestaurant",
+        "summary": "管理端更新餐馆",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "业务管理"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      },
+      "delete": {
+        "operationId": "ElmAdminController_deleteRestaurant",
+        "summary": "管理端删除餐馆",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "业务管理"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/api/admin/commerce/foods": {
+      "get": {
+        "operationId": "ElmAdminController_getFoods",
+        "summary": "管理端食品列表",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "业务管理"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      },
+      "post": {
+        "operationId": "ElmAdminController_createFood",
+        "summary": "管理端创建食品",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "业务管理"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/api/admin/commerce/foods/{id}": {
+      "patch": {
+        "operationId": "ElmAdminController_updateFood",
+        "summary": "管理端更新食品",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "业务管理"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      },
+      "delete": {
+        "operationId": "ElmAdminController_deleteFood",
+        "summary": "管理端删除食品",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "业务管理"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/api/admin/commerce/orders": {
+      "get": {
+        "operationId": "ElmAdminController_getOrders",
+        "summary": "管理端真实支付订单列表",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "业务管理"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/api/admin/commerce/orders/{orderNo}": {
+      "get": {
+        "operationId": "ElmAdminController_getOrderDetail",
+        "summary": "管理端订单详情",
+        "parameters": [
+          {
+            "name": "orderNo",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "业务管理"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/api/admin/commerce/orders/{orderNo}/accept": {
+      "post": {
+        "operationId": "ElmAdminController_acceptOrder",
+        "summary": "管理端订单接单",
+        "parameters": [
+          {
+            "name": "orderNo",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "业务管理"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/api/admin/commerce/orders/{orderNo}/start-preparing": {
+      "post": {
+        "operationId": "ElmAdminController_startPreparing",
+        "summary": "管理端订单开始制作",
+        "parameters": [
+          {
+            "name": "orderNo",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "业务管理"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/api/admin/commerce/orders/{orderNo}/start-delivery": {
+      "post": {
+        "operationId": "ElmAdminController_startDelivery",
+        "summary": "管理端订单开始配送",
+        "parameters": [
+          {
+            "name": "orderNo",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "业务管理"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/api/admin/commerce/orders/{orderNo}/complete": {
+      "post": {
+        "operationId": "ElmAdminController_completeOrder",
+        "summary": "管理端订单完成",
+        "parameters": [
+          {
+            "name": "orderNo",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "业务管理"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/api/admin/commerce/orders/{orderNo}/refund/approve": {
+      "post": {
+        "operationId": "ElmAdminController_approveRefund",
+        "summary": "管理端同意退款",
+        "parameters": [
+          {
+            "name": "orderNo",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ApproveRefundDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "业务管理"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/api/admin/commerce/orders/{orderNo}/refund/reject": {
+      "post": {
+        "operationId": "ElmAdminController_rejectRefund",
+        "summary": "管理端驳回退款",
+        "parameters": [
+          {
+            "name": "orderNo",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RejectRefundDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "业务管理"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/api/payments/alipay/wap/create": {
+      "post": {
+        "operationId": "PaymentController_createAlipayWapPayment",
+        "summary": "创建支付宝 WAP 支付单",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateAlipayWapPaymentDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "支付"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/api/payments/alipay/wap/resume": {
+      "post": {
+        "operationId": "PaymentController_resumeAlipayWapPayment",
+        "summary": "继续支付宝 WAP 支付单",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResumeAlipayWapPaymentDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "支付"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/api/payments/alipay/status/{orderNo}": {
+      "get": {
+        "operationId": "PaymentController_getAlipayPaymentStatus",
+        "summary": "查询支付宝支付状态",
+        "parameters": [
+          {
+            "name": "orderNo",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "refresh",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "支付"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/api/orders/{orderNo}/refund/request": {
+      "post": {
+        "operationId": "PaymentController_requestRefund",
+        "summary": "用户申请订单退款",
+        "parameters": [
+          {
+            "name": "orderNo",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RequestRefundDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "支付"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/api/payments/alipay/notify": {
+      "post": {
+        "operationId": "PaymentController_handleAlipayNotify",
+        "summary": "支付宝异步通知",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "支付"
+        ]
+      }
+    },
+    "/api/orders": {
+      "get": {
+        "operationId": "PaymentController_listOrders",
+        "summary": "用户支付订单列表",
+        "parameters": [
+          {
+            "name": "limit",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "支付"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    }
+  },
+  "info": {
+    "title": "Vue3 Elm API",
+    "description": "Vue3 + Elm 项目后端 API 文档",
+    "version": "1.0",
+    "contact": {}
+  },
+  "tags": [],
+  "servers": [],
+  "components": {
+    "securitySchemes": {
+      "bearer": {
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "type": "http"
+      }
+    },
+    "schemas": {
+      "CreateUserDto": {
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string",
+            "description": "用户名",
+            "example": "john_doe"
+          },
+          "password": {
+            "type": "string",
+            "description": "密码",
+            "example": "password123"
+          },
+          "email": {
+            "type": "string",
+            "description": "邮箱",
+            "example": "john@example.com"
+          },
+          "phone": {
+            "type": "string",
+            "description": "手机号",
+            "example": "13800138000"
+          },
+          "role": {
+            "type": "string",
+            "description": "角色",
+            "example": "user"
+          },
+          "status": {
+            "type": "number",
+            "description": "状态",
+            "example": 1
+          },
+          "permissions": {
+            "description": "权限码",
+            "example": [
+              "user:view"
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "tenantId": {
+            "type": "object",
+            "description": "所属租户 ID",
+            "example": 1
+          },
+          "dataScope": {
+            "type": "string",
+            "description": "数据范围",
+            "example": "TENANT"
+          },
+          "boundShopIds": {
+            "description": "绑定店铺 ID 列表",
+            "example": [
+              "1"
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "username",
+          "password"
+        ]
+      },
+      "UpdateUserDto": {
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string",
+            "description": "用户名",
+            "example": "john_doe"
+          },
+          "email": {
+            "type": "string",
+            "description": "邮箱",
+            "example": "john@example.com"
+          },
+          "phone": {
+            "type": "string",
+            "description": "手机号",
+            "example": "13800138000"
+          },
+          "role": {
+            "type": "string",
+            "description": "角色",
+            "example": "user"
+          },
+          "status": {
+            "type": "number",
+            "description": "状态",
+            "example": 1
+          },
+          "permissions": {
+            "description": "权限码",
+            "example": [
+              "user:view"
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "tenantId": {
+            "type": "object",
+            "description": "所属租户 ID",
+            "example": 1
+          },
+          "dataScope": {
+            "type": "string",
+            "description": "数据范围",
+            "example": "TENANT"
+          },
+          "boundShopIds": {
+            "description": "绑定店铺 ID 列表",
+            "example": [
+              "1"
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "LoginDto": {
+        "type": "object",
+        "properties": {
+          "account": {
+            "type": "string",
+            "description": "用户名或手机号",
+            "example": "admin"
+          },
+          "username": {
+            "type": "string",
+            "description": "兼容旧字段：用户名",
+            "example": "admin"
+          },
+          "password": {
+            "type": "string",
+            "description": "密码",
+            "example": "123456"
+          },
+          "rememberMe": {
+            "type": "boolean",
+            "description": "是否签发 7 天免登录 token",
+            "example": true
+          }
+        },
+        "required": [
+          "account",
+          "password"
+        ]
+      },
+      "UpdateProfileDto": {
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string",
+            "description": "用户名",
+            "example": "john_doe"
+          },
+          "email": {
+            "type": "object",
+            "description": "邮箱",
+            "example": "john@example.com"
+          },
+          "phone": {
+            "type": "object",
+            "description": "手机号",
+            "example": "13800138000"
+          }
+        }
+      },
+      "CreateTenantDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "UpdateTenantDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "TenantTransitionDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "SendSmsDto": {
+        "type": "object",
+        "properties": {
+          "phone": {
+            "type": "string",
+            "description": "手机号",
+            "example": "13800138001"
+          },
+          "scene": {
+            "type": "string",
+            "description": "验证码场景",
+            "enum": [
+              "login",
+              "register",
+              "reset_password"
+            ]
+          }
+        },
+        "required": [
+          "phone",
+          "scene"
+        ]
+      },
+      "CustomerRegisterDto": {
+        "type": "object",
+        "properties": {
+          "phone": {
+            "type": "string",
+            "description": "手机号",
+            "example": "13800138001"
+          },
+          "smsCode": {
+            "type": "string",
+            "description": "短信验证码",
+            "example": "123456"
+          },
+          "password": {
+            "type": "string",
+            "description": "密码",
+            "example": "password123"
+          }
+        },
+        "required": [
+          "phone",
+          "smsCode"
+        ]
+      },
+      "CustomerPasswordLoginDto": {
+        "type": "object",
+        "properties": {
+          "phone": {
+            "type": "string",
+            "description": "手机号",
+            "example": "13800138001"
+          },
+          "password": {
+            "type": "string",
+            "description": "密码",
+            "example": "password123"
+          }
+        },
+        "required": [
+          "phone",
+          "password"
+        ]
+      },
+      "CustomerSmsLoginDto": {
+        "type": "object",
+        "properties": {
+          "phone": {
+            "type": "string",
+            "description": "手机号",
+            "example": "13800138001"
+          },
+          "smsCode": {
+            "type": "string",
+            "description": "短信验证码",
+            "example": "123456"
+          }
+        },
+        "required": [
+          "phone",
+          "smsCode"
+        ]
+      },
+      "CustomerRefreshTokenDto": {
+        "type": "object",
+        "properties": {
+          "refreshToken": {
+            "type": "string",
+            "description": "刷新令牌"
+          }
+        },
+        "required": [
+          "refreshToken"
+        ]
+      },
+      "CustomerLogoutDto": {
+        "type": "object",
+        "properties": {
+          "refreshToken": {
+            "type": "string",
+            "description": "刷新令牌"
+          }
+        }
+      },
+      "UpsertRoleDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "description": "ID（更新时传入）"
+          },
+          "name": {
+            "type": "string",
+            "description": "角色名称"
+          },
+          "code": {
+            "type": "string",
+            "description": "角色编码"
+          },
+          "status": {
+            "type": "number",
+            "description": "状态：1启用 0停用"
+          },
+          "remark": {
+            "type": "string",
+            "description": "备注"
+          },
+          "permissions": {
+            "description": "权限码列表",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "UpsertMenuDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "description": "ID（更新时传入）"
+          },
+          "parentId": {
+            "type": "object",
+            "description": "父级菜单 ID"
+          },
+          "title": {
+            "type": "string",
+            "description": "菜单名称"
+          },
+          "path": {
+            "type": "string",
+            "description": "路由路径"
+          },
+          "name": {
+            "type": "string",
+            "description": "路由名称"
+          },
+          "icon": {
+            "type": "string",
+            "description": "图标"
+          },
+          "permission": {
+            "type": "string",
+            "description": "权限标识"
+          },
+          "type": {
+            "type": "string",
+            "description": "菜单类型"
+          },
+          "sort": {
+            "type": "number",
+            "description": "排序"
+          },
+          "status": {
+            "type": "number",
+            "description": "状态：1启用 0停用"
+          }
+        }
+      },
+      "UpsertDeptDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "description": "ID（更新时传入）"
+          },
+          "parentId": {
+            "type": "object",
+            "description": "父级部门 ID"
+          },
+          "name": {
+            "type": "string",
+            "description": "部门名称"
+          },
+          "leader": {
+            "type": "string",
+            "description": "负责人"
+          },
+          "phone": {
+            "type": "string",
+            "description": "电话"
+          },
+          "email": {
+            "type": "string",
+            "description": "邮箱"
+          },
+          "sort": {
+            "type": "number",
+            "description": "排序"
+          },
+          "status": {
+            "type": "number",
+            "description": "状态：1启用 0停用"
+          }
+        }
+      },
+      "ApproveRefundDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "RejectRefundDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "CreateAlipayWapPaymentDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "ResumeAlipayWapPaymentDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "RequestRefundDto": {
+        "type": "object",
+        "properties": {}
+      }
+    }
+  }
+}

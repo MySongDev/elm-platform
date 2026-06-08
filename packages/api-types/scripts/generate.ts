@@ -38,9 +38,18 @@ async function generate() {
   }
 
   // Generate types using openapi-typescript
-  const openapiTS = await import('openapi-typescript')
+  const { astToString, default: openapiTS } = await import('openapi-typescript')
   const source = new URL(`file://${SPEC_FILE}`)
-  const output = await openapiTS.default(source)
+  const ast = await openapiTS(source)
+  const output = `/* eslint-disable */
+/**
+ * @elm-platform/api-types
+ *
+ * This file is auto-generated from the OpenAPI spec.
+ * Run \`pnpm api:generate\` to regenerate.
+ */
+
+${astToString(ast)}`
   writeFileSync(OUTPUT_FILE, output)
   console.log(`✓ Generated types at ${OUTPUT_FILE}`)
 }

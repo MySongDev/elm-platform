@@ -32,7 +32,7 @@
 - Modify: `.github/pull_request_template.md`
 - Existing: `docs/adr/0000-template.md`
 
-- [ ] **Step 1: Add ADR usage rules**
+- [x] **Step 1: Add ADR usage rules**
 
 In `CONTRIBUTING.md`, add a short section explaining when ADR is required:
 
@@ -43,7 +43,7 @@ In `CONTRIBUTING.md`, add a short section explaining when ADR is required:
 ADR 模板位于 `docs/adr/0000-template.md`。
 ```
 
-- [ ] **Step 2: Extend PR risk checklist if needed**
+- [x] **Step 2: Extend PR risk checklist if needed**
 
 Ensure `.github/pull_request_template.md` includes fields for:
 
@@ -52,7 +52,7 @@ Ensure `.github/pull_request_template.md` includes fields for:
 - [ ] 是否涉及 ADR？如有，请附链接
 ```
 
-- [ ] **Step 3: Commit docs**
+- [x] **Step 3: Commit docs**
 
 ```bash
 git add CONTRIBUTING.md .github/pull_request_template.md docs/adr/0000-template.md
@@ -67,7 +67,7 @@ git commit -m "docs: add adr governance workflow"
 - Create: `docs/api/versioning.md`
 - Modify: `.github/pull_request_template.md`
 
-- [ ] **Step 1: Create API policy**
+- [x] **Step 1: Create API policy**
 
 Create `docs/api/versioning.md` with:
 
@@ -91,11 +91,11 @@ Create `docs/api/versioning.md` with:
 - Document migration notes in the PR.
 ```
 
-- [ ] **Step 2: Add PR checklist item**
+- [x] **Step 2: Add PR checklist item**
 
 In `.github/pull_request_template.md`, ensure API breaking changes require migration notes and regenerated API types.
 
-- [ ] **Step 3: Verify API drift still works**
+- [x] **Step 3: Verify API drift still works**
 
 Run:
 
@@ -106,7 +106,7 @@ git diff -- packages/api-types
 
 Expected: generated files are either unchanged or intentionally updated by the API change.
 
-- [ ] **Step 4: Commit API policy**
+- [x] **Step 4: Commit API policy**
 
 ```bash
 git add docs/api/versioning.md .github/pull_request_template.md packages/api-types
@@ -121,7 +121,7 @@ git commit -m "docs: define api compatibility policy"
 - Create: `docs/database/migration-checklist.md`
 - Modify: `.github/pull_request_template.md`
 
-- [ ] **Step 1: Create migration checklist**
+- [x] **Step 1: Create migration checklist**
 
 Create `docs/database/migration-checklist.md`:
 
@@ -136,11 +136,11 @@ Create `docs/database/migration-checklist.md`:
 - [ ] Are indexes created safely?
 ```
 
-- [ ] **Step 2: Link checklist from PR template**
+- [x] **Step 2: Link checklist from PR template**
 
 In `.github/pull_request_template.md`, link `docs/database/migration-checklist.md` from the database migration risk item.
 
-- [ ] **Step 3: Commit migration docs**
+- [x] **Step 3: Commit migration docs**
 
 ```bash
 git add docs/database/migration-checklist.md .github/pull_request_template.md

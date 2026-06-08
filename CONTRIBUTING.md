@@ -111,7 +111,7 @@ PR 描述需要说明：
 
 - 设计书：`docs/superpowers/specs/*.md`
 - 计划书：`docs/superpowers/plans/*.md`
-- ADR：重大架构决策后续放入 `docs/adr/`
+- ADR：重大架构决策放入 `docs/adr/`
 
 满足任一条件时，PR 描述应附设计书或计划书链接：
 
@@ -120,7 +120,24 @@ PR 描述需要说明：
 - 引入新的工程化工具、CI job、部署配置或外部服务。
 - 改动 API 契约或前后端共享类型。
 
-## 6. API 类型生成
+## 6. 架构决策记录（ADR）
+
+重大架构、工具链、部署、认证、租户隔离、API 版本、数据库迁移、可观测性和安全策略变更需要新增 ADR。
+
+ADR 模板位于 `docs/adr/0000-template.md`。新 ADR 文件建议使用递增编号，例如 `docs/adr/0001-use-feature-flags.md`。
+
+ADR 至少需要说明：
+
+- 背景和约束
+- 被考虑过的备选方案
+- 最终决策
+- 代价、风险、迁移影响和后续清理计划
+
+PR 涉及 ADR 时，请在 PR 模板的 `ADR` 字段附上链接。
+
+## 7. API 类型生成与兼容性
+
+API 兼容性策略见 `docs/api/versioning.md`。
 
 后端 Swagger 文档用于生成前端 API 类型：
 
@@ -139,7 +156,9 @@ pnpm api:generate
 
 CI 会检测 `packages/api-types/` 是否发生漂移。
 
-## 7. 数据库变更
+## 8. 数据库变更
+
+数据库迁移检查清单见 `docs/database/migration-checklist.md`。
 
 涉及 Prisma schema / migration 的 PR 需要说明：
 
@@ -148,7 +167,7 @@ CI 会检测 `packages/api-types/` 是否发生漂移。
 - 是否需要回滚方案
 - 是否需要 seed 数据更新
 
-## 8. Review 建议
+## 9. Review 建议
 
 Reviewer 优先关注：
 
