@@ -19,8 +19,14 @@ import {
 } from './shopFoodUtils.js'
 
 const props = defineProps({
-  food: { type: Object, required: true },
-  cartMap: { type: Map, default: () => new Map() },
+  food: {
+    type: Object,
+    required: true,
+  },
+  cartMap: {
+    type: Map,
+    default: () => new Map(),
+  },
 })
 const emit = defineEmits(['add', 'decrease'])
 
@@ -136,11 +142,11 @@ function onAddClick(event) {
 }
 
 .food-img {
+  flex-shrink: 0;
   width: 78px;
   height: 78px;
-  border-radius: 8px;
   object-fit: cover;
-  flex-shrink: 0;
+  border-radius: 8px;
 }
 
 .food-detail {
@@ -150,19 +156,20 @@ function onAddClick(event) {
 }
 
 .title-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
   font-size: 15px;
   font-weight: 700;
   color: #222;
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 6px;
 }
 
 .title-text {
+  @include text-ellipsis;
+
   flex: 1;
   min-width: 0;
-  @include text-ellipsis();
 }
 
 .labels {
@@ -172,20 +179,20 @@ function onAddClick(event) {
 }
 
 .label {
-  border: 1px solid currentColor;
-  border-radius: 2px;
-  font-size: 10px;
   padding: 1px 4px;
+  font-size: 10px;
   font-weight: 600;
+  border: 1px solid currentcolor;
+  border-radius: 2px;
 }
 
 .activity-tag {
   display: inline-block;
-  margin-top: 6px;
   padding: 2px 6px;
+  margin-top: 6px;
   font-size: 11px;
-  border-radius: 4px;
   font-weight: 600;
+  border-radius: 4px;
 }
 
 .tips-line {
@@ -203,18 +210,18 @@ function onAddClick(event) {
 
 .price-block {
   display: flex;
-  align-items: baseline;
   gap: 6px;
+  align-items: baseline;
 }
 
 .price {
-  color: #fb4e44;
   font-size: 18px;
   font-weight: 800;
+  color: #fb4e44;
 
   i {
-    font-size: 12px;
     margin-right: 1px;
+    font-size: 12px;
     font-style: normal;
   }
 }
@@ -230,49 +237,49 @@ function onAddClick(event) {
 }
 
 .spec-btn {
-  border: none;
-  border-radius: 14px;
   padding: 6px 14px;
   font-size: 13px;
-  color: #333;
-  background: #ffd45e;
   font-weight: 600;
+  color: #333;
   cursor: pointer;
+  background: #ffd45e;
+  border: none;
+  border-radius: 14px;
 }
 
 .cart-btns {
   display: flex;
-  align-items: center;
   gap: 6px;
+  align-items: center;
 }
 
 .decrease-btn,
 .add-btn {
   width: 24px;
   height: 24px;
-  border: none;
-  border-radius: 50%;
   font-size: 16px;
   line-height: 1;
   cursor: pointer;
+  border: none;
+  border-radius: 50%;
 }
 
 .decrease-btn {
-  background: #fff;
   color: #666;
+  background: #fff;
   border: 1px solid #ddd;
 }
 
 .add-btn {
-  background: #ffd600;
   color: #333;
+  background: #ffd600;
 }
 
 .qty {
-  font-size: 14px;
-  color: #333;
   min-width: 20px;
-  text-align: center;
+  font-size: 14px;
   font-weight: 600;
+  color: #333;
+  text-align: center;
 }
 </style>

@@ -36,5 +36,9 @@ export function useElementSize(): UseElementSizeReturn {
   onUnmounted(() => observer.disconnect())
   onDeactivated(() => observer.disconnect())
 
-  return { elRef, height, width }
+  return {
+    elRef,
+    height,
+    width,
+  }
 }

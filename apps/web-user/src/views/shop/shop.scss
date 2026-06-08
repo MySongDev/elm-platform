@@ -7,19 +7,18 @@
   --tab-height: 42px;
   --safe-bottom: 72px;
 
+  position: relative;
   height: 100vh;
   max-height: 100dvh;
   overflow: hidden;
-  position: relative;
   background: #f6f6f6;
 }
 
 .outer-scroller {
   height: 100%;
-  overflow-y: auto;
-  overflow-x: hidden;
-  -webkit-overflow-scrolling: touch;
+  overflow: hidden auto;
   overscroll-behavior-y: contain;
+  -webkit-overflow-scrolling: touch;
 
   &::-webkit-scrollbar {
     display: none;
@@ -35,35 +34,35 @@
   position: sticky;
   top: var(--nav-height);
   z-index: 10;
+  display: flex;
   height: var(--tab-height);
   background: #fff;
-  display: flex;
   border-bottom: 1px solid #f0f0f0;
 }
 
 .tab-item {
-  flex: 1;
-  line-height: var(--tab-height);
-  text-align: center;
-  font-size: 14px;
-  color: #666;
-  cursor: pointer;
   position: relative;
+  flex: 1;
+  font-size: 14px;
+  line-height: var(--tab-height);
+  color: #666;
+  text-align: center;
+  cursor: pointer;
 
   &.active {
-    color: #111920;
     font-weight: 700;
+    color: #111920;
 
     &::after {
-      content: '';
       position: absolute;
       bottom: 5px;
       left: 50%;
-      transform: translateX(-50%);
       width: 20%;
       height: 2px;
+      content: '';
       background: #111920;
       border-radius: 1px;
+      transform: translateX(-50%);
     }
   }
 }
@@ -96,17 +95,17 @@
 }
 
 .bottom-safe {
-  height: var(--safe-bottom);
   flex-shrink: 0;
+  height: var(--safe-bottom);
 }
 
 .fly-ball-layer {
   position: fixed;
   top: 0;
   left: 0;
+  z-index: 9999;
   width: 0;
   height: 0;
-  z-index: 9999;
   pointer-events: none;
 }
 
@@ -118,9 +117,9 @@
 .fly-ball-inner {
   width: 16px;
   height: 16px;
-  margin-left: -8px;
   margin-top: -8px;
-  border-radius: 50%;
+  margin-left: -8px;
   background: #ff4d4f;
+  border-radius: 50%;
   transition: transform 0.5s cubic-bezier(0.5, -0.3, 1, 1);
 }

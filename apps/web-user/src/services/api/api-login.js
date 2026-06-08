@@ -19,30 +19,51 @@ export async function getCaptchas() {
 
 /** 账号密码登录 */
 export function accountLogin(username, password, captcha_code) {
-  return post(authEndpoints.login, { username, password, captcha_code })
+  return post(authEndpoints.login, {
+    username,
+    password,
+    captcha_code,
+  })
 }
 
 /** 手机号登录 */
 export function sendLogin(code, mobile, validate_token) {
-  return post(authEndpoints.loginByMobile, { code, mobile, validate_token })
+  return post(authEndpoints.loginByMobile, {
+    code,
+    mobile,
+    validate_token,
+  })
 }
 
 export function sendCustomerSms(phone, scene) {
-  return post(authEndpoints.customerSmsSend, { phone, scene })
+  return post(authEndpoints.customerSmsSend, {
+    phone,
+    scene,
+  })
 }
 
 export function customerRegister(phone, smsCode, password) {
-  return post(authEndpoints.customerRegister, { phone, smsCode, password: password || undefined })
+  return post(authEndpoints.customerRegister, {
+    phone,
+    smsCode,
+    password: password || undefined,
+  })
     .then(unwrapCustomerAuthResponse)
 }
 
 export function customerPasswordLogin(phone, password) {
-  return post(authEndpoints.customerPasswordLogin, { phone, password })
+  return post(authEndpoints.customerPasswordLogin, {
+    phone,
+    password,
+  })
     .then(unwrapCustomerAuthResponse)
 }
 
 export function customerSmsLogin(phone, smsCode) {
-  return post(authEndpoints.customerSmsLogin, { phone, smsCode })
+  return post(authEndpoints.customerSmsLogin, {
+    phone,
+    smsCode,
+  })
     .then(unwrapCustomerAuthResponse)
 }
 

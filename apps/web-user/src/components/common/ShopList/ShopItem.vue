@@ -12,7 +12,10 @@ const {
   imgBaseUrl = IMAGE_BASE_URL,
   // geohash,
 } = defineProps({
-  item: { type: Object, required: true },
+  item: {
+    type: Object,
+    required: true,
+  },
   imgBaseUrl: String,
   geohash: String,
 })
@@ -94,8 +97,8 @@ function navToShop() {
   display: flex;
   align-items: center;
   padding: 16.5px 9.3px;
-  border-bottom: 0.5px solid #e2e2e2;
   background: #fff;
+  border-bottom: 0.5px solid #e2e2e2;
 
   &:active {
     background: #f5f5f5;
@@ -105,8 +108,8 @@ function navToShop() {
     width: 64px;
     height: 64px;
     margin-right: 10px;
-    border-radius: 4px;
     object-fit: cover;
+    border-radius: 4px;
   }
 }
 
@@ -118,23 +121,24 @@ function navToShop() {
 
 .shop-detail_header {
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: space-between;
   margin-bottom: 10px;
 
   .shop-detail_name {
+    @include text-ellipsis;
+
     flex: 1;
-    @include text-ellipsis();
     font-size: 16px;
     font-weight: 700;
 
     &::before {
+      padding: 1px 4px;
+      margin-right: 8px;
+      font-size: 12px;
       content: '品牌';
       background: #ffd930;
-      margin-right: 8px;
-      padding: 1px 4px;
       border-radius: 4px;
-      font-size: 12px;
     }
   }
 
@@ -144,24 +148,24 @@ function navToShop() {
   }
 
   .shop-detail_supported-methods {
+    padding: 0 2px;
+    font-size: 10px;
     color: #999;
     border: 0.6px solid #f1f1f1;
-    padding: 0 2px;
     border-radius: 2px;
-    font-size: 10px;
   }
 }
 
 .shop-item_center-content {
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: space-between;
   margin-bottom: 10px;
 
   .rating {
     display: flex;
-    align-items: center;
     gap: 6px;
+    align-items: center;
   }
 
   .monthly_sales {
@@ -177,20 +181,20 @@ function navToShop() {
 
   .delivery_span {
     padding: 1px 4px;
-    border: 0.6px solid $blue;
-    border-radius: 2px;
     font-size: 10px;
     white-space: nowrap;
+    border: 0.6px solid $blue;
+    border-radius: 2px;
   }
 
   .span-bg-blue {
-    background: $blue;
     color: #fff;
+    background: $blue;
   }
 
   .span-bg-white {
-    background: #fff;
     color: $blue;
+    background: #fff;
   }
 }
 

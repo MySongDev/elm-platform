@@ -36,5 +36,9 @@ export function useFormDraft(form, storageKey = 'form_draft', expireMinutes = 30
 
   onMounted(restoreDraft)
 
-  return { saveDraft, clearDraft, restoreDraft }
+  return {
+    saveDraft,
+    clearDraft,
+    restoreDraft,
+  }
 }

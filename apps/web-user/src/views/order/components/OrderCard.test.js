@@ -13,6 +13,10 @@ function createOrder(overrides = {}) {
     createdAt: '2026-05-24T12:00:00.000Z',
     updatedAt: '2026-05-24T12:00:00.000Z',
     paidAt: null,
+    fulfillmentStatus: 'AWAITING_ACCEPTANCE',
+    refundStatus: 'NONE',
+    customerAvailableActions: ['REQUEST_REFUND'],
+    refundRejectReason: null,
     ...overrides,
   }
 }
@@ -72,6 +76,50 @@ describe('orderCard', () => {
     })
 
     expect(wrapper.root.textContent).not.toContain('继续支付')
+
+    wrapper.unmount()
+  })
+
+  it('shows refund request action when backend marks the order refundable', async () => {
+    const wrapper = await mountOrderCard({
+      order: createOrder({ status: 'PAID' }),
+    })
+
+    expect(wrapper.root.textContent).toContain('申请退款')
+
+    wrapper.unmount()
+  })
+
+  it('emits request-refund when clicking refund action', async () => {
+    const order = createOrder({ status: 'PAID' })
+    const emitted = []
+    const wrapper = await mountOrderCard(
+      { order },
+      {
+        onRequestRefund: payload => emitted.push(payload),
+      },
+    )
+
+    wrapper.root.querySelector('[data-test="request-refund"]').click()
+    await nextTick()
+
+    expect(emitted).toEqual([order])
+
+    wrapper.unmount()
+  })
+
+  it('shows refund reject reason when refund is rejected', async () => {
+    const wrapper = await mountOrderCard({
+      order: createOrder({
+        status: 'PAID',
+        customerAvailableActions: [],
+        refundStatus: 'REJECTED',
+        refundRejectReason: '订单已开始制作',
+      }),
+    })
+
+    expect(wrapper.root.textContent).toContain('退款已驳回')
+    expect(wrapper.root.textContent).toContain('订单已开始制作')
 
     wrapper.unmount()
   })

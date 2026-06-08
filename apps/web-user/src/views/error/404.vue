@@ -57,19 +57,19 @@ function goBack() {
 
 <style lang="scss" scoped>
 .not-found {
-  min-height: 100vh;
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #0f0f1a;
+  min-height: 100vh;
   overflow: hidden;
-  position: relative;
+  background: #0f0f1a;
 
   &__content {
-    text-align: center;
-    padding: 40px 24px;
     position: relative;
     z-index: 1;
+    padding: 40px 24px;
+    text-align: center;
   }
 
   &__illustration {
@@ -80,31 +80,31 @@ function goBack() {
   }
 
   &__planet {
-    width: 120px;
-    height: 120px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, #6c63ff 0%, #3b3486 100%);
     position: absolute;
     bottom: 20px;
     left: 50%;
+    width: 120px;
+    height: 120px;
+    background: linear-gradient(135deg, #6c63ff 0%, #3b3486 100%);
+    border-radius: 50%;
+    box-shadow: 0 20px 60px rgb(108 99 255 / 30%);
     transform: translateX(-50%);
-    box-shadow: 0 20px 60px rgba(108, 99, 255, 0.3);
   }
 
   &__crater {
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
-    background: rgba(0, 0, 0, 0.15);
     position: absolute;
     top: 30px;
     right: 25px;
+    width: 30px;
+    height: 30px;
+    background: rgb(0 0 0 / 15%);
+    border-radius: 50%;
 
     &--sm {
-      width: 16px;
-      height: 16px;
       top: 60px;
       right: 55px;
+      width: 16px;
+      height: 16px;
     }
   }
 
@@ -117,22 +117,22 @@ function goBack() {
   }
 
   &__helmet {
+    position: relative;
     width: 28px;
     height: 28px;
-    border-radius: 50%;
     background: #e8e8e8;
     border: 3px solid #ccc;
-    position: relative;
+    border-radius: 50%;
 
     &::after {
-      content: '';
-      width: 16px;
-      height: 12px;
-      border-radius: 8px;
-      background: linear-gradient(135deg, #87ceeb, #4a9eff);
       position: absolute;
       top: 50%;
       left: 50%;
+      width: 16px;
+      height: 12px;
+      content: '';
+      background: linear-gradient(135deg, #87ceeb, #4a9eff);
+      border-radius: 8px;
       transform: translate(-50%, -50%);
     }
   }
@@ -140,17 +140,17 @@ function goBack() {
   &__body {
     width: 22px;
     height: 30px;
+    margin: 2px auto 0;
     background: #e8e8e8;
     border-radius: 8px;
-    margin: 2px auto 0;
   }
 
   &__stars span {
     position: absolute;
     width: 3px;
     height: 3px;
-    border-radius: 50%;
     background: #fff;
+    border-radius: 50%;
     animation: twinkle 2s ease-in-out infinite;
 
     &:nth-child(1) {
@@ -178,35 +178,34 @@ function goBack() {
     }
 
     &:nth-child(5) {
-      bottom: 80px;
       right: 30px;
+      bottom: 80px;
       animation-delay: 1.6s;
     }
   }
 
   &__code {
+    margin: 0 0 8px;
     font-size: 80px;
     font-weight: 800;
-    background: linear-gradient(135deg, #6c63ff, #e942f5);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    margin: 0 0 8px;
     line-height: 1;
     letter-spacing: -2px;
+    background: linear-gradient(135deg, #6c63ff, #e942f5);
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
   }
 
   &__title {
+    margin: 0 0 8px;
     font-size: 22px;
     font-weight: 600;
     color: #e8e8f0;
-    margin: 0 0 8px;
   }
 
   &__desc {
+    margin: 0 0 40px;
     font-size: 14px;
     color: #8888a0;
-    margin: 0 0 40px;
   }
 
   &__actions {
@@ -217,17 +216,17 @@ function goBack() {
 
   &__btn {
     padding: 12px 28px;
-    border-radius: 12px;
     font-size: 15px;
     font-weight: 500;
     cursor: pointer;
-    transition: all 0.2s ease;
     border: none;
+    border-radius: 12px;
+    transition: all 0.2s ease;
 
     &--primary {
-      background: linear-gradient(135deg, #6c63ff, #5a52e0);
       color: #fff;
-      box-shadow: 0 4px 20px rgba(108, 99, 255, 0.4);
+      background: linear-gradient(135deg, #6c63ff, #5a52e0);
+      box-shadow: 0 4px 20px rgb(108 99 255 / 40%);
 
       &:active {
         transform: scale(0.96);
@@ -235,9 +234,9 @@ function goBack() {
     }
 
     &--ghost {
-      background: rgba(255, 255, 255, 0.06);
       color: #b0b0c8;
-      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgb(255 255 255 / 6%);
+      border: 1px solid rgb(255 255 255 / 10%);
 
       &:active {
         transform: scale(0.96);
@@ -247,7 +246,6 @@ function goBack() {
 }
 
 @keyframes float {
-
   0%,
   100% {
     transform: translateX(-30%) translateY(0);
@@ -259,7 +257,6 @@ function goBack() {
 }
 
 @keyframes twinkle {
-
   0%,
   100% {
     opacity: 0.3;

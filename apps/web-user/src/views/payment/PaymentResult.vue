@@ -165,25 +165,25 @@ onBeforeUnmount(() => {
 }
 
 .result-content {
-  min-height: calc(100vh - 48px);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  min-height: calc(100vh - 48px);
   padding: 24px 16px 40px;
   text-align: center;
 }
 
 .status-icon {
-  width: 76px;
-  height: 76px;
-  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
+  width: 76px;
+  height: 76px;
   font-size: 34px;
   font-weight: 700;
   color: #fff;
+  border-radius: 50%;
 
   &.success {
     background: #19be6b;
@@ -206,9 +206,9 @@ h2 {
 
 p {
   margin-top: 10px;
+  font-size: 14px;
   line-height: 1.7;
   color: #5b6573;
-  font-size: 14px;
 }
 
 .order-meta {
@@ -217,11 +217,11 @@ p {
 
 .result-card {
   width: 100%;
+  padding: 16px;
   margin-top: 24px;
   background: #fff;
   border-radius: 16px;
-  padding: 16px;
-  box-shadow: 0 12px 32px rgba(22, 119, 255, 0.08);
+  box-shadow: 0 12px 32px rgb(22 119 255 / 8%);
 }
 
 .row {
@@ -229,38 +229,38 @@ p {
   align-items: center;
   justify-content: space-between;
   min-height: 36px;
-  color: #5b6573;
   font-size: 14px;
+  color: #5b6573;
 
   strong {
-    color: #1f2329;
     font-size: 14px;
+    color: #1f2329;
   }
 }
 
 .actions {
-  width: 100%;
   display: flex;
   gap: 12px;
+  width: 100%;
   margin-top: 20px;
 }
 
 .btn {
   flex: 1;
   height: 44px;
-  border-radius: 999px;
-  border: 0;
   font-size: 15px;
   font-weight: 700;
+  border: 0;
+  border-radius: 999px;
 
   &.primary {
-    background: #1677ff;
     color: #fff;
+    background: #1677ff;
   }
 
   &.secondary {
-    background: #eaf2ff;
     color: #1677ff;
+    background: #eaf2ff;
   }
 }
 </style>

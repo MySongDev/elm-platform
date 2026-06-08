@@ -27,26 +27,26 @@ const loadingStore = useLoadingStore()
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(255, 255, 255, 0.55);
+  background: rgb(255 255 255 / 55%);
   backdrop-filter: blur(2px);
 }
 
 .global-loading__box {
   display: flex;
-  min-width: 116px;
-  min-height: 96px;
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  min-width: 116px;
+  min-height: 96px;
+  background: rgb(255 255 255 / 96%);
   border-radius: 8px;
-  background: rgba(255, 255, 255, 0.96);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 10px 30px rgb(0 0 0 / 12%);
 }
 
 .global-loading__text {
   margin-top: 10px;
-  color: #333;
   font-size: 14px;
+  color: #333;
 }
 
 .global-loading-enter-active,

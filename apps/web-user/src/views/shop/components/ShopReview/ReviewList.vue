@@ -76,14 +76,24 @@ const { sentinel } = useInfiniteScroll({
 </template>
 
 <style lang="scss" scoped>
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+
+  100% {
+    background-position: -200% 0;
+  }
+}
+
 .review-list {
   background: #fff;
 }
 
 .integrity-tip {
   display: flex;
-  align-items: center;
   gap: 1.6vw;
+  align-items: center;
   padding: 2.4vw 3.2vw;
   font-size: 3vw;
   color: #999;
@@ -95,10 +105,10 @@ const { sentinel } = useInfiniteScroll({
 }
 
 .empty-tip {
-  text-align: center;
   padding: 10vw;
-  color: #bbb;
   font-size: 3.6vw;
+  color: #bbb;
+  text-align: center;
 }
 
 // ---- Skeleton ----
@@ -116,20 +126,20 @@ const { sentinel } = useInfiniteScroll({
 .skeleton {
   background: linear-gradient(90deg, #f0f0f0 25%, #e8e8e8 50%, #f0f0f0 75%);
   background-size: 200% 100%;
-  animation: shimmer 1.4s infinite;
   border-radius: 4px;
+  animation: shimmer 1.4s infinite;
 }
 
 .skeleton-avatar {
+  flex-shrink: 0;
   width: 10.67vw;
   height: 10.67vw;
   border-radius: 50%;
-  flex-shrink: 0;
 }
 
 .skeleton-body {
-  flex: 1;
   display: flex;
+  flex: 1;
   flex-direction: column;
   gap: 2vw;
 }
@@ -150,20 +160,10 @@ const { sentinel } = useInfiniteScroll({
   }
 }
 
-@keyframes shimmer {
-  0% {
-    background-position: 200% 0;
-  }
-
-  100% {
-    background-position: -200% 0;
-  }
-}
-
 .list-footer {
   padding: 15px 0;
-  text-align: center;
-  color: #999;
   font-size: 12px;
+  color: #999;
+  text-align: center;
 }
 </style>

@@ -90,14 +90,14 @@ onBeforeUnmount(saveScrollPosition)
 
 <style lang="scss" scoped>
 .nav-layout {
-  height: 100vh;
   display: flex;
   flex-direction: column;
+  height: 100vh;
 }
 
 .nav-main {
-  flex: 1;
   position: relative;
+  flex: 1;
   overflow-y: auto;
   scrollbar-width: none;
   -webkit-overflow-scrolling: touch;
@@ -109,12 +109,12 @@ onBeforeUnmount(saveScrollPosition)
 }
 
 .nav-header-edit {
-  border: 0;
-  background: transparent;
   padding: 0;
-  color: #fff;
   font-size: 14px;
+  color: #fff;
   white-space: nowrap;
+  background: transparent;
+  border: 0;
 }
 
 :deep(.van-tabbar-item--active .van-icon) {

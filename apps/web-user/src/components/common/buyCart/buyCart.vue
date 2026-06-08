@@ -5,8 +5,18 @@ defineOptions({
   name: 'BuyCart',
 })
 const cartList = ref([
-  { id: 1, name: 'ew1', price: 20, quantity: 1 },
-  { id: 2, name: '红烧肉', price: 35, quantity: 2 },
+  {
+    id: 1,
+    name: 'ew1',
+    price: 20,
+    quantity: 1,
+  },
+  {
+    id: 2,
+    name: '红烧肉',
+    price: 35,
+    quantity: 2,
+  },
 ])
 
 function updateQuantity(item, delta) {
@@ -105,32 +115,29 @@ const buttonText = computed(() => {
 $color-bg-dark: #3d3d3f;
 $color-border: #444;
 $color-text: #fff;
-$color-text-secondary: rgba(255, 255, 255, 0.7);
+$color-text-secondary: rgb(255 255 255 / 70%);
 $color-disabled: #535356;
 $color-active: #38ca73;
 
 // ================= 主体 =================
 .buycart {
   position: fixed;
+  right: 0;
   bottom: 0;
   left: 0;
-  right: 0;
-  height: 47px;
-
+  z-index: 100;
   display: flex;
   align-items: center;
-
+  height: 47px;
   padding-left: 80px;
   background: $color-bg-dark;
-  z-index: 100;
 }
 
 // ================= icon =================
 .buycart__icon {
   position: absolute;
-  left: 10px;
   top: -16px;
-
+  left: 10px;
   padding: 10px;
   background: $color-bg-dark;
   border: 4px solid $color-border;
@@ -150,28 +157,25 @@ $color-active: #38ca73;
 }
 
 .buycart__price {
-  color: $color-text;
   font-size: 16px;
   font-weight: 600;
+  color: $color-text;
 }
 
 .buycart__delivery {
-  color: $color-text-secondary;
   font-size: 12px;
+  color: $color-text-secondary;
 }
 
 // ================= 按钮 =================
 .buycart__button {
-  margin-left: auto;
-
   min-width: 120px;
   height: 100%;
   padding: 0 12px;
-
-  background: $color-disabled;
-  color: $color-text;
-
+  margin-left: auto;
   font-weight: 700;
+  color: $color-text;
+  background: $color-disabled;
   border: none;
 }
 
@@ -182,14 +186,16 @@ $color-active: #38ca73;
 .cart-panel {
   background: #fff;
   border-radius: 12px 12px 0 0;
+
   /* max-height: 60vh; */
+
   /* overflow-y: auto; */
 }
 
 .cart-header {
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: space-between;
   padding: 16px;
   border-bottom: 1px solid #eee;
 }
@@ -202,8 +208,8 @@ $color-active: #38ca73;
 
 .clear-btn {
   display: flex;
-  align-items: center;
   gap: 4px;
+  align-items: center;
   font-size: 13px;
   color: #999;
   background: none;
@@ -223,50 +229,52 @@ $color-active: #38ca73;
 }
 
 .item-name {
+  flex: 1;
   font-size: 14px;
   color: #333;
-  flex: 1;
 }
 
 .item-right {
   display: flex;
-  align-items: center;
   gap: 12px;
+  align-items: center;
 }
 
 .item-price {
   font-size: 16px;
   font-weight: 600;
   color: #ff6000;
+
   /* 橙色价格 */
 }
 
 .quantity-control {
   display: flex;
-  align-items: center;
   gap: 4px;
+  align-items: center;
 }
 
 .btn-minus,
 .btn-plus {
-  width: 18px;
-  height: 18px;
-  border: 1px solid #3190e8;
-  /* 蓝色边框 */
-  border-radius: 50%;
-  background: #fff;
-  color: #3190e8;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 12px;
+  width: 18px;
+  height: 18px;
   padding: 0;
+  font-size: 12px;
+  color: #3190e8;
+  background: #fff;
+  border: 1px solid #3190e8;
+
+  /* 蓝色边框 */
+  border-radius: 50%;
 }
 
 .quantity {
+  min-width: 20px;
   font-size: 14px;
   color: #333;
-  min-width: 20px;
   text-align: center;
 }
 </style>

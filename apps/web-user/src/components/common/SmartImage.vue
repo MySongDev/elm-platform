@@ -5,21 +5,45 @@ import { buildImageCandidateUrls } from '@/utils/imageCandidates'
 import { scheduleImageTask } from '@/utils/imageLoadScheduler'
 
 const props = defineProps({
-  src: { type: String, required: true },
-  alt: { type: String, default: '' },
+  src: {
+    type: String,
+    required: true,
+  },
+  alt: {
+    type: String,
+    default: '',
+  },
   /** 跳过可视判断，立即参与调度 */
-  eager: { type: Boolean, default: false },
+  eager: {
+    type: Boolean,
+    default: false,
+  },
   /** 数值越小越先加载 */
-  priority: { type: Number, default: IMAGE_PRIORITY.NORMAL },
-  skeleton: { type: Boolean, default: true },
+  priority: {
+    type: Number,
+    default: IMAGE_PRIORITY.NORMAL,
+  },
+  skeleton: {
+    type: Boolean,
+    default: true,
+  },
   /** 加载完成前模糊，完成后过渡清晰 */
-  progressive: { type: Boolean, default: true },
-  rootMargin: { type: String, default: '0px 0px 200px 0px' },
+  progressive: {
+    type: Boolean,
+    default: true,
+  },
+  rootMargin: {
+    type: String,
+    default: '0px 0px 200px 0px',
+  },
   /**
    * IO 触发后延迟多久才真正调度加载（ms）。
    * 快速滑过的图片在此期间离开视口会被取消，避免发起无效请求。
    */
-  loadDelay: { type: Number, default: 150 },
+  loadDelay: {
+    type: Number,
+    default: 150,
+  },
 })
 
 const emit = defineEmits(['load', 'error'])
@@ -135,7 +159,10 @@ function startWhenVisible() {
         runLoadAttempt()
       }, props.loadDelay)
     },
-    { rootMargin: props.rootMargin, threshold: 0.01 },
+    {
+      rootMargin: props.rootMargin,
+      threshold: 0.01,
+    },
   )
   io.observe(rootEl.value)
 }
@@ -194,11 +221,11 @@ onMounted(() => {
 <style lang="scss" scoped>
 .smart-img {
   position: relative;
-  overflow: hidden;
   display: inline-block;
-  vertical-align: middle;
   width: 100%;
   height: 100%;
+  overflow: hidden;
+  vertical-align: middle;
 }
 
 .smart-img__skeleton {
@@ -233,10 +260,10 @@ onMounted(() => {
 
 .smart-img__img--progressive.is-loaded {
   filter: none;
-  transform: none;
   transition:
     filter 0.35s ease,
     transform 0.35s ease;
+  transform: none;
 }
 
 .smart-img__broken {

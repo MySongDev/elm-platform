@@ -3,10 +3,19 @@ import { useMenuScroll } from '@/composables/ui'
 import MenuCategoryBlock from './MenuCategoryBlock.vue'
 
 const props = defineProps({
-  categories: { type: Array, default: () => [] },
+  categories: {
+    type: Array,
+    default: () => [],
+  },
   activeCategoryId: [Number, String],
-  cartMap: { type: Map, default: () => new Map() },
-  scrollRoot: { type: Object, default: null },
+  cartMap: {
+    type: Map,
+    default: () => new Map(),
+  },
+  scrollRoot: {
+    type: Object,
+    default: null,
+  },
 })
 const emit = defineEmits(['add', 'decrease', 'scroll-category'])
 
@@ -45,11 +54,11 @@ defineExpose({ scrollToCategory })
   align-items: center;
   justify-content: center;
   padding: 8px 10px;
+  margin-top: 8px;
   font-size: 12px;
   color: #999;
   background: #fff;
   border-radius: 6px;
-  margin-top: 8px;
 }
 
 .bottom-safe {

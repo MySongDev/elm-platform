@@ -12,7 +12,10 @@ const props = defineProps({
    * 自定义滚动源（如商家页 `.shop-scroll` 的 ref）。
    * 不传时沿用 `window` 滚动，保持其它使用场景不变。
    */
-  scrollElement: { type: [Object, HTMLElement], default: null },
+  scrollElement: {
+    type: [Object, HTMLElement],
+    default: null,
+  },
 })
 
 // ==================== 路由 ====================
@@ -98,7 +101,10 @@ function goSearch() {
 watch(
   () => unref(props.scrollElement),
   () => bindScroll(),
-  { flush: 'post', immediate: true },
+  {
+    flush: 'post',
+    immediate: true,
+  },
 )
 
 // ==================== 生命周期 ====================
@@ -138,61 +144,67 @@ onUnmounted(() => {
   position: fixed;
   top: 0;
   left: 0;
-  width: 100%;
-  height: 50px;
   z-index: 1000;
   display: flex;
   align-items: center;
+  width: 100%;
+  height: 50px;
   padding: 0 12px;
+
   // background: $ff;
-  background-color: rgba(255, 255, 255, var(--nav-bg-opacity));
+  background-color: rgb(255 255 255 / var(--nav-bg-opacity));
 
   .iconfont {
-    color: black;
     font-size: 19px;
+    color: black;
     transition: color 0.1s linear;
   }
 }
 
 .nav-search-wrapper {
-  flex: 1;
   display: flex;
+  flex: 1;
   justify-content: flex-end;
 }
 
 .search-bar {
   display: flex;
-  flex-direction: row-reverse;
-  align-items: center;
   flex-grow: var(--search-flex-grow, 0);
+
   /* 动态增长 */
   flex-basis: 34px;
+  flex-direction: row-reverse;
+  align-items: center;
+
   /* 初始仅图标宽度 */
   max-width: 150px;
+
   /* 上限 */
   height: 34px;
-  border-radius: 17px;
-  background: var(--search-bg);
   overflow: hidden;
+  background: var(--search-bg);
+  border-radius: 17px;
   transition: flex-grow 0.2s ease-out;
+
   /* 平滑过渡 */
 
   .search-icon-box {
-    width: 34px;
-    height: 34px;
-    flex-shrink: 0;
     display: flex;
+    flex-shrink: 0;
     align-items: center;
     justify-content: center;
+    width: 34px;
+    height: 34px;
   }
 
   .search-content {
+    display: flex;
     flex: 1;
+    align-items: center;
+
     /* 占据剩余空间 */
     overflow: hidden;
     white-space: nowrap;
-    display: flex;
-    align-items: center;
 
     .placeholder {
       padding-left: 15px;
@@ -202,10 +214,10 @@ onUnmounted(() => {
   }
 
   .line {
+    flex-shrink: 0;
     width: 1px;
     height: 16px;
     background: #999;
-    flex-shrink: 0;
   }
 }
 

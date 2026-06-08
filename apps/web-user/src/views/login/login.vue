@@ -9,9 +9,18 @@ import { useUserStore } from '@/stores/modules/store-user'
 defineOptions({ name: 'Login' })
 
 const tabs = [
-  { key: 'sms', label: '验证码登录' },
-  { key: 'password', label: '密码登录' },
-  { key: 'register', label: '注册' },
+  {
+    key: 'sms',
+    label: '验证码登录',
+  },
+  {
+    key: 'password',
+    label: '密码登录',
+  },
+  {
+    key: 'register',
+    label: '注册',
+  },
 ]
 
 const phonePattern = /^1\d{10}$/
@@ -225,8 +234,8 @@ onBeforeUnmount(() => {
     flex: 1;
     min-width: 0;
     height: 9.6vw;
-    color: #666;
     font-size: 3.7333vw;
+    color: #666;
     background: #f5f5f5;
     border-radius: 4.8vw;
 
@@ -249,9 +258,10 @@ onBeforeUnmount(() => {
     border-bottom: 0.0267vw solid $e4;
 
     input {
-      min-width: 0;
-      flex: 1;
       @include size-color(4.3733vw, #666);
+
+      flex: 1;
+      min-width: 0;
     }
   }
 
@@ -260,8 +270,8 @@ onBeforeUnmount(() => {
 
     button {
       flex: 0 0 24vw;
-      color: #3190e8;
       font-size: 3.7333vw;
+      color: #3190e8;
       text-align: right;
 
       &:disabled {
@@ -276,9 +286,9 @@ onBeforeUnmount(() => {
 
   display: block;
   margin: 2.6667vw auto;
-  color: $ff;
   font-size: 4.2667vw;
   line-height: 13.3333vw;
+  color: $ff;
   text-align: center;
   background-color: #4cd964;
   border-radius: 2.6667vw;
@@ -291,9 +301,9 @@ onBeforeUnmount(() => {
 .to_forget {
   display: block;
   width: fit-content;
-  margin-left: auto;
   padding: 1.3333vw 4vw;
-  color: $blue;
+  margin-left: auto;
   font-size: 3.4667vw;
+  color: $blue;
 }
 </style>

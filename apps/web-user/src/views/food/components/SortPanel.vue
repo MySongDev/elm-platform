@@ -56,13 +56,13 @@ function handleSelect(value) {
 
 .sort-left {
   display: flex;
-  align-items: center;
   gap: 12px;
+  align-items: center;
 }
 
 .check-icon {
-  color: #409EFF;
   font-size: 16px;
   font-weight: bold;
+  color: #409EFF;
 }
 </style>

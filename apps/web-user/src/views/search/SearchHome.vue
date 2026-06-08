@@ -100,7 +100,7 @@ loadHistory()
                     <svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="24" height="14" class="pay_icon">
                       <polygon points="0,14 4,0 24,0 20,14" style="fill:none;stroke:#FF6000;stroke-width:1" />
                       <line x1="1.5" y1="12" x2="20" y2="12" style="stroke:#FF6000;stroke-width:1.5" />
-                      <text x="3.5" y="9" style="fill:#FF6000;font-size:9;font-weight:bold;">支付</text>
+                      <text x="3.5" y="9" style="font-size:9;font-weight:bold;fill:#FF6000;">支付</text>
                     </svg>
                   </p>
                   <p>月售 {{ item.month_sales || item.recent_order_num }} 单</p>
@@ -143,42 +143,42 @@ loadHistory()
 
 <style lang="scss" scoped>
 .search-contanier {
-  width: 100%;
-  background: $ff;
-  padding: 12px;
-  margin: 0 auto;
   display: flex;
   justify-content: space-around;
+  width: 100%;
+  padding: 12px;
+  margin: 0 auto;
+  background: $ff;
 }
 
 .search-input {
   flex: 4;
   height: 38px;
-  border: .5px solid #e4e4e4;
-  border-radius: 4px;
-  margin-right: 4px;
   padding: 0 5px;
-  background: #f2f2f2;
+  margin-right: 4px;
   font-size: 15px;
   font-weight: 700;
+  background: #f2f2f2;
+  border: .5px solid #e4e4e4;
+  border-radius: 4px;
 }
 
 .search-submit {
   flex: 1;
-  padding: 0 8px;
-  background: #3190e8;
-  color: $ff;
-  border-radius: 4px;
   max-width: 100px;
+  padding: 0 8px;
+  color: $ff;
+  background: #3190e8;
+  border-radius: 4px;
 }
 
 .restaurant-content {
   .title-restaurant {
-    border-bottom: 1px solid #e2e2e2;
-    color: #666;
-    text-indent: 11px;
     font-weight: bold;
     line-height: 47px;
+    color: #666;
+    text-indent: 11px;
+    border-bottom: 1px solid #e2e2e2;
   }
 }
 
@@ -188,8 +188,8 @@ loadHistory()
 }
 
 .list-item {
-  padding: 10px;
   display: flex;
+  padding: 10px;
 }
 
 .item-left {
@@ -203,13 +203,13 @@ loadHistory()
 }
 
 .item-right {
-  font-size: 14px;
   flex: 1;
+  font-size: 14px;
 
   &_text {
+    padding-bottom: 5.85px;
     line-height: 21px;
     border-bottom: 0.6px solid $blue;
-    padding-bottom: 5.85px;
 
     svg {
       margin-left: 4px;
@@ -221,8 +221,8 @@ loadHistory()
     line-height: 21px;
 
     span {
-      vertical-align: middle;
       margin-right: 4px;
+      vertical-align: middle;
     }
 
     .activities_icon {
@@ -242,10 +242,11 @@ loadHistory()
   line-height: 46.88px;
 
   &_title {
-    background: $e4;
-    text-indent: 11px;
     @include size-color(14px, #666);
+
     font-weight: 700;
+    text-indent: 11px;
+    background: $e4;
   }
 
   &_content {
@@ -253,11 +254,12 @@ loadHistory()
   }
 
   &_text {
-    padding: 0 0 0 10px;
+    @include text-ellipsis;
+
     display: flex;
     align-items: center;
     justify-content: space-between;
-    @include text-ellipsis;
+    padding: 0 0 0 10px;
     font-size: 16.4px;
     border-bottom: 1px solid #e2e2e2;
   }
@@ -268,9 +270,9 @@ loadHistory()
   }
 
   &_clear-all {
+    font-weight: 700;
     color: #3190e8;
     text-align: center;
-    font-weight: 700;
   }
 }
 </style>

@@ -222,7 +222,10 @@ function setupPerformanceMonitor(router) {
         })
       }
     })
-    paintObserver.observe({ type: 'paint', buffered: true })
+    paintObserver.observe({
+      type: 'paint',
+      buffered: true,
+    })
   }
   catch {}
 
@@ -240,7 +243,10 @@ function setupPerformanceMonitor(router) {
         })
       }
     })
-    longTaskObserver.observe({ type: 'longtask', buffered: true })
+    longTaskObserver.observe({
+      type: 'longtask',
+      buffered: true,
+    })
   }
   catch {}
 }

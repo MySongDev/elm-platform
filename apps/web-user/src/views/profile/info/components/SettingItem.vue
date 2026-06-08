@@ -24,12 +24,12 @@ defineProps({
 
 <style lang="scss" scoped>
 .setting-item {
-  padding: 12px;
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  border-bottom: 1px solid $e4;
+  justify-content: space-between;
+  padding: 12px;
   background: #fff;
+  border-bottom: 1px solid $e4;
 
   &_left {
     display: flex;
@@ -43,6 +43,7 @@ defineProps({
 
   &_icon {
     @include wh(20px, 18px);
+
     margin-right: 6px;
   }
 

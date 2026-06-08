@@ -60,15 +60,31 @@ const validateRules = [
     message: '请输入正确的账号',
     selector: 'input[name="username"]',
   },
-  { check: () => !!form.oldPassword, message: '请输入旧密码', selector: 'input[name="oldpass"]' },
-  { check: () => !!form.newPassword, message: '请输入新密码', selector: 'input[name="newpass"]' },
-  { check: () => !!form.confirmPassword, message: '请输入确认密码', selector: 'input[name="enterpass"]' },
+  {
+    check: () => !!form.oldPassword,
+    message: '请输入旧密码',
+    selector: 'input[name="oldpass"]',
+  },
+  {
+    check: () => !!form.newPassword,
+    message: '请输入新密码',
+    selector: 'input[name="newpass"]',
+  },
+  {
+    check: () => !!form.confirmPassword,
+    message: '请输入确认密码',
+    selector: 'input[name="enterpass"]',
+  },
   {
     check: () => form.newPassword === form.confirmPassword,
     message: '两次输入的密码不一致',
     selector: 'input[name="enterpass"]',
   },
-  { check: () => form.captchaCode.length === 4, message: '请输入验证码', selector: 'input[name="captcha_code"]' },
+  {
+    check: () => form.captchaCode.length === 4,
+    message: '请输入验证码',
+    selector: 'input[name="captcha_code"]',
+  },
 ]
 
 const isSubmitDisabled = computed(() => {
@@ -191,13 +207,13 @@ onMounted(getCode)
   width: 351px;
   height: 44px;
   margin: 20px auto 0;
-  border: 0;
-  background: #f69;
+  font-size: 16px;
+  line-height: 42px;
   color: $ff;
   text-align: center;
-  line-height: 42px;
+  background: #f69;
+  border: 0;
   border-radius: 22px;
-  font-size: 16px;
 
   &.disabled {
     opacity: 0.55;
@@ -206,25 +222,25 @@ onMounted(getCode)
 
 .code-number {
   .captcha-image {
+    flex-shrink: 0;
     width: 50px;
     height: 35px;
-    flex-shrink: 0;
   }
 
   .line {
+    flex-shrink: 0;
     width: 1px;
     height: 30px;
     margin: 0 4px;
-    flex-shrink: 0;
     background-color: #e3e5e7;
   }
 
   .next {
-    border: 0;
-    background: transparent;
-    white-space: nowrap;
     font-size: 14px;
-    color: #ff6699;
+    color: #f69;
+    white-space: nowrap;
+    background: transparent;
+    border: 0;
   }
 }
 </style>

@@ -48,34 +48,34 @@ const emit = defineEmits(['toggle-all', 'checkout', 'remove'])
 <style lang="scss" scoped>
 .cart-bottom {
   position: fixed;
-  left: 0;
   right: 0;
   bottom: var(--van-tabbar-height, 50px);
+  left: 0;
   z-index: 20;
-  height: calc(60px + env(safe-area-inset-bottom));
   display: flex;
-  align-items: center;
   gap: 14px;
+  align-items: center;
+  height: calc(60px + env(safe-area-inset-bottom));
   padding: 8px 12px calc(8px + env(safe-area-inset-bottom));
-  border-top: 1px solid #e8eaef;
   background: #fff;
+  border-top: 1px solid #e8eaef;
 }
 
 .bottom-summary {
-  min-width: 0;
   display: flex;
-  align-items: center;
   gap: 10px;
+  align-items: center;
+  min-width: 0;
 }
 
 .select-all {
   display: inline-flex;
-  align-items: center;
   gap: 8px;
-  border: 0;
-  background: transparent;
+  align-items: center;
   padding: 0;
   font-size: 14px;
+  background: transparent;
+  border: 0;
 }
 
 .select-label {
@@ -105,25 +105,25 @@ const emit = defineEmits(['toggle-all', 'checkout', 'remove'])
 }
 
 .action-button {
-  margin-left: auto;
   width: 28vw;
   min-width: 100px;
   height: 40px;
-  border: 0;
-  border-radius: 999px;
-  background: #c9c9c9;
-  color: #fff;
+  margin-left: auto;
   font-size: 16px;
   font-weight: 700;
+  color: #fff;
+  background: #c9c9c9;
+  border: 0;
+  border-radius: 999px;
 
   &.active {
-    background: #ffd12f;
     color: #3f4448;
+    background: #ffd12f;
   }
 
   &.danger.active {
-    background: #f04438;
     color: #fff;
+    background: #f04438;
   }
 }
 </style>

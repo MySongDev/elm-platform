@@ -89,7 +89,10 @@ export function useFormValidator<T extends Record<string, any>>(
       return
     const el = document.querySelector(`[data-field="${field}"]`)
     if (el) {
-      el.scrollIntoView({ behavior: 'smooth', block: 'center' })
+      el.scrollIntoView({
+        behavior: 'smooth',
+        block: 'center',
+      })
     }
   }
 

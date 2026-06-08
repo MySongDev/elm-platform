@@ -44,10 +44,17 @@ app.get('/api/payments/alipay/test-connection', async (_req, res) => {
     const result = await sdk.exec('alipay.trade.query', {
       bizContent: { out_trade_no: 'TEST_CONNECTION_CHECK' },
     })
-    res.json({ ok: true, result })
+    res.json({
+      ok: true,
+      result,
+    })
   }
   catch (error) {
-    res.json({ ok: false, message: error.message, code: error.code })
+    res.json({
+      ok: false,
+      message: error.message,
+      code: error.code,
+    })
   }
 })
 

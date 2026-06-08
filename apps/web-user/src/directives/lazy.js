@@ -81,7 +81,11 @@ function processQueue() {
 }
 
 function enqueue(el, src, priority) {
-  queue.push({ el, src, priority })
+  queue.push({
+    el,
+    src,
+    priority,
+  })
   processQueue()
 }
 

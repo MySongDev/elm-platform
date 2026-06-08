@@ -44,6 +44,7 @@ onMounted(() => {
 .page-enter-active,
 .page-leave-active {
   transition: opacity .2s ease, transform 0.2s ease;
+
   /* position: absolute;
   inset: 0; */
 }

@@ -29,20 +29,20 @@ defineProps({
 
 <style lang="scss" scoped>
 .profile-nav {
-  margin-top: 10px;
   padding: 0 12px;
+  margin-top: 10px;
   background: $ff;
 
   .nav-link {
-    line-height: 45px;
     display: flex;
-    justify-content: start;
     align-items: center;
+    justify-content: start;
+    line-height: 45px;
     border-bottom: 1px solid $e4;
 
     span {
-      margin-left: 5px;
       flex: 1;
+      margin-left: 5px;
     }
   }
 

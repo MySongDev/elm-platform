@@ -104,11 +104,11 @@ function handleSelect(option) {
 }
 
 .required-tag {
+  padding: 2px 6px;
   margin-left: 8px;
   font-size: 11px;
   color: #FF4D4F;
   background: #FFF0F0;
-  padding: 2px 6px;
   border-radius: 4px;
 }
 
@@ -137,20 +137,20 @@ function handleSelect(option) {
   justify-content: center;
   padding: 12px 16px;
   background: #F7F8FA;
-  border-radius: 8px;
   border: 1px solid #E5E5E5;
+  border-radius: 8px;
   transition: all 0.2s ease;
 }
 
 .specs-option.is-selected {
+  color: var(--theme-color);
   background: var(--theme-light);
   border-color: var(--theme-color);
-  color: var(--theme-color);
 }
 
 .specs-option.is-disabled {
-  opacity: 0.5;
   cursor: not-allowed;
+  opacity: 0.5;
 }
 
 .specs-option:not(.is-disabled):hover {
@@ -162,15 +162,15 @@ function handleSelect(option) {
 }
 
 .option-price {
-  font-size: 12px;
   margin-left: 4px;
+  font-size: 12px;
   opacity: 0.8;
 }
 
 .check-icon {
   position: absolute;
-  bottom: 2px;
   right: 2px;
+  bottom: 2px;
   font-size: 10px;
   color: var(--theme-color);
 }

@@ -110,11 +110,11 @@ function handleClear() {
 
 <style scoped>
 .filter-panel {
-  padding: 20px 15px;
-  background: #fff;
   position: relative;
   max-height: 60vh;
+  padding: 20px 15px;
   overflow-y: auto;
+  background: #fff;
 }
 
 .section {
@@ -122,15 +122,15 @@ function handleClear() {
 }
 
 .section-title {
+  margin-bottom: 12px;
   font-size: 13px;
   color: #666;
-  margin-bottom: 12px;
 }
 
 .tag-row {
   display: flex;
-  gap: 10px;
   flex-wrap: wrap;
+  gap: 10px;
 }
 
 .tag-grid {
@@ -140,26 +140,26 @@ function handleClear() {
 }
 
 .filter-tag {
-  height: 36px;
   display: flex;
+  gap: 6px;
   align-items: center;
   justify-content: flex-start;
-  gap: 6px;
+  height: 36px;
   padding: 0 12px;
-  border: 1px solid #e0e0e0;
-  border-radius: 4px;
   font-size: 13px;
   color: #333;
   cursor: pointer;
   user-select: none;
   background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
   transition: all 0.2s;
 }
 
 .filter-tag.active {
   color: #2395ff;
-  border-color: #2395ff;
   background: #f0f7ff;
+  border-color: #2395ff;
 }
 
 .tag-icon {
@@ -168,22 +168,23 @@ function handleClear() {
   justify-content: center;
   width: 18px;
   height: 18px;
-  border-radius: 3px;
   font-size: 11px;
   font-weight: bold;
+  border-radius: 3px;
 }
 
 .footer {
   position: sticky;
+  right: 0;
   bottom: 0;
   left: 0;
-  right: 0;
   display: flex;
+  gap: 12px;
   padding: 15px;
+  margin: 0 -15px -20px;
   background: #fff;
   border-top: 1px solid #eee;
-  gap: 12px;
-  margin: 0 -15px -20px;
+
   /* 抵消父容器 padding */
 }
 
@@ -191,18 +192,18 @@ function handleClear() {
 .btn-confirm {
   flex: 1;
   height: 40px;
-  border-radius: 4px;
   font-size: 15px;
+  white-space: nowrap;
   cursor: pointer;
   border: none;
+  border-radius: 4px;
   transition: opacity 0.2s;
-  white-space: nowrap;
 }
 
 .btn-clear {
-  border: 1px solid #ddd;
-  background: #fff;
   color: #333;
+  background: #fff;
+  border: 1px solid #ddd;
 }
 
 .btn-clear:active {
@@ -210,8 +211,8 @@ function handleClear() {
 }
 
 .btn-confirm {
-  background: #4cd964;
   color: #fff;
+  background: #4cd964;
 }
 
 .btn-confirm:active {

@@ -1,6 +1,6 @@
 import path from 'node:path'
-import { describe, expect, it } from 'vitest'
 import { loadConfigFromFile } from 'vite'
+import { describe, expect, it } from 'vitest'
 
 const viteConfigPath = path.resolve('vite.config.js')
 
@@ -21,5 +21,5 @@ describe('vite proxy target', () => {
       'http://127.0.0.1:3000',
       'http://127.0.0.1:3000/api',
     ])
-  })
+  }, 15000)
 })

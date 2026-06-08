@@ -53,10 +53,16 @@ export function usePageScroll(options: UsePageScrollOptions = {}): UsePageScroll
 
   const scrollTo = (top: number, behavior: ScrollBehavior = 'auto') => {
     if (containerRef?.value && isContainerScrollable()) {
-      containerRef.value.scrollTo({ top, behavior })
+      containerRef.value.scrollTo({
+        top,
+        behavior,
+      })
     }
     else {
-      window.scrollTo({ top, behavior })
+      window.scrollTo({
+        top,
+        behavior,
+      })
     }
   }
 

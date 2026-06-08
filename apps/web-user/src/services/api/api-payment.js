@@ -4,7 +4,7 @@ import { getStore } from '@/untils/storage'
 import { paymentEndpoints } from './endpoints/payment.endpoints'
 
 export const PAY_API_UNAVAILABLE_MESSAGE
-  = '后端支付服务未启动或不可用，请先运行 pnpm --filter vue3-elm-node run dev 后再重试。'
+  = 'Payment backend service is unavailable. Please run pnpm --filter @elm-platform/server run dev and retry.'
 
 const paymentRequest = axios.create({
   baseURL: '/pay-api',
@@ -92,6 +92,13 @@ export async function createAlipayWapPayment(payload) {
 
 export async function resumeAlipayWapPayment(payload) {
   const response = await paymentRequest.post(paymentEndpoints.resumeAlipayWap, payload)
+  return unwrapResponse(response)
+}
+
+export async function requestOrderRefund({ orderNo, reason }) {
+  const response = await paymentRequest.post(paymentEndpoints.requestRefund(orderNo), {
+    reason,
+  })
   return unwrapResponse(response)
 }
 

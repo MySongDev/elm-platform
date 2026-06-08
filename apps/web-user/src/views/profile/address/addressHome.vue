@@ -66,8 +66,8 @@ loadAddresses()
 <style lang="scss" scoped>
 .address-page {
   min-height: 100%;
-  background: #fff;
   color: #222;
+  background: #fff;
 }
 
 // :deep(#head_top.address-head) {
@@ -77,11 +77,11 @@ loadAddresses()
 
 .add-button {
   padding: 8px 0;
-  border: 0;
-  background: transparent;
-  color: #222;
   font-size: 15px;
+  color: #222;
   white-space: nowrap;
+  background: transparent;
+  border: 0;
 }
 
 .address-list {
@@ -89,10 +89,10 @@ loadAddresses()
 }
 
 .address-item {
-  min-height: 91px;
   display: grid;
   grid-template-columns: minmax(0, 1fr) 48px;
   align-items: center;
+  min-height: 91px;
   border-bottom: 1px solid #e9e9e9;
 }
 
@@ -100,32 +100,33 @@ loadAddresses()
   min-width: 0;
 
   h2 {
+    @include text-ellipsis;
+
     margin: 0 0 12px;
-    color: #222;
     font-size: 18px;
     font-weight: 500;
     line-height: 1.25;
-    @include text-ellipsis;
+    color: #222;
   }
 
   p {
     display: flex;
     gap: 20px;
-    color: #999;
     font-size: 14px;
     line-height: 1.2;
+    color: #999;
   }
 }
 
 .edit-button {
+  display: grid;
+  place-items: center;
   justify-self: end;
   width: 40px;
   height: 40px;
-  display: grid;
-  place-items: center;
-  border: 0;
-  background: transparent;
-  color: #888;
   font-size: 20px;
+  color: #888;
+  background: transparent;
+  border: 0;
 }
 </style>

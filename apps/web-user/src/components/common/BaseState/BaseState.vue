@@ -71,12 +71,13 @@ defineEmits(['retry'])
 .state-overlay {
   position: absolute;
   inset: 0;
+  z-index: 10;
+
   /* 现代属性：top/left/right/bottom 全为 0 */
   display: flex;
   align-items: center;
   justify-content: center;
   background: #fff;
-  z-index: 10;
 }
 
 .fade-enter-active,

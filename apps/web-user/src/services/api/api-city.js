@@ -22,5 +22,9 @@ export const getCityInfo = number => get(cityEndpoints.cityInfo(number))
 
 /** 根据城市id搜索城市信息 */
 export async function searchCityInfo(city_id, keyword, type = 'search') {
-  return get(cityEndpoints.searchPois, { city_id, keyword, type })
+  return get(cityEndpoints.searchPois, {
+    city_id,
+    keyword,
+    type,
+  })
 }

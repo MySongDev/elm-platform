@@ -22,19 +22,31 @@ const settingGroups = computed(() => [
   {
     title: null,
     items: [
-      { label: '用户名', to: { name: 'SetUserName' }, value: userName.value },
+      {
+        label: '用户名',
+        to: { name: 'SetUserName' },
+        value: userName.value,
+      },
     ],
   },
   {
     title: '账号绑定',
     items: [
-      { label: '手机', icon: 'mobile', iconColor: 'blue' },
+      {
+        label: '手机',
+        icon: 'mobile',
+        iconColor: 'blue',
+      },
     ],
   },
   {
     title: '安全设置',
     items: [
-      { label: '登录密码', to: '/forget', value: '修改' },
+      {
+        label: '登录密码',
+        to: '/forget',
+        value: '修改',
+      },
     ],
   },
 ])
@@ -107,15 +119,15 @@ async function handleLogout() {
 .logout-btn {
   display: block;
   width: 92%;
-  margin: 30px auto 0;
   padding: 10px 0;
-  border: none;
-  border-radius: 6px;
-  text-align: center;
-  background: #d8584a;
+  margin: 30px auto 0;
   font-size: 14px;
   color: #fff;
+  text-align: center;
   cursor: pointer;
+  background: #d8584a;
+  border: none;
+  border-radius: 6px;
 
   &:active {
     opacity: 0.85;

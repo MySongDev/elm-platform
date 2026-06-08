@@ -1,6 +1,6 @@
 <script setup>
 import { storeToRefs } from 'pinia'
-import { computed, onActivated, watch } from 'vue'
+import { computed, onActivated, shallowRef, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
 import BaseState from '@/components/common/BaseState/BaseState.vue'
@@ -8,6 +8,7 @@ import { useUserStore } from '@/stores/modules/store-user'
 import { getStore } from '@/untils/storage'
 import OrderCard from './components/OrderCard.vue'
 import { useContinuePayment } from './composables/useContinuePayment'
+import { useRequestRefund } from './composables/useRequestRefund'
 import { useUserOrders } from './composables/useUserOrders'
 
 defineOptions({
@@ -66,6 +67,42 @@ const { continuePayment } = useContinuePayment({
   fetchOrders,
   goLogin,
 })
+
+const { requestRefund } = useRequestRefund({
+  fetchOrders,
+})
+
+const refundDialogVisible = shallowRef(false)
+const refundReason = shallowRef('')
+const pendingRefundOrder = shallowRef(null)
+
+function resetRefundDialog() {
+  refundReason.value = ''
+  pendingRefundOrder.value = null
+}
+
+function openRefundDialog(order) {
+  pendingRefundOrder.value = order
+  refundReason.value = ''
+  refundDialogVisible.value = true
+}
+
+async function handleRefundDialogClose(action) {
+  if (action === 'cancel') {
+    resetRefundDialog()
+    return true
+  }
+
+  if (!pendingRefundOrder.value)
+    return true
+
+  const success = await requestRefund(pendingRefundOrder.value, refundReason.value)
+
+  if (success)
+    resetRefundDialog()
+
+  return success
+}
 
 onActivated(() => {
   if (isAuthenticated.value)
@@ -152,50 +189,72 @@ watch(
             :order="order"
             :highlight="order.orderNo === highlightedOrderNo"
             @continue-payment="continuePayment"
+            @request-refund="openRefundDialog"
           />
         </div>
       </BaseState>
     </template>
+
+    <van-dialog
+      v-model:show="refundDialogVisible"
+      title="申请退款"
+      show-cancel-button
+      confirm-button-text="提交申请"
+      cancel-button-text="取消"
+      :before-close="handleRefundDialogClose"
+    >
+      <div class="refund-dialog">
+        <van-field
+          v-model="refundReason"
+          rows="3"
+          autosize
+          type="textarea"
+          maxlength="80"
+          show-word-limit
+          placeholder="请输入退款原因"
+        />
+      </div>
+    </van-dialog>
   </section>
 </template>
 
 <style lang="scss" scoped>
 .order-page {
   min-height: 100%;
-  background: #f5f7fa;
   padding: 12px 12px calc(var(--van-tabbar-height) + 18px);
+  background: #f5f7fa;
 }
 
 .order-header {
-  min-height: 58px;
   display: flex;
+  gap: 12px;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
+  min-height: 58px;
   margin-bottom: 10px;
 }
 
 .order-title {
   margin: 0;
-  color: #1f2329;
   font-size: 20px;
-  line-height: 1.3;
   font-weight: 800;
+  line-height: 1.3;
+  color: #1f2329;
 }
 
 .order-subtitle {
   margin-top: 4px;
-  color: #8a8f99;
   font-size: 12px;
   line-height: 1.4;
+  color: #8a8f99;
 }
 
 .refresh-button,
 .primary-button {
-  border: 0;
-  border-radius: 6px;
   font-size: 14px;
   font-weight: 700;
+  border: 0;
+  border-radius: 6px;
 }
 
 .refresh-button {
@@ -214,8 +273,12 @@ watch(
   min-width: 112px;
   height: 42px;
   padding: 0 18px;
-  background: #ffdd1f;
   color: #222;
+  background: #ffdd1f;
+}
+
+.refund-dialog {
+  padding: 10px 16px 16px;
 }
 
 .order-list {
@@ -239,31 +302,31 @@ watch(
 }
 
 .state-visual {
+  position: relative;
   width: 88px;
   height: 88px;
-  border-radius: 50%;
   margin-bottom: 16px;
-  position: relative;
+  border-radius: 50%;
 
   &::before,
   &::after {
-    content: '';
     position: absolute;
-    border-radius: 4px;
+    content: '';
     background: #fff;
+    border-radius: 4px;
   }
 
   &::before {
-    left: 22px;
-    right: 22px;
     top: 24px;
+    right: 22px;
+    left: 22px;
     height: 10px;
   }
 
   &::after {
-    left: 22px;
-    right: 34px;
     top: 44px;
+    right: 34px;
+    left: 22px;
     height: 10px;
   }
 
@@ -277,17 +340,17 @@ watch(
 }
 
 .state-title {
-  color: #1f2329;
   font-size: 18px;
-  line-height: 1.4;
   font-weight: 700;
+  line-height: 1.4;
+  color: #1f2329;
 }
 
 .state-desc {
   max-width: 280px;
   margin: 8px 0 18px;
-  color: #8a8f99;
   font-size: 14px;
   line-height: 1.6;
+  color: #8a8f99;
 }
 </style>

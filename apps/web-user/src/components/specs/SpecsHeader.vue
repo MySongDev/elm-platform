@@ -117,20 +117,20 @@ const selectedText = computed(() => {
 
 <style scoped>
 .specs-header {
-  padding: 16px;
   position: relative;
+  padding: 16px;
 }
 
 .product-image {
   position: relative;
-  border-radius: 12px;
   overflow: hidden;
+  border-radius: 12px;
 }
 
 .product-image.image-left {
+  float: left;
   width: 120px;
   height: 120px;
-  float: left;
   margin-right: 16px;
 }
 
@@ -149,21 +149,21 @@ const selectedText = computed(() => {
   position: absolute;
   top: 8px;
   left: 8px;
-  background: #FF4D4F;
-  color: #fff;
   padding: 2px 8px;
-  border-radius: 4px;
   font-size: 12px;
+  color: #fff;
+  background: #FF4D4F;
+  border-radius: 4px;
 }
 
 .theme-badge {
   position: absolute;
   top: 8px;
   right: 8px;
-  color: #fff;
   padding: 2px 8px;
-  border-radius: 4px;
   font-size: 12px;
+  color: #fff;
+  border-radius: 4px;
 }
 
 .price-info {
@@ -182,27 +182,27 @@ const selectedText = computed(() => {
 
 .currency {
   font-size: 14px;
-  color: #FF4D4F;
   font-weight: 600;
+  color: #FF4D4F;
 }
 
 .amount {
   font-size: 28px;
-  color: #FF4D4F;
   font-weight: 700;
+  color: #FF4D4F;
 }
 
 .original-price {
+  margin-top: 4px;
   font-size: 14px;
   color: #999;
   text-decoration: line-through;
-  margin-top: 4px;
 }
 
 .servings {
+  margin-top: 4px;
   font-size: 13px;
   color: #666;
-  margin-top: 4px;
 }
 
 .selected-info {

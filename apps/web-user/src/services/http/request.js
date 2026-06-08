@@ -87,7 +87,10 @@ request.interceptors.response.use(
       const message = getBusinessMessage(response.data)
 
       showAlert(message)
-      addBusinessErrorLog({ response, message })
+      addBusinessErrorLog({
+        response,
+        message,
+      })
 
       const error = new Error(message)
       error.name = response.data?.name || 'BusinessError'
@@ -155,7 +158,10 @@ request.interceptors.response.use(
     }
 
     if (code !== 'ERR_CANCELED') {
-      addHttpErrorLog({ error, message: userMessage })
+      addHttpErrorLog({
+        error,
+        message: userMessage,
+      })
     }
 
     if (import.meta.env.DEV && code !== 'ERR_CANCELED') {

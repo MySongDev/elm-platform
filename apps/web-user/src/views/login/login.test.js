@@ -22,9 +22,27 @@ vi.mock('@/stores/modules/store-user', () => ({
 vi.mock('@/services/api/', () => ({
   accountLogin: vi.fn(),
   getCaptchas: vi.fn(() => Promise.resolve('captcha')),
-  customerPasswordLogin: vi.fn(() => Promise.resolve({ token: 'password-token', user: { id: 1, phone: '13800138000' } })),
-  customerRegister: vi.fn(() => Promise.resolve({ token: 'register-token', user: { id: 2, phone: '13800138001' } })),
-  customerSmsLogin: vi.fn(() => Promise.resolve({ token: 'sms-token', user: { id: 3, phone: '13800138002' } })),
+  customerPasswordLogin: vi.fn(() => Promise.resolve({
+    token: 'password-token',
+    user: {
+      id: 1,
+      phone: '13800138000',
+    },
+  })),
+  customerRegister: vi.fn(() => Promise.resolve({
+    token: 'register-token',
+    user: {
+      id: 2,
+      phone: '13800138001',
+    },
+  })),
+  customerSmsLogin: vi.fn(() => Promise.resolve({
+    token: 'sms-token',
+    user: {
+      id: 3,
+      phone: '13800138002',
+    },
+  })),
   sendCustomerSms: vi.fn(() => Promise.resolve({ debugCode: '123456' })),
 }))
 
@@ -104,7 +122,13 @@ describe('login view', () => {
     await nextTick()
 
     expect(api.customerPasswordLogin).toHaveBeenCalledWith('13800138000', 'secret123')
-    expect(recordUserInfo).toHaveBeenCalledWith({ token: 'password-token', user: { id: 1, phone: '13800138000' } })
+    expect(recordUserInfo).toHaveBeenCalledWith({
+      token: 'password-token',
+      user: {
+        id: 1,
+        phone: '13800138000',
+      },
+    })
     expect(push).toHaveBeenCalledWith('/orders')
   })
 
@@ -120,7 +144,13 @@ describe('login view', () => {
     await nextTick()
 
     expect(api.customerRegister).toHaveBeenCalledWith('13800138001', '123456', 'secret123')
-    expect(recordUserInfo).toHaveBeenCalledWith({ token: 'register-token', user: { id: 2, phone: '13800138001' } })
+    expect(recordUserInfo).toHaveBeenCalledWith({
+      token: 'register-token',
+      user: {
+        id: 2,
+        phone: '13800138001',
+      },
+    })
     expect(push).toHaveBeenCalledWith('/orders')
   })
 })

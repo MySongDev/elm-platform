@@ -3,9 +3,18 @@
 import MenuFoodItem from './MenuFoodItem.vue'
 
 defineProps({
-  category: { type: Object, required: true },
-  cartMap: { type: Map, default: () => new Map() },
-  isLast: { type: Boolean, default: false },
+  category: {
+    type: Object,
+    required: true,
+  },
+  cartMap: {
+    type: Map,
+    default: () => new Map(),
+  },
+  isLast: {
+    type: Boolean,
+    default: false,
+  },
 })
 const emit = defineEmits(['add', 'decrease'])
 </script>
@@ -31,6 +40,7 @@ const emit = defineEmits(['add', 'decrease'])
 <style lang="scss" scoped>
 .category-section {
   margin-bottom: 18px;
+
   // scroll-margin-top: 91px;
 
   &.is-promo {
@@ -46,8 +56,8 @@ const emit = defineEmits(['add', 'decrease'])
 .section-head {
   position: sticky;
   top: calc(var(--nav-height) + var(--tab-height)); // 50px + 42px
-  margin-bottom: 8px;
   padding: 10px 0 4px 10px;
+  margin-bottom: 8px;
   background: linear-gradient(180deg, #fff4ea 0%, #fff 48px);
 }
 
@@ -58,10 +68,11 @@ const emit = defineEmits(['add', 'decrease'])
 }
 
 .section-name {
+  @include text-ellipsis;
+
   font-size: 16px;
   font-weight: 800;
   color: #222;
-  @include text-ellipsis();
 }
 
 .section-desc {

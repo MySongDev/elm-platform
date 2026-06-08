@@ -45,70 +45,70 @@ watch(() => route.path, (newPath, oldPath) => {
 
 <style lang="scss">
 .address-layout {
-  height: 100vh;
   display: flex;
   flex-direction: column;
+  height: 100vh;
 }
 
 /* 内容区域（关键） */
 .address-main {
-  flex: 1;
   position: relative;
+  flex: 1;
   overflow: hidden;
 }
 
 /* 页面动画层 */
 .address-page {
-  width: 100%;
-  height: 100%;
   position: absolute;
   inset: 0;
+  width: 100%;
+  height: 100%;
   overflow-y: auto;
 }
 
 /* 前进动画：新页从右进入，旧页向左离开 */
 
 .slide-right-enter-from {
-  transform: translateX(100%);
   // position: absolute;
   opacity: 0;
+  transform: translateX(100%);
 }
 
 .slide-right-enter-to {
-  transform: translateX(0);
   // position: absolute;
   opacity: 1;
+  transform: translateX(0);
 }
 
 .slide-right-leave-from {
-  transform: translateX(0);
   opacity: 1;
+  transform: translateX(0);
 }
 
 .slide-right-leave-to {
-  transform: translateX(-20%); //离开的页面整体向左移动20%有一种层叠的效果  100%则有一种推动的效果
   opacity: 0;
+  transform: translateX(-20%); // 离开的页面整体向左移动20%有一种层叠的效果  100%则有一种推动的效果
 }
 
 /* 后退动画：新页从左进入，旧页向右离开 */
 .slide-left-enter-from {
-  transform: translateX(-20%);
   opacity: 0;
+  transform: translateX(-20%);
 }
 
 .slide-left-enter-to {
-  transform: translateX(0);
   opacity: 1;
+  transform: translateX(0);
 }
 
 .slide-left-leave-from {
-  transform: translateX(0);
   opacity: 1;
+  transform: translateX(0);
 }
 
 .slide-left-leave-to {
-  transform: translateX(100%);
   opacity: 0;
+  transform: translateX(100%);
 }
 
 /* 共用动画时间 */

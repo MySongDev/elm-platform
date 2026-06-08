@@ -17,7 +17,13 @@ function toggleReply() {
 
 // 渲染星级
 function getStarLabel(score) {
-  const map = { 5: '😍', 4: '😊', 3: '😐', 2: '😕', 1: '😞' }
+  const map = {
+    5: '😍',
+    4: '😊',
+    3: '😐',
+    2: '😕',
+    1: '😞',
+  }
   return map[score] || '😊'
 }
 </script>
@@ -91,15 +97,15 @@ function getStarLabel(score) {
 <style lang="scss" scoped>
 .review-item {
   padding: 4vw 3.2vw;
-  border-bottom: 1px solid #f0f0f0;
   background: #fff;
+  border-bottom: 1px solid #f0f0f0;
 }
 
 // ---- 用户行 ----
 .user-row {
   display: flex;
-  align-items: flex-start;
   gap: 2.4vw;
+  align-items: flex-start;
   margin-bottom: 3vw;
 }
 
@@ -111,31 +117,31 @@ function getStarLabel(score) {
 .avatar {
   width: 10.67vw;
   height: 10.67vw;
-  border-radius: 50%;
   object-fit: cover;
+  border-radius: 50%;
 }
 
 .avatar-placeholder {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #ffd4a8;
-  color: #fff;
   font-size: 4vw;
   font-weight: 700;
+  color: #fff;
+  background: #ffd4a8;
 }
 
 .source-badge {
   position: absolute;
   bottom: -1vw;
   left: 50%;
-  transform: translateX(-50%);
-  background: #4caf50;
-  color: #fff;
-  font-size: 2.2vw;
   padding: 0.3vw 1.2vw;
-  border-radius: 3px;
+  font-size: 2.2vw;
+  color: #fff;
   white-space: nowrap;
+  background: #4caf50;
+  border-radius: 3px;
+  transform: translateX(-50%);
 }
 
 .user-info {
@@ -145,9 +151,9 @@ function getStarLabel(score) {
 
 .name-row {
   display: flex;
-  align-items: center;
   flex-wrap: wrap;
   gap: 1.6vw;
+  align-items: center;
   margin-bottom: 1.2vw;
 }
 
@@ -158,27 +164,27 @@ function getStarLabel(score) {
 }
 
 .member-badge {
-  font-size: 2.8vw;
   padding: 0.4vw 1.6vw;
-  border-radius: 10px;
+  font-size: 2.8vw;
   font-weight: 500;
+  border-radius: 10px;
 
   &.gold {
-    background: #fff3d6;
     color: #d4870a;
+    background: #fff3d6;
   }
 
   &.black {
-    background: #333;
     color: #d4a84b;
+    background: #333;
   }
 }
 
 .purchase-times {
+  padding: 0.4vw 1.6vw;
   font-size: 2.8vw;
   color: #ff6b00;
   background: #fff0e6;
-  padding: 0.4vw 1.6vw;
   border-radius: 10px;
 }
 
@@ -194,10 +200,10 @@ function getStarLabel(score) {
 
 .meta-right {
   display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 1vw;
   flex-shrink: 0;
+  flex-direction: column;
+  gap: 1vw;
+  align-items: flex-end;
 }
 
 .date {
@@ -206,10 +212,10 @@ function getStarLabel(score) {
 }
 
 .more-btn {
-  color: #ccc;
   font-size: 4vw;
-  cursor: pointer;
+  color: #ccc;
   letter-spacing: 1px;
+  cursor: pointer;
 }
 
 // ---- 正文 ----
@@ -218,59 +224,59 @@ function getStarLabel(score) {
 }
 
 .review-text {
-  font-size: 4vw;
-  color: #222;
-  line-height: 1.6;
   margin: 0 0 2vw;
+  font-size: 4vw;
+  line-height: 1.6;
+  color: #222;
 
   &.empty {
-    color: #999;
     font-size: 3.6vw;
+    color: #999;
   }
 }
 
 .image-list {
   display: flex;
-  gap: 2vw;
   flex-wrap: wrap;
+  gap: 2vw;
 }
 
 .review-image {
   width: 22vw;
   height: 22vw;
-  border-radius: 4px;
   object-fit: cover;
+  border-radius: 4px;
 }
 
 // ---- 好评商品 ----
 .related-product {
   display: flex;
+  gap: 1vw;
   align-items: center;
   margin-bottom: 2.4vw;
   font-size: 3.2vw;
   color: #555;
-  gap: 1vw;
 }
 
 .related-label {
-  background: #f5f5f5;
-  padding: 1.2vw 2.4vw;
-  border-radius: 4px;
   flex: 1;
+  padding: 1.2vw 2.4vw;
+  background: #f5f5f5;
+  border-radius: 4px;
 }
 
 .chevron {
-  color: #bbb;
   font-size: 3.6vw;
+  color: #bbb;
 }
 
 .useful {
   display: flex;
-  align-items: center;
   gap: 1vw;
+  align-items: center;
   margin-left: auto;
-  color: #999;
   font-size: 3.2vw;
+  color: #999;
   white-space: nowrap;
 }
 
@@ -280,17 +286,17 @@ function getStarLabel(score) {
 
 // ---- 商家回复 ----
 .merchant-reply {
-  background: #f7f7f7;
-  border-radius: 6px;
   padding: 2.4vw 3.2vw;
   font-size: 3.2vw;
-  color: #555;
   line-height: 1.5;
+  color: #555;
+  background: #f7f7f7;
+  border-radius: 6px;
 }
 
 .reply-prefix {
-  color: #333;
   font-weight: 500;
+  color: #333;
 }
 
 .reply-text {
@@ -298,9 +304,9 @@ function getStarLabel(score) {
 }
 
 .expand-btn {
-  color: #ff8c00;
   margin-left: 1vw;
-  cursor: pointer;
   font-size: 3.2vw;
+  color: #ff8c00;
+  cursor: pointer;
 }
 </style>

@@ -1,5 +1,5 @@
 {
-  "name": "vue3-elm-js",
+  "name": "@elm-platform/web-user",
   "type": "module",
   "version": "0.0.0",
   "private": true,
@@ -54,3 +54,4 @@
     "vue-tsc": "catalog:"
   }
 }
+

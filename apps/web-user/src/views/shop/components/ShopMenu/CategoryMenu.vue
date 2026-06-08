@@ -4,7 +4,10 @@ import { nextTick, ref, watch } from 'vue'
 import { getImageUrl } from '@/config'
 
 const props = defineProps({
-  categories: { type: Array, default: () => [] },
+  categories: {
+    type: Array,
+    default: () => [],
+  },
   activeId: [Number, String],
 })
 
@@ -57,34 +60,32 @@ watch(
 <style lang="scss" scoped>
 .category-menu {
   width: 80px;
-  background: $ff;
-  overflow-y: auto;
-  overflow-x: hidden;
-  -webkit-overflow-scrolling: touch;
+  overflow: hidden auto;
   overscroll-behavior-y: contain;
+  background: $ff;
+  -webkit-overflow-scrolling: touch;
 
   &::-webkit-scrollbar {
     display: none;
   }
 
   .cat-item {
+    position: relative;
     padding: 14px;
     font-size: 12px;
-    transition: all 0.2s;
     line-height: 1.25;
-    cursor: pointer;
-    position: relative;
     color: #666;
+    cursor: pointer;
+    transition: all 0.2s;
 
     .cat-content {
       display: flex;
       flex-direction: column;
-      align-items: center;
       gap: 4px;
+      align-items: center;
 
       &.row {
-        flex-direction: row;
-        flex-wrap: wrap;
+        flex-flow: row wrap;
         justify-content: center;
       }
     }
@@ -101,21 +102,21 @@ watch(
     }
 
     .cat-name {
-      word-break: break-all;
       text-align: center;
+      word-break: break-all;
     }
 
     &.active {
-      color: #111920;
       font-weight: 700;
+      color: #111920;
 
       &::before {
-        content: '';
         position: absolute;
-        left: 0;
         top: 35%;
+        left: 0;
         width: 3px;
         height: 50%;
+        content: '';
         background: #ffbd27;
         border-radius: 0 4px 4px 0;
       }

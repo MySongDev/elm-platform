@@ -150,14 +150,14 @@ defineExpose({
 
 <style scoped>
 .specs-selector {
+  padding-bottom: env(safe-area-inset-bottom);
   background: #fff;
   border-radius: 16px 16px 0 0;
-  padding-bottom: env(safe-area-inset-bottom);
 }
 
 .specs-body {
   max-height: 60vh;
-  overflow-y: auto;
   padding: 0 16px 16px;
+  overflow-y: auto;
 }
 </style>

@@ -7,7 +7,11 @@ export const getAddress = user_id => get(userEndpoints.addresses(user_id))
 
 /** 删除地址 */
 export function deleteAddress(user_id, addressid) {
-  return http({ url: userEndpoints.addressDetail(user_id, addressid), params: {}, method: 'DELETE' })
+  return http({
+    url: userEndpoints.addressDetail(user_id, addressid),
+    params: {},
+    method: 'DELETE',
+  })
 }
 
 /** 新增收货地址 */

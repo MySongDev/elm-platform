@@ -4,7 +4,10 @@ import { computed, ref, useTemplateRef } from 'vue'
 const props = defineProps({
   // modelValue: Number,
   max: { default: 5 },
-  readonly: { type: Boolean, default: true },
+  readonly: {
+    type: Boolean,
+    default: true,
+  },
   precision: { default: 0.1 },
 })
 const rating = defineModel()
@@ -89,17 +92,18 @@ function onTouchMove(e) {
 
 .star-bg {
   color: #ddd;
+
   // fill: #ddd;
 }
 
 .star-active {
-  color: #f7ba2a;
   // fill: #f7ba2a;
   position: absolute;
-  left: 0;
   top: 0;
-  width: v-bind(displayPercent);
+  left: 0;
+  width: v-bind(displaypercent);
   overflow: hidden;
+  color: #f7ba2a;
   white-space: nowrap;
   pointer-events: none;
   transition: width 0.35s ease;
@@ -107,9 +111,9 @@ function onTouchMove(e) {
 
 .rating {
   display: inline-block;
-  color: #f7ba2a;
-  font-size: 14px;
   margin-left: 4px;
+  font-size: 14px;
+  color: #f7ba2a;
   transform: translateY(-1.5px);
 }
 </style>

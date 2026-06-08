@@ -25,27 +25,27 @@ const emit = defineEmits(['click'])
 
 <style lang="scss" scoped>
 .cart-check-button {
-  width: 20px;
-  height: 20px;
-  border: 1px solid #d4d7dc;
-  border-radius: 50%;
-  background: #fff;
-  padding: 0;
   position: relative;
   display: inline-block;
   flex: 0 0 auto;
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  background: #fff;
+  border: 1px solid #d4d7dc;
+  border-radius: 50%;
 
   &.checked {
-    border-color: #ffd12f;
     background: #ffd12f;
+    border-color: #ffd12f;
 
     &::after {
-      content: '';
       position: absolute;
-      left: 6px;
       top: 3px;
+      left: 6px;
       width: 5px;
       height: 7px;
+      content: '';
       border: solid #413f3f;
       border-width: 0 2px 2px 0;
       transform: rotate(45deg);

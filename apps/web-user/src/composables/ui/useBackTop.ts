@@ -194,10 +194,18 @@ export function useBackTop(options: UseBackTopOptions | number = {}): UseBackTop
     if (!currentTarget)
       return
 
-    if (currentTarget === window)
-      window.scrollTo({ top: 0, behavior })
-    else
-      currentTarget.scrollTo({ top: 0, behavior })
+    if (currentTarget === window) {
+      window.scrollTo({
+        top: 0,
+        behavior,
+      })
+    }
+    else {
+      currentTarget.scrollTo({
+        top: 0,
+        behavior,
+      })
+    }
   }
 
   onMounted(() => {

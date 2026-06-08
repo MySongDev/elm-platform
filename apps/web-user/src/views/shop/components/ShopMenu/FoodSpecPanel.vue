@@ -236,44 +236,44 @@ function handleKeydown(e) {
 .spec-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.45);
   z-index: 1000;
   display: flex;
   align-items: center; // 垂直居中
   justify-content: center; // 水平居中
   padding: 16px; // 小屏时留出边距
+  background: rgb(0 0 0 / 45%);
 }
 
 // ===== 面板主体 =====
 .spec-panel {
   position: relative;
-  width: 100%;
-  max-width: 420px; // 限制最大宽度，避免大屏过宽
-  background: #fff;
-  border-radius: 16px;
-  padding: 24px;
-  max-height: min(80vh, 600px); // 限制最大高度
   display: flex;
   flex-direction: column;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15); // 增加层次感
+  width: 100%;
+  max-width: 420px; // 限制最大宽度，避免大屏过宽
+  max-height: min(80vh, 600px); // 限制最大高度
+  padding: 24px;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgb(0 0 0 / 15%); // 增加层次感
 }
 
 // ===== 关闭按钮 =====
 .close-btn {
   position: absolute;
-  right: 16px;
   top: 16px;
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  border: none;
-  background: #f0f0f0;
-  color: #888;
-  font-size: 14px;
-  cursor: pointer;
+  right: 16px;
   display: flex;
   align-items: center;
   justify-content: center;
+  width: 28px;
+  height: 28px;
+  font-size: 14px;
+  color: #888;
+  cursor: pointer;
+  background: #f0f0f0;
+  border: none;
+  border-radius: 50%;
   transition: background 0.15s;
 
   &:hover {
@@ -287,11 +287,11 @@ function handleKeydown(e) {
 
 // ===== 菜品标题 =====
 .food-title {
+  padding-right: 36px; // 避免与关闭按钮重叠
+  margin: 0 0 20px;
   font-size: 18px;
   font-weight: 700;
   color: #111;
-  margin: 0 0 20px;
-  padding-right: 36px; // 避免与关闭按钮重叠
 }
 
 // ===== 规格组 =====
@@ -314,10 +314,10 @@ function handleKeydown(e) {
 }
 
 .spec-group-name {
+  margin: 0 0 10px;
   font-size: 14px;
   font-weight: 600;
   color: #333;
-  margin: 0 0 10px;
 }
 
 .spec-values {
@@ -329,16 +329,16 @@ function handleKeydown(e) {
 // 规格选项按钮
 .spec-value-btn {
   display: inline-flex;
-  align-items: center;
   gap: 6px;
+  align-items: center;
   padding: 8px 14px;
-  border-radius: 8px;
-  border: 1.5px solid #e8e8e8;
-  background: #fff;
   font-size: 13px;
   font-weight: 500;
   color: #333;
   cursor: pointer;
+  background: #fff;
+  border: 1.5px solid #e8e8e8;
+  border-radius: 8px;
   transition: border-color 0.15s, background 0.15s, color 0.15s;
 
   &:hover:not(.active) {
@@ -347,12 +347,12 @@ function handleKeydown(e) {
 
   // 选中态
   &.active {
-    border-color: #ff8c00;
+    color: #f60;
     background: #fff8ee;
-    color: #ff6600;
+    border-color: #ff8c00;
 
     .spec-value-price {
-      color: #ff6600;
+      color: #f60;
     }
   }
 }
@@ -366,18 +366,19 @@ function handleKeydown(e) {
 // ===== 底部操作区 =====
 .panel-footer {
   padding: 16px 0 0;
-  border-top: 1px solid #f0f0f0;
   margin-top: 16px;
+  border-top: 1px solid #f0f0f0;
 }
 
 .selected-label {
+  margin: 0 0 12px;
+  overflow: hidden;
   font-size: 12px;
   color: #999;
-  margin: 0 0 12px;
+  text-overflow: ellipsis;
+
   // 最多一行，超长省略
   white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 
 .footer-action {
@@ -392,21 +393,21 @@ function handleKeydown(e) {
   color: #fb4e44;
 
   i {
+    margin-right: 1px;
     font-size: 14px;
     font-style: normal;
-    margin-right: 1px;
   }
 }
 
 .confirm-btn {
   padding: 12px 24px;
-  border: none;
-  border-radius: 22px;
-  background: #ffd600;
-  color: #333;
   font-size: 15px;
   font-weight: 700;
+  color: #333;
   cursor: pointer;
+  background: #ffd600;
+  border: none;
+  border-radius: 22px;
   transition: filter 0.15s, background 0.15s;
 
   &:hover:not(:disabled) {
@@ -419,9 +420,9 @@ function handleKeydown(e) {
 
   // 售罄态
   &--disabled {
-    background: #e0e0e0;
     color: #aaa;
     cursor: not-allowed;
+    background: #e0e0e0;
   }
 }
 
@@ -447,8 +448,8 @@ function handleKeydown(e) {
   opacity: 0;
 
   .spec-panel {
-    transform: scale(0.9);
     opacity: 0;
+    transform: scale(0.9);
   }
 }
 
@@ -456,8 +457,8 @@ function handleKeydown(e) {
   opacity: 0;
 
   .spec-panel {
-    transform: scale(0.95);
     opacity: 0;
+    transform: scale(0.95);
   }
 }
 </style>

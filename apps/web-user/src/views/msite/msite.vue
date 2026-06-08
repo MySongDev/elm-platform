@@ -207,16 +207,16 @@ onDeactivated(() => {
 }
 
 .slide-style {
-  background: #fff;
   display: grid;
   grid-template-rows: repeat(2, 1fr);
   grid-template-columns: repeat(4, 1fr);
+  background: #fff;
 
   .slide-item {
     display: flex;
     flex-direction: column;
-    justify-content: center;
     align-items: center;
+    justify-content: center;
   }
 
   .slide-img {
@@ -225,9 +225,9 @@ onDeactivated(() => {
   }
 
   .slide-title {
-    text-align: center;
     font-size: 13px;
     color: #666;
+    text-align: center;
   }
 }
 
@@ -235,25 +235,25 @@ onDeactivated(() => {
   background: #fff;
 
   .contnet-title {
-    background: #fff;
     padding: 10px 0 10px 10px;
     font-size: 14px;
     color: #999;
+    background: #fff;
     border-bottom: 1px solid #eee;
 
     &.is-sticky {
       position: sticky;
       top: 0;
       z-index: 100;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 2px 8px rgb(0 0 0 / 10%);
     }
 
     &_svg {
       width: 20px;
       height: 20px;
-      vertical-align: middle;
-      margin-bottom: 6px;
       margin-right: 5px;
+      margin-bottom: 6px;
+      vertical-align: middle;
       fill: #999;
     }
   }

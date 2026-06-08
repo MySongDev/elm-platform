@@ -2,15 +2,29 @@
 import FormItemWrapper from './FormItemWrapper.vue'
 
 defineProps({
-  modelValue: { type: Number, default: 1 },
-  error: { type: String, default: '' },
+  modelValue: {
+    type: Number,
+    default: 1,
+  },
+  error: {
+    type: String,
+    default: '',
+  },
 })
 
 const emit = defineEmits(['update:modelValue', 'field-change'])
 
 const options = [
-  { value: 1, label: '男', icon: '👨' },
-  { value: 2, label: '女', icon: '👩' },
+  {
+    value: 1,
+    label: '男',
+    icon: '👨',
+  },
+  {
+    value: 2,
+    label: '女',
+    icon: '👩',
+  },
 ]
 
 function onChange(value) {
@@ -54,12 +68,13 @@ function onChange(value) {
 
   &_input {
     position: absolute;
-    opacity: 0;
     width: 0;
     height: 0;
+    opacity: 0;
   }
 
   &_content {
+    position: relative;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -68,14 +83,13 @@ function onChange(value) {
     background: #f8f9fa;
     border: 2px solid #e9ecef;
     border-radius: 16px;
-    position: relative;
     transition: all 0.3s;
   }
 
   &.active &_content {
     background: #e6f7ff;
     border-color: #1890ff;
-    box-shadow: 0 4px 12px rgba(24, 144, 255, 0.15);
+    box-shadow: 0 4px 12px rgb(24 144 255 / 15%);
   }
 
   &_icon {
@@ -94,24 +108,24 @@ function onChange(value) {
   }
 
   &.active &_text {
-    color: #1890ff;
     font-weight: 600;
+    color: #1890ff;
   }
 
   &_check {
     position: absolute;
     top: 2px;
     right: 4px;
-    width: 24px;
-    height: 24px;
-    background: #1890ff;
-    color: white;
-    border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
+    width: 24px;
+    height: 24px;
     font-size: 14px;
     font-weight: bold;
+    color: white;
+    background: #1890ff;
+    border-radius: 50%;
     animation: popIn 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
   }
 

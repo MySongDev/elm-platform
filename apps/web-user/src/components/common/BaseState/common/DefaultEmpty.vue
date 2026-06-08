@@ -6,7 +6,7 @@
 
 <style scoped>
 .empty {
-  text-align: center;
   color: #aaa;
+  text-align: center;
 }
 </style>

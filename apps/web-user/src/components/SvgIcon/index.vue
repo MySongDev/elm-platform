@@ -43,6 +43,7 @@ const svgStyle = computed(() => {
   width: 1em;
   height: 1em;
   overflow: hidden;
+
   /* 单色模式：默认继承 color，可被 CSS 变量覆盖 */
   fill: var(--icon-fill, currentColor);
 }

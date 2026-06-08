@@ -41,5 +41,10 @@ export function useStateContainer<T = any>(
     state.value = ''
   }
 
-  return { state, data, execute, resetState }
+  return {
+    state,
+    data,
+    execute,
+    resetState,
+  }
 }

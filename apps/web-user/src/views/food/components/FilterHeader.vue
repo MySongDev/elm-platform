@@ -9,9 +9,18 @@ const props = defineProps({
 const emit = defineEmits(['toggle'])
 
 const tabs = computed(() => [
-  { key: 'category', label: props.categoryName || '分类' },
-  { key: 'sort', label: '排序' },
-  { key: 'filter', label: '筛选' },
+  {
+    key: 'category',
+    label: props.categoryName || '分类',
+  },
+  {
+    key: 'sort',
+    label: '排序',
+  },
+  {
+    key: 'filter',
+    label: '筛选',
+  },
 ])
 </script>
 
@@ -29,39 +38,39 @@ const tabs = computed(() => [
 
 <style scoped>
 .filter-header {
+  position: relative;
+  z-index: 101;
   display: flex;
   background: #fff;
   border-bottom: 1px solid #e5e5e5;
-  position: relative;
-  z-index: 101;
 }
 
 .filter-tab {
-  flex: 1;
+  position: relative;
   display: flex;
+  flex: 1;
   align-items: center;
   justify-content: center;
   padding: 14px 0;
   font-size: 14px;
   color: #666;
   cursor: pointer;
-  position: relative;
 }
 
 .filter-tab:not(:last-child)::after {
-  content: '';
   position: absolute;
-  right: 0;
   top: 50%;
-  transform: translateY(-50%);
+  right: 0;
   width: 1px;
   height: 20px;
+  content: '';
   background: #e5e5e5;
+  transform: translateY(-50%);
 }
 
 .filter-tab.active {
-  color: #409EFF;
   font-weight: 500;
+  color: #409EFF;
 }
 
 .tab-text {

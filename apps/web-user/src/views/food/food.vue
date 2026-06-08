@@ -98,12 +98,36 @@ async function fetchFoodCategory() {
 }
 
 const sortOptions = [
-  { text: '智能排序', value: 4, iconColor: '#409EFF' },
-  { text: '距离最近', value: 5, iconColor: '#67C23A' },
-  { text: '销量最高', value: 6, iconColor: '#FF6B6B' },
-  { text: '起送价最低', value: 1, iconColor: '#E6A23C' },
-  { text: '配送速度最快', value: 2, iconColor: '#67C23A' },
-  { text: '评分最高', value: 3, iconColor: '#FFD700' },
+  {
+    text: '智能排序',
+    value: 4,
+    iconColor: '#409EFF',
+  },
+  {
+    text: '距离最近',
+    value: 5,
+    iconColor: '#67C23A',
+  },
+  {
+    text: '销量最高',
+    value: 6,
+    iconColor: '#FF6B6B',
+  },
+  {
+    text: '起送价最低',
+    value: 1,
+    iconColor: '#E6A23C',
+  },
+  {
+    text: '配送速度最快',
+    value: 2,
+    iconColor: '#67C23A',
+  },
+  {
+    text: '评分最高',
+    value: 3,
+    iconColor: '#FFD700',
+  },
 ]
 
 async function fetchDelivery() {
@@ -227,8 +251,8 @@ onDeactivated(() => {
 
 .food-filter {
   position: relative;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   z-index: 10;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
 /* ========== 容器动画：首次展开 ========== */
@@ -243,27 +267,27 @@ onDeactivated(() => {
 }
 
 .container-enter-from {
+  max-height: 0;
   opacity: 0;
   transform: perspective(1000px) rotateX(-15deg) translateY(-20px);
-  max-height: 0;
 }
 
 .container-enter-to {
+  max-height: 70vh;
   opacity: 1;
   transform: perspective(1000px) rotateX(0) translateY(0);
-  max-height: 70vh;
 }
 
 .container-leave-from {
+  max-height: 70vh;
   opacity: 1;
   transform: perspective(1000px) rotateX(0) translateY(0);
-  max-height: 70vh;
 }
 
 .container-leave-to {
+  max-height: 0;
   opacity: 0;
   transform: perspective(1000px) rotateX(-10deg) translateY(-10px);
-  max-height: 0;
 }
 
 /* ========== 内容动画：选项卡切换 ========== */
@@ -276,27 +300,27 @@ onDeactivated(() => {
 }
 
 .content-enter-from {
+  filter: blur(4px);
   opacity: 0;
   transform: translateX(30px) scale(0.95);
-  filter: blur(4px);
 }
 
 .content-enter-to {
+  filter: blur(0);
   opacity: 1;
   transform: translateX(0) scale(1);
-  filter: blur(0);
 }
 
 .content-leave-from {
+  filter: blur(0);
   opacity: 1;
   transform: translateX(0) scale(1);
-  filter: blur(0);
 }
 
 .content-leave-to {
+  filter: blur(4px);
   opacity: 0;
   transform: translateX(-30px) scale(0.95);
-  filter: blur(4px);
 }
 
 /* ========== 遮罩层动画 ========== */
@@ -314,13 +338,13 @@ onDeactivated(() => {
 .dropdown-wrapper {
   position: absolute;
   top: 100%;
-  left: 0;
   right: 0;
-  background: #fff;
+  left: 0;
   z-index: 1000;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
   overflow: hidden;
+  background: #fff;
   border-radius: 0 0 12px 12px;
+  box-shadow: 0 8px 24px rgb(0 0 0 / 12%);
   will-change: transform, opacity, max-height;
 }
 
@@ -346,12 +370,9 @@ onDeactivated(() => {
 
 .overlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.4);
-  backdrop-filter: blur(2px);
+  inset: 0;
   z-index: 99;
+  background: rgb(0 0 0 / 40%);
+  backdrop-filter: blur(2px);
 }
 </style>

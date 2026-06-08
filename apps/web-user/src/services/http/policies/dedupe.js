@@ -72,7 +72,10 @@ export function setupDedupe(config) {
   }
 
   config.signal = controller.signal
-  pendingRequestMap.set(key, { controller, config })
+  pendingRequestMap.set(key, {
+    controller,
+    config,
+  })
 
   return config
 }

@@ -2,7 +2,10 @@
 import SkeletonBlock from './SkeletonBlock.vue'
 
 defineProps({
-  rows: { type: Number, default: 6 },
+  rows: {
+    type: Number,
+    default: 6,
+  },
 })
 </script>
 
@@ -40,9 +43,9 @@ defineProps({
 }
 
 .shop-skeleton-item__avatar {
+  flex: 0 0 64px;
   width: 64px;
   height: 64px;
-  flex: 0 0 64px;
   margin-right: 10px;
   border-radius: 4px;
 }

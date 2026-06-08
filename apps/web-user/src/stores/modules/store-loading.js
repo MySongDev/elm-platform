@@ -73,7 +73,10 @@ export const useLoadingStore = defineStore('loading', {
     },
 
     show(text = '加载中...') {
-      this.start({ text, delay: 0 })
+      this.start({
+        text,
+        delay: 0,
+      })
     },
 
     hide() {

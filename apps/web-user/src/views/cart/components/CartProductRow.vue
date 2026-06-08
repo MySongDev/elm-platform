@@ -51,8 +51,8 @@ const emit = defineEmits(['toggle', 'increase', 'decrease'])
 <style lang="scss" scoped>
 .cart-product {
   display: flex;
-  align-items: center;
   gap: 12px;
+  align-items: center;
   padding-bottom: 20px;
 }
 
@@ -60,29 +60,29 @@ const emit = defineEmits(['toggle', 'increase', 'decrease'])
   flex: 0 0 88px;
   width: 88px;
   height: 78px;
-  border-radius: 6px;
   object-fit: cover;
   background: #f2f3f5;
+  border-radius: 6px;
 }
 
 .product-content {
-  flex: 1;
-  min-width: 0;
-  align-self: stretch;
   display: flex;
+  flex: 1;
   flex-direction: column;
+  align-self: stretch;
   justify-content: space-between;
+  min-width: 0;
   padding: 2px 0;
 }
 
 .product-name {
   margin: 0;
+  overflow: hidden;
   font-size: 14px;
   font-weight: 700;
   line-height: 1.35;
-  overflow: hidden;
-  white-space: nowrap;
   text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .product-tag {
@@ -91,32 +91,32 @@ const emit = defineEmits(['toggle', 'increase', 'decrease'])
   height: 20px;
   padding: 0 5px;
   margin-right: 2px;
-  border-radius: 4px 0 4px 0;
-  background: #d8843e;
-  color: #fff;
   font-size: 12px;
   font-weight: 700;
+  color: #fff;
   vertical-align: 1px;
+  background: #d8843e;
+  border-radius: 4px 0;
 }
 
 .product-spec {
   margin: 6px 0 0;
-  color: #8f8f8f;
   font-size: 12px;
   line-height: 1.4;
+  color: #8f8f8f;
 }
 
 .product-bottom {
   display: flex;
+  gap: 10px;
   align-items: center;
   justify-content: space-between;
-  gap: 10px;
 }
 
 .price-wrap {
-  min-width: 0;
   display: flex;
   align-items: baseline;
+  min-width: 0;
   color: #f4342d;
 }
 
@@ -133,29 +133,29 @@ const emit = defineEmits(['toggle', 'increase', 'decrease'])
 
 .origin-price {
   margin-left: 10px;
-  color: #777;
   font-size: 12px;
+  color: #777;
   text-decoration: line-through;
 }
 
 .quantity-stepper {
-  flex: 0 0 auto;
-  height: 30px;
   display: inline-flex;
+  flex: 0 0 auto;
   align-items: center;
-  border: 1px solid #d9dce1;
-  border-radius: 9px;
+  height: 30px;
   overflow: hidden;
   background: #fff;
+  border: 1px solid #d9dce1;
+  border-radius: 9px;
 }
 
 .stepper-button {
   width: 28px;
   height: 100%;
-  border: 0;
-  background: #fff;
   font-size: 17px;
   line-height: 1;
+  background: #fff;
+  border: 0;
 
   &:disabled {
     color: #c7c7c7;
@@ -163,12 +163,12 @@ const emit = defineEmits(['toggle', 'increase', 'decrease'])
 }
 
 .quantity {
-  width: 30px;
-  height: 30px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border-inline: 1px solid #edf0f3;
+  width: 30px;
+  height: 30px;
   font-size: 14px;
+  border-inline: 1px solid #edf0f3;
 }
 </style>

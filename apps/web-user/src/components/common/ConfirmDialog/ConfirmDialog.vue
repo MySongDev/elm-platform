@@ -29,7 +29,10 @@ const emit = defineEmits([
 /**
  * ========= Props =========
  */
-const model = defineModel({ type: Boolean, default: false })
+const model = defineModel({
+  type: Boolean,
+  default: false,
+})
 
 /**
  * ========= methods =========
@@ -87,20 +90,19 @@ function handleConfirm() {
   position: fixed;
   inset: 0;
   z-index: 1000;
-  background: rgba(0, 0, 0, .5);
-
   display: flex;
-  justify-content: center;
   align-items: center;
+  justify-content: center;
+  background: rgb(0 0 0 / 50%);
 }
 
 .overlay-content {
   width: 90%;
   max-width: 420px;
-  background: #fff;
-  border-radius: 10px;
   padding: 24px;
   text-align: center;
+  background: #fff;
+  border-radius: 10px;
 }
 
 .title {
@@ -111,16 +113,16 @@ function handleConfirm() {
 
 .actions {
   display: flex;
-  justify-content: space-between;
   gap: 12px;
+  justify-content: space-between;
 
   button {
     flex: 1;
     padding: 10px 0;
-    border-radius: 6px;
     color: #fff;
-    border: none;
     cursor: pointer;
+    border: none;
+    border-radius: 6px;
   }
 
   .cancel {

@@ -1,7 +1,13 @@
 <script setup>
 defineProps({
-  text: { type: String, default: '加载中...' },
-  size: { type: String, default: '24px' },
+  text: {
+    type: String,
+    default: '加载中...',
+  },
+  size: {
+    type: String,
+    default: '24px',
+  },
 })
 </script>
 
@@ -15,12 +21,12 @@ defineProps({
 <style scoped>
 .local-loading {
   display: flex;
-  min-height: 96px;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  color: #999;
+  min-height: 96px;
   font-size: 14px;
+  color: #999;
 }
 
 .local-loading__text {

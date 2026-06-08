@@ -6,14 +6,29 @@ import { useInfiniteScroll } from '@/composables/ui'
 import ShopItem from './ShopItem.vue'
 
 const props = defineProps({
-  list: { type: Array, default: () => [] },
+  list: {
+    type: Array,
+    default: () => [],
+  },
   loading: Boolean,
   finished: Boolean,
-  threshold: { type: Number, default: 250 },
+  threshold: {
+    type: Number,
+    default: 250,
+  },
   pageRef: Object,
-  enableBackTop: { type: Boolean, default: true },
-  skeleton: { type: Boolean, default: true },
-  skeletonRows: { type: Number, default: 6 },
+  enableBackTop: {
+    type: Boolean,
+    default: true,
+  },
+  skeleton: {
+    type: Boolean,
+    default: true,
+  },
+  skeletonRows: {
+    type: Number,
+    default: 6,
+  },
 })
 
 const emit = defineEmits(['item-click', 'reach-bottom'])
@@ -33,7 +48,10 @@ const showSentinel = computed(() => props.list.length > 0 || props.loading)
 const showInitialSkeleton = computed(() => props.skeleton && props.loading && props.list.length === 0)
 
 function scrollToTop(behavior = 'smooth') {
-  scrollTarget.value?.scrollTo({ top: 0, behavior })
+  scrollTarget.value?.scrollTo({
+    top: 0,
+    behavior,
+  })
 }
 
 defineExpose({ scrollToTop })
@@ -74,7 +92,6 @@ defineExpose({ scrollToTop })
 
 <style lang="scss" scoped>
 .shopping-container {
-
   &.is-scrollable {
     height: 100%;
     overflow-y: auto;
@@ -84,9 +101,9 @@ defineExpose({ scrollToTop })
 
 .list-footer {
   padding: 15px 0;
-  text-align: center;
-  color: #999;
   font-size: 12px;
+  color: #999;
+  text-align: center;
 }
 
 .back-top-icon {

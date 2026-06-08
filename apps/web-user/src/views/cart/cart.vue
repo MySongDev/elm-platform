@@ -139,10 +139,10 @@ onBeforeUnmount(() => navbarHeader?.clearHeader())
   --cart-bottom-safe: calc(168px + env(safe-area-inset-bottom));
 
   min-height: 100vh;
-  margin: 0 auto;
-  background: $ff;
   padding-bottom: var(--cart-bottom-safe);
+  margin: 0 auto;
   color: #444;
+  background: $ff;
 }
 
 .cart-content {

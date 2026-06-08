@@ -114,20 +114,24 @@ const showHeaderSearch = computed(() => {
 // }
 .page-wrapper {
   flex: 1;
+
   /* 确保内容区至少占满屏幕，防止 mode="out-in" 时高度塌陷 */
+
   /* min-height: calc(100vh - 45px); */
 }
 
 #head_top {
+  @include wh(100%, 12vw);
+
   position: relative;
   z-index: 999;
+
   // inset: 0;
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  @include wh(100%, 12vw);
-  padding: 0 10px;
   flex-shrink: 0;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 10px;
   background-color: $blue;
 
   .left_area {
@@ -135,8 +139,9 @@ const showHeaderSearch = computed(() => {
 
     .svg {
       @include wh(5.6vw, 20px);
+
       vertical-align: bottom;
-      fill: rgb(255, 255, 255);
+      fill: rgb(255 255 255);
     }
   }
 
@@ -148,8 +153,8 @@ const showHeaderSearch = computed(() => {
 
   .right_area {
     min-width: 60px;
-    text-align: right;
     margin-left: auto;
+    text-align: right;
 
   }
 }
@@ -165,8 +170,8 @@ const showHeaderSearch = computed(() => {
 
   .head_title {
     .title_text {
-      color: #222;
       font-weight: 500;
+      color: #222;
     }
   }
 
@@ -183,12 +188,12 @@ const showHeaderSearch = computed(() => {
 
 }
 
-//中间标题内容
+// 中间标题内容
 .head_title {
   .title_text {
-    color: $ff;
-    font-weight: bold;
     font-size: 5vw;
+    font-weight: bold;
+    color: $ff;
   }
 }
 
@@ -197,6 +202,7 @@ const showHeaderSearch = computed(() => {
   .user_avatar {
     // transform: translateX(200%);
     @include wh(5.3333vw, 5.3333vw);
+
     fill: #fff;
   }
 

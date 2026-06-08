@@ -18,7 +18,10 @@ export default {
       path: 'add',
       name: 'AddressAdd',
       component: () => import('@/views/profile/address/add/AddressAdd.vue'),
-      meta: { title: '添加地址', requiresAuth: true },
+      meta: {
+        title: '添加地址',
+        requiresAuth: true,
+      },
     },
     {
       path: 'addDatil',

@@ -31,9 +31,9 @@ defineProps({
 
 <style lang="scss" scoped>
 .profile-card {
-  background: $blue;
   width: 100%;
   height: 90px;
+  background: $blue;
 
   &_link {
     display: flex;
@@ -43,26 +43,27 @@ defineProps({
   }
 
   &_avatar {
+    flex-shrink: 0;
     width: 58px;
     height: 58px;
-    border-radius: 50%;
     object-fit: cover;
-    flex-shrink: 0;
+    border-radius: 50%;
   }
 
   &_info {
-    flex: 1;
-    margin-left: 12px;
     display: flex;
+    flex: 1;
     flex-direction: column;
     justify-content: center;
+    margin-left: 12px;
     overflow: hidden;
   }
 
   &_name {
+    @include text-ellipsis;
+
     font-size: 18.75px;
     font-weight: 500;
-    @include text-ellipsis();
     color: $ff;
   }
 
@@ -81,6 +82,7 @@ defineProps({
 
   &_arrow {
     @include wh(16px, 16px);
+
     flex-shrink: 0;
   }
 }

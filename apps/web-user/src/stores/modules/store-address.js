@@ -50,5 +50,9 @@ export const useAddressStore = defineStore('address', () => {
       AddressList.value.splice(idx, 0, deleted)
     }
   }
-  return { AddressList, loadAddresses, romeAddress }
+  return {
+    AddressList,
+    loadAddresses,
+    romeAddress,
+  }
 })

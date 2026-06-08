@@ -1,18 +1,45 @@
 <script setup>
 defineProps({
-  label: { type: String, default: '' },
-  type: { type: String, default: 'text' },
-  placeholder: { type: String, default: '' },
-  name: { type: String, required: true },
-  maxlength: { type: [Number, String], default: undefined },
-  inputmode: { type: String, default: undefined },
-  pattern: { type: String, default: undefined },
-  autocomplete: { type: String, default: 'off' },
+  label: {
+    type: String,
+    default: '',
+  },
+  type: {
+    type: String,
+    default: 'text',
+  },
+  placeholder: {
+    type: String,
+    default: '',
+  },
+  name: {
+    type: String,
+    required: true,
+  },
+  maxlength: {
+    type: [Number, String],
+    default: undefined,
+  },
+  inputmode: {
+    type: String,
+    default: undefined,
+  },
+  pattern: {
+    type: String,
+    default: undefined,
+  },
+  autocomplete: {
+    type: String,
+    default: 'off',
+  },
 })
 
 const emit = defineEmits(['input'])
 
-const model = defineModel({ type: String, default: '' })
+const model = defineModel({
+  type: String,
+  default: '',
+})
 
 function handleInput(e) {
   emit('input', e)
@@ -43,28 +70,29 @@ function handleInput(e) {
 
 <style lang="scss" scoped>
 .form-item {
-  position: relative;
   @include flex-center($justify: flex-start);
-
   @include wh(100%, 45px);
+
+  position: relative;
   padding: 12px;
 
   &::after {
-    content: '';
     @include wh(100%, 1px);
+
     position: absolute;
-    left: 0;
     bottom: 0;
+    left: 0;
+    content: '';
+    background: #e3e5e7;
     transform: scaleY(0.5);
     transform-origin: 0 0;
-    background: #e3e5e7;
   }
 
   .form-label {
     min-width: 60px;
     margin-right: 12px;
-    color: #18191c;
     font-size: 14px;
+    color: #18191c;
     text-align: right;
   }
 
@@ -73,8 +101,8 @@ function handleInput(e) {
     min-width: 0;
 
     &::placeholder {
-      color: #505050;
       font-size: 12px;
+      color: #505050;
     }
   }
 }

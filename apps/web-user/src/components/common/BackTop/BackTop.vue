@@ -3,14 +3,38 @@ import { computed, toValue, watch } from 'vue'
 import { useBackTop } from '@/composables/ui'
 
 const props = defineProps({
-  target: { type: Object, default: null },
-  threshold: { type: Number, default: 400 },
-  showAfter: { type: [Object, String], default: null },
-  offset: { type: Number, default: 0 },
-  right: { type: [Number, String], default: 16 },
-  bottom: { type: [Number, String], default: 80 },
-  ariaLabel: { type: String, default: '返回顶部' },
-  behavior: { type: String, default: 'smooth' },
+  target: {
+    type: Object,
+    default: null,
+  },
+  threshold: {
+    type: Number,
+    default: 400,
+  },
+  showAfter: {
+    type: [Object, String],
+    default: null,
+  },
+  offset: {
+    type: Number,
+    default: 0,
+  },
+  right: {
+    type: [Number, String],
+    default: 16,
+  },
+  bottom: {
+    type: [Number, String],
+    default: 80,
+  },
+  ariaLabel: {
+    type: String,
+    default: '返回顶部',
+  },
+  behavior: {
+    type: String,
+    default: 'smooth',
+  },
 })
 
 const { showBackTop, scrollToTop, setAnchor, setTarget } = useBackTop({
@@ -36,7 +60,10 @@ watch(
 watch(
   () => toValue(props.showAfter),
   anchor => setAnchor(anchor),
-  { immediate: true, flush: 'post' },
+  {
+    immediate: true,
+    flush: 'post',
+  },
 )
 </script>
 
@@ -62,28 +89,28 @@ watch(
 <style lang="scss" scoped>
 .back-top {
   position: fixed;
-  width: 44px;
-  height: 44px;
-  background: rgba(255, 255, 255, 0.95);
-  border: none;
-  border-radius: 50%;
+  z-index: var(--z-index-backtop, 100);
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.12);
+  width: 44px;
+  height: 44px;
   color: #666;
   cursor: pointer;
-  z-index: var(--z-index-backtop, 100);
+  background: rgb(255 255 255 / 95%);
   backdrop-filter: blur(4px);
-  transform: translateZ(0);
-  will-change: transform, opacity;
+  border: none;
+  border-radius: 50%;
+  box-shadow: 0 2px 12px rgb(0 0 0 / 12%);
   transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1),
     opacity 0.3s ease,
     box-shadow 0.2s ease;
+  transform: translateZ(0);
+  will-change: transform, opacity;
 
   &:hover {
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.16);
     color: #333;
+    box-shadow: 0 4px 16px rgb(0 0 0 / 16%);
   }
 
   &:active {
@@ -103,7 +130,6 @@ watch(
 }
 
 @media (prefers-reduced-motion: reduce) {
-
   .back-top-fade-enter-active,
   .back-top-fade-leave-active {
     transition: none;

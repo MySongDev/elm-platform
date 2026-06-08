@@ -1,7 +1,10 @@
 <script setup>
 defineProps({
   label: String,
-  error: { type: String, default: '' },
+  error: {
+    type: String,
+    default: '',
+  },
 })
 </script>
 
@@ -21,22 +24,22 @@ defineProps({
 
 <style lang="scss" scoped>
 .form-item {
-  background: #fff;
   padding: 12px 16px;
   margin-bottom: 2px;
+  background: #fff;
   border: 1px solid transparent;
   transition: all 0.3s;
 
   &.has-error {
-    border-color: #ff4d4f;
     background: #fff2f0;
+    border-color: #ff4d4f;
   }
 
   &_label {
     display: block;
+    margin-bottom: 8px;
     font-size: 14px;
     color: #666;
-    margin-bottom: 8px;
   }
 
   &_body {
@@ -44,23 +47,23 @@ defineProps({
   }
 
   &_error {
-    color: #ff4d4f;
-    font-size: 12px;
-    margin-top: 8px;
     padding-left: 4px;
+    margin-top: 8px;
+    font-size: 12px;
+    color: #ff4d4f;
   }
 }
 
 .slide-enter-active,
 .slide-leave-active {
-  transition: all 0.3s ease;
   max-height: 30px;
   overflow: hidden;
+  transition: all 0.3s ease;
 }
 
 .slide-enter-from,
 .slide-leave-to {
-  opacity: 0;
   max-height: 0;
+  opacity: 0;
 }
 </style>

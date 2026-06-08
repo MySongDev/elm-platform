@@ -38,21 +38,21 @@ function selectFilter(key) {
 
 .filter-tag {
   display: inline-flex;
-  align-items: center;
   gap: 1vw;
+  align-items: center;
   padding: 1.6vw 3.2vw;
-  border-radius: 20px;
   font-size: 3.2vw;
   color: #666;
-  background: #f5f5f5;
   white-space: nowrap;
   cursor: pointer;
+  background: #f5f5f5;
+  border-radius: 20px;
   transition: all 0.2s;
 
   &.active {
-    background: #fff8e6;
-    color: #ff8c00;
     font-weight: 600;
+    color: #ff8c00;
+    background: #fff8e6;
   }
 
   .filter-icon {

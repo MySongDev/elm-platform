@@ -14,9 +14,15 @@ const props = defineProps({
 
 const emit = defineEmits({
   'continue-payment': order => Boolean(order?.orderNo),
+  'request-refund': order => Boolean(order?.orderNo),
 })
 
 const canContinuePayment = computed(() => props.order.status === 'PENDING')
+
+const canRequestRefund = computed(() => {
+  return Array.isArray(props.order.customerAvailableActions)
+    && props.order.customerAvailableActions.includes('REQUEST_REFUND')
+})
 
 const statusMap = {
   PAID: {
@@ -40,6 +46,25 @@ const statusMeta = computed(() => {
   }
 })
 
+const fulfillmentStatusMap = {
+  PENDING_PAYMENT: '待支付',
+  AWAITING_ACCEPTANCE: '待接单',
+  ACCEPTED: '已接单',
+  PREPARING: '制作中',
+  DELIVERING: '配送中',
+  COMPLETED: '已完成',
+  CANCELED: '已取消',
+}
+
+const refundStatusMap = {
+  NONE: '',
+  REQUESTED: '退款申请中',
+  APPROVED: '退款已同意',
+  REJECTED: '退款已驳回',
+}
+
+const fulfillmentText = computed(() => fulfillmentStatusMap[props.order.fulfillmentStatus] || '')
+const refundText = computed(() => refundStatusMap[props.order.refundStatus] || '')
 const amountText = computed(() => Number(props.order.payableAmount || 0).toFixed(2))
 const totalQty = computed(() => Number(props.order.totalQty || 0))
 
@@ -89,6 +114,8 @@ const timeText = computed(() => {
         <span>{{ timeText }}</span>
         <span v-if="totalQty">共 {{ totalQty }} 件</span>
         <span v-if="order.tradeStatus">{{ order.tradeStatus }}</span>
+        <span v-if="fulfillmentText">{{ fulfillmentText }}</span>
+        <span v-if="refundText">{{ refundText }}</span>
       </div>
       <button
         v-if="canContinuePayment"
@@ -99,29 +126,41 @@ const timeText = computed(() => {
       >
         继续支付
       </button>
+      <button
+        v-if="canRequestRefund"
+        class="refund-button"
+        data-test="request-refund"
+        type="button"
+        @click="emit('request-refund', order)"
+      >
+        申请退款
+      </button>
     </div>
+    <p v-if="order.refundStatus === 'REJECTED' && order.refundRejectReason" class="refund-reason">
+      驳回原因：{{ order.refundRejectReason }}
+    </p>
   </article>
 </template>
 
 <style lang="scss" scoped>
 .order-card {
-  background: #fff;
-  border-radius: 8px;
   padding: 14px;
+  background: #fff;
   border: 1px solid #edf0f5;
-  box-shadow: 0 6px 18px rgba(31, 35, 41, 0.04);
+  border-radius: 8px;
+  box-shadow: 0 6px 18px rgb(31 35 41 / 4%);
 }
 
 .order-card.highlighted {
   border-color: #19be6b;
-  box-shadow: 0 8px 22px rgba(25, 190, 107, 0.14);
+  box-shadow: 0 8px 22px rgb(25 190 107 / 14%);
 }
 
 .order-card__header {
   display: flex;
+  gap: 12px;
   align-items: flex-start;
   justify-content: space-between;
-  gap: 12px;
 }
 
 .shop-info {
@@ -130,31 +169,31 @@ const timeText = computed(() => {
 
 .shop-name {
   margin: 0;
-  color: #1f2329;
   font-size: 16px;
-  line-height: 1.35;
   font-weight: 700;
+  line-height: 1.35;
+  color: #1f2329;
 }
 
 .order-no {
   margin-top: 5px;
-  color: #8a8f99;
   font-size: 12px;
   line-height: 1.4;
+  color: #8a8f99;
   word-break: break-all;
 }
 
 .status-tag {
-  flex: 0 0 auto;
-  min-width: 58px;
-  height: 26px;
-  border-radius: 4px;
   display: inline-flex;
+  flex: 0 0 auto;
   align-items: center;
   justify-content: center;
+  min-width: 58px;
+  height: 26px;
   padding: 0 8px;
   font-size: 12px;
   font-weight: 700;
+  border-radius: 4px;
 
   &.paid {
     color: #0f8f4f;
@@ -174,11 +213,11 @@ const timeText = computed(() => {
 }
 
 .order-card__body {
-  margin-top: 14px;
   display: flex;
+  gap: 12px;
   align-items: flex-end;
   justify-content: space-between;
-  gap: 12px;
+  margin-top: 14px;
 }
 
 .amount-block {
@@ -188,36 +227,49 @@ const timeText = computed(() => {
 }
 
 .amount-label {
-  color: #8a8f99;
   font-size: 12px;
+  color: #8a8f99;
 }
 
 .amount-value {
-  color: #ff4d4f;
   font-size: 20px;
   line-height: 1.2;
+  color: #ff4d4f;
 }
 
 .meta-list {
-  min-width: 0;
   display: flex;
   flex-wrap: wrap;
-  justify-content: flex-end;
   gap: 6px 10px;
-  color: #687080;
+  justify-content: flex-end;
+  min-width: 0;
   font-size: 12px;
   line-height: 1.4;
+  color: #687080;
 }
 
-.continue-button {
+.continue-button,
+.refund-button {
   flex: 0 0 auto;
   height: 32px;
-  border: 0;
-  border-radius: 16px;
   padding: 0 14px;
-  background: #19be6b;
-  color: #fff;
   font-size: 13px;
   font-weight: 700;
+  color: #fff;
+  background: #19be6b;
+  border: 0;
+  border-radius: 16px;
+}
+
+.refund-button {
+  color: #ff4d4f;
+  background: #fff1f0;
+}
+
+.refund-reason {
+  margin: 10px 0 0;
+  font-size: 12px;
+  line-height: 1.5;
+  color: #ff4d4f;
 }
 </style>

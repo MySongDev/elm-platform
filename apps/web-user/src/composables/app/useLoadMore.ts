@@ -96,7 +96,11 @@ export function useLoadMore<T = any>(
 
     try {
       const nextPage = page.value + 1
-      const result = await fetchFn({ page: nextPage, pageSize, signal: controller.signal })
+      const result = await fetchFn({
+        page: nextPage,
+        pageSize,
+        signal: controller.signal,
+      })
 
       if (controller.signal.aborted)
         return

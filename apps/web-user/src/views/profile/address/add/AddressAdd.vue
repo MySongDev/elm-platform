@@ -148,13 +148,13 @@ async function handleSubmit() {
 }
 
 .form-error {
+  padding: 10px 16px;
+  margin: 0 16px 16px;
+  font-size: 14px;
+  color: #ff4d4f;
   background: #fff2f0;
   border: 1px solid #ffccc7;
   border-radius: 6px;
-  padding: 10px 16px;
-  margin: 0 16px 16px;
-  color: #ff4d4f;
-  font-size: 14px;
 }
 
 .submit-btn {
@@ -162,25 +162,25 @@ async function handleSubmit() {
   width: 95%;
   height: 48px;
   margin: 24px auto 0;
-  background: #1890ff;
-  color: #fff;
-  border: none;
-  border-radius: 8px;
   font-size: 16px;
   font-weight: 500;
+  color: #fff;
   cursor: pointer;
+  background: #1890ff;
+  border: none;
+  border-radius: 8px;
+  box-shadow: 0 2px 0 rgb(0 0 0 / 4.5%);
   transition: all 0.3s;
-  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.045);
 
   &:active:not(:disabled) {
     background: #096dd9;
-    transform: translateY(1px);
     box-shadow: none;
+    transform: translateY(1px);
   }
 
   &:disabled {
-    background: #bae7ff;
     cursor: not-allowed;
+    background: #bae7ff;
     opacity: 0.7;
   }
 }

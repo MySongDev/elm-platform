@@ -31,10 +31,16 @@ export function useScrollPosition(containerRef: Ref<HTMLElement | null> | null =
     requestAnimationFrame(() => {
       const el = containerRef?.value
       if (el) {
-        el.scrollTo({ top: target, behavior: 'instant' })
+        el.scrollTo({
+          top: target,
+          behavior: 'instant',
+        })
       }
       else {
-        window.scrollTo({ top: target, behavior: 'instant' })
+        window.scrollTo({
+          top: target,
+          behavior: 'instant',
+        })
       }
     })
   }

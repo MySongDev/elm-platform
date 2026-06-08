@@ -57,7 +57,7 @@ const handleBuyNow = () => emit('buy-now')
   padding: 12px 16px;
   background: #fff;
   border-top: 1px solid #EEE;
-  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 -2px 10px rgb(0 0 0 / 5%);
 }
 
 .footer-left {
@@ -75,14 +75,14 @@ const handleBuyNow = () => emit('buy-now')
 
 .total-price .currency {
   font-size: 14px;
-  color: #FF4D4F;
   font-weight: 600;
+  color: #FF4D4F;
 }
 
 .total-price .amount {
   font-size: 22px;
-  color: #FF4D4F;
   font-weight: 700;
+  color: #FF4D4F;
 }
 
 .footer-actions {
@@ -92,22 +92,22 @@ const handleBuyNow = () => emit('buy-now')
 
 .btn {
   padding: 12px 24px;
-  border-radius: 24px;
   font-size: 15px;
   font-weight: 600;
-  border: none;
   cursor: pointer;
+  border: none;
+  border-radius: 24px;
   transition: all 0.2s ease;
 }
 
 .btn-add-cart {
-  background: #FFF0F0;
   color: var(--theme-color);
+  background: #FFF0F0;
 }
 
 .btn-buy-now {
-  background: var(--theme-color);
   color: #fff;
+  background: var(--theme-color);
 }
 
 .btn:active {

@@ -111,23 +111,23 @@ function handleBuyNow(data) {
 
 .specs-type-tabs {
   display: flex;
+  gap: 12px;
   padding: 12px 16px;
   background: #fff;
-  gap: 12px;
 }
 
 .tab-item {
   padding: 8px 16px;
-  border-radius: 20px;
   font-size: 14px;
-  background: #F7F8FA;
   color: #666;
   cursor: pointer;
+  background: #F7F8FA;
+  border-radius: 20px;
   transition: all 0.2s ease;
 }
 
 .tab-item.active {
-  background: #FF6B6B;
   color: #fff;
+  background: #FF6B6B;
 }
 </style>

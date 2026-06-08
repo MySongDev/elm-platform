@@ -12,5 +12,10 @@ export const getFoodCategoryList = () => get(foodEndpoints.categoryList)
 
 /** 获取商铺列表 */
 export function getShopList(latitude, longitude, offset, limit) {
-  return get(shopEndpoints.list, { latitude, longitude, offset, limit }, { loading: false })
+  return get(shopEndpoints.list, {
+    latitude,
+    longitude,
+    offset,
+    limit,
+  }, { loading: false })
 }

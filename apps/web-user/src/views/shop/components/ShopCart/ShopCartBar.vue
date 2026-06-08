@@ -5,13 +5,25 @@ import { useRouter } from 'vue-router'
 import { buildPaymentCartItems, savePaymentCheckoutDraft } from '@/untils/payment'
 
 const props = defineProps({
-  cartItems: { type: Array, default: () => [] },
+  cartItems: {
+    type: Array,
+    default: () => [],
+  },
   totalQty: Number,
   totalPrice: Number,
-  minAmount: { type: Number, default: 20 },
+  minAmount: {
+    type: Number,
+    default: 20,
+  },
   shopId: [String, Number],
-  shopName: { type: String, default: '当前商家' },
-  deliveryFee: { type: Number, default: 4 },
+  shopName: {
+    type: String,
+    default: '当前商家',
+  },
+  deliveryFee: {
+    type: Number,
+    default: 4,
+  },
 })
 
 const emit = defineEmits(['add', 'decrease', 'clear'])

@@ -33,13 +33,13 @@ defineProps({
   }
 
   &_item {
-    height: 87px;
-    flex: 1;
     display: flex;
+    flex: 1;
     flex-direction: column;
     justify-content: center;
-    border-right: 1px solid $e4;
+    height: 87px;
     text-align: center;
+    border-right: 1px solid $e4;
 
     &_top {
       font-size: 12px;
@@ -51,9 +51,9 @@ defineProps({
     }
 
     &_bottom {
+      margin-top: 6px;
       font-size: 14px;
       color: #666;
-      margin-top: 6px;
     }
 
     &:last-child {

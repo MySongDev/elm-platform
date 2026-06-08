@@ -18,5 +18,9 @@ export function useAlert(): UseAlertReturn {
     alertText.value = ''
   }
 
-  return { alertText, showAlert, closeAlert }
+  return {
+    alertText,
+    showAlert,
+    closeAlert,
+  }
 }

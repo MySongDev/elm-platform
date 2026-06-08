@@ -6,7 +6,10 @@ const props = defineProps({
     type: Array,
     default: () => [],
   },
-  activeIndex: { type: Number, default: 0 },
+  activeIndex: {
+    type: Number,
+    default: 0,
+  },
 })
 
 const emit = defineEmits(['select-category', 'select-sub'])
@@ -91,39 +94,39 @@ function getImageUrl(filename) {
 
 /* ========== 左侧边栏 ========== */
 .cat-sidebar {
-  width: 140px;
-  background: #f5f5f5;
-  overflow-y: auto;
   flex-shrink: 0;
+  width: 140px;
+  overflow-y: auto;
+  background: #f5f5f5;
   border-right: 1px solid #eee;
 }
 
 .cat-item {
+  position: relative;
   display: flex;
   align-items: center;
   padding: 12px 8px;
   font-size: 13px;
   color: #666;
   cursor: pointer;
-  position: relative;
   transition: all 0.2s;
 }
 
 .cat-item.active {
-  background: #fff;
-  color: #2395ff;
   font-weight: 500;
+  color: #2395ff;
+  background: #fff;
 }
 
 .cat-item.active::before {
-  content: '';
   position: absolute;
-  left: 0;
   top: 50%;
-  transform: translateY(-50%);
+  left: 0;
   width: 3px;
   height: 16px;
+  content: '';
   background: #2395ff;
+  transform: translateY(-50%);
 }
 
 .cat-icon {
@@ -142,36 +145,36 @@ function getImageUrl(filename) {
 
 .cat-meta {
   display: flex;
-  align-items: center;
   gap: 2px;
+  align-items: center;
 }
 
 .cat-count {
+  min-width: 16px;
+  padding: 1px 4px;
   font-size: 10px;
   color: #999;
-  background: #e0e0e0;
-  padding: 1px 4px;
-  border-radius: 8px;
-  min-width: 16px;
   text-align: center;
+  background: #e0e0e0;
+  border-radius: 8px;
 }
 
 .cat-item.active .cat-count {
-  background: #2395ff;
   color: #fff;
+  background: #2395ff;
 }
 
 .cat-arrow {
-  color: #ccc;
-  font-size: 12px;
   margin-left: 2px;
+  font-size: 12px;
+  color: #ccc;
 }
 
 /* ========== 右侧内容区 ========== */
 .cat-content {
   flex: 1;
-  overflow-y: auto;
   padding: 8px 0;
+  overflow-y: auto;
   background: #fff;
 }
 
@@ -190,8 +193,8 @@ function getImageUrl(filename) {
 
 .sub-info {
   display: flex;
-  align-items: center;
   gap: 8px;
+  align-items: center;
 }
 
 .sub-icon {
@@ -207,9 +210,9 @@ function getImageUrl(filename) {
 }
 
 .sub-count {
+  min-width: 30px;
   font-size: 12px;
   color: #999;
-  min-width: 30px;
   text-align: right;
 }
 
@@ -230,7 +233,7 @@ function getImageUrl(filename) {
 /* 滚动条美化 */
 .cat-sidebar::-webkit-scrollbar,
 .cat-content::-webkit-scrollbar {
-  width: 0;
   display: none;
+  width: 0;
 }
 </style>

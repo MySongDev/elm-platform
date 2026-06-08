@@ -13,11 +13,11 @@
 }
 
 button {
-  margin-top: 8px;
   padding: 4px 10px;
-  border: none;
-  background: #fb7299;
+  margin-top: 8px;
   color: #fff;
+  background: #fb7299;
+  border: none;
   border-radius: 4px;
 }
 </style>

@@ -30,6 +30,7 @@ vi.mock('@/untils/storage', () => ({
 const {
   createAlipayWapPayment,
   getUserPaymentOrders,
+  requestOrderRefund,
   resumeAlipayWapPayment,
 } = await import('./api-payment')
 
@@ -101,6 +102,24 @@ describe('api-payment', () => {
       params: {
         limit: 20,
       },
+    })
+  })
+
+  it('requests order refund by order number and reason', async () => {
+    mocks.paymentClient.post.mockResolvedValueOnce({
+      data: {
+        orderNo: 'ELMALI202605241200000001',
+        refundStatus: 'REQUESTED',
+      },
+    })
+
+    await requestOrderRefund({
+      orderNo: 'ELMALI202605241200000001',
+      reason: '不想要了',
+    })
+
+    expect(mocks.paymentClient.post).toHaveBeenCalledWith('/orders/ELMALI202605241200000001/refund/request', {
+      reason: '不想要了',
     })
   })
 })

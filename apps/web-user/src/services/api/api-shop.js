@@ -15,5 +15,8 @@ export const getShopReviewFilters = restaurant_id => get(shopEndpoints.ratingTag
 
 /** 获取评价信息 */
 export function getShopRatings(restaurant_id, offset, limit) {
-  return get(shopEndpoints.ratings(restaurant_id), { offset, limit }, { loading: false })
+  return get(shopEndpoints.ratings(restaurant_id), {
+    offset,
+    limit,
+  }, { loading: false })
 }

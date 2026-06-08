@@ -57,9 +57,9 @@ const hasReserveInfo = computed(() => props.store.reserveText || props.store.del
 
 <style lang="scss" scoped>
 .store-card {
-  border-radius: 18px;
   padding: 10px;
-  box-shadow: 0 1px 0 rgba(17, 24, 39, 0.02);
+  border-radius: 18px;
+  box-shadow: 0 1px 0 rgb(17 24 39 / 2%);
 }
 
 .store-card+.store-card {
@@ -68,33 +68,33 @@ const hasReserveInfo = computed(() => props.store.reserveText || props.store.del
 
 .store-header {
   display: flex;
-  align-items: center;
   gap: 12px;
+  align-items: center;
 }
 
 .store-main {
-  flex: 1;
-  min-width: 0;
   display: flex;
-  align-items: center;
+  flex: 1;
   gap: 28px;
+  align-items: center;
+  min-width: 0;
 }
 
 .store-line {
-  min-width: 0;
   display: flex;
   align-items: center;
+  min-width: 0;
 }
 
 .store-name {
   min-width: 0;
   margin: 0;
+  overflow: hidden;
   font-size: 16px;
   font-weight: 700;
   line-height: 1.25;
-  overflow: hidden;
-  white-space: nowrap;
   text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .store-arrow {
@@ -105,10 +105,10 @@ const hasReserveInfo = computed(() => props.store.reserveText || props.store.del
 
 .delivery-info {
   display: inline-flex;
-  align-items: center;
   gap: 8px;
-  color: #777;
+  align-items: center;
   font-size: 13px;
+  color: #777;
   white-space: nowrap;
 }
 
@@ -118,38 +118,38 @@ const hasReserveInfo = computed(() => props.store.reserveText || props.store.del
   justify-content: flex-end;
   min-width: 156px;
   height: 24px;
-  color: #2397db;
   font-size: 12px;
+  color: #2397db;
   white-space: nowrap;
 }
 
 .reserve-tag,
 .reserve-time {
-  height: 22px;
   display: inline-flex;
   align-items: center;
+  height: 22px;
   border: 1px solid #4db0ea;
 }
 
 .reserve-tag {
   padding: 0 7px;
-  border-radius: 5px 0 0 5px;
-  background: #36a7ea;
   color: #fff;
+  background: #36a7ea;
+  border-radius: 5px 0 0 5px;
 }
 
 .reserve-time {
   padding: 0 7px;
+  background: #fff;
   border-left: 0;
   border-radius: 0 5px 5px 0;
-  background: #fff;
 }
 
 .product-list {
   margin-top: 15px;
 }
 
-@media (max-width: 374px) {
+@media (width <= 374px) {
   .store-card {
     padding-inline: 14px;
   }

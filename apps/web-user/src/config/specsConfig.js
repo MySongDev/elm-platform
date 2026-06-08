@@ -21,10 +21,26 @@ export const CAKE_SPECS_CONFIG = {
         type: 'single',
         required: true,
         options: [
-          { id: 'durian_mango_glutinous', name: '榴莲+芒果+血糯米', price: 0 },
-          { id: 'durian_seaweed_taro', name: '榴莲+海苔肉松+芋泥', price: 0 },
-          { id: 'mango_glutinous_coconut', name: '芒果+血糯米+椰奶冻', price: 0 },
-          { id: 'dragon_fruit_mango_glutinous', name: '火龙果+芒果+血糯米', price: 0 },
+          {
+            id: 'durian_mango_glutinous',
+            name: '榴莲+芒果+血糯米',
+            price: 0,
+          },
+          {
+            id: 'durian_seaweed_taro',
+            name: '榴莲+海苔肉松+芋泥',
+            price: 0,
+          },
+          {
+            id: 'mango_glutinous_coconut',
+            name: '芒果+血糯米+椰奶冻',
+            price: 0,
+          },
+          {
+            id: 'dragon_fruit_mango_glutinous',
+            name: '火龙果+芒果+血糯米',
+            price: 0,
+          },
         ],
       },
       {
@@ -33,8 +49,16 @@ export const CAKE_SPECS_CONFIG = {
         type: 'single',
         required: true,
         options: [
-          { id: '6inch', name: '6英寸', price: 0 },
-          { id: '8inch', name: '8英寸', price: +30 },
+          {
+            id: '6inch',
+            name: '6英寸',
+            price: 0,
+          },
+          {
+            id: '8inch',
+            name: '8英寸',
+            price: +30,
+          },
         ],
       },
     ],
@@ -63,10 +87,26 @@ export const CAKE_SPECS_CONFIG = {
         type: 'single',
         required: true,
         options: [
-          { id: 'durian_3a', name: '3A金枕榴莲', price: 0 },
-          { id: 'mango', name: '芒果', price: 0 },
-          { id: 'glutinous_rice', name: '手工血糯米', price: 0 },
-          { id: 'mochi', name: '麻薯', price: 0 },
+          {
+            id: 'durian_3a',
+            name: '3A金枕榴莲',
+            price: 0,
+          },
+          {
+            id: 'mango',
+            name: '芒果',
+            price: 0,
+          },
+          {
+            id: 'glutinous_rice',
+            name: '手工血糯米',
+            price: 0,
+          },
+          {
+            id: 'mochi',
+            name: '麻薯',
+            price: 0,
+          },
         ],
       },
       {
@@ -75,10 +115,26 @@ export const CAKE_SPECS_CONFIG = {
         type: 'single',
         required: false,
         options: [
-          { id: 'red_bean', name: '红豆', price: 0 },
-          { id: 'earl_grey_pudding', name: '伯爵红茶奶冻', price: 0 },
-          { id: 'popping', name: '脆啵啵', price: 0 },
-          { id: 'chocolate_cubes', name: '法芙娜巧克力豆', price: 0 },
+          {
+            id: 'red_bean',
+            name: '红豆',
+            price: 0,
+          },
+          {
+            id: 'earl_grey_pudding',
+            name: '伯爵红茶奶冻',
+            price: 0,
+          },
+          {
+            id: 'popping',
+            name: '脆啵啵',
+            price: 0,
+          },
+          {
+            id: 'chocolate_cubes',
+            name: '法芙娜巧克力豆',
+            price: 0,
+          },
         ],
       },
       {
@@ -87,10 +143,26 @@ export const CAKE_SPECS_CONFIG = {
         type: 'single',
         required: false,
         options: [
-          { id: 'oreo', name: '奥利奥', price: 0 },
-          { id: 'hazelnut', name: '榛子巧克力', price: 0 },
-          { id: 'coconut_pudding', name: '椰奶冻', price: 0 },
-          { id: 'strawberry_pudding', name: '草莓奶冻', price: 0 },
+          {
+            id: 'oreo',
+            name: '奥利奥',
+            price: 0,
+          },
+          {
+            id: 'hazelnut',
+            name: '榛子巧克力',
+            price: 0,
+          },
+          {
+            id: 'coconut_pudding',
+            name: '椰奶冻',
+            price: 0,
+          },
+          {
+            id: 'strawberry_pudding',
+            name: '草莓奶冻',
+            price: 0,
+          },
         ],
       },
     ],
@@ -122,8 +194,16 @@ export const FLOWER_SPECS_CONFIG = {
         type: 'single',
         required: true,
         options: [
-          { id: 'pink_rose_99', name: '99支粉玫瑰', price: 0 },
-          { id: 'carnation_20', name: '20支康乃馨', price: 0 },
+          {
+            id: 'pink_rose_99',
+            name: '99支粉玫瑰',
+            price: 0,
+          },
+          {
+            id: 'carnation_20',
+            name: '20支康乃馨',
+            price: 0,
+          },
         ],
       },
     ],

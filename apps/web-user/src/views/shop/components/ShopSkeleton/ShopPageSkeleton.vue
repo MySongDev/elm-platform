@@ -91,17 +91,17 @@ import SkeletonBlock from '@/components/common/Skeleton/SkeletonBlock.vue'
 .shop-skeleton-info,
 .shop-skeleton-food__body {
   display: flex;
-  min-width: 0;
   flex: 1;
   flex-direction: column;
   gap: 10px;
+  min-width: 0;
 }
 
 .shop-skeleton-coupon {
-  margin-top: 14px;
   padding: 10px;
-  border-radius: 6px;
+  margin-top: 14px;
   background: #fafafa;
+  border-radius: 6px;
 }
 
 .shop-skeleton-tabs {
@@ -110,8 +110,8 @@ import SkeletonBlock from '@/components/common/Skeleton/SkeletonBlock.vue'
   z-index: 1;
   height: 42px;
   padding: 0 72px;
-  border-bottom: 1px solid #f0f0f0;
   background: #fff;
+  border-bottom: 1px solid #f0f0f0;
 }
 
 .shop-skeleton-content {
@@ -121,10 +121,10 @@ import SkeletonBlock from '@/components/common/Skeleton/SkeletonBlock.vue'
 
 .shop-skeleton-side {
   display: flex;
-  width: 82px;
   flex: 0 0 82px;
   flex-direction: column;
   gap: 24px;
+  width: 82px;
   padding: 18px 12px;
   background: #f8f8f8;
 }

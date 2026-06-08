@@ -52,105 +52,105 @@
 
 <style scoped>
 * {
-  margin: 0;
-  padding: 0;
   box-sizing: border-box;
+  padding: 0;
+  margin: 0;
 }
 
 .demo-wrapper {
-  padding: 40px;
-  font-family: system-ui, sans-serif;
   display: flex;
   gap: 30px;
+  padding: 40px;
+  font-family: system-ui, sans-serif;
   background: #fff;
 }
 
 .demo-card {
+  width: 380px;
+  padding: 20px;
   border: 2px solid #ddd;
   border-radius: 12px;
-  padding: 20px;
-  width: 380px;
 }
 
 .demo-title {
-  font-weight: 600;
   margin-bottom: 12px;
   font-size: 15px;
+  font-weight: 600;
 }
 
 /* Flex 容器 */
 .flex-container {
+  position: relative;
   display: flex;
   align-items: center;
-  border: 2px dashed #e74c3c;
-  padding: 12px;
-  border-radius: 8px;
-  position: relative;
-  background: #fafafa;
   min-height: 70px;
+  padding: 12px;
+  background: #fafafa;
+  border: 2px dashed #e74c3c;
+  border-radius: 8px;
 }
 
 /* 绝对定位的购物车图标 */
 .icon-cart {
   position: absolute;
-  left: 0;
   top: 50%;
-  transform: translateY(-50%);
-  width: 50px;
-  height: 50px;
-  background: #ff6b6b;
-  border-radius: 12px;
+  left: 0;
+  z-index: 2;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: white;
+  width: 50px;
+  height: 50px;
   font-size: 26px;
-  z-index: 2;
+  color: white;
+  background: #ff6b6b;
+  border-radius: 12px;
+  transform: translateY(-50%);
 }
 
 /* 文字有 flex:1 */
 .text-flex {
   flex: 1;
-  background: #d4edda;
   padding: 12px 16px;
-  border-radius: 6px;
-  border: 2px solid #27ae60;
   font-weight: bold;
   text-align: center;
+  background: #d4edda;
+  border: 2px solid #27ae60;
+  border-radius: 6px;
 }
 
 /* 文字无 flex */
 .text-no-flex {
-  background: #fff3cd;
   padding: 12px 16px;
-  border-radius: 6px;
-  border: 2px solid #f39c12;
   font-weight: bold;
   text-align: center;
+  background: #fff3cd;
+  border: 2px solid #f39c12;
+  border-radius: 6px;
 }
 
 /* 容器左边缘辅助线 */
 .left-edge {
   position: absolute;
-  left: 0;
   top: 0;
   bottom: 0;
-  border-left: 3px dotted #3498db;
+  left: 0;
   z-index: 3;
   pointer-events: none;
+  border-left: 3px dotted #3498db;
 }
 
 .note {
-  font-size: 12px;
-  color: #555;
   margin-top: 10px;
+  font-size: 12px;
   line-height: 1.6;
+  color: #555;
 }
 
 .highlight {
-  background: #ffeeba;
   padding: 2px 6px;
-  border-radius: 4px;
   font-family: monospace;
+  background: #ffeeba;
+  border-radius: 4px;
 }
 </style>

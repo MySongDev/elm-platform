@@ -59,8 +59,8 @@ export default {}
           <circle cx="16" cy="16" r="15" stroke="#999" stroke-width="0.6" fill="none" />
           <line x1="16" y1="10" x2="16" y2="21" style="stroke: #999; stroke-width: 0.8" />
           <line x1="10" y1="10" x2="22" y2="10" style="stroke: #999; stroke-width: 0.8" />
-          <path d="M9.5 18 L16 10 L22.5 18" style="stroke: #999; stroke-width: 0.8; fill: none" />
-          <text x="10" y="27" style="font-size: 6px; fill: #999; font-weight: 700">顶部</text>
+          <path d="M9.5 18 L16 10 L22.5 18" style=" fill: none;stroke: #999; stroke-width: 0.8" />
+          <text x="10" y="27" style="font-size: 6px; font-weight: 700; fill: #999">顶部</text>
         </g>
       </symbol>
       <symbol id="default" viewBox="0 0 33 32">

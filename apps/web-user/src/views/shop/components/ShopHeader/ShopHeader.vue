@@ -59,17 +59,17 @@ $color-text-secondary: #888;
 $white: #fff;
 
 .shop-header {
+  padding: 0 10px 10px;
   background: $white;
-  padding: 0px 10px 10px 10px;
   border-radius: 0 0 12px 12px;
 
   // 1. Banner 区：使用 aspect-ratio 保持比例
   &__banner {
     width: 100%;
     aspect-ratio: 2 / 1; // 替代 50vw，防止大屏下高度失控
-    border-radius: 15px;
-    overflow: hidden;
     margin-bottom: 15px;
+    overflow: hidden;
+    border-radius: 15px;
 
     img {
       width: 100%;
@@ -85,12 +85,12 @@ $white: #fff;
   }
 
   &__logo {
+    flex-shrink: 0;
     width: 80px;
     height: 80px;
-    flex-shrink: 0;
     margin-right: 14px;
-    border-radius: 12px;
     overflow: hidden;
+    border-radius: 12px;
 
     img {
       width: 100%;
@@ -104,11 +104,12 @@ $white: #fff;
   }
 
   &__title {
+    @include text-ellipsis; // 建议封装的单行截断
+
+    margin-bottom: 8px;
     font-size: 18px;
     font-weight: 800;
     color: $color-text-main;
-    margin-bottom: 8px;
-    @include text-ellipsis(); // 建议封装的单行截断
   }
 
   // 3. 统计行：使用扁平化命名空间
@@ -123,10 +124,10 @@ $white: #fff;
       color: $color-text-secondary;
 
       &__value {
+        margin-top: 2px;
         font-size: 15px;
         font-weight: 600;
         color: $color-text-main;
-        margin-top: 2px;
       }
     }
   }
@@ -134,9 +135,9 @@ $white: #fff;
   // 4. 滚动区优化
   &__activities {
     display: flex;
+    gap: 4px;
     margin-top: 12px;
     overflow-x: auto;
-    gap: 4px;
     -webkit-overflow-scrolling: touch; // 移动端滚动丝滑
     scrollbar-width: none; // Firefox
 

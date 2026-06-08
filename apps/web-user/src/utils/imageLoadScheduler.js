@@ -119,5 +119,8 @@ export function preloadImageUrl(url, { priority = 0 } = {}) {
     })
   })
 
-  return { promise, cancel }
+  return {
+    promise,
+    cancel,
+  }
 }

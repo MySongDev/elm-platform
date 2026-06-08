@@ -14,9 +14,30 @@ interface AddressItem {
 }
 
 export const demoAddresses: AddressItem[] = [
-  { id: 'demo-1', address: 'xxx宾馆', address_detail: '304', name: 'xxx', sex: 1, phone: '17552025202' },
-  { id: 'demo-2', address: 'xxxx医院-病房楼', address_detail: '3002', name: 'xxx', sex: 1, phone: '17552025202' },
-  { id: 'demo-3', address: 'xxxx学院-5号楼', address_detail: '209', name: 'xxx', sex: 1, phone: '17552025202' },
+  {
+    id: 'demo-1',
+    address: 'xxx宾馆',
+    address_detail: '304',
+    name: 'xxx',
+    sex: 1,
+    phone: '17552025202',
+  },
+  {
+    id: 'demo-2',
+    address: 'xxxx医院-病房楼',
+    address_detail: '3002',
+    name: 'xxx',
+    sex: 1,
+    phone: '17552025202',
+  },
+  {
+    id: 'demo-3',
+    address: 'xxxx学院-5号楼',
+    address_detail: '209',
+    name: 'xxx',
+    sex: 1,
+    phone: '17552025202',
+  },
 ]
 
 export function getAddressTitle(item: AddressItem = {}): string {

@@ -71,18 +71,18 @@ async function handleFileChange(event) {
 <style lang="scss" scoped>
 .avatar-uploader {
   position: relative;
-  padding: 12px;
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: space-between;
+  padding: 12px;
   background: #fff;
   border-bottom: 1px solid $e4;
 
   &_input {
     position: absolute;
     inset: 0;
-    opacity: 0;
     cursor: pointer;
+    opacity: 0;
   }
 
   &_label {
@@ -97,10 +97,11 @@ async function handleFileChange(event) {
 
   &_img {
     @include wh(46px, 46px);
-    border-radius: 50%;
+
     margin-right: 8px;
     vertical-align: bottom;
     object-fit: cover;
+    border-radius: 50%;
 
     &--default {
       display: flex;

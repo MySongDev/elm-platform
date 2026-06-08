@@ -66,8 +66,8 @@ function resetName() {
     display: block;
     width: 100%;
     height: 40px;
-    margin: 10px auto;
     padding: 4.5px 2.3px;
+    margin: 10px auto;
     background: transparent;
     border: 1px solid #ddd;
 
@@ -93,13 +93,13 @@ function resetName() {
 .reset {
   width: 100%;
   margin-top: 15px;
-  background: $blue;
-  text-align: center;
   line-height: 47px;
+  text-align: center;
+  background: $blue;
 
   button {
-    color: $ff;
     font-size: 16.5px;
+    color: $ff;
     background: none;
   }
 }

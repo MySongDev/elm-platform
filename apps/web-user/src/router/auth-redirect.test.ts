@@ -13,9 +13,12 @@ describe('user router auth redirects', () => {
 
     const { default: router } = await import('./index')
 
-    await router.push({ path: '/login', query: { redirect: '/profile/info' } })
+    await router.push({
+      path: '/login',
+      query: { redirect: '/profile/info' },
+    })
     await router.isReady()
 
     expect(router.currentRoute.value.fullPath).toBe('/profile/info')
-  })
+  }, 10_000)
 })

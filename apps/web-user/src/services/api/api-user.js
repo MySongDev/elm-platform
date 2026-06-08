@@ -18,7 +18,13 @@ export const getUserInfo = getCustomerProfile
 
 /** 改密码 */
 export function changePassword(username, oldpassWord, newpassword, confirmpassword, captcha_code) {
-  return post(authEndpoints.changePassword, { username, oldpassWord, newpassword, confirmpassword, captcha_code })
+  return post(authEndpoints.changePassword, {
+    username,
+    oldpassWord,
+    newpassword,
+    confirmpassword,
+    captcha_code,
+  })
 }
 
 /** 退出登录 */

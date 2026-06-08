@@ -139,9 +139,9 @@ async function pay() {
 <style lang="scss" scoped>
 .payment-page {
   min-height: 100vh;
-  background: #f5f7fa;
-  color: #222;
   padding-bottom: 76px;
+  color: #222;
+  background: #f5f7fa;
 }
 
 .payment-content {
@@ -149,11 +149,11 @@ async function pay() {
 }
 
 .amount-panel {
-  background: linear-gradient(135deg, #1677ff, #19be6b);
-  color: #fff;
   padding: 24px 16px;
-  border-radius: 8px;
+  color: #fff;
   text-align: center;
+  background: linear-gradient(135deg, #1677ff, #19be6b);
+  border-radius: 8px;
 }
 
 .amount-label {
@@ -175,32 +175,32 @@ async function pay() {
 
 .order-card,
 .method-card {
+  padding: 14px;
   margin-top: 12px;
   background: #fff;
   border-radius: 8px;
-  padding: 14px;
 }
 
 .card-title {
+  margin-bottom: 12px;
   font-size: 16px;
   font-weight: 700;
-  margin-bottom: 12px;
 }
 
 .empty-tip {
-  margin-bottom: 10px;
   padding: 10px 12px;
-  border-radius: 8px;
-  background: #fff7e6;
-  color: #d46b08;
+  margin-bottom: 10px;
   font-size: 13px;
   line-height: 1.5;
+  color: #d46b08;
+  background: #fff7e6;
+  border-radius: 8px;
 }
 
 .detail-row {
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: space-between;
   min-height: 30px;
   font-size: 14px;
   color: #666;
@@ -211,25 +211,25 @@ async function pay() {
 }
 
 .method-item {
+  display: flex;
+  gap: 10px;
+  align-items: center;
   width: 100%;
   min-height: 62px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  border: 1px solid #edf0f5;
-  border-radius: 8px;
-  background: #fff;
   padding: 10px;
   margin-top: 10px;
   text-align: left;
+  background: #fff;
+  border: 1px solid #edf0f5;
+  border-radius: 8px;
 
   &.active {
-    border-color: #1677ff;
     background: #f2f8ff;
+    border-color: #1677ff;
 
     .method-check {
-      border-color: #1677ff;
       background: #1677ff;
+      border-color: #1677ff;
 
       &::after {
         opacity: 1;
@@ -239,24 +239,24 @@ async function pay() {
 }
 
 .method-icon {
-  width: 36px;
-  height: 36px;
-  flex: 0 0 36px;
-  border-radius: 50%;
-  background: #eef7ff;
-  color: #1677ff;
   display: flex;
+  flex: 0 0 36px;
   align-items: center;
   justify-content: center;
+  width: 36px;
+  height: 36px;
   font-weight: 700;
+  color: #1677ff;
+  background: #eef7ff;
+  border-radius: 50%;
 }
 
 .method-copy {
-  flex: 1;
-  min-width: 0;
   display: flex;
+  flex: 1;
   flex-direction: column;
   gap: 4px;
+  min-width: 0;
 
   strong {
     font-size: 15px;
@@ -270,60 +270,60 @@ async function pay() {
 }
 
 .method-check {
+  position: relative;
   width: 18px;
   height: 18px;
   border: 1px solid #c9ced6;
   border-radius: 50%;
-  position: relative;
 
   &::after {
-    content: '';
     position: absolute;
-    left: 5px;
     top: 2px;
+    left: 5px;
     width: 5px;
     height: 9px;
+    content: '';
     border: solid #fff;
     border-width: 0 2px 2px 0;
-    transform: rotate(45deg);
     opacity: 0;
+    transform: rotate(45deg);
   }
 }
 
 .payment-footer {
   position: fixed;
-  left: 0;
   right: 0;
   bottom: 0;
-  height: 64px;
-  background: #fff;
-  box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.08);
+  left: 0;
+  z-index: 20;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  height: 64px;
   padding: 8px 12px;
-  z-index: 20;
+  background: #fff;
+  box-shadow: 0 -4px 16px rgb(0 0 0 / 8%);
 
   span {
     display: block;
-    color: #777;
     font-size: 12px;
+    color: #777;
   }
 
   strong {
-    color: #ff4d4f;
     font-size: 20px;
+    color: #ff4d4f;
   }
 
   button {
     width: 156px;
     height: 44px;
-    border: 0;
-    border-radius: 6px;
-    background: #19be6b;
-    color: #fff;
     font-size: 16px;
     font-weight: 700;
+    color: #fff;
+    background: #19be6b;
+    border: 0;
+    border-radius: 6px;
 
     &:disabled {
       opacity: 0.7;

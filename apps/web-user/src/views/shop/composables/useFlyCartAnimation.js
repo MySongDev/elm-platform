@@ -25,7 +25,14 @@ export function useFlyCartAnimation(options) {
     const endY = endRect.top + endRect.height / 2
     const id = ++ballId
 
-    flyBalls.value.push({ id, startX, startY, endX, endY, flying: false })
+    flyBalls.value.push({
+      id,
+      startX,
+      startY,
+      endX,
+      endY,
+      flying: false,
+    })
 
     nextTick(() => {
       requestAnimationFrame(() => {

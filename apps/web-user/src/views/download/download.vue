@@ -57,19 +57,19 @@ async function downLoadApp() {
 .download-sapn {
   display: block;
   width: 100%;
-  line-height: 50px;
-  text-align: center;
   font-size: 19px;
+  line-height: 50px;
   color: #666;
+  text-align: center;
 }
 
 .download-btn {
-  width: 100%;
   display: block;
-  background: #4cd964;
+  width: 100%;
   margin-top: 10px;
-  border-radius: 8px;
-  color: $ff;
   line-height: 40px;
+  color: $ff;
+  background: #4cd964;
+  border-radius: 8px;
 }
 </style>

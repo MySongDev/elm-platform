@@ -2,9 +2,18 @@
 import { computed } from 'vue'
 
 const props = defineProps({
-  width: { type: [Number, String], default: '100%' },
-  height: { type: [Number, String], default: 16 },
-  radius: { type: [Number, String], default: 4 },
+  width: {
+    type: [Number, String],
+    default: '100%',
+  },
+  height: {
+    type: [Number, String],
+    default: 16,
+  },
+  radius: {
+    type: [Number, String],
+    default: 4,
+  },
   circle: Boolean,
 })
 
@@ -45,11 +54,11 @@ const blockStyle = computed(() => {
 }
 
 .skeleton-block::after {
-  content: '';
   position: absolute;
   inset: 0;
+  content: '';
+  background: linear-gradient(90deg, transparent, rgb(255 255 255 / 70%), transparent);
   transform: translateX(-100%);
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.7), transparent);
   animation: skeleton-shimmer 1.4s infinite;
 }
 

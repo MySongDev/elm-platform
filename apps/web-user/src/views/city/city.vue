@@ -180,19 +180,20 @@ history()
 
       .input_style {
         @include wh(90%, 8vw);
-        border-radius: 1.3333vw;
+
         font-size: 4.0613vw;
+        border-radius: 1.3333vw;
       }
 
       .city_input {
-        border: 0.2667vw solid $e4;
-        margin: 4vw;
         padding-left: 1.3333vw;
+        margin: 4vw;
+        border: 0.2667vw solid $e4;
       }
 
       .city_submit {
-        color: $ff;
         margin-bottom: 2.6667vw;
+        color: $ff;
         background-color: $blue;
       }
     }
@@ -212,31 +213,33 @@ history()
 
   .city_name,
   .history_style {
-    margin-top: 3px;
     @include flex-center(space-between);
-    background-color: $ff;
+
     height: 8vw;
     padding-left: 5.3333vw;
+    margin-top: 3px;
     font-size: 4.0613vw;
     line-height: 6.9333vw;
+    background-color: $ff;
     border: 0.2667vw solid $e4;
     border-radius: 1.6vw;
   }
 
   .remove {
     @include wh(8vw, 7vw);
-    font-size: 7vw;
+
     margin-right: 2.6667vw;
-    border-radius: 3vw;
-    text-align: center;
+    font-size: 7vw;
     line-height: 6vw;
     color: #999;
+    text-align: center;
+    border-radius: 3vw;
   }
 
   .clear_search_history {
     padding: 10px 0;
-    text-align: center;
     font-size: 16px;
+    text-align: center;
   }
 }
 </style>

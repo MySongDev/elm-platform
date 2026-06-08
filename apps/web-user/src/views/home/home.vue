@@ -106,57 +106,58 @@ onMounted(loadCurrentLocation)
 }
 
 .home_nav {
-  width: 100%;
-  min-height: 67px;
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
-  align-items: center;
   gap: 10px;
+  align-items: center;
+  width: 100%;
+  min-height: 67px;
   padding: 10px 12px;
   background-color: #fff;
   border-bottom: 1px solid #f1f1f1;
 }
 
 .location-card {
-  min-width: 0;
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
   gap: 6px;
-  border: 0;
-  background: transparent;
+  align-items: flex-start;
+  min-width: 0;
   text-align: left;
+  background: transparent;
+  border: 0;
 
   &.is-clickable {
     cursor: pointer;
   }
 
   .location-label {
-    color: #999;
     font-size: 13px;
     line-height: 1;
+    color: #999;
   }
 
   strong {
+    @include text-ellipsis;
+
     max-width: 100%;
-    color: #111;
     font-size: 15px;
     font-weight: 600;
     line-height: 1.25;
-    @include text-ellipsis;
+    color: #111;
   }
 }
 
 .relocate-button {
   display: flex;
-  align-items: center;
   gap: 4px;
-  border: 0;
-  background: transparent;
-  color: $blue;
+  align-items: center;
   font-size: 13px;
   font-weight: 600;
+  color: $blue;
   white-space: nowrap;
+  background: transparent;
+  border: 0;
 
   .van-icon {
     font-size: 15px;
@@ -169,11 +170,11 @@ onMounted(loadCurrentLocation)
 
   .home_cit {
     padding: 1vw 1vw 1vw 3vw;
-    border-bottom: 0.1vw solid #e4e4e4;
-    background-color: #fff;
-    color: #666;
     font-size: 3.5vw;
     line-height: 8vw;
+    color: #666;
+    background-color: #fff;
+    border-bottom: 0.1vw solid #e4e4e4;
   }
 
   .home-u {
@@ -182,12 +183,12 @@ onMounted(loadCurrentLocation)
     font-size: 3.5vw;
 
     .to_city {
-      border-bottom: 0.1vw solid $e4;
-      border-right: 0.1vw solid $e4;
-      color: $blue;
       line-height: 10.1vw;
+      color: $blue;
       text-align: center;
       background-color: #fff;
+      border-right: 0.1vw solid $e4;
+      border-bottom: 0.1vw solid $e4;
     }
   }
 }
@@ -202,11 +203,11 @@ onMounted(loadCurrentLocation)
       top: 0;
       z-index: 2;
       padding: 1vw 1vw 1vw 2.6667vw;
+      font-size: 3.5vw;
+      line-height: 8vw;
+      background-color: #fff;
       border-top: 0.1vw solid #e4e4e4;
       border-bottom: 0.1vw solid #e4e4e4;
-      background-color: #fff;
-      line-height: 8vw;
-      font-size: 3.5vw;
 
       span {
         font-size: 3vw;
@@ -220,13 +221,14 @@ onMounted(loadCurrentLocation)
 
     .ellipsis {
       @include text-ellipsis;
+      @include size-color(3.75vw, #666);
+
       height: 10.9333vw;
       padding: 1vw 0.2vw;
-      border-bottom: 0.1vw solid #e4e4e4;
-      border-right: 0.1vw solid #e4e4e4;
-      text-align: center;
       line-height: 9.3vw;
-      @include size-color(3.75vw, #666);
+      text-align: center;
+      border-right: 0.1vw solid #e4e4e4;
+      border-bottom: 0.1vw solid #e4e4e4;
     }
   }
 }
