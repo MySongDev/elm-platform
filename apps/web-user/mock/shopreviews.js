@@ -1,65 +1,79 @@
-import Mock from 'mockjs'
+import { pickRandom, randomBoolean, randomCname, randomCsentence, randomDate, randomImage, randomInt, shuffle } from './mock-utils.js'
 
 const REVIEW_TAGS = [
-  { name: '全部', unsatisfied: false },
-  { name: '满意', unsatisfied: false },
-  { name: '不满意', unsatisfied: true },
-  { name: '有图', unsatisfied: false },
-  { name: '味道好', unsatisfied: false },
-  { name: '送货快', unsatisfied: false },
-  { name: '分量足', unsatisfied: false },
-  { name: '包装精美', unsatisfied: false },
-  { name: '干净卫生', unsatisfied: false },
-  { name: '食材新鲜', unsatisfied: false },
-  { name: '服务不错', unsatisfied: false },
+  {
+    name: '全部',
+    unsatisfied: false,
+  },
+  {
+    name: '满意',
+    unsatisfied: false,
+  },
+  {
+    name: '不满意',
+    unsatisfied: true,
+  },
+  {
+    name: '有图',
+    unsatisfied: false,
+  },
+  {
+    name: '味道好',
+    unsatisfied: false,
+  },
+  {
+    name: '送货快',
+    unsatisfied: false,
+  },
+  {
+    name: '分量足',
+    unsatisfied: false,
+  },
+  {
+    name: '包装精美',
+    unsatisfied: false,
+  },
 ]
 
 const TAG_NAMES = REVIEW_TAGS.map(item => item.name)
+const memberLabels = {
+  black: '黑金会员',
+  gold: '黄金会员',
+  silver: '白银会员',
+}
 
-Mock.Random.extend({
-  reviewTags() {
-    const count = Mock.Random.integer(1, 4)
-    const tags = Mock.Random.shuffle(TAG_NAMES.filter(name => name !== '全部')).slice(0, count)
-    return ['全部', ...tags]
-  },
-})
+function randomReviewTags() {
+  const count = randomInt(1, 4)
+  const tags = shuffle(TAG_NAMES.filter(name => name !== '全部')).slice(0, count)
+  return ['全部', ...tags]
+}
 
-const reviews = Mock.mock({
-  'list|24': [{
-    'id|+1': 1,
-    'nickname': '@cname',
-    'avatar': '@image("100x100", "#f0f0f0", "@cname")',
-    memberBadge() {
-      const types = ['gold', 'black', 'silver']
-      const labels = { gold: '黄金会员', black: '黑金会员', silver: '白银会员' }
-      const type = Mock.Random.pick(types)
-      return { type, label: labels[type] }
+function createReview(id) {
+  const type = pickRandom(['gold', 'black', 'silver'])
+
+  return {
+    avatar: randomImage('100x100', 'user'),
+    content: randomBoolean(85, 15) ? randomCsentence(10, 30) : '',
+    date: randomDate(),
+    id,
+    images: randomBoolean(25, 75) ? [randomImage('160x160', 'food')] : [],
+    memberBadge: {
+      label: memberLabels[type],
+      type,
     },
-    'productStar|3-5': 5,
-    'packageStar|3-5': 5,
-    'date': '@date("yyyy.MM.dd")',
-    content() {
-      return Mock.Random.boolean(85, 15, true) ? Mock.Random.csentence(10, 30) : ''
-    },
-    relatedProduct() {
-      return Mock.Random.pick(['经典提拉米苏', '意式肉酱面', '草莓蛋糕', '芒果奶冻'])
-    },
-    'usefulCount|0-25': 0,
-    reply() {
-      return Mock.Random.boolean() ? Mock.Random.csentence(8, 20) : null
-    },
-    images() {
-      return Mock.Random.boolean(25, 75, true)
-        ? [Mock.Random.image('160x160', '#f5f5f5', 'food')]
-        : []
-    },
-    source() {
-      return Mock.Random.pick(['外卖', '到店', ''])
-    },
-    'purchaseTimes|1-8': 1,
-    'tags': '@reviewTags',
-  }],
-}).list
+    nickname: randomCname(),
+    packageStar: randomInt(3, 5),
+    productStar: randomInt(3, 5),
+    purchaseTimes: randomInt(1, 8),
+    relatedProduct: pickRandom(['经典提拉米苏', '意式肉酱面', '草莓蛋糕', '芒果奶冻']),
+    reply: randomBoolean() ? randomCsentence(8, 20) : null,
+    source: pickRandom(['外卖', '到店', '']),
+    tags: randomReviewTags(),
+    usefulCount: randomInt(0, 25),
+  }
+}
+
+const reviews = Array.from({ length: 24 }, (_, index) => createReview(index + 1))
 
 function getPagedReviews(query = {}) {
   const offset = Number(query.offset ?? 0)
@@ -75,7 +89,7 @@ function getReviewTags() {
   return REVIEW_TAGS.map((item, index) => ({
     ...item,
     _id: `mock-review-tag-${index}`,
-    count: index === 0 ? reviews.length : Mock.Random.integer(1, reviews.length),
+    count: index === 0 ? reviews.length : randomInt(1, reviews.length),
   }))
 }
 

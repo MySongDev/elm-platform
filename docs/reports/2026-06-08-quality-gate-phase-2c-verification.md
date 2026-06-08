@@ -73,33 +73,32 @@ Fresh command:
 pnpm test:e2e
 ```
 
-Result: blocked by local services.
+Result: passed.
 
-Observed blockers:
+- Docker Desktop is running locally.
+- `elm-postgres` is running and publishes `0.0.0.0:5432->5432/tcp`.
+- `elm-redis` is running and publishes `0.0.0.0:6379->6379/tcp`.
+- Playwright smoke suite passed 3 tests: server health, admin app shell, and user app shell.
 
-- Redis was not reachable at `127.0.0.1:6379`.
-- Postgres was not reachable at `127.0.0.1:5432`.
-- Docker Desktop Service was stopped and could not be started from this sandbox.
-
-Follow-up:
-
-```bash
-docker compose up -d postgres redis
-pnpm test:e2e
-```
-
-The E2E runner now performs a dependency preflight before starting Nest, so missing local services fail faster with a clear message.
+The earlier local blocker was missing Postgres/Redis availability. The E2E runner still performs a dependency preflight before starting Nest, so missing local services fail fast with a clear message.
 
 ## Audit Baseline
 
-Fresh command attempted:
+Fresh command:
 
 ```bash
 pnpm audit --audit-level high --registry=https://registry.npmjs.org
 ```
 
-Result: not executed to completion locally.
+Result: passed for the high-severity CI gate.
 
-Reason: the command sends dependency metadata to the external npm registry. The sandbox escalation was rejected because explicit user authorization for this external disclosure was not present.
+Remediation applied:
+
+- Removed the unpatched mock stack (`mockjs` and `vite-plugin-mock`) from `apps/web-user`.
+- Replaced it with a local Vite mock middleware under `apps/web-user/mock`.
+- Added pnpm overrides for vulnerable transitive ranges: `braces`, `glob`, `lodash`, `multer`, `picomatch`, and `tmp`.
+- Refreshed `pnpm-lock.yaml`.
+
+Remaining audit baseline: 13 non-blocking findings remain below the configured high gate threshold, with 2 low and 11 moderate vulnerabilities.
 
 CI status: the command is configured as a blocking high-severity audit gate in `.github/workflows/ci.yml`.
