@@ -24,7 +24,7 @@ export default defineConfig({
     ? undefined
     : [
         {
-          command: 'pnpm --filter vue3-elm-node run start',
+          command: 'pnpm --filter @elm-platform/server run start',
           url: `${serverUrl}/api-docs-json`,
           reuseExistingServer: !process.env.CI,
           timeout: 120_000,
@@ -37,13 +37,13 @@ export default defineConfig({
           },
         },
         {
-          command: 'pnpm --filter elm-web-admin run dev -- --host 127.0.0.1 --port 5173 --strictPort',
+          command: 'pnpm --filter @elm-platform/web-admin run dev -- --host 127.0.0.1 --port 5173 --strictPort',
           url: adminUrl,
           reuseExistingServer: !process.env.CI,
           timeout: 120_000,
         },
         {
-          command: 'pnpm --filter vue3-elm-js run dev:mock -- --host 127.0.0.1 --port 5174 --strictPort',
+          command: 'pnpm --filter @elm-platform/web-user run dev:mock -- --host 127.0.0.1 --port 5174 --strictPort',
           url: userUrl,
           reuseExistingServer: !process.env.CI,
           timeout: 120_000,

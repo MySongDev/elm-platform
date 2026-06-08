@@ -1,12 +1,23 @@
 {
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": "always",
+    "source.fixAll.stylelint": "always",
     "source.organizeImports": "never"
   },
   "eslint.format.enable": true,
   "[vue]": {
     "editor.formatOnSave": false
   },
+  "stylelint.configFile": "stylelint.config.mjs",
+  "stylelint.validate": [
+    "css",
+    "scss",
+    "vue"
+  ],
+  "stylelint.workingDirectories": [
+    "apps/web-admin",
+    "apps/web-user"
+  ],
   "eslint.validate": [
     "javascript",
     "javascriptreact",

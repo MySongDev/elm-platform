@@ -22,7 +22,7 @@ const services = [
   {
     name: 'server',
     readyUrl: `${serverUrl}/api-docs-json`,
-    args: ['--filter', 'vue3-elm-node', 'run', 'start'],
+    args: ['--filter', '@elm-platform/server', 'run', 'start'],
     env: {
       APP_PORT: '3000',
       APP_PREFIX: 'api',
@@ -34,12 +34,12 @@ const services = [
   {
     name: 'admin',
     readyUrl: adminUrl,
-    args: ['--filter', 'elm-web-admin', 'exec', 'vite', '--host', '127.0.0.1', '--port', '5173', '--strictPort'],
+    args: ['--filter', '@elm-platform/web-admin', 'exec', 'vite', '--host', '127.0.0.1', '--port', '5173', '--strictPort'],
   },
   {
     name: 'user',
     readyUrl: userUrl,
-    args: ['--filter', 'vue3-elm-js', 'exec', 'vite', '--mode', 'mock', '--host', '127.0.0.1', '--port', '5174', '--strictPort'],
+    args: ['--filter', '@elm-platform/web-user', 'exec', 'vite', '--mode', 'mock', '--host', '127.0.0.1', '--port', '5174', '--strictPort'],
   },
 ]
 
@@ -236,3 +236,4 @@ finally {
   await Promise.all(startedProcesses.reverse().map(killProcessTree))
   process.exit(exitCode)
 }
+

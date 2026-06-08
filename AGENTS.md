@@ -34,17 +34,17 @@ pnpm clean            # removes node_modules, dist, .turbo in workspaces
 ### Backend (`apps/server`)
 
 ```bash
-pnpm --filter vue3-elm-node run start:dev
-pnpm --filter vue3-elm-node run build
-pnpm --filter vue3-elm-node run lint
-pnpm --filter vue3-elm-node run test
-pnpm --filter vue3-elm-node run test -- path/to/file.spec.ts
-pnpm --filter vue3-elm-node run test:e2e
-pnpm --filter vue3-elm-node run test:cov
-pnpm --filter vue3-elm-node run prisma:generate
-pnpm --filter vue3-elm-node run prisma:migrate
-pnpm --filter vue3-elm-node run prisma:studio
-pnpm --filter vue3-elm-node run prisma:seed
+pnpm --filter @elm-platform/server run start:dev
+pnpm --filter @elm-platform/server run build
+pnpm --filter @elm-platform/server run lint
+pnpm --filter @elm-platform/server run test
+pnpm --filter @elm-platform/server run test -- path/to/file.spec.ts
+pnpm --filter @elm-platform/server run test:e2e
+pnpm --filter @elm-platform/server run test:cov
+pnpm --filter @elm-platform/server run prisma:generate
+pnpm --filter @elm-platform/server run prisma:migrate
+pnpm --filter @elm-platform/server run prisma:studio
+pnpm --filter @elm-platform/server run prisma:seed
 ```
 
 Backend environment variables are documented in `apps/server/.env.example`. The Nest app defaults to port `3000`, global prefix `api`, and Swagger at `http://localhost:3000/api-docs`.
@@ -52,30 +52,30 @@ Backend environment variables are documented in `apps/server/.env.example`. The 
 ### Admin web (`apps/web-admin`)
 
 ```bash
-pnpm --filter elm-web-admin run dev
-pnpm --filter elm-web-admin run build        # runs vue-tsc before vite build
-pnpm --filter elm-web-admin run type-check
-pnpm --filter elm-web-admin run test:unit
-pnpm --filter elm-web-admin exec vitest run src/app/router/__tests__/build-routes.test.ts
-pnpm --filter elm-web-admin run lint
-pnpm --filter elm-web-admin run lint:style
-pnpm --filter elm-web-admin run preview
+pnpm --filter @elm-platform/web-admin run dev
+pnpm --filter @elm-platform/web-admin run build        # runs vue-tsc before vite build
+pnpm --filter @elm-platform/web-admin run type-check
+pnpm --filter @elm-platform/web-admin run test:unit
+pnpm --filter @elm-platform/web-admin exec vitest run src/app/router/__tests__/build-routes.test.ts
+pnpm --filter @elm-platform/web-admin run lint
+pnpm --filter @elm-platform/web-admin run lint:style
+pnpm --filter @elm-platform/web-admin run preview
 ```
 
 ### User web (`apps/web-user`)
 
 ```bash
-pnpm --filter vue3-elm-js run dev            # proxies API to local backend
-pnpm --filter vue3-elm-js run dev:mock       # enables vite-plugin-mock
-pnpm --filter vue3-elm-js run server:dev     # local Alipay sandbox service on port 3001
-pnpm --filter vue3-elm-js run build          # runs vue-tsc before vite build
-pnpm --filter vue3-elm-js run type-check
-pnpm --filter vue3-elm-js run test
-pnpm --filter vue3-elm-js exec vitest run src/services/http/policies.test.js
-pnpm --filter vue3-elm-js run test:watch
-pnpm --filter vue3-elm-js run lint
-pnpm --filter vue3-elm-js run format
-pnpm --filter vue3-elm-js run preview
+pnpm --filter @elm-platform/web-user run dev            # proxies API to local backend
+pnpm --filter @elm-platform/web-user run dev:mock       # enables vite-plugin-mock
+pnpm --filter @elm-platform/web-user run server:dev     # local Alipay sandbox service on port 3001
+pnpm --filter @elm-platform/web-user run build          # runs vue-tsc before vite build
+pnpm --filter @elm-platform/web-user run type-check
+pnpm --filter @elm-platform/web-user run test
+pnpm --filter @elm-platform/web-user exec vitest run src/services/http/policies.test.js
+pnpm --filter @elm-platform/web-user run test:watch
+pnpm --filter @elm-platform/web-user run lint
+pnpm --filter @elm-platform/web-user run format
+pnpm --filter @elm-platform/web-user run preview
 ```
 
 ## Architecture
@@ -113,3 +113,4 @@ Pinia stores live in `src/stores/modules` for user/session, addresses, locations
 - `apps/web-user/vite.config.js` proxies `/api` and `/ele-api` to the local backend and `/pay-api` to the local Alipay sandbox service; `dev:mock` enables mocks from `apps/web-user/mock`.
 - Web builds run `vue-tsc --noEmit` before `vite build`; fix type errors before treating a build as successful.
 - User-web Vitest runs in `happy-dom` and matches `src/**/*.test.{js,ts}`. Admin Vitest runs in `node` and matches `src/**/*.{test,spec}.ts`. Backend Jest matches `apps/server/src/**/*.spec.ts` via the package-local Jest config.
+
