@@ -40,7 +40,19 @@ pnpm lint
 pnpm lint:style
 ```
 
-## 3. 分支策略
+## 3. Monorepo 命令
+
+Use root commands for common verification so local development and CI stay aligned:
+
+- `pnpm ci:lint`
+- `pnpm ci:type-check`
+- `pnpm ci:test`
+- `pnpm ci:build`
+- `pnpm ci:api-drift`
+
+See `docs/engineering/monorepo.md` for package roles, build order, and dependency boundary rules. Prefer adding reusable root scripts over duplicating long command chains directly in GitHub Actions.
+
+## 4. 分支策略
 
 推荐短生命周期 feature 分支，通过 PR 合并到 `main`：
 
@@ -58,7 +70,7 @@ pnpm lint:style
 - 至少 1 个 reviewer approve
 - 不允许直接 force push
 
-## 4. Commit 规范
+## 5. Commit 规范
 
 项目使用 Conventional Commits，并由 commitlint + husky 自动校验：
 
@@ -89,7 +101,7 @@ ci: add API drift detection workflow
 - `chore` — 杂项
 - `revert` — 回滚
 
-## 5. PR 流程
+## 6. PR 流程
 
 创建 PR 前请至少执行：
 
@@ -120,7 +132,7 @@ PR 描述需要说明：
 - 引入新的工程化工具、CI job、部署配置或外部服务。
 - 改动 API 契约或前后端共享类型。
 
-## 6. 架构决策记录（ADR）
+## 7. 架构决策记录（ADR）
 
 重大架构、工具链、部署、认证、租户隔离、API 版本、数据库迁移、可观测性和安全策略变更需要新增 ADR。
 
@@ -135,7 +147,7 @@ ADR 至少需要说明：
 
 PR 涉及 ADR 时，请在 PR 模板的 `ADR` 字段附上链接。
 
-## 7. API 类型生成与兼容性
+## 8. API 类型生成与兼容性
 
 API 兼容性策略见 `docs/api/versioning.md`。
 
@@ -156,7 +168,7 @@ pnpm api:generate
 
 CI 会检测 `packages/api-types/` 是否发生漂移。
 
-## 8. 数据库变更
+## 9. 数据库变更
 
 数据库迁移检查清单见 `docs/database/migration-checklist.md`。
 
@@ -167,7 +179,7 @@ CI 会检测 `packages/api-types/` 是否发生漂移。
 - 是否需要回滚方案
 - 是否需要 seed 数据更新
 
-## 9. Review 建议
+## 10. Review 建议
 
 Reviewer 优先关注：
 
