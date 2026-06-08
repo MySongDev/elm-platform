@@ -293,7 +293,7 @@ pnpm --filter @elm-platform/web-admin run lint
 
 Expected: either pass or show a small, intentional set of violations to fix in the same PR.
 
-- [ ] **Step 4: Commit boundary rule**
+- [x] **Step 4: Commit boundary rule**
 
 ```bash
 git add eslint.config.mjs apps/web-admin/src

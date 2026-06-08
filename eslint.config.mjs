@@ -96,6 +96,76 @@ export default antfu(
     },
   },
   {
+    files: ['apps/web-admin/src/shared/**/*.{js,ts,tsx,vue}'],
+    rules: {
+      'no-restricted-imports': ['warn', {
+        patterns: [
+          {
+            group: [
+              '@/app/**',
+              '@/entities/**',
+              '@/features/**',
+              '@/pages/**',
+              '@/widgets/**',
+            ],
+            message: 'shared is the lowest web-admin layer and must not import upper layers.',
+          },
+        ],
+      }],
+    },
+  },
+  {
+    files: ['apps/web-admin/src/entities/**/*.{js,ts,tsx,vue}'],
+    rules: {
+      'no-restricted-imports': ['warn', {
+        patterns: [
+          {
+            group: [
+              '@/app/**',
+              '@/features/**',
+              '@/pages/**',
+              '@/widgets/**',
+            ],
+            message: 'entities may depend on shared only, not on app/features/pages/widgets.',
+          },
+        ],
+      }],
+    },
+  },
+  {
+    files: ['apps/web-admin/src/features/**/*.{js,ts,tsx,vue}'],
+    rules: {
+      'no-restricted-imports': ['warn', {
+        patterns: [
+          {
+            group: [
+              '@/app/**',
+              '@/pages/**',
+              '@/widgets/**',
+            ],
+            message: 'features may depend on entities and shared, not on app/pages/widgets.',
+          },
+        ],
+      }],
+    },
+  },
+  {
+    files: ['apps/web-admin/src/widgets/**/*.{js,ts,tsx,vue}'],
+    rules: {
+      'no-restricted-imports': ['warn', {
+        patterns: [
+          {
+            group: [
+              '@/app/**',
+              '@/pages/**',
+            ],
+            message: 'widgets may depend on entities/features/shared, not on app/pages.',
+          },
+        ],
+      }],
+    },
+  },
+  {
     files: ['apps/web-admin/**/*.vue'],
     rules: {
       'vue/html-indent': ['error', 2, {
