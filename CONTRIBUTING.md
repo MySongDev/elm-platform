@@ -21,7 +21,7 @@ docker compose up -d
 cp apps/server/.env.example apps/server/.env
 
 # 生成 Prisma Client
-pnpm --filter vue3-elm-node run prisma:generate
+pnpm --filter @elm-platform/server run prisma:generate
 
 # 启动所有应用
 pnpm dev

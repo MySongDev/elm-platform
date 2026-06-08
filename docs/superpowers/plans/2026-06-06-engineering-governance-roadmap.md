@@ -37,7 +37,7 @@ No business implementation should be changed while executing Phase 1 documentati
 - Modify: `.github/pull_request_template.md`
 - Create: `docs/superpowers/plans/2026-06-06-phase-1-governance-checklist.md`
 
-- [ ] **Step 1: Add design/plan references to CONTRIBUTING**
+- [x] **Step 1: Add design/plan references to CONTRIBUTING**
 
 In `CONTRIBUTING.md`, after section `## 5. PR 流程`, add:
 
@@ -56,7 +56,7 @@ In `CONTRIBUTING.md`, after section `## 5. PR 流程`, add:
 - 改动 API 契约或前后端共享类型。
 ```
 
-- [ ] **Step 2: Add governance links to PR template**
+- [x] **Step 2: Add governance links to PR template**
 
 In `.github/pull_request_template.md`, after `## Why`, add:
 
@@ -70,7 +70,7 @@ In `.github/pull_request_template.md`, after `## Why`, add:
 
 Keep fields empty by default so small PRs are not blocked.
 
-- [ ] **Step 3: Create platform checklist**
+- [x] **Step 3: Create platform checklist**
 
 Create `docs/superpowers/plans/2026-06-06-phase-1-governance-checklist.md`:
 
@@ -110,7 +110,7 @@ pnpm build
 ```
 ```
 
-- [ ] **Step 4: Verify documentation diff**
+- [x] **Step 4: Verify documentation diff**
 
 Run:
 
@@ -120,7 +120,7 @@ git diff -- CONTRIBUTING.md .github/pull_request_template.md docs/superpowers/pl
 
 Expected: only collaboration documentation and checklist changes.
 
-- [ ] **Step 5: Commit Phase 1 governance docs**
+- [x] **Step 5: Commit Phase 1 governance docs**
 
 ```bash
 git add CONTRIBUTING.md .github/pull_request_template.md docs/superpowers/plans/2026-06-06-phase-1-governance-checklist.md
@@ -135,7 +135,7 @@ git commit -m "docs: document phase 1 governance checklist"
 - Use existing spec: `docs/superpowers/specs/2026-06-06-request-id-structured-logging-design.md`
 - Use existing plan: `docs/superpowers/plans/2026-06-06-request-id-structured-logging.md`
 
-- [ ] **Step 1: Re-read existing requestId design and plan**
+- [x] **Step 1: Re-read existing requestId design and plan**
 
 Run:
 
@@ -145,7 +145,7 @@ git diff -- docs/superpowers/specs/2026-06-06-request-id-structured-logging-desi
 
 Expected: understand whether these files have uncommitted changes before editing implementation files.
 
-- [ ] **Step 2: Execute the requestId plan task-by-task**
+- [x] **Step 2: Execute the requestId plan task-by-task**
 
 Follow `docs/superpowers/plans/2026-06-06-request-id-structured-logging.md`.
 
@@ -157,19 +157,19 @@ Expected implementation scope:
 - `apps/server/src/common/interceptors/logging.interceptor.ts`
 - `apps/server/src/common/interceptors/logging.interceptor.spec.ts`
 
-- [ ] **Step 3: Verify requestId behavior**
+- [x] **Step 3: Verify requestId behavior**
 
 Run:
 
 ```bash
-pnpm --filter vue3-elm-node run test -- request-id.middleware.spec.ts
-pnpm --filter vue3-elm-node run test -- logging.interceptor.spec.ts
-pnpm --filter vue3-elm-node run build
+pnpm --filter @elm-platform/server run test -- request-id.middleware.spec.ts
+pnpm --filter @elm-platform/server run test -- logging.interceptor.spec.ts
+pnpm --filter @elm-platform/server run build
 ```
 
 Expected: middleware and logging tests pass; server builds.
 
-- [ ] **Step 4: Commit requestId work**
+- [x] **Step 4: Commit requestId work**
 
 ```bash
 git add apps/server/src/common/middleware apps/server/src/main.ts apps/server/src/common/interceptors/logging.interceptor.ts apps/server/src/common/interceptors/logging.interceptor.spec.ts
@@ -184,7 +184,7 @@ git commit -m "feat(server): add request id logging"
 - Create: `docs/superpowers/specs/2026-06-06-quality-gate-phase-2c-design.md`
 - Create: `docs/superpowers/plans/2026-06-06-quality-gate-phase-2c.md`
 
-- [ ] **Step 1: Write Phase 2C design**
+- [x] **Step 1: Write Phase 2C design**
 
 Create `docs/superpowers/specs/2026-06-06-quality-gate-phase-2c-design.md` with:
 
@@ -226,7 +226,7 @@ pnpm build
 ```
 ```
 
-- [ ] **Step 2: Write Phase 2C implementation plan**
+- [x] **Step 2: Write Phase 2C implementation plan**
 
 Create `docs/superpowers/plans/2026-06-06-quality-gate-phase-2c.md` with tasks for:
 
@@ -255,11 +255,11 @@ Create `docs/superpowers/plans/2026-06-06-quality-gate-phase-2c.md` with tasks f
 - [ ] Run `pnpm test:cov`, `pnpm exec playwright test`, `pnpm audit --audit-level high`, and `pnpm build`.
 ```
 
-- [ ] **Step 3: Review scope before implementation**
+- [x] **Step 3: Review scope before implementation**
 
 Expected decision: do not implement Phase 2C until the user approves this new design and plan.
 
-- [ ] **Step 4: Commit Phase 2C docs**
+- [x] **Step 4: Commit Phase 2C docs**
 
 ```bash
 git add docs/superpowers/specs/2026-06-06-quality-gate-phase-2c-design.md docs/superpowers/plans/2026-06-06-quality-gate-phase-2c.md
@@ -275,7 +275,7 @@ git commit -m "docs: plan phase 2c quality gates"
 - Create: `docs/superpowers/plans/2026-06-06-architecture-governance.md`
 - Create: `docs/adr/0000-template.md`
 
-- [ ] **Step 1: Create ADR template**
+- [x] **Step 1: Create ADR template**
 
 Create `docs/adr/0000-template.md`:
 
@@ -299,7 +299,7 @@ Describe the chosen decision.
 Describe tradeoffs, follow-up work, and migration impact.
 ```
 
-- [ ] **Step 2: Write Phase 3 design**
+- [x] **Step 2: Write Phase 3 design**
 
 Create `docs/superpowers/specs/2026-06-06-architecture-governance-design.md` covering:
 
@@ -327,7 +327,7 @@ Create `docs/superpowers/specs/2026-06-06-architecture-governance-design.md` cov
 从文档治理开始，再接入自动化检查。先在 web-admin 和 packages 试点 import boundary，再逐步扩展。Feature Flags 先采用配置驱动，不引入外部平台。
 ```
 
-- [ ] **Step 3: Write Phase 3 implementation plan**
+- [x] **Step 3: Write Phase 3 implementation plan**
 
 Create `docs/superpowers/plans/2026-06-06-architecture-governance.md` with task groups:
 
@@ -356,7 +356,7 @@ Create `docs/superpowers/plans/2026-06-06-architecture-governance.md` with task 
 - [ ] Expand import boundary rules only after baseline warnings are understood.
 ```
 
-- [ ] **Step 4: Commit Phase 3 docs**
+- [x] **Step 4: Commit Phase 3 docs**
 
 ```bash
 git add docs/adr/0000-template.md docs/superpowers/specs/2026-06-06-architecture-governance-design.md docs/superpowers/plans/2026-06-06-architecture-governance.md
@@ -371,7 +371,7 @@ git commit -m "docs: plan architecture governance"
 - Create: `docs/superpowers/specs/2026-06-06-scale-observability-backlog-design.md`
 - Create: `docs/superpowers/plans/2026-06-06-scale-observability-backlog.md`
 
-- [ ] **Step 1: Write Phase 4 design**
+- [x] **Step 1: Write Phase 4 design**
 
 Create `docs/superpowers/specs/2026-06-06-scale-observability-backlog-design.md`:
 
@@ -401,7 +401,7 @@ Phase 4 面向中大型团队、真实生产部署、多服务协作和合规要
 - RBAC 不可篡改审计日志.
 ```
 
-- [ ] **Step 2: Write Phase 4 backlog plan**
+- [x] **Step 2: Write Phase 4 backlog plan**
 
 Create `docs/superpowers/plans/2026-06-06-scale-observability-backlog.md`:
 
@@ -435,7 +435,7 @@ Create `docs/superpowers/plans/2026-06-06-scale-observability-backlog.md`:
 - [ ] RBAC audit hardening design after current audit query needs are known.
 ```
 
-- [ ] **Step 3: Commit Phase 4 backlog docs**
+- [x] **Step 3: Commit Phase 4 backlog docs**
 
 ```bash
 git add docs/superpowers/specs/2026-06-06-scale-observability-backlog-design.md docs/superpowers/plans/2026-06-06-scale-observability-backlog.md
@@ -449,7 +449,7 @@ git commit -m "docs: capture scale observability backlog"
 **Files:**
 - All docs changed in this roadmap.
 
-- [ ] **Step 1: Search for unresolved markers**
+- [x] **Step 1: Search for unresolved markers**
 
 Run:
 
@@ -459,7 +459,7 @@ rg -n "TB[D]|TO[D]O|待[补]|以后[再]说|fill[ ]in|place[ -]?holder" docs/sup
 
 Expected: no unresolved marker strings in newly created files. Existing unrelated matches, if any, should be reviewed and left untouched unless part of this roadmap.
 
-- [ ] **Step 2: Verify roadmap links**
+- [x] **Step 2: Verify roadmap links**
 
 Run:
 
@@ -469,7 +469,7 @@ rg -n "engineering-governance-roadmap|Phase 1|Phase 2|Phase 3|Phase 4|ADR|Design
 
 Expected: roadmap docs and collaboration docs reference the same flow.
 
-- [ ] **Step 3: Inspect final diff**
+- [x] **Step 3: Inspect final diff**
 
 Run:
 
@@ -479,7 +479,7 @@ git diff -- docs/superpowers/specs docs/superpowers/plans docs/adr CONTRIBUTING.
 
 Expected: changes are documentation/governance only unless a later task explicitly implemented code.
 
-- [ ] **Step 4: Run lightweight docs-safe verification**
+- [x] **Step 4: Run lightweight docs-safe verification**
 
 Run:
 
@@ -490,7 +490,7 @@ git status --short
 
 Expected: pnpm is available; git status shows only intended docs/governance changes plus any unrelated pre-existing worktree changes.
 
-- [ ] **Step 5: Commit final docs if not already committed task-by-task**
+- [x] **Step 5: Commit final docs if not already committed task-by-task**
 
 ```bash
 git add docs/superpowers/specs docs/superpowers/plans docs/adr CONTRIBUTING.md .github/pull_request_template.md
