@@ -1,10 +1,10 @@
-import type { ConfigService } from '@nestjs/config'
-import type { PrismaService } from '../../prisma/prisma.service'
-import type { SmsService } from '../sms/sms.service'
-import type { CustomerTokenService } from './customer-token.service'
 import type { CustomerPasswordLoginDto, CustomerRegisterDto, CustomerSmsLoginDto } from './dto/customer-auth.dto'
 import { BadRequestException, ConflictException, Injectable, UnauthorizedException } from '@nestjs/common'
+import { ConfigService } from '@nestjs/config'
 import * as bcrypt from 'bcryptjs'
+import { PrismaService } from '../../prisma/prisma.service'
+import { SmsService } from '../sms/sms.service'
+import { CustomerTokenService } from './customer-token.service'
 
 @Injectable()
 export class CustomerAuthService {
@@ -68,7 +68,10 @@ export class CustomerAuthService {
       }
       await this.sms.verifyCode(dto.phone, 'login', dto.smsCode)
       user = await (this.prisma as any).customerUser.create({
-        data: { phone: dto.phone, status: 1 },
+        data: {
+          phone: dto.phone,
+          status: 1,
+        },
       })
     }
     else {

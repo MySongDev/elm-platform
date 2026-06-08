@@ -1,3 +1,4 @@
+import type { TenantContext } from '../tenant/tenant.types'
 import { AdminService } from './admin.service'
 
 describe('adminService monitor APIs', () => {
@@ -27,11 +28,30 @@ describe('adminService monitor APIs', () => {
       del: jest.fn().mockResolvedValue(undefined),
       ...overrides.redis,
     }
+    const tenantAccess = {
+      assertCanRead: jest.fn(),
+    }
 
     return {
-      service: new AdminService(prisma as any, redis as any),
+      service: new AdminService(prisma as any, redis as any, tenantAccess as any),
       prisma,
       redis,
+      tenantAccess,
+    }
+  }
+
+  function tenantContext(overrides: Partial<TenantContext> = {}): TenantContext {
+    return {
+      userId: 1,
+      username: 'tenant-admin',
+      tenantId: 10,
+      tenantCode: 'flower-cake',
+      tenantName: '鲜花蛋糕',
+      tenantStatus: 'ACTIVE',
+      dataScope: 'TENANT',
+      boundShopIds: [],
+      isPlatformAdmin: false,
+      ...overrides,
     }
   }
 
@@ -96,5 +116,76 @@ describe('adminService monitor APIs', () => {
 
     await expect(service.getOperationLogs()).resolves.toEqual([])
     expect(loginLogFindMany).not.toHaveBeenCalled()
+  })
+
+  it('filters login logs by tenant user when context is provided', async () => {
+    const { service, prisma } = createService()
+
+    await service.getLoginLogs(tenantContext())
+
+    expect(prisma.loginLog.findMany).toHaveBeenCalledWith(expect.objectContaining({
+      where: { user: { tenantId: 10 } },
+    }))
+  })
+
+  it('does not filter login logs for platform admins', async () => {
+    const { service, prisma } = createService()
+
+    await service.getLoginLogs(tenantContext({
+      dataScope: 'ALL',
+      tenantId: null,
+      isPlatformAdmin: true,
+    }))
+
+    expect(prisma.loginLog.findMany).toHaveBeenCalledWith(expect.objectContaining({
+      where: undefined,
+    }))
+  })
+
+  it('filters operation logs by tenantId when context is provided', async () => {
+    const { service, prisma } = createService()
+
+    await service.getOperationLogs(tenantContext())
+
+    expect(prisma.operationLog.findMany).toHaveBeenCalledWith(expect.objectContaining({
+      where: { tenantId: 10 },
+    }))
+  })
+
+  it('returns runtime system logs for non-platform admins', async () => {
+    const { service, prisma, tenantAccess } = createService()
+
+    const result = await service.getSystemLogs(tenantContext())
+
+    expect(tenantAccess.assertCanRead).toHaveBeenCalled()
+    expect(prisma.systemLog.findMany).not.toHaveBeenCalled()
+    expect(result).toEqual(expect.arrayContaining([
+      expect.objectContaining({ source: 'NestJS' }),
+    ]))
+  })
+
+  it('reads full system logs for platform admins', async () => {
+    const systemLogs = [{
+      id: 1,
+      level: 'info',
+      source: 'test',
+      message: 'ok',
+    }]
+    const { service, prisma } = createService({
+      prisma: {
+        systemLog: {
+          findMany: jest.fn().mockResolvedValue(systemLogs),
+        },
+      },
+    })
+
+    const result = await service.getSystemLogs(tenantContext({
+      dataScope: 'ALL',
+      tenantId: null,
+      isPlatformAdmin: true,
+    }))
+
+    expect(prisma.systemLog.findMany).toHaveBeenCalled()
+    expect(result).toEqual(systemLogs)
   })
 })

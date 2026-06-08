@@ -1,5 +1,3 @@
-import type { AdminService } from './admin.service'
-import type { UpsertDeptDto, UpsertMenuDto, UpsertRoleDto } from './dto/admin.dto'
 import {
   Body,
   Controller,
@@ -9,19 +7,26 @@ import {
   ParseIntPipe,
   Patch,
   Post,
+  Request,
   UseGuards,
 } from '@nestjs/common'
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger'
 import { Roles } from '../auth/decorators/roles.decorator'
 import { AdminAuthGuard } from '../auth/guards/admin-auth.guard'
 import { RolesGuard } from '../auth/guards/roles.guard'
+import { TenantContextService } from '../tenant/tenant-context.service'
+import { AdminService } from './admin.service'
+import { UpsertDeptDto, UpsertMenuDto, UpsertRoleDto } from './dto/admin.dto'
 
 @ApiTags('后台管理')
 @ApiBearerAuth()
 @Controller('admin')
 @UseGuards(AdminAuthGuard, RolesGuard)
 export class AdminController {
-  constructor(private readonly adminService: AdminService) {}
+  constructor(
+    private readonly adminService: AdminService,
+    private readonly tenantContext: TenantContextService,
+  ) {}
 
   @Get('permissions/pages')
   @Roles('admin', 'user')
@@ -54,22 +59,25 @@ export class AdminController {
   @Get('monitor/login-logs')
   @Roles('admin')
   @ApiOperation({ summary: '登录日志' })
-  getLoginLogs() {
-    return this.adminService.getLoginLogs()
+  async getLoginLogs(@Request() req: any) {
+    const context = await this.tenantContext.fromRequestUser(req.user)
+    return this.adminService.getLoginLogs(context)
   }
 
   @Get('monitor/operation-logs')
   @Roles('admin')
   @ApiOperation({ summary: '操作日志' })
-  getOperationLogs() {
-    return this.adminService.getOperationLogs()
+  async getOperationLogs(@Request() req: any) {
+    const context = await this.tenantContext.fromRequestUser(req.user)
+    return this.adminService.getOperationLogs(context)
   }
 
   @Get('monitor/system-logs')
   @Roles('admin')
   @ApiOperation({ summary: '系统日志' })
-  getSystemLogs() {
-    return this.adminService.getSystemLogs()
+  async getSystemLogs(@Request() req: any) {
+    const context = await this.tenantContext.fromRequestUser(req.user)
+    return this.adminService.getSystemLogs(context)
   }
 
   @Get('system/roles')

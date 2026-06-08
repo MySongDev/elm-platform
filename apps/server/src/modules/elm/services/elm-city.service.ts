@@ -1,8 +1,8 @@
 import type { CityRecord } from '../types/elm.types'
-import type { ElmStoreService } from './elm-store.service'
 import { Injectable, NotFoundException } from '@nestjs/common'
 import { createEntry, createRestaurantCategory } from '../factories/elm.factories'
 import { parseGeoHash } from '../utils/elm-query'
+import { ElmStoreService } from './elm-store.service'
 
 @Injectable()
 export class ElmCityService {
@@ -98,9 +98,33 @@ export class ElmCityService {
 
   getActivityAttributes() {
     return [
-      { description: '可使用在线支付', icon_color: 'FF4E00', icon_name: '付', id: 3, name: '在线支付', ranking_weight: 2, __v: 0 },
-      { description: '该商家支持开发票', icon_color: '999999', icon_name: '票', id: 4, name: '开发票', ranking_weight: 3, __v: 0 },
-      { description: '新店开业优惠', icon_color: '70BC46', icon_name: '新', id: 5, name: '新店', ranking_weight: 4, __v: 0 },
+      {
+        description: '可使用在线支付',
+        icon_color: 'FF4E00',
+        icon_name: '付',
+        id: 3,
+        name: '在线支付',
+        ranking_weight: 2,
+        __v: 0,
+      },
+      {
+        description: '该商家支持开发票',
+        icon_color: '999999',
+        icon_name: '票',
+        id: 4,
+        name: '开发票',
+        ranking_weight: 3,
+        __v: 0,
+      },
+      {
+        description: '新店开业优惠',
+        icon_color: '70BC46',
+        icon_name: '新',
+        id: 5,
+        name: '新店',
+        ranking_weight: 4,
+        __v: 0,
+      },
     ]
   }
 }

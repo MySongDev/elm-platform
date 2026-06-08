@@ -1,8 +1,8 @@
-import type { ElmFoodService } from '../services/elm-food.service'
 import type { FoodRecord } from '../types/elm.types'
 import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Query } from '@nestjs/common'
 import { ApiOperation, ApiTags } from '@nestjs/swagger'
 import { rawResponse } from '../../../common/interceptors/transform.interceptor'
+import { ElmFoodService } from '../services/elm-food.service'
 
 @ApiTags('Elm 兼容接口 - 商品')
 @Controller()
@@ -39,14 +39,20 @@ export class ElmFoodPublicController {
   @Get('shopping/v2/foods/count')
   @ApiOperation({ summary: '获取食品数量' })
   getFoodCount() {
-    return rawResponse({ status: 1, count: this.foodService.countFoods() })
+    return rawResponse({
+      status: 1,
+      count: this.foodService.countFoods(),
+    })
   }
 
   @Post('shopping/v2/addfood')
   @ApiOperation({ summary: '添加食品' })
   addFood(@Body() body: Partial<FoodRecord>) {
     this.foodService.createFood(body)
-    return rawResponse({ status: 1, success: '添加食品成功' })
+    return rawResponse({
+      status: 1,
+      success: '添加食品成功',
+    })
   }
 
   @Post('shopping/v2/updatefood')
@@ -54,7 +60,10 @@ export class ElmFoodPublicController {
   updateFood(@Body() body: Partial<FoodRecord> & { item_id?: number }) {
     if (body.item_id)
       this.foodService.updateFood(body.item_id, body)
-    return rawResponse({ status: 1, success: '修改食品信息成功' })
+    return rawResponse({
+      status: 1,
+      success: '修改食品信息成功',
+    })
   }
 
   @Delete('shopping/v2/food/:foodId')

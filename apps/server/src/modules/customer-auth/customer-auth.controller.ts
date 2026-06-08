@@ -1,6 +1,8 @@
-import type { SmsService } from '../sms/sms.service'
-import type { CustomerAuthService } from './customer-auth.service'
-import type {
+import { Body, Controller, Get, Post, Request, UseGuards } from '@nestjs/common'
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger'
+import { SmsService } from '../sms/sms.service'
+import { CustomerAuthService } from './customer-auth.service'
+import {
   CustomerLogoutDto,
   CustomerPasswordLoginDto,
   CustomerRefreshTokenDto,
@@ -8,8 +10,6 @@ import type {
   CustomerSmsLoginDto,
   SendSmsDto,
 } from './dto/customer-auth.dto'
-import { Body, Controller, Get, Post, Request, UseGuards } from '@nestjs/common'
-import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger'
 import { CustomerAuthGuard } from './guards/customer-auth.guard'
 
 @ApiTags('用户端认证')

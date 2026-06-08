@@ -1,3 +1,4 @@
+import type { TenantContext } from '../tenant/tenant.types'
 import type { CreateAlipayWapPaymentDto, PaymentCartItemDto } from './dto/create-alipay-wap-payment.dto'
 import type { ResumeAlipayWapPaymentDto } from './dto/resume-alipay-wap-payment.dto'
 import {
@@ -7,11 +8,19 @@ import {
   UnauthorizedException,
 } from '@nestjs/common'
 import { PrismaService } from '../../prisma/prisma.service'
+import { seedRestaurants } from '../elm/data/elm.seed'
+import { OrderWorkflowService } from '../order/order-workflow.service'
+import { TenantAccessService } from '../tenant/tenant-access.service'
 import { AlipayService } from './alipay/alipay.service'
 
 type PaymentStatus = 'PENDING' | 'PAID' | 'CLOSED'
 
 type PaymentOrderRecord = Record<string, any>
+
+interface AdminOrderQuery {
+  tenantId?: number | string | null
+  shopId?: string | number | null
+}
 
 interface CreateAlipayWapPaymentPayload extends CreateAlipayWapPaymentDto {
   userId: string
@@ -47,6 +56,8 @@ export class PaymentService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly alipay: AlipayService,
+    private readonly orderWorkflow: OrderWorkflowService,
+    private readonly tenantAccess: TenantAccessService,
   ) {}
 
   async createAlipayWapPayment(payload: CreateAlipayWapPaymentPayload) {
@@ -61,12 +72,15 @@ export class PaymentService {
 
     const orderNo = this.createOrderNo()
     const subject = `${summary.shopName} 外卖订单`
+    const tenantId = await this.resolveTenantIdByShopId(summary.shopId)
 
     const order = await (this.prisma as any).paymentOrder.create({
       data: {
         orderNo,
         status: 'PENDING',
         tradeStatus: 'WAIT_BUYER_PAY',
+        fulfillmentStatus: 'PENDING_PAYMENT',
+        refundStatus: 'NONE',
         subject,
         userId: summary.userId,
         shopId: summary.shopId,
@@ -75,6 +89,7 @@ export class PaymentService {
         goodsAmount: summary.goodsAmount,
         deliveryFee: summary.deliveryFee,
         payableAmount: summary.payableAmount,
+        tenantId,
       },
     })
 
@@ -109,7 +124,8 @@ export class PaymentService {
           paidAt: toDate(trade?.send_pay_date || trade?.gmt_payment) || order.paidAt || undefined,
         },
       })
-      return this.toOrderSummary(updatedOrder)
+      const syncedOrder = await this.orderWorkflow.syncPaymentStatus(updatedOrder)
+      return this.toOrderSummary(syncedOrder)
     }
 
     return this.toOrderSummary(order)
@@ -126,9 +142,10 @@ export class PaymentService {
     return { orders: orders.map((order: PaymentOrderRecord) => this.toOrderSummary(order)) }
   }
 
-  async listAdminOrders(limit?: unknown) {
+  async listAdminOrders(limit?: unknown, context?: TenantContext, query: AdminOrderQuery = {}) {
     const take = Number.parseInt(String(limit || ''), 10)
     const orders = await (this.prisma as any).paymentOrder.findMany({
+      where: this.buildOrderWhere(context, query),
       orderBy: [{ paidAt: 'desc' }, { updatedAt: 'desc' }, { createdAt: 'desc' }],
       take: Number.isFinite(take) && take > 0 ? take : 100,
     })
@@ -185,7 +202,7 @@ export class PaymentService {
       return false
 
     const tradeStatus = String(payload.trade_status || order.tradeStatus)
-    await (this.prisma as any).paymentOrder.update({
+    const updatedOrder = await (this.prisma as any).paymentOrder.update({
       where: { orderNo },
       data: {
         tradeNo: String(payload.trade_no || order.tradeNo || ''),
@@ -195,6 +212,7 @@ export class PaymentService {
         paidAt: toDate(payload.gmt_payment),
       },
     })
+    await this.orderWorkflow.syncPaymentStatus(updatedOrder)
 
     return true
   }
@@ -238,6 +256,32 @@ export class PaymentService {
     return order as PaymentOrderRecord
   }
 
+  private buildOrderWhere(context?: TenantContext, query: AdminOrderQuery = {}) {
+    if (!context)
+      return undefined
+
+    this.tenantAccess.assertCanRead(context)
+
+    const where = this.tenantAccess.buildScopedWhere(context, query)
+    return Object.keys(where).length ? where : undefined
+  }
+
+  private async resolveTenantIdByShopId(shopId?: string | null) {
+    if (!shopId)
+      return null
+
+    const seededRestaurant = seedRestaurants.find(item => String(item.id) === String(shopId))
+    if (!seededRestaurant?.tenantCode)
+      return seededRestaurant?.tenantId ?? null
+
+    const tenant = await (this.prisma as any).tenant?.findUnique?.({
+      where: { code: seededRestaurant.tenantCode },
+      select: { id: true },
+    })
+
+    return tenant?.id ?? seededRestaurant.tenantId ?? null
+  }
+
   private ensureOrderOwner(order: PaymentOrderRecord, userId?: string) {
     if (userId && String(order.userId) !== String(userId)) {
       throw new UnauthorizedException('无权访问该订单')
@@ -248,7 +292,7 @@ export class PaymentService {
     const trade = await this.alipay.queryTrade(order.orderNo)
     const tradeStatus = String(trade?.trade_status || order.tradeStatus)
 
-    return (this.prisma as any).paymentOrder.update({
+    const updatedOrder = await (this.prisma as any).paymentOrder.update({
       where: { orderNo: order.orderNo },
       data: {
         tradeNo: trade?.trade_no || order.tradeNo,
@@ -259,6 +303,8 @@ export class PaymentService {
         paidAt: toDate(trade?.send_pay_date || trade?.gmt_payment) || order.paidAt || undefined,
       },
     })
+
+    return this.orderWorkflow.syncPaymentStatus(updatedOrder)
   }
 
   private toOrderSummary(order: PaymentOrderRecord) {
@@ -272,15 +318,30 @@ export class PaymentService {
       shopName: order.shopName,
       status: order.status,
       tradeStatus: order.tradeStatus,
+      fulfillmentStatus: order.fulfillmentStatus || (order.status === 'PAID' ? 'AWAITING_ACCEPTANCE' : order.status === 'CLOSED' ? 'CANCELED' : 'PENDING_PAYMENT'),
+      refundStatus: order.refundStatus || 'NONE',
+      refundBaseFulfillmentStatus: order.refundBaseFulfillmentStatus || null,
+      refundReason: order.refundReason || null,
+      refundRejectReason: order.refundRejectReason || null,
       payableAmount: toPrice(order.payableAmount),
       goodsAmount: toPrice(order.goodsAmount),
       deliveryFee: toPrice(order.deliveryFee),
       cartItems,
       totalQty: cartItems.reduce((sum: number, item: Record<string, any>) => sum + Number(item.qty || 0), 0),
       paidAt: order.paidAt || null,
+      acceptedAt: order.acceptedAt || null,
+      preparingAt: order.preparingAt || null,
+      deliveringAt: order.deliveringAt || null,
+      completedAt: order.completedAt || null,
+      canceledAt: order.canceledAt || null,
+      refundRequestedAt: order.refundRequestedAt || null,
+      refundedAt: order.refundedAt || null,
+      refundRejectedAt: order.refundRejectedAt || null,
       createdAt: order.createdAt,
       updatedAt: order.updatedAt,
       tradeNo: order.tradeNo || null,
+      availableActions: this.orderWorkflow.getAdminAvailableActions(order),
+      customerAvailableActions: this.orderWorkflow.getCustomerAvailableActions(order),
     }
   }
 

@@ -1,4 +1,8 @@
-export type TreeNode<T> = T & { id: number, parentId: number | null, children?: TreeNode<T>[] }
+export type TreeNode<T> = T & {
+  id: number
+  parentId: number | null
+  children?: TreeNode<T>[]
+}
 
 export interface RoleRecord {
   id: number

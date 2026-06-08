@@ -1,7 +1,7 @@
 import type { CanActivate, ExecutionContext } from '@nestjs/common'
-import type { Reflector } from '@nestjs/core'
-import type { PrismaService } from '../../../prisma/prisma.service'
 import { Injectable } from '@nestjs/common'
+import { Reflector } from '@nestjs/core'
+import { PrismaService } from '../../../prisma/prisma.service'
 import { PERMISSIONS_KEY } from '../decorators/permissions.decorator'
 import { ROLES_KEY } from '../decorators/roles.decorator'
 
@@ -40,7 +40,11 @@ export class RolesGuard implements CanActivate {
 
     const currentUser = await this.prisma.user.findUnique({
       where: { id: user.id },
-      select: { role: true, permissions: true, status: true },
+      select: {
+        role: true,
+        permissions: true,
+        status: true,
+      },
     })
 
     if (!currentUser || currentUser.status !== 1) {
@@ -60,7 +64,10 @@ export class RolesGuard implements CanActivate {
     return rolePassed && permissionPassed
   }
 
-  private async resolveEffectivePermissions(user: { role?: string | null, permissions?: string[] | null }) {
+  private async resolveEffectivePermissions(user: {
+    role?: string | null
+    permissions?: string[] | null
+  }) {
     const rolePermissions = await this.getRolePermissions(user.role)
     return Array.from(new Set([...rolePermissions, ...(user.permissions ?? [])]))
   }
@@ -73,7 +80,10 @@ export class RolesGuard implements CanActivate {
     try {
       const role = await (this.prisma as any).role.findUnique({
         where: { code: roleCode },
-        select: { permissions: true, status: true },
+        select: {
+          permissions: true,
+          status: true,
+        },
       })
 
       if (!role || role.status !== 1) {

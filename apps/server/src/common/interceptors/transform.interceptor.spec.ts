@@ -15,13 +15,19 @@ describe('transformInterceptor', () => {
     const interceptor = new TransformInterceptor()
 
     const response = await firstValueFrom(
-      interceptor.intercept(context, createHandler({ id: 1, name: 'Alice' })),
+      interceptor.intercept(context, createHandler({
+        id: 1,
+        name: 'Alice',
+      })),
     )
 
     expect(response).toMatchObject({
       code: 200,
       message: 'success',
-      data: { id: 1, name: 'Alice' },
+      data: {
+        id: 1,
+        name: 'Alice',
+      },
     })
     expect(response.timestamp).toEqual(expect.any(String))
     expect(new Date(response.timestamp).toString()).not.toBe('Invalid Date')

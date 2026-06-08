@@ -1,9 +1,9 @@
-import type { ElmCityService } from '../services/elm-city.service'
-import type { ElmRestaurantService } from '../services/elm-restaurant.service'
 import type { RestaurantRecord } from '../types/elm.types'
 import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Query } from '@nestjs/common'
 import { ApiOperation, ApiTags } from '@nestjs/swagger'
 import { rawResponse } from '../../../common/interceptors/transform.interceptor'
+import { ElmCityService } from '../services/elm-city.service'
+import { ElmRestaurantService } from '../services/elm-restaurant.service'
 
 @ApiTags('Elm 兼容接口 - 商家')
 @Controller()
@@ -22,7 +22,10 @@ export class ElmRestaurantPublicController {
   @Get('shopping/restaurants/count')
   @ApiOperation({ summary: '获取餐馆数量' })
   getRestaurantCount() {
-    return rawResponse({ status: 1, count: this.restaurantService.countRestaurants() })
+    return rawResponse({
+      status: 1,
+      count: this.restaurantService.countRestaurants(),
+    })
   }
 
   @Get('v4/restaurants')
@@ -59,7 +62,10 @@ export class ElmRestaurantPublicController {
   @ApiOperation({ summary: '添加餐馆' })
   addRestaurant(@Body() body: Partial<RestaurantRecord>) {
     this.restaurantService.createRestaurant(body)
-    return rawResponse({ status: 1, success: '添加餐馆成功' })
+    return rawResponse({
+      status: 1,
+      success: '添加餐馆成功',
+    })
   }
 
   @Post('shopping/updateshop')
@@ -67,7 +73,10 @@ export class ElmRestaurantPublicController {
   updateRestaurant(@Body() body: Partial<RestaurantRecord> & { id?: number }) {
     if (body.id)
       this.restaurantService.updateRestaurant(body.id, body)
-    return rawResponse({ status: 1, success: '修改商铺信息成功' })
+    return rawResponse({
+      status: 1,
+      success: '修改商铺信息成功',
+    })
   }
 
   @Delete('shopping/restaurant/:restaurantId')

@@ -50,6 +50,7 @@ export const seedRestaurants: RestaurantRecord[] = [
     distance: '1.2公里',
     order_lead_time: '32分钟',
     description: '鲜花与蛋糕一起送达',
+    tenantCode: 'flower-cake',
   }),
   createRestaurant({
     id: 2,
@@ -65,6 +66,7 @@ export const seedRestaurants: RestaurantRecord[] = [
     distance: '2.5公里',
     order_lead_time: '28分钟',
     description: '经典炸鸡汉堡套餐',
+    tenantCode: 'fast-food',
   }),
   createRestaurant({
     id: 3,
@@ -80,23 +82,64 @@ export const seedRestaurants: RestaurantRecord[] = [
     distance: '3.1公里',
     order_lead_time: '35分钟',
     description: '低脂轻食和鲜榨果汁',
+    tenantCode: 'flower-cake',
   }),
 ]
 
 export const seedMenuCategories: MenuCategorySeed[] = [
-  { id: 1, restaurant_id: 1, name: '热销榜', description: '大家喜欢吃，才叫真好吃。', type: 1, icon_url: '', is_selected: true },
-  { id: 2, restaurant_id: 1, name: '蛋糕甜品', description: '生日与下午茶精选', type: 2, icon_url: '', is_selected: false },
-  { id: 3, restaurant_id: 2, name: '人气套餐', description: '多人套餐更划算', type: 1, icon_url: '', is_selected: true },
-  { id: 4, restaurant_id: 2, name: '小食饮品', description: '炸物和饮品', type: 2, icon_url: '', is_selected: false },
-  { id: 5, restaurant_id: 3, name: '轻食沙拉', description: '高蛋白低负担', type: 1, icon_url: '', is_selected: true },
+  {
+    id: 1,
+    restaurant_id: 1,
+    name: '热销榜',
+    description: '大家喜欢吃，才叫真好吃。',
+    type: 1,
+    icon_url: '',
+    is_selected: true,
+  },
+  {
+    id: 2,
+    restaurant_id: 1,
+    name: '蛋糕甜品',
+    description: '生日与下午茶精选',
+    type: 2,
+    icon_url: '',
+    is_selected: false,
+  },
+  {
+    id: 3,
+    restaurant_id: 2,
+    name: '人气套餐',
+    description: '多人套餐更划算',
+    type: 1,
+    icon_url: '',
+    is_selected: true,
+  },
+  {
+    id: 4,
+    restaurant_id: 2,
+    name: '小食饮品',
+    description: '炸物和饮品',
+    type: 2,
+    icon_url: '',
+    is_selected: false,
+  },
+  {
+    id: 5,
+    restaurant_id: 3,
+    name: '轻食沙拉',
+    description: '高蛋白低负担',
+    type: 1,
+    icon_url: '',
+    is_selected: true,
+  },
 ]
 
 export const seedFoods: FoodRecord[] = [
-  createFood(1, 1, 1, '玫瑰草莓蛋糕', 68, 'food/15c545e4a705.png', '玫瑰香气与草莓夹心'),
-  createFood(1, 2, 2, '向日葵花束', 99, 'food/15c545e4a705.png', '明亮花束，适合纪念日'),
-  createFood(2, 3, 3, '经典香辣鸡腿堡套餐', 39, 'food/15c545e4a705.png', '汉堡、薯条、可乐'),
-  createFood(2, 4, 4, '黄金鸡块', 18, 'food/15c545e4a705.png', '外脆里嫩小食'),
-  createFood(3, 5, 5, '牛油果鸡胸沙拉', 42, 'food/15c545e4a705.png', '高蛋白轻食'),
+  createFood(1, 1, 1, '玫瑰草莓蛋糕', 68, 'food/15c545e4a705.png', '玫瑰香气与草莓夹心', { tenantCode: 'flower-cake' }),
+  createFood(1, 2, 2, '向日葵花束', 99, 'food/15c545e4a705.png', '明亮花束，适合纪念日', { tenantCode: 'flower-cake' }),
+  createFood(2, 3, 3, '经典香辣鸡腿堡套餐', 39, 'food/15c545e4a705.png', '汉堡、薯条、可乐', { tenantCode: 'fast-food' }),
+  createFood(2, 4, 4, '黄金鸡块', 18, 'food/15c545e4a705.png', '外脆里嫩小食', { tenantCode: 'fast-food' }),
+  createFood(3, 5, 5, '牛油果鸡胸沙拉', 42, 'food/15c545e4a705.png', '高蛋白轻食', { tenantCode: 'flower-cake' }),
 ]
 
 export const seedAddresses: AddressRecord[] = [

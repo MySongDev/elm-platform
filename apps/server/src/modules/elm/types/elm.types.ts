@@ -59,6 +59,8 @@ export interface RestaurantRecord {
   distance: string
   order_lead_time: string
   description: string
+  tenantId?: number | null
+  tenantCode?: string | null
   delivery_mode: {
     color: string
     id: number
@@ -88,8 +90,14 @@ export interface FoodRecord {
     icon_color: string
     image_text: string
   }
-  attributes: Array<{ icon_color: string, icon_name: string }>
-  specifications: Array<{ name: string, values: string[] }>
+  attributes: Array<{
+    icon_color: string
+    icon_name: string
+  }>
+  specifications: Array<{
+    name: string
+    values: string[]
+  }>
   specfoods: Array<{
     specs_name: string
     name: string
@@ -98,7 +106,10 @@ export interface FoodRecord {
     food_id: number
     restaurant_id: number
     _id: string
-    specs: Array<{ name: string, value: string }>
+    specs: Array<{
+      name: string
+      value: string
+    }>
     stock: number
     checkout_mode: number
     is_essential: boolean
@@ -111,6 +122,8 @@ export interface FoodRecord {
     pinyin_name: string
     original_price: number
   }>
+  tenantId?: number | null
+  tenantCode?: string | null
   createdAt: string
 }
 
@@ -184,6 +197,8 @@ export interface RestaurantSeedInput {
   distance: string
   order_lead_time: string
   description: string
+  tenantId?: number | null
+  tenantCode?: string | null
 }
 
 export interface RestaurantListQuery {

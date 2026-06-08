@@ -1,6 +1,6 @@
 import type { OrderRecord } from '../types/elm.types'
-import type { ElmStoreService } from './elm-store.service'
 import { Injectable, NotFoundException } from '@nestjs/common'
+import { ElmStoreService } from './elm-store.service'
 
 @Injectable()
 export class ElmOrderService {

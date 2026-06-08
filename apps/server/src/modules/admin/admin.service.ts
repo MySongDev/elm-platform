@@ -1,8 +1,10 @@
-import type { PrismaService } from '../../prisma/prisma.service'
-import type { RedisService } from '../../redis/redis.service'
+import type { TenantContext } from '../tenant/tenant.types'
 import type { UpsertDeptDto, UpsertMenuDto, UpsertRoleDto } from './dto/admin.dto'
 import type { LoginLogView, TreeNode } from './model/admin-records'
 import { Injectable, NotFoundException } from '@nestjs/common'
+import { PrismaService } from '../../prisma/prisma.service'
+import { RedisService } from '../../redis/redis.service'
+import { TenantAccessService } from '../tenant/tenant-access.service'
 import { fallbackDepts, fallbackMenus, fallbackRoles } from './constants/admin-fallback-data'
 import { buttonPermissions, pagePermissions } from './constants/admin-permissions'
 
@@ -15,6 +17,7 @@ export class AdminService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly redis: RedisService,
+    private readonly tenantAccess: TenantAccessService,
   ) {}
 
   getPagePermissions() {
@@ -44,11 +47,20 @@ export class AdminService {
     return { success: true }
   }
 
-  async getLoginLogs(): Promise<LoginLogView[]> {
+  async getLoginLogs(context?: TenantContext): Promise<LoginLogView[]> {
+    const where = this.buildLoginLogWhere(context)
     const logs = (await this.prisma.loginLog.findMany({
+      where,
       orderBy: { createdAt: 'desc' },
       take: 200,
-      include: { user: { select: { id: true, username: true } } },
+      include: {
+        user: {
+          select: {
+            id: true,
+            username: true,
+          },
+        },
+      },
     })) as Array<{
       id: number
       userId: number
@@ -76,9 +88,11 @@ export class AdminService {
     }))
   }
 
-  async getOperationLogs() {
+  async getOperationLogs(context?: TenantContext) {
     try {
+      const where = this.buildOperationLogWhere(context)
       return await (this.prisma as any).operationLog.findMany({
+        where,
         orderBy: { createdAt: 'desc' },
         take: 200,
       })
@@ -88,7 +102,12 @@ export class AdminService {
     }
   }
 
-  async getSystemLogs() {
+  async getSystemLogs(context?: TenantContext) {
+    if (context && !context.isPlatformAdmin) {
+      this.tenantAccess.assertCanRead(context)
+      return this.getRuntimeSystemLogs()
+    }
+
     try {
       const logs = await (this.prisma as any).systemLog.findMany({
         orderBy: { createdAt: 'desc' },
@@ -103,6 +122,30 @@ export class AdminService {
     }
 
     return this.getRuntimeSystemLogs()
+  }
+
+  private buildLoginLogWhere(context?: TenantContext) {
+    if (!context || context.dataScope === 'ALL')
+      return undefined
+
+    this.tenantAccess.assertCanRead(context)
+
+    if (!context.tenantId)
+      return { userId: -1 }
+
+    return { user: { tenantId: context.tenantId } }
+  }
+
+  private buildOperationLogWhere(context?: TenantContext) {
+    if (!context || context.dataScope === 'ALL')
+      return undefined
+
+    this.tenantAccess.assertCanRead(context)
+
+    if (!context.tenantId)
+      return { tenantId: -1 }
+
+    return { tenantId: context.tenantId }
   }
 
   private async getRuntimeSystemLogs() {
@@ -188,7 +231,15 @@ export class AdminService {
       })
     }
     catch {
-      const role = { id: Date.now(), name: dto.name || '未命名角色', code: dto.code || `role_${Date.now()}`, status: dto.status ?? 1, remark: dto.remark || null, permissions: dto.permissions || [], createdAt: new Date().toISOString() }
+      const role = {
+        id: Date.now(),
+        name: dto.name || '未命名角色',
+        code: dto.code || `role_${Date.now()}`,
+        status: dto.status ?? 1,
+        remark: dto.remark || null,
+        permissions: dto.permissions || [],
+        createdAt: new Date().toISOString(),
+      }
       this.memoryRoles.push(role)
       return role
     }
@@ -196,13 +247,19 @@ export class AdminService {
 
   async updateRole(id: number, dto: UpsertRoleDto) {
     try {
-      return await (this.prisma as any).role.update({ where: { id }, data: dto })
+      return await (this.prisma as any).role.update({
+        where: { id },
+        data: dto,
+      })
     }
     catch {
       const index = this.memoryRoles.findIndex(item => item.id === id)
       if (index < 0)
         throw new NotFoundException('角色不存在')
-      this.memoryRoles[index] = { ...this.memoryRoles[index], ...dto }
+      this.memoryRoles[index] = {
+        ...this.memoryRoles[index],
+        ...dto,
+      }
       return this.memoryRoles[index]
     }
   }
@@ -232,7 +289,10 @@ export class AdminService {
       return await (this.prisma as any).menu.create({ data: this.normalizeMenu(dto) })
     }
     catch {
-      const menu = { id: Date.now(), ...this.normalizeMenu(dto) }
+      const menu = {
+        id: Date.now(),
+        ...this.normalizeMenu(dto),
+      }
       this.memoryMenus.push(menu)
       return menu
     }
@@ -240,13 +300,19 @@ export class AdminService {
 
   async updateMenu(id: number, dto: UpsertMenuDto) {
     try {
-      return await (this.prisma as any).menu.update({ where: { id }, data: this.normalizeMenu(dto) })
+      return await (this.prisma as any).menu.update({
+        where: { id },
+        data: this.normalizeMenu(dto),
+      })
     }
     catch {
       const index = this.memoryMenus.findIndex(item => item.id === id)
       if (index < 0)
         throw new NotFoundException('菜单不存在')
-      this.memoryMenus[index] = { ...this.memoryMenus[index], ...this.normalizeMenu(dto) }
+      this.memoryMenus[index] = {
+        ...this.memoryMenus[index],
+        ...this.normalizeMenu(dto),
+      }
       return this.memoryMenus[index]
     }
   }
@@ -276,7 +342,10 @@ export class AdminService {
       return await (this.prisma as any).dept.create({ data: this.normalizeDept(dto) })
     }
     catch {
-      const dept = { id: Date.now(), ...this.normalizeDept(dto) }
+      const dept = {
+        id: Date.now(),
+        ...this.normalizeDept(dto),
+      }
       this.memoryDepts.push(dept)
       return dept
     }
@@ -284,13 +353,19 @@ export class AdminService {
 
   async updateDept(id: number, dto: UpsertDeptDto) {
     try {
-      return await (this.prisma as any).dept.update({ where: { id }, data: this.normalizeDept(dto) })
+      return await (this.prisma as any).dept.update({
+        where: { id },
+        data: this.normalizeDept(dto),
+      })
     }
     catch {
       const index = this.memoryDepts.findIndex(item => item.id === id)
       if (index < 0)
         throw new NotFoundException('部门不存在')
-      this.memoryDepts[index] = { ...this.memoryDepts[index], ...this.normalizeDept(dto) }
+      this.memoryDepts[index] = {
+        ...this.memoryDepts[index],
+        ...this.normalizeDept(dto),
+      }
       return this.memoryDepts[index]
     }
   }
@@ -305,11 +380,19 @@ export class AdminService {
     return { success: true }
   }
 
-  private buildTree<T extends { id: number, parentId: number | null, sort?: number }>(list: T[]) {
+  private buildTree<T extends {
+    id: number
+    parentId: number | null
+    sort?: number
+  }>(list: T[],
+  ) {
     const map = new Map<number, TreeNode<T>>()
     const roots: TreeNode<T>[] = []
 
-    list.forEach(item => map.set(item.id, { ...item, children: [] }))
+    list.forEach(item => map.set(item.id, {
+      ...item,
+      children: [],
+    }))
     map.forEach((item) => {
       if (item.parentId && map.has(item.parentId)) {
         map.get(item.parentId)?.children?.push(item)

@@ -1,7 +1,7 @@
 import type { AddressRecord, ElmUserRecord } from '../types/elm.types'
-import type { ElmStoreService } from './elm-store.service'
 import { Injectable } from '@nestjs/common'
 import { nextNumberId, toNumberValue, toStringValue } from '../utils/elm-query'
+import { ElmStoreService } from './elm-store.service'
 
 @Injectable()
 export class ElmUserCompatService {

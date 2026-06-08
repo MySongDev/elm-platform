@@ -12,21 +12,68 @@ datasource db {
 
 // 示例模型 - 用户表
 model User {
-  id        Int      @id @default(autoincrement())
-  username  String   @unique
-  password  String
-  email     String?  @unique
-  phone     String?  @unique
-  avatar    String?
-  status    Int      @default(1) // 1: 启用 0: 禁用
-  role      String   @default("user") // "admin" | "user"
-  permissions String[] @default([]) // 按钮级权限码，如 ["user:add", "user:delete"]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id           Int      @id @default(autoincrement())
+  username     String   @unique
+  password     String
+  email        String?  @unique
+  phone        String?  @unique
+  avatar       String?
+  status       Int      @default(1) // 1: 启用 0: 禁用
+  role         String   @default("user") // "admin" | "user"
+  permissions  String[] @default([]) // 按钮级权限码，如 ["user:add", "user:delete"]
+  tenantId     Int?     @map("tenant_id")
+  dataScope    String   @default("ALL") @map("data_scope")
+  boundShopIds String[] @default([]) @map("bound_shop_ids")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 
+  tenant    Tenant?    @relation(fields: [tenantId], references: [id], onDelete: SetNull)
   loginLogs LoginLog[]
 
+  @@index([tenantId])
   @@map("users")
+}
+
+model Tenant {
+  id           Int      @id @default(autoincrement())
+  code         String   @unique
+  name         String
+  status       String   @default("PENDING")
+  contactName  String?  @map("contact_name")
+  contactPhone String?  @map("contact_phone")
+  contactEmail String?  @map("contact_email")
+  planCode     String   @default("standard") @map("plan_code")
+  settings     Json?
+  remark       String?
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  users      User[]
+  orders     PaymentOrder[]
+  orderLogs  OrderActionLog[]
+  actionLogs TenantActionLog[]
+
+  @@map("tenants")
+}
+
+model TenantActionLog {
+  id         Int      @id @default(autoincrement())
+  tenantId   Int      @map("tenant_id")
+  event      String
+  fromStatus String   @map("from_status")
+  toStatus   String   @map("to_status")
+  actorId    String   @map("actor_id")
+  actorName  String   @map("actor_name")
+  actorType  String   @map("actor_type")
+  reason     String?
+  remark     String?
+  requestId  String?  @map("request_id")
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@map("tenant_action_logs")
 }
 
 model CustomerUser {
@@ -44,27 +91,71 @@ model CustomerUser {
 }
 
 model PaymentOrder {
-  id             Int      @id @default(autoincrement())
-  orderNo        String   @unique
-  userId         String
-  shopId         String?
-  shopName       String
-  status         String   @default("PENDING")
-  tradeStatus    String   @default("WAIT_BUYER_PAY")
-  tradeNo        String?
-  subject        String
-  goodsAmount    Decimal  @db.Decimal(10, 2)
-  deliveryFee    Decimal  @db.Decimal(10, 2)
-  payableAmount  Decimal  @db.Decimal(10, 2)
-  cartItems      Json
-  notifyPayload  Json?
-  queryPayload   Json?
-  buyerPayAmount Decimal? @db.Decimal(10, 2)
-  paidAt         DateTime?
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  id                          Int      @id @default(autoincrement())
+  orderNo                     String   @unique
+  userId                      String
+  shopId                      String?
+  shopName                    String
+  status                      String   @default("PENDING")
+  tradeStatus                 String   @default("WAIT_BUYER_PAY")
+  fulfillmentStatus           String   @default("PENDING_PAYMENT") @map("fulfillment_status")
+  refundStatus                String   @default("NONE") @map("refund_status")
+  refundBaseFulfillmentStatus String?  @map("refund_base_fulfillment_status")
+  refundReason                String?  @map("refund_reason")
+  refundRejectReason          String?  @map("refund_reject_reason")
+  tradeNo                     String?
+  subject                     String
+  goodsAmount                 Decimal  @db.Decimal(10, 2)
+  deliveryFee                 Decimal  @db.Decimal(10, 2)
+  payableAmount               Decimal  @db.Decimal(10, 2)
+  cartItems                   Json
+  notifyPayload               Json?
+  queryPayload                Json?
+  buyerPayAmount              Decimal? @db.Decimal(10, 2)
+  paidAt                      DateTime?
+  acceptedAt                  DateTime? @map("accepted_at")
+  preparingAt                 DateTime? @map("preparing_at")
+  deliveringAt                DateTime? @map("delivering_at")
+  completedAt                 DateTime? @map("completed_at")
+  canceledAt                  DateTime? @map("canceled_at")
+  refundRequestedAt           DateTime? @map("refund_requested_at")
+  refundedAt                  DateTime? @map("refunded_at")
+  refundRejectedAt            DateTime? @map("refund_rejected_at")
+  tenantId                    Int?     @map("tenant_id")
+  createdAt                   DateTime @default(now())
+  updatedAt                   DateTime @updatedAt
 
+  tenant    Tenant?          @relation(fields: [tenantId], references: [id], onDelete: SetNull)
+  actionLogs OrderActionLog[] @relation("PaymentOrderActionLogs")
+
+  @@index([tenantId])
+  @@index([tenantId, shopId])
   @@map("payment_orders")
+}
+
+model OrderActionLog {
+  id                    Int      @id @default(autoincrement())
+  orderNo               String   @map("order_no")
+  operatorId            String   @map("operator_id")
+  operatorName          String   @map("operator_name")
+  operatorType          String   @map("operator_type")
+  action                String
+  fromFulfillmentStatus String?  @map("from_fulfillment_status")
+  toFulfillmentStatus   String?  @map("to_fulfillment_status")
+  fromRefundStatus      String?  @map("from_refund_status")
+  toRefundStatus        String?  @map("to_refund_status")
+  reason                String?
+  remark                String?
+  requestId             String?  @map("request_id")
+  tenantId              Int?     @map("tenant_id")
+  createdAt             DateTime @default(now()) @map("created_at")
+
+  tenant Tenant? @relation(fields: [tenantId], references: [id], onDelete: SetNull)
+  order PaymentOrder @relation("PaymentOrderActionLogs", fields: [orderNo], references: [orderNo], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@index([orderNo])
+  @@map("order_action_logs")
 }
 
 model LoginLog {
@@ -135,17 +226,20 @@ model Dept {
 }
 
 model OperationLog {
-  id        Int      @id @default(autoincrement())
-  username  String
-  module    String
-  action    String
-  method    String
-  path      String
-  ip        String?
-  status    Int      @default(1)
-  duration  Int      @default(0)
-  createdAt DateTime @default(now())
+  id         Int      @id @default(autoincrement())
+  username   String
+  module     String
+  action     String
+  method     String
+  path       String
+  ip         String?
+  status     Int      @default(1)
+  duration   Int      @default(0)
+  tenantId   Int?     @map("tenant_id")
+  tenantCode String?  @map("tenant_code")
+  createdAt  DateTime @default(now())
 
+  @@index([tenantId])
   @@map("operation_logs")
 }
 

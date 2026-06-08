@@ -9,6 +9,11 @@ import {
 } from 'class-validator'
 
 export class UpsertRoleDto {
+  @ApiPropertyOptional({ description: 'ID（更新时传入）' })
+  @IsInt()
+  @IsOptional()
+  id?: number
+
   @ApiPropertyOptional({ description: '角色名称' })
   @IsString()
   @IsOptional()
@@ -36,6 +41,11 @@ export class UpsertRoleDto {
 }
 
 export class UpsertMenuDto {
+  @ApiPropertyOptional({ description: 'ID（更新时传入）' })
+  @IsInt()
+  @IsOptional()
+  id?: number
+
   @ApiPropertyOptional({ description: '父级菜单 ID' })
   @IsInt()
   @IsOptional()
@@ -84,6 +94,11 @@ export class UpsertMenuDto {
 }
 
 export class UpsertDeptDto {
+  @ApiPropertyOptional({ description: 'ID（更新时传入）' })
+  @IsInt()
+  @IsOptional()
+  id?: number
+
   @ApiPropertyOptional({ description: '父级部门 ID' })
   @IsInt()
   @IsOptional()

@@ -1,14 +1,19 @@
+import type { TenantContext } from '../../tenant/tenant.types'
 import type { RestaurantListQuery, RestaurantRecord } from '../types/elm.types'
-import type { ElmStoreService } from './elm-store.service'
 import { Injectable, NotFoundException } from '@nestjs/common'
+import { TenantAccessService } from '../../tenant/tenant-access.service'
 import { createRestaurant } from '../factories/elm.factories'
 import { nextNumberId, toNumberValue, toStringValue } from '../utils/elm-query'
+import { ElmStoreService } from './elm-store.service'
 
 @Injectable()
 export class ElmRestaurantService {
-  constructor(private readonly store: ElmStoreService) {}
+  constructor(
+    private readonly store: ElmStoreService,
+    private readonly tenantAccess: TenantAccessService,
+  ) {}
 
-  listRestaurants(query: RestaurantListQuery = {}) {
+  listRestaurants(query: RestaurantListQuery = {}, context?: TenantContext) {
     const offset = toNumberValue(query.offset, 0)
     const limit = toNumberValue(query.limit, 20)
     const keyword = toStringValue(query.keyword).trim()
@@ -17,7 +22,7 @@ export class ElmRestaurantService {
       0,
     )
 
-    let list = [...this.store.restaurants]
+    let list = this.scopeRestaurants(context)
     if (keyword) {
       list = list.filter(item => item.name.includes(keyword) || item.category.includes(keyword))
     }
@@ -28,23 +33,34 @@ export class ElmRestaurantService {
     return list.slice(offset, offset + limit)
   }
 
-  searchRestaurants(keyword: string) {
-    return this.listRestaurants({ keyword, offset: 0, limit: 20 })
+  searchRestaurants(keyword: string, context?: TenantContext) {
+    return this.listRestaurants({
+      keyword,
+      offset: 0,
+      limit: 20,
+    }, context)
   }
 
-  countRestaurants() {
-    return this.store.restaurants.length
+  countRestaurants(context?: TenantContext) {
+    return this.scopeRestaurants(context).length
   }
 
-  getRestaurant(id: number) {
-    const restaurant = this.store.restaurants.find(item => item.id === id)
+  getRestaurant(id: number, context?: TenantContext) {
+    const restaurant = this.scopeRestaurants(context).find(item => item.id === id)
     if (!restaurant)
       throw new NotFoundException('餐馆不存在')
     return restaurant
   }
 
-  createRestaurant(data: Partial<RestaurantRecord>) {
+  createRestaurant(data: Partial<RestaurantRecord>, context?: TenantContext) {
+    if (context) {
+      this.tenantAccess.assertCanWrite(context)
+      if (context.dataScope === 'SHOP')
+        this.tenantAccess.assertShopAllowed(context, null)
+    }
+
     const id = nextNumberId(this.store.restaurants.map(item => item.id))
+    const tenantFields = this.resolveCreateTenantFields(data, context)
     const restaurant = createRestaurant({
       id,
       name: toStringValue(data.name, '新餐馆'),
@@ -59,14 +75,18 @@ export class ElmRestaurantService {
       distance: toStringValue(data.distance, '1.0公里'),
       order_lead_time: toStringValue(data.order_lead_time, '30分钟'),
       description: toStringValue(data.description, ''),
+      ...tenantFields,
     })
 
     this.store.restaurants.unshift(restaurant)
     return restaurant
   }
 
-  updateRestaurant(id: number, data: Partial<RestaurantRecord>) {
-    const index = this.store.restaurants.findIndex(item => item.id === id)
+  updateRestaurant(id: number, data: Partial<RestaurantRecord>, context?: TenantContext) {
+    if (context)
+      this.tenantAccess.assertCanWrite(context)
+
+    const index = this.store.restaurants.findIndex(item => item.id === id && this.isRestaurantAllowed(item, context))
     if (index < 0)
       throw new NotFoundException('餐馆不存在')
 
@@ -74,6 +94,7 @@ export class ElmRestaurantService {
     const longitude = toNumberValue(data.longitude, current.longitude)
     const latitude = toNumberValue(data.latitude, current.latitude)
     const deliveryFee = toNumberValue(data.float_delivery_fee, current.float_delivery_fee)
+    const tenantFields = this.resolveUpdateTenantFields(current, data, context)
 
     this.store.restaurants[index] = {
       ...current,
@@ -85,12 +106,16 @@ export class ElmRestaurantService {
       piecewise_agent_fee: {
         tips: `配送费约¥${deliveryFee}`,
       },
+      ...tenantFields,
     }
     return this.store.restaurants[index]
   }
 
-  deleteRestaurant(id: number) {
-    const restaurantIndex = this.store.restaurants.findIndex(item => item.id === id)
+  deleteRestaurant(id: number, context?: TenantContext) {
+    if (context)
+      this.tenantAccess.assertCanWrite(context)
+
+    const restaurantIndex = this.store.restaurants.findIndex(item => item.id === id && this.isRestaurantAllowed(item, context))
     if (restaurantIndex >= 0) {
       this.store.restaurants.splice(restaurantIndex, 1)
     }
@@ -98,6 +123,66 @@ export class ElmRestaurantService {
     return {
       status: 1,
       success: '删除餐馆成功',
+    }
+  }
+
+  private scopeRestaurants(context?: TenantContext) {
+    if (!context)
+      return [...this.store.restaurants]
+
+    this.tenantAccess.assertCanRead(context)
+    return this.store.restaurants.filter(item => this.isRestaurantAllowed(item, context))
+  }
+
+  private isRestaurantAllowed(restaurant: RestaurantRecord, context?: TenantContext) {
+    if (!context || context.dataScope === 'ALL')
+      return true
+
+    if (!this.matchesTenant(restaurant, context))
+      return false
+
+    if (context.dataScope === 'SHOP')
+      return context.boundShopIds.includes(String(restaurant.id))
+
+    return true
+  }
+
+  private matchesTenant(restaurant: RestaurantRecord, context: TenantContext) {
+    const matchesTenantId = context.tenantId != null && restaurant.tenantId != null && restaurant.tenantId === context.tenantId
+    const matchesTenantCode = Boolean(context.tenantCode && restaurant.tenantCode && restaurant.tenantCode === context.tenantCode)
+
+    return matchesTenantId || matchesTenantCode
+  }
+
+  private resolveCreateTenantFields(data: Partial<RestaurantRecord>, context?: TenantContext) {
+    if (!context || context.dataScope === 'ALL') {
+      return {
+        tenantId: data.tenantId ?? null,
+        tenantCode: data.tenantCode ?? null,
+      }
+    }
+
+    return {
+      tenantId: context.tenantId,
+      tenantCode: context.tenantCode,
+    }
+  }
+
+  private resolveUpdateTenantFields(
+    current: RestaurantRecord,
+    data: Partial<RestaurantRecord>,
+    context?: TenantContext,
+  ) {
+    if (!context || context.dataScope === 'ALL') {
+      return {
+        tenantId: data.tenantId ?? current.tenantId ?? null,
+        tenantCode: data.tenantCode ?? current.tenantCode ?? null,
+      }
+    }
+
+    return {
+      tenantId: current.tenantId ?? context.tenantId,
+      tenantCode: current.tenantCode ?? context.tenantCode,
     }
   }
 }

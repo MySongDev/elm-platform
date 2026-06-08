@@ -41,7 +41,14 @@ describe('customerTokenService', () => {
       getClient: jest.fn(() => client),
     } as any
 
-    return { service: new CustomerTokenService(jwtService, redis), jwtService, redis, client, store, userSets }
+    return {
+      service: new CustomerTokenService(jwtService, redis),
+      jwtService,
+      redis,
+      client,
+      store,
+      userSets,
+    }
   }
 
   const user = {
@@ -59,7 +66,11 @@ describe('customerTokenService', () => {
     const [tokenId, secret] = result.refreshToken.split('.')
 
     expect(jwtService.sign).toHaveBeenCalledWith(
-      { sub: 7, phone: '13800138000', subjectType: 'customer' },
+      {
+        sub: 7,
+        phone: '13800138000',
+        subjectType: 'customer',
+      },
       { expiresIn: '30m' },
     )
     expect(result.token).toBe('access-token')
@@ -68,7 +79,10 @@ describe('customerTokenService', () => {
     expect(result.refreshExpiresIn).toBe(30 * 24 * 60 * 60)
     expect(redis.set).toHaveBeenCalledWith(
       `customer:refresh:${tokenId}`,
-      expect.objectContaining({ userId: 7, tokenHash: expect.any(String) }),
+      expect.objectContaining({
+        userId: 7,
+        tokenHash: expect.any(String),
+      }),
       30 * 24 * 60 * 60,
     )
     expect(store.get(`customer:refresh:${tokenId}`)).not.toContain(secret)

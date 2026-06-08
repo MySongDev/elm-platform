@@ -1,9 +1,9 @@
-import type { JwtService } from '@nestjs/jwt'
-import type { PrismaService } from '../../prisma/prisma.service'
-import type { RedisService } from '../../redis/redis.service'
 import { ConflictException, Injectable, UnauthorizedException } from '@nestjs/common'
+import { JwtService } from '@nestjs/jwt'
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library'
 import * as bcrypt from 'bcryptjs'
+import { PrismaService } from '../../prisma/prisma.service'
+import { RedisService } from '../../redis/redis.service'
 
 export interface MenuNode {
   id: number
@@ -38,7 +38,10 @@ export class AuthService {
   async getUserMenus(userId: number): Promise<MenuNode[]> {
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
-      select: { role: true, permissions: true },
+      select: {
+        role: true,
+        permissions: true,
+      },
     })
 
     if (!user) {
@@ -46,7 +49,10 @@ export class AuthService {
     }
 
     const list = (await (this.prisma as any).menu.findMany({
-      where: { status: 1, type: { in: ['catalog', 'menu'] } },
+      where: {
+        status: 1,
+        type: { in: ['catalog', 'menu'] },
+      },
       orderBy: [{ sort: 'asc' }, { id: 'asc' }],
     })) as MenuNode[]
 
@@ -68,7 +74,10 @@ export class AuthService {
     const map = new Map<number, MenuNode>()
     const roots: MenuNode[] = []
 
-    list.forEach(item => map.set(item.id, { ...item, children: [] }))
+    list.forEach(item => map.set(item.id, {
+      ...item,
+      children: [],
+    }))
     map.forEach((item) => {
       if (item.parentId != null && map.has(item.parentId)) {
         map.get(item.parentId)!.children!.push(item)
@@ -112,6 +121,16 @@ export class AuthService {
 
     const user = await this.prisma.user.findFirst({
       where: { OR: [{ username: account }, { phone: account }] },
+      include: {
+        tenant: {
+          select: {
+            id: true,
+            code: true,
+            name: true,
+            status: true,
+          },
+        },
+      },
     })
 
     if (!user) {
@@ -136,7 +155,12 @@ export class AuthService {
     await this.recordOnlineUser(user, ip, userAgent, expiresInSeconds)
     const effectivePermissions = await this.resolveEffectivePermissions(user)
 
-    const payload = { sub: user.id, username: user.username, role: user.role, subjectType: 'admin' }
+    const payload = {
+      sub: user.id,
+      username: user.username,
+      role: user.role,
+      subjectType: 'admin',
+    }
     const token = this.jwtService.sign(payload, { expiresIn })
 
     return {
@@ -151,6 +175,16 @@ export class AuthService {
         status: user.status,
         role: user.role,
         permissions: effectivePermissions,
+        tenant: user.tenant
+          ? {
+              id: user.tenant.id,
+              code: user.tenant.code,
+              name: user.tenant.name,
+              status: user.tenant.status,
+            }
+          : null,
+        dataScope: user.dataScope || 'ALL',
+        boundShopIds: user.boundShopIds || [],
       },
     }
   }
@@ -170,7 +204,14 @@ export class AuthService {
     try {
       const { browser, os } = this.parseUserAgent(userAgent)
       await this.prisma.loginLog.create({
-        data: { userId, ip, browser, os, status, message },
+        data: {
+          userId,
+          ip,
+          browser,
+          os,
+          status,
+          message,
+        },
       })
     }
     catch {
@@ -179,8 +220,12 @@ export class AuthService {
   }
 
   private parseUserAgent(userAgent?: string) {
-    if (!userAgent)
-      return { browser: '未知', os: '未知' }
+    if (!userAgent) {
+      return {
+        browser: '未知',
+        os: '未知',
+      }
+    }
 
     let browser = '未知'
     let os = '未知'
@@ -207,7 +252,10 @@ export class AuthService {
     else if (userAgent.includes('iPhone') || userAgent.includes('iPad'))
       os = 'iOS'
 
-    return { browser, os }
+    return {
+      browser,
+      os,
+    }
   }
 
   private async recordOnlineUser(user: any, ip?: string, userAgent?: string, ttlSeconds = DEFAULT_SESSION_TTL_SECONDS) {
@@ -233,7 +281,10 @@ export class AuthService {
     }
   }
 
-  private async resolveEffectivePermissions(user: { role?: string | null, permissions?: string[] | null }) {
+  private async resolveEffectivePermissions(user: {
+    role?: string | null
+    permissions?: string[] | null
+  }) {
     const rolePermissions = await this.getRolePermissions(user.role)
     return Array.from(new Set([...rolePermissions, ...(user.permissions ?? [])]))
   }
@@ -246,7 +297,10 @@ export class AuthService {
     try {
       const role = await (this.prisma as any).role.findUnique({
         where: { code: roleCode },
-        select: { permissions: true, status: true },
+        select: {
+          permissions: true,
+          status: true,
+        },
       })
 
       if (!role || role.status !== 1) {
@@ -272,6 +326,16 @@ export class AuthService {
         status: true,
         role: true,
         permissions: true,
+        dataScope: true,
+        boundShopIds: true,
+        tenant: {
+          select: {
+            id: true,
+            code: true,
+            name: true,
+            status: true,
+          },
+        },
         createdAt: true,
         updatedAt: true,
       },
@@ -287,7 +351,11 @@ export class AuthService {
     }
   }
 
-  async updateProfile(userId: number, data: { username?: string, email?: string, phone?: string }) {
+  async updateProfile(userId: number, data: {
+    username?: string
+    email?: string | null
+    phone?: string | null
+  }) {
     try {
       const user = await this.prisma.user.update({
         where: { id: userId },
@@ -331,6 +399,11 @@ export class AuthService {
       take: currentPageSize,
     })
 
-    return { list, total, page: currentPage, pageSize: currentPageSize }
+    return {
+      list,
+      total,
+      page: currentPage,
+      pageSize: currentPageSize,
+    }
   }
 }

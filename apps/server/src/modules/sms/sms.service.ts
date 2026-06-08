@@ -48,7 +48,10 @@ export class SmsService {
     const cooldown = this.config.get<number>('sms.cooldownSeconds', 60)
 
     await this.provider.sendCode(phone, code, scene)
-    await this.redis.set(codeKey, { hash: this.hashCode(code), createdAt: new Date().toISOString() }, ttl)
+    await this.redis.set(codeKey, {
+      hash: this.hashCode(code),
+      createdAt: new Date().toISOString(),
+    }, ttl)
     await this.redis.set(cooldownKey, '1', cooldown)
 
     const count = await this.redis.incr(dailyKey)
@@ -56,7 +59,12 @@ export class SmsService {
       await this.redis.expire(dailyKey, this.secondsUntilTomorrow())
     }
 
-    return this.providerName === 'mock' ? { success: true, debugCode: code } : { success: true }
+    return this.providerName === 'mock'
+      ? {
+          success: true,
+          debugCode: code,
+        }
+      : { success: true }
   }
 
   async verifyCode(phone: string, scene: SmsScene, code: string) {

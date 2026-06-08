@@ -1,5 +1,5 @@
 {
-  "name": "vue3-elm-node",
+  "name": "@elm-platform/server",
   "version": "0.0.1",
   "private": true,
   "description": "Vue3 + Elm + NestJS 后端服务",
@@ -97,3 +97,4 @@
     "testEnvironment": "node"
   }
 }
+

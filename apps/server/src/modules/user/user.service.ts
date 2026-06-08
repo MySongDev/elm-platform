@@ -1,11 +1,12 @@
-import type { PrismaService } from '../../prisma/prisma.service'
-import type { RedisService } from '../../redis/redis.service'
+import type { TenantContext } from '../tenant/tenant.types'
 import type { CreateUserDto, UpdateUserDto } from './dto/create-user.dto'
-import { ConflictException, Injectable, NotFoundException } from '@nestjs/common'
+import { BadRequestException, ConflictException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common'
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library'
 import * as bcrypt from 'bcryptjs'
+import { PrismaService } from '../../prisma/prisma.service'
+import { RedisService } from '../../redis/redis.service'
 
-interface UserWithoutPassword {
+export interface UserWithoutPassword {
   id: number
   username: string
   email: string | null
@@ -14,6 +15,9 @@ interface UserWithoutPassword {
   status: number
   role: string
   permissions: string[]
+  tenantId: number | null
+  dataScope: string
+  boundShopIds: string[]
   createdAt: Date
   updatedAt: Date
 }
@@ -28,7 +32,11 @@ export class UserService {
   /**
    * 创建用户
    */
-  async create(createUserDto: CreateUserDto): Promise<UserWithoutPassword> {
+  async create(createUserDto: CreateUserDto, actorContext?: TenantContext): Promise<UserWithoutPassword> {
+    this.assertUserTenantScope(createUserDto)
+    if (actorContext)
+      this.assertUserMutationAllowed(actorContext, createUserDto)
+
     // 检查用户名是否已存在
     const existingUser = await this.prisma.user.findUnique({
       where: { username: createUserDto.username },
@@ -105,8 +113,11 @@ export class UserService {
   /**
    * 更新用户
    */
-  async update(id: number, updateUserDto: UpdateUserDto): Promise<UserWithoutPassword> {
+  async update(id: number, updateUserDto: UpdateUserDto, actorContext?: TenantContext): Promise<UserWithoutPassword> {
     await this.findOne(id)
+    this.assertUserTenantScope(updateUserDto)
+    if (actorContext)
+      this.assertUserMutationAllowed(actorContext, updateUserDto)
 
     try {
       const user = await this.prisma.user.update({
@@ -131,7 +142,7 @@ export class UserService {
    * 删除用户
    */
   async remove(id: number): Promise<void> {
-    const user = await this.findOne(id)
+    await this.findOne(id)
 
     await this.prisma.user.delete({
       where: { id },
@@ -152,8 +163,55 @@ export class UserService {
       status: true,
       role: true,
       permissions: true,
+      tenantId: true,
+      dataScope: true,
+      boundShopIds: true,
       createdAt: true,
       updatedAt: true,
     } as const
+  }
+
+  private assertUserTenantScope(dto: {
+    tenantId?: number | null
+    dataScope?: string
+    boundShopIds?: string[]
+  }) {
+    const dataScope = dto.dataScope || 'ALL'
+    const boundShopIds = dto.boundShopIds || []
+
+    if (dataScope === 'ALL' && dto.tenantId) {
+      throw new BadRequestException('平台管理员不能绑定租户')
+    }
+
+    if ((dataScope === 'TENANT' || dataScope === 'SHOP') && !dto.tenantId) {
+      throw new BadRequestException('租户账号必须绑定租户')
+    }
+
+    if (dataScope === 'SHOP' && boundShopIds.length === 0) {
+      throw new BadRequestException('店铺运营账号必须绑定至少一个店铺')
+    }
+  }
+
+  private assertUserMutationAllowed(
+    actor: TenantContext,
+    target: {
+      tenantId?: number | null
+      dataScope?: string
+      boundShopIds?: string[]
+    },
+  ) {
+    if (actor.dataScope === 'ALL')
+      return
+
+    if (!actor.tenantId)
+      throw new ForbiddenException('当前账号未绑定租户')
+
+    if ((target.dataScope || 'ALL') === 'ALL') {
+      throw new ForbiddenException('租户管理员不能创建或修改平台管理员')
+    }
+
+    if (target.tenantId !== actor.tenantId) {
+      throw new ForbiddenException('租户管理员不能管理其它租户用户')
+    }
   }
 }

@@ -104,6 +104,8 @@ export function createRestaurant(data: RestaurantSeedInput): RestaurantRecord {
         _id: `activity-${data.id}-special`,
       },
     ],
+    tenantId: data.tenantId ?? null,
+    tenantCode: data.tenantCode ?? null,
     createdAt: nowIso(),
   }
 }
@@ -116,6 +118,10 @@ export function createFood(
   price: number,
   imagePath: string,
   description: string,
+  tenant?: {
+    tenantId?: number | null
+    tenantCode?: string | null
+  },
 ): FoodRecord {
   const monthSales = 120 + itemId * 8
 
@@ -138,7 +144,10 @@ export function createFood(
       icon_color: 'f07373',
       image_text: '招牌',
     },
-    attributes: [{ icon_color: '5ec452', icon_name: '新' }],
+    attributes: [{
+      icon_color: '5ec452',
+      icon_name: '新',
+    }],
     specifications: [],
     specfoods: [
       {
@@ -163,6 +172,8 @@ export function createFood(
         original_price: 0,
       },
     ],
+    tenantId: tenant?.tenantId ?? null,
+    tenantCode: tenant?.tenantCode ?? null,
     createdAt: nowIso(),
   }
 }
@@ -175,7 +186,10 @@ export function createEntry(
   categoryId: number,
 ) {
   const filterKey = encodeURIComponent(JSON.stringify({
-    restaurant_category_id: { id: categoryId, name: title },
+    restaurant_category_id: {
+      id: categoryId,
+      name: title,
+    },
   }))
 
   return {

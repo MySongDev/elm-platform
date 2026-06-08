@@ -1,7 +1,7 @@
-import type { ElmCityService } from '../services/elm-city.service'
 import { Controller, Get, Param, ParseIntPipe, Query } from '@nestjs/common'
 import { ApiOperation, ApiTags } from '@nestjs/swagger'
 import { rawResponse } from '../../../common/interceptors/transform.interceptor'
+import { ElmCityService } from '../services/elm-city.service'
 
 @ApiTags('Elm 兼容接口 - 城市定位')
 @Controller()

@@ -2,6 +2,8 @@ import { Body, Controller, Get, HttpCode, Param, Post, Query, Request, UseGuards
 import { ApiBearerAuth, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger'
 import { rawResponse } from '../../common/interceptors/transform.interceptor'
 import { CustomerAuthGuard } from '../customer-auth/guards/customer-auth.guard'
+import { RequestRefundDto } from '../order/dto/request-refund.dto'
+import { OrderWorkflowService } from '../order/order-workflow.service'
 import { CreateAlipayWapPaymentDto } from './dto/create-alipay-wap-payment.dto'
 import {
   ResumeAlipayWapPaymentDto,
@@ -12,7 +14,10 @@ import { PaymentService } from './payment.service'
 @ApiTags('支付')
 @Controller()
 export class PaymentController {
-  constructor(private readonly paymentService: PaymentService) {}
+  constructor(
+    private readonly paymentService: PaymentService,
+    private readonly orderWorkflow: OrderWorkflowService,
+  ) {}
 
   @Post('payments/alipay/wap/create')
   @UseGuards(CustomerAuthGuard)
@@ -29,9 +34,9 @@ export class PaymentController {
   @Post('payments/alipay/wap/resume')
   @UseGuards(CustomerAuthGuard)
   @ApiBearerAuth()
+  @ApiOperation({ summary: '继续支付宝 WAP 支付单' })
   @ApiOkResponse({ type: ResumeAlipayWapPaymentResponseDto })
   @HttpCode(200)
-  @ApiOperation({ summary: '继续支付宝 WAP 支付单' })
   async resumeAlipayWapPayment(@Body() dto: ResumeAlipayWapPaymentDto, @Request() req: any) {
     const result = await this.paymentService.resumeAlipayWapPayment({
       ...dto,
@@ -50,6 +55,28 @@ export class PaymentController {
     @Request() req?: any,
   ) {
     const result = await this.paymentService.getAlipayPaymentStatus(orderNo, refresh !== '0', String(req.user.id))
+    return rawResponse(result)
+  }
+
+  @Post('orders/:orderNo/refund/request')
+  @UseGuards(CustomerAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: '用户申请订单退款' })
+  async requestRefund(
+    @Param('orderNo') orderNo: string,
+    @Body() dto: RequestRefundDto,
+    @Request() req: any,
+  ) {
+    const userId = String(req.user.id)
+    const result = await this.orderWorkflow.requestRefund(orderNo, {
+      userId,
+      reason: dto.reason,
+      operator: {
+        operatorId: userId,
+        operatorName: req.user.phone || `customer#${userId}`,
+        operatorType: 'CUSTOMER',
+      },
+    })
     return rawResponse(result)
   }
 

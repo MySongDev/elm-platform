@@ -1,4 +1,5 @@
-import { BadRequestException, NotFoundException, UnauthorizedException } from '@nestjs/common'
+import { BadRequestException, ForbiddenException, NotFoundException, UnauthorizedException } from '@nestjs/common'
+import { TenantAccessService } from '../tenant/tenant-access.service'
 import { PaymentService } from './payment.service'
 
 function createOrder(overrides: Record<string, unknown> = {}) {
@@ -10,6 +11,11 @@ function createOrder(overrides: Record<string, unknown> = {}) {
     shopName: '示例商家',
     status: 'PENDING',
     tradeStatus: 'WAIT_BUYER_PAY',
+    fulfillmentStatus: 'PENDING_PAYMENT',
+    refundStatus: 'NONE',
+    refundBaseFulfillmentStatus: null,
+    refundReason: null,
+    refundRejectReason: null,
     tradeNo: null,
     subject: '示例商家 外卖订单',
     goodsAmount: { toNumber: () => 24 },
@@ -42,6 +48,9 @@ function createService() {
       findMany: jest.fn().mockResolvedValue([order]),
       update: jest.fn().mockImplementation(({ data }) => Promise.resolve(createOrder(data))),
     },
+    tenant: {
+      findUnique: jest.fn().mockResolvedValue({ id: 10 }),
+    },
   } as any
 
   const alipay = {
@@ -57,10 +66,23 @@ function createService() {
     getSellerId: jest.fn().mockReturnValue('seller-id'),
   } as any
 
+  const orderWorkflow = {
+    syncPaymentStatus: jest.fn().mockImplementation(order => Promise.resolve(order)),
+    getAdminAvailableActions: jest.fn().mockReturnValue([]),
+    getCustomerAvailableActions: jest.fn().mockReturnValue([]),
+  } as any
+  const realTenantAccess = new TenantAccessService()
+  const tenantAccess = {
+    assertCanRead: jest.fn(context => realTenantAccess.assertCanRead(context)),
+    buildScopedWhere: jest.fn((context, query) => realTenantAccess.buildScopedWhere(context, query)),
+  } as any
+
   return {
-    service: new PaymentService(prisma, alipay),
+    service: new PaymentService(prisma, alipay, orderWorkflow, tenantAccess),
     prisma,
     alipay,
+    orderWorkflow,
+    tenantAccess,
     order,
   }
 }
@@ -88,6 +110,7 @@ describe('paymentService', () => {
         userId: '1',
         shopId: '101',
         shopName: '示例商家',
+        tenantId: null,
         subject: '示例商家 外卖订单',
         goodsAmount: 24,
         deliveryFee: 5,
@@ -143,6 +166,17 @@ describe('paymentService', () => {
     expect(result.status).toBe('PAID')
   })
 
+  it('syncs fulfillment status after a paid payment status refresh', async () => {
+    const { service, orderWorkflow } = createService()
+
+    await service.getAlipayPaymentStatus('ELMALI202605231234560001', true)
+
+    expect(orderWorkflow.syncPaymentStatus).toHaveBeenCalledWith(expect.objectContaining({
+      status: 'PAID',
+      tradeStatus: 'TRADE_SUCCESS',
+    }))
+  })
+
   it('throws when the order does not exist', async () => {
     const { service, prisma } = createService()
     prisma.paymentOrder.findUnique.mockResolvedValue(null)
@@ -179,6 +213,7 @@ describe('paymentService', () => {
     const result = await service.listAdminOrders()
 
     expect(prisma.paymentOrder.findMany).toHaveBeenCalledWith({
+      where: undefined,
       orderBy: [{ paidAt: 'desc' }, { updatedAt: 'desc' }, { createdAt: 'desc' }],
       take: 100,
     })
@@ -196,6 +231,124 @@ describe('paymentService', () => {
         totalQty: 2,
       }),
     ])
+  })
+
+  it('filters admin payment orders by tenant context', async () => {
+    const {
+      service,
+      prisma,
+      tenantAccess,
+    } = createService()
+
+    await service.listAdminOrders(undefined, {
+      userId: 1,
+      username: 'tenant-admin',
+      tenantId: 10,
+      tenantCode: 'flower-cake',
+      tenantName: '鲜花蛋糕',
+      tenantStatus: 'ACTIVE',
+      dataScope: 'TENANT',
+      boundShopIds: [],
+      isPlatformAdmin: false,
+    })
+
+    expect(tenantAccess.assertCanRead).toHaveBeenCalled()
+    expect(prisma.paymentOrder.findMany).toHaveBeenCalledWith(expect.objectContaining({
+      where: { tenantId: 10 },
+    }))
+  })
+
+  it('rejects admin payment order filters for another tenant', async () => {
+    const { service, prisma } = createService()
+
+    await expect(service.listAdminOrders(undefined, {
+      userId: 1,
+      username: 'tenant-admin',
+      tenantId: 10,
+      tenantCode: 'flower-cake',
+      tenantName: '鲜花蛋糕',
+      tenantStatus: 'ACTIVE',
+      dataScope: 'TENANT',
+      boundShopIds: [],
+      isPlatformAdmin: false,
+    }, { tenantId: 20 })).rejects.toThrow(ForbiddenException)
+
+    expect(prisma.paymentOrder.findMany).not.toHaveBeenCalled()
+  })
+
+  it('filters admin payment orders by bound shops for shop scoped operators', async () => {
+    const { service, prisma } = createService()
+
+    await service.listAdminOrders(undefined, {
+      userId: 1,
+      username: 'shop-operator',
+      tenantId: 10,
+      tenantCode: 'flower-cake',
+      tenantName: '鲜花蛋糕',
+      tenantStatus: 'ACTIVE',
+      dataScope: 'SHOP',
+      boundShopIds: ['1'],
+      isPlatformAdmin: false,
+    })
+
+    expect(prisma.paymentOrder.findMany).toHaveBeenCalledWith(expect.objectContaining({
+      where: {
+        tenantId: 10,
+        shopId: { in: ['1'] },
+      },
+    }))
+  })
+
+  it('allows shop scoped operators to narrow admin orders to bound shops', async () => {
+    const { service, prisma } = createService()
+
+    await service.listAdminOrders(undefined, {
+      userId: 1,
+      username: 'shop-operator',
+      tenantId: 10,
+      tenantCode: 'flower-cake',
+      tenantName: '鲜花蛋糕',
+      tenantStatus: 'ACTIVE',
+      dataScope: 'SHOP',
+      boundShopIds: ['1'],
+      isPlatformAdmin: false,
+    }, { shopId: '1' })
+
+    expect(prisma.paymentOrder.findMany).toHaveBeenCalledWith(expect.objectContaining({
+      where: {
+        tenantId: 10,
+        shopId: '1',
+      },
+    }))
+  })
+
+  it('resolves tenant id from seeded shop when creating payment orders', async () => {
+    const { service, prisma } = createService()
+
+    await service.createAlipayWapPayment({
+      userId: '1',
+      shopId: '1',
+      shopName: '鲜花蛋糕旗舰店',
+      deliveryFee: 5,
+      cartItems: [{
+        itemId: '1001',
+        skuId: '1001',
+        title: '商品',
+        qty: 2,
+        unitPrice: 12,
+      }],
+    })
+
+    expect(prisma.tenant.findUnique).toHaveBeenCalledWith({
+      where: { code: 'flower-cake' },
+      select: { id: true },
+    })
+    expect(prisma.paymentOrder.create).toHaveBeenCalledWith({
+      data: expect.objectContaining({
+        shopId: '1',
+        tenantId: 10,
+      }),
+    })
   })
 
   it('resumes a pending Alipay WAP payment with the original order number after refreshing status', async () => {

@@ -1,7 +1,7 @@
-import type { JwtService } from '@nestjs/jwt'
-import type { RedisService } from '../../redis/redis.service'
 import { createHash, randomBytes, randomUUID, timingSafeEqual } from 'node:crypto'
 import { Injectable, UnauthorizedException } from '@nestjs/common'
+import { JwtService } from '@nestjs/jwt'
+import { RedisService } from '../../redis/redis.service'
 
 interface CustomerUserLike {
   id: number
@@ -153,7 +153,10 @@ export class CustomerTokenService {
       return null
     }
 
-    return { tokenId, secret }
+    return {
+      tokenId,
+      secret,
+    }
   }
 
   private hashSecret(secret: string) {

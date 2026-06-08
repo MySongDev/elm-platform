@@ -29,11 +29,17 @@ describe('jwtStrategy subject boundaries', () => {
   })
 
   it('rejects tokens that do not declare a supported subject type', async () => {
-    await expect(strategy.validate({ sub: 1, username: 'legacy-admin' }))
+    await expect(strategy.validate({
+      sub: 1,
+      username: 'legacy-admin',
+    }))
       .rejects
       .toThrow(UnauthorizedException)
 
-    await expect(strategy.validate({ sub: 1, subjectType: 'partner' }))
+    await expect(strategy.validate({
+      sub: 1,
+      subjectType: 'partner',
+    }))
       .rejects
       .toThrow(UnauthorizedException)
   })

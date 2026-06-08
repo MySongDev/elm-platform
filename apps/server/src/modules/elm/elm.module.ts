@@ -1,5 +1,7 @@
 import { Module } from '@nestjs/common'
+import { OrderModule } from '../order/order.module'
 import { PaymentModule } from '../payment/payment.module'
+import { TenantModule } from '../tenant/tenant.module'
 import { ElmAdminController } from './controllers/elm-admin.controller'
 import { ElmFoodPublicController } from './controllers/elm-food-public.controller'
 import { ElmLocationController } from './controllers/elm-location.controller'
@@ -14,7 +16,7 @@ import { ElmStoreService } from './services/elm-store.service'
 import { ElmUserCompatService } from './services/elm-user-compat.service'
 
 @Module({
-  imports: [PaymentModule],
+  imports: [PaymentModule, OrderModule, TenantModule],
   controllers: [
     ElmLocationController,
     ElmRestaurantPublicController,

@@ -1,4 +1,3 @@
-import type { ElmUserCompatService } from '../services/elm-user-compat.service'
 import {
   Body,
   Controller,
@@ -14,6 +13,7 @@ import {
 import { FileInterceptor } from '@nestjs/platform-express'
 import { ApiOperation, ApiTags } from '@nestjs/swagger'
 import { rawResponse } from '../../../common/interceptors/transform.interceptor'
+import { ElmUserCompatService } from '../services/elm-user-compat.service'
 
 @ApiTags('Elm 兼容接口 - 用户')
 @Controller()

@@ -51,7 +51,14 @@ describe('smsService', () => {
 
     const service = new SmsService(redis as any, configService as any, injectProvider ? provider : undefined)
 
-    return { service, redis, configService, provider, store, expirations }
+    return {
+      service,
+      redis,
+      configService,
+      provider,
+      store,
+      expirations,
+    }
   }
 
   afterEach(() => {
@@ -69,11 +76,17 @@ describe('smsService', () => {
 
     const result = await service.sendCode('13800138000', 'login')
 
-    expect(result).toEqual({ success: true, debugCode: '123456' })
+    expect(result).toEqual({
+      success: true,
+      debugCode: '123456',
+    })
     expect(provider.sendCode).toHaveBeenCalledWith('13800138000', '123456', 'login')
     expect(redis.set).toHaveBeenCalledWith(
       'sms:code:login:13800138000',
-      expect.objectContaining({ hash: expect.any(String), createdAt: fixedNow.toISOString() }),
+      expect.objectContaining({
+        hash: expect.any(String),
+        createdAt: fixedNow.toISOString(),
+      }),
       300,
     )
     expect(store.get('sms:code:login:13800138000')).toContain('"hash"')
@@ -84,8 +97,14 @@ describe('smsService', () => {
     const moduleRef = await Test.createTestingModule({
       providers: [
         SmsService,
-        { provide: RedisService, useValue: {} },
-        { provide: ConfigService, useValue: { get: jest.fn() } },
+        {
+          provide: RedisService,
+          useValue: {},
+        },
+        {
+          provide: ConfigService,
+          useValue: { get: jest.fn() },
+        },
       ],
     }).compile()
 

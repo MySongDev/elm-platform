@@ -8,7 +8,10 @@ import { RolesGuard } from './roles.guard'
 interface GuardOptions {
   requiredRoles?: string[]
   requiredPermissions?: string[]
-  requestUser?: { id?: number, subjectType?: string }
+  requestUser?: {
+    id?: number
+    subjectType?: string
+  }
   currentUser?: {
     role: string
     permissions?: string[] | null
@@ -20,8 +23,16 @@ interface GuardOptions {
   } | null
 }
 
-function createExecutionContext(requestUser?: { id?: number, subjectType?: string }): ExecutionContext {
-  const user = requestUser?.id ? { subjectType: 'admin', ...requestUser } : requestUser
+function createExecutionContext(requestUser?: {
+  id?: number
+  subjectType?: string
+}): ExecutionContext {
+  const user = requestUser?.id
+    ? {
+        subjectType: 'admin',
+        ...requestUser,
+      }
+    : requestUser
 
   return {
     getClass: jest.fn(),
@@ -83,7 +94,10 @@ describe('rolesGuard', () => {
   it('rejects customer subjects before loading admin role data', async () => {
     const { guard, context, prisma } = createGuard({
       requiredRoles: ['admin'],
-      requestUser: { id: 7, subjectType: 'customer' },
+      requestUser: {
+        id: 7,
+        subjectType: 'customer',
+      },
       currentUser: {
         role: 'admin',
         permissions: ['*:*:*'],
@@ -104,7 +118,11 @@ describe('rolesGuard', () => {
     const disabled = createGuard({
       requiredRoles: ['admin'],
       requestUser: { id: 2 },
-      currentUser: { role: 'admin', permissions: ['system:user:list'], status: 0 },
+      currentUser: {
+        role: 'admin',
+        permissions: ['system:user:list'],
+        status: 0,
+      },
     })
 
     await expect(missing.guard.canActivate(missing.context)).resolves.toBe(false)
@@ -126,7 +144,11 @@ describe('rolesGuard', () => {
     await expect(guard.canActivate(context)).resolves.toBe(true)
     expect(prisma.user.findUnique).toHaveBeenCalledWith({
       where: { id: 7 },
-      select: { role: true, permissions: true, status: true },
+      select: {
+        role: true,
+        permissions: true,
+        status: true,
+      },
     })
   })
 
@@ -191,7 +213,10 @@ describe('rolesGuard', () => {
     await expect(guard.canActivate(context)).resolves.toBe(true)
     expect(prisma.role.findUnique).toHaveBeenCalledWith({
       where: { code: 'user' },
-      select: { permissions: true, status: true },
+      select: {
+        permissions: true,
+        status: true,
+      },
     })
   })
 
