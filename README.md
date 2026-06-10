@@ -10,7 +10,12 @@ elm-platform/
 │   ├── server/          # NestJS 后端服务
 │   ├── web-admin/       # 管理后台 (Vue 3 + Element Plus)
 │   └── web-user/        # 用户端 (Vue 3 + Vant)
-├── packages/            # 共享包
+├── packages/
+│   ├── api-types/       # 从 OpenAPI 生成的接口类型
+│   ├── contracts/       # 前后端共享的业务契约类型
+│   ├── tsconfig/        # 共享 TypeScript 配置基线
+│   └── vite-config/     # 共享 Vite 配置工具函数
+├── docs/                # 架构决策、工程规范、开发报告
 ├── package.json         # 根配置
 └── pnpm-workspace.yaml  # 工作区配置
 ```
@@ -90,22 +95,13 @@ pnpm clean  # 删除 node_modules、dist、.turbo
 
 ## 数据库配置
 
-后端使用 Prisma 管理数据库：
+后端使用 Prisma 管理数据库，**从根目录运行**：
 
 ```bash
-cd apps/server
-
-# 生成 Prisma Client
-pnpm prisma:generate
-
-# 运行数据库迁移
-pnpm prisma:migrate
-
-# 打开 Prisma Studio
-pnpm prisma:studio
-
-# 填充种子数据
-pnpm prisma:seed
+pnpm --filter @elm-platform/server run prisma:generate
+pnpm --filter @elm-platform/server run prisma:migrate
+pnpm --filter @elm-platform/server run prisma:studio
+pnpm --filter @elm-platform/server run prisma:seed
 ```
 
 ## API 文档
@@ -113,7 +109,7 @@ pnpm prisma:seed
 启动后端服务后，访问 Swagger 文档：
 
 ```
-http://localhost:3000/api/docs
+http://localhost:3000/api-docs
 ```
 
 ## 主要功能
@@ -128,10 +124,11 @@ http://localhost:3000/api/docs
 
 ### 管理后台
 - 数据统计面板
-- 用户管理
-- 餐厅管理
-- 订单管理
-- 配送管理
+- 系统管理（用户、角色、菜单、部门）
+- 商业管理（餐厅、食品、订单）
+- 平台管理（多租户）
+- 商户入驻工作流
+- 监控中心（在线用户、登录/操作/系统日志）
 
 ## 项目规范
 
