@@ -46,7 +46,7 @@
     "turbo:affected:lint": "turbo run lint --affected",
     "clean": "pnpm -r exec rm -rf node_modules dist .turbo",
     "prepare": "husky",
-    "preinstall": "node -e \"if (!/pnpm/.test(process.env.npm_config_user_agent)) { console.error('\\n\\x1b[31m此项目仅支持 pnpm，请使用 pnpm install 安装依赖\\x1b[0m\\n'); process.exit(1); }\""
+    "preinstall": "node -e \"if (!process.env.CI && !/pnpm/.test(process.env.npm_config_user_agent)) { console.error('\\n\\x1b[31m此项目仅支持 pnpm，请使用 pnpm install 安装依赖\\x1b[0m\\n'); process.exit(1); }\""
   },
   "devDependencies": {
     "@antfu/eslint-config": "catalog:",
