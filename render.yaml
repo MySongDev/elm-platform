@@ -1,0 +1,39 @@
+name: Deploy Server to Render
+
+services:
+  - type: web
+    name: elm-platform-server
+    runtime: node
+    region: singapore              # 离国内最近的区域
+    plan: free
+    rootDir: .                     # monorepo 根目录
+    buildCommand: pnpm install --frozen-lockfile && pnpm build:packages && pnpm --filter @elm-platform/server run prisma:generate && pnpm --filter @elm-platform/server run prisma:migrate:prod && pnpm --filter @elm-platform/server run build
+    startCommand: pnpm --filter @elm-platform/server run start:prod
+    envVars:
+      - key: APP_PORT
+        value: 3000
+      - key: APP_PREFIX
+        value: api
+      - key: DATABASE_URL
+        sync: false                # 手动在 Render Dashboard 设置
+      - key: REDIS_HOST
+        sync: false
+      - key: REDIS_PORT
+        value: "6379"
+      - key: REDIS_PASSWORD
+        sync: false
+      - key: REDIS_DB
+        value: "0"
+      - key: CUSTOMER_LOGIN_AUTO_REGISTER
+        value: "true"
+      - key: SMS_PROVIDER
+        value: mock
+      - key: SMS_MOCK_CODE
+        value: "123456"
+      - key: SMS_CODE_TTL_SECONDS
+        value: "300"
+      - key: SMS_COOLDOWN_SECONDS
+        value: "60"
+      - key: SMS_DAILY_LIMIT
+        value: "10"
+    healthCheckPath: /api-docs
