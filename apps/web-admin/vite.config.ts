@@ -10,6 +10,7 @@ export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, cwd(), '')
 
   return {
+    base: process.env.BASE_URL || '/',
     server: {
       watch: {
         ignored: [

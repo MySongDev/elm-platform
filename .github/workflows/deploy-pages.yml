@@ -1,0 +1,135 @@
+# Deploy web-admin and web-user to GitHub Pages
+#
+# Prerequisites:
+#   1. Repo → Settings → Pages → Source = "GitHub Actions"
+#   2. For project pages (e.g. github.com/user/repo), update BASE_URL
+#      below to match your repo name (default: /REPO_NAME/).
+#      For user/org pages (e.g. github.com/user/user.github.io),
+#      keep the defaults (/admin/ and /user/).
+#
+# The workflow builds both frontends into /admin/ and /user/ subdirectories,
+# with a landing page at the root for navigation.
+
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# Allow only one concurrent deployment, skipping runs queued between the run
+# in-progress and latest queued. Do not cancel in-progress runs as we want to
+# allow the production deployment to complete.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+# Required by actions/deploy-pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+env:
+  # ---------------------------------------------------------------
+  # Project pages: change to '/YOUR_REPO_NAME/'.
+  # User/org pages: keep as '/admin/' and '/user/'.
+  # ---------------------------------------------------------------
+  ADMIN_BASE_URL: /admin/
+  USER_BASE_URL: /user/
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build shared packages
+        run: pnpm build:packages
+
+      - name: Build admin
+        run: pnpm build:admin
+        env:
+          BASE_URL: ${{ env.ADMIN_BASE_URL }}
+
+      - name: Build user
+        run: pnpm build:user
+        env:
+          BASE_URL: ${{ env.USER_BASE_URL }}
+
+      - name: Assemble site
+        run: |
+          mkdir -p site/admin site/user
+          cp -r apps/web-admin/dist/* site/admin/
+          cp -r apps/web-user/dist/*  site/user/
+          cat > site/index.html << 'HTML'
+          <!DOCTYPE html>
+          <html lang="zh-CN">
+          <head>
+            <meta charset="UTF-8" />
+            <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+            <title>Elm Platform</title>
+            <style>
+              * { margin: 0; padding: 0; box-sizing: border-box; }
+              body {
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+                display: flex; justify-content: center; align-items: center;
+                min-height: 100vh;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: #fff;
+              }
+              .container { text-align: center; }
+              h1 { font-size: 2.5rem; margin-bottom: 0.5rem; }
+              p  { font-size: 1.1rem; opacity: 0.85; margin-bottom: 2rem; }
+              .links { display: flex; gap: 1.5rem; justify-content: center; flex-wrap: wrap; }
+              .links a {
+                display: inline-block; padding: 1rem 2.5rem;
+                background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3);
+                border-radius: 12px; color: #fff; text-decoration: none;
+                font-size: 1.1rem; font-weight: 500;
+                transition: background 0.2s, transform 0.2s;
+              }
+              .links a:hover { background: rgba(255,255,255,0.25); transform: translateY(-2px); }
+            </style>
+          </head>
+          <body>
+            <div class="container">
+              <h1>Elm Platform</h1>
+              <p>Choose an application to get started</p>
+              <div class="links">
+                <a href="./admin/">Admin Dashboard</a>
+                <a href="./user/">User App</a>
+              </div>
+            </div>
+          </body>
+          </html>
+          HTML
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

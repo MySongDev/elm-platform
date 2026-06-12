@@ -57,3 +57,6 @@ apps/server/prisma/*.db-journal
 
 # Misc
 *.tsbuildinfo
+
+# Docs
+docs
