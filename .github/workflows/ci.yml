@@ -280,8 +280,8 @@ jobs:
       - name: Generate Prisma client
         run: pnpm --filter @elm-platform/server run prisma:generate
 
-      - name: Run database migrations
-        run: pnpm --filter @elm-platform/server run prisma:migrate
+      - name: Sync database schema
+        run: pnpm --filter @elm-platform/server run prisma:db:push
         env:
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/elm_test?schema=public
 
