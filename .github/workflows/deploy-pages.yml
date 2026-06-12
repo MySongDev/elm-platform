@@ -35,8 +35,8 @@ env:
   # Project pages: change to '/YOUR_REPO_NAME/'.
   # User/org pages: keep as '/admin/' and '/user/'.
   # ---------------------------------------------------------------
-  ADMIN_BASE_URL: /admin/
-  USER_BASE_URL: /user/
+  ADMIN_BASE_URL: /elm-platform/admin/
+  USER_BASE_URL: /elm-platform/user/
 
 jobs:
   build:
@@ -51,7 +51,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: pnpm
 
       - name: Install dependencies
