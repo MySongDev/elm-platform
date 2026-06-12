@@ -782,7 +782,7 @@ pnpm exec husky init
 
 ```text
 安装 Husky；
-创建 .husky 文件夹；
+创建 .husky 文件夹(文件名要和git的生命周期钩子一样，不可以自定义)；
 配置 Git hooksPath；
 让 Git 后续能找到 .husky 里的 hook 文件。
 ```

@@ -1,6 +1,6 @@
 <script setup>
 import { showAlert } from '@/components/common//AlterTip'
-import { getDeviceInfo } from '@/untils/device-detector'
+import { getDeviceInfo } from '@/utils/device-detector'
 
 defineOptions({
   name: 'DownLoad',

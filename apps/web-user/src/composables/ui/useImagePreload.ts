@@ -1,4 +1,4 @@
-import { preloadImageUrl } from '@/utils/imageLoadScheduler'
+import { preloadImageUrl } from '@/utils/image/imageLoadScheduler'
 
 export function useImagePreload() {
   return { preloadImageUrl }

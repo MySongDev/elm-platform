@@ -7,7 +7,7 @@ import { useAuthRedirect } from '@/composables/app'
 import { useStateContainer } from '@/composables/ui'
 import { getImageUrl } from '@/config'
 import { searchRestaurant } from '@/services/api/api-search'
-import { clearAll, getSearchHistory, removeSearchItem, setSearchHistory } from '@/untils/SearchHistory'
+import { clearAll, getSearchHistory, removeSearchItem, setSearchHistory } from '@/utils/search/SearchHistory'
 
 defineOptions({
   name: 'SearchHome',

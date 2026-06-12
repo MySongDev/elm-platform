@@ -6,8 +6,8 @@ import { useRoute } from 'vue-router'
 import { showAlert } from '@/components/common/AlterTip'
 import { createAlipayWapPayment } from '@/services/api/api-payment'
 import { useUserStore } from '@/stores/modules/store-user'
-import { clearPaymentCheckoutDraft, getPaymentCheckoutDraft } from '@/untils/payment'
-import { getStore } from '@/untils/storage'
+import { clearPaymentCheckoutDraft, getPaymentCheckoutDraft } from '@/utils/payment'
+import { getStore } from '@/utils/storage/storage'
 
 defineOptions({
   name: 'ShopPayment',

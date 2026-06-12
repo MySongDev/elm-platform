@@ -1,4 +1,4 @@
-import { getStore } from '@/untils/storage'
+import { getStore } from '@/utils/storage/storage'
 
 import { get, post } from '../http/http'
 

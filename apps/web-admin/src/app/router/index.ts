@@ -7,7 +7,7 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
 import { setupGuards } from './guards/index'
 import { staticRoutes } from './routes/index'
-import './types'
+import './types/route-meta'
 
 const router = createRouter({
   history: createWebHashHistory(),

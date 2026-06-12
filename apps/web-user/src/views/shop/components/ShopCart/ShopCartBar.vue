@@ -2,7 +2,7 @@
 import { computed, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 
-import { buildPaymentCartItems, savePaymentCheckoutDraft } from '@/untils/payment'
+import { buildPaymentCartItems, savePaymentCheckoutDraft } from '@/utils/payment'
 
 const props = defineProps({
   cartItems: {

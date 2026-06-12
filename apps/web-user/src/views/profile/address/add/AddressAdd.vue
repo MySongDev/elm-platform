@@ -7,7 +7,7 @@ import { useFormValidator } from '@/composables/ui'
 import { addAddress } from '@/services/api/api-address'
 import { useLocationStore } from '@/stores/modules/store-locations'
 import { useUserStore } from '@/stores/modules/store-user'
-import { useFormDraft } from '@/untils/FormDraft'
+import { useFormDraft } from '@/utils/FormDraft'
 
 import { addressSchema } from './addressFormSchema'
 import FormInput from './components/FormInput.vue'

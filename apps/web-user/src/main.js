@@ -12,7 +12,7 @@ import { setUnauthorizedHandler } from '@/services/http/http'
 import { pinia, registStore } from '@/stores'
 import { useUserStore } from '@/stores/modules/store-user'
 
-import { setStore } from '@/untils/storage'
+import { setStore } from '@/utils/storage/storage'
 import App from './App.vue'
 import lazy from './directives/lazy'
 

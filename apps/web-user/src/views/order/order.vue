@@ -5,7 +5,7 @@ import { useRoute, useRouter } from 'vue-router'
 
 import BaseState from '@/components/common/BaseState/BaseState.vue'
 import { useUserStore } from '@/stores/modules/store-user'
-import { getStore } from '@/untils/storage'
+import { getStore } from '@/utils/storage/storage'
 import OrderCard from './components/OrderCard.vue'
 import { useContinuePayment } from './composables/useContinuePayment'
 import { useRequestRefund } from './composables/useRequestRefund'

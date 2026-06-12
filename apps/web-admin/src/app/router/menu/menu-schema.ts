@@ -4,7 +4,7 @@
  * @description 在菜单进入路由适配层前做结构校验和无效节点过滤，避免异常后端数据破坏动态路由注册。
  */
 
-import type { BackendMenuNode } from './build-routes'
+import type { BackendMenuNode } from '../build-routes'
 
 export type MenuValidationSeverity = 'error' | 'warning'
 

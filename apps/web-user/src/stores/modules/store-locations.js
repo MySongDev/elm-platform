@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 
-import { getStore } from '@/untils/storage'
+import { getStore } from '@/utils/storage/storage'
 
 export const useLocationStore = defineStore('location', {
   state: () => {

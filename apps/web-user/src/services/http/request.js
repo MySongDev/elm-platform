@@ -2,7 +2,7 @@ import axios from 'axios'
 
 import { showAlert } from '@/components/common/AlterTip/index'
 import { API_BASE_URL } from '@/config'
-import { getStore } from '@/untils/storage'
+import { getStore } from '@/utils/storage/storage'
 
 import { refreshCustomerToken } from './auth-refresh'
 import { finishGlobalLoading, startGlobalLoading } from './loading'

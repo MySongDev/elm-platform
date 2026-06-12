@@ -1,10 +1,10 @@
 import type { UserMenuNode } from '@/entities/session'
 import { describe, expect, it, vi } from 'vitest'
 import { buildRoutes, buildRoutesFromRouteMenus } from '../build-routes'
-import { adaptBackendMenusToRouteMenus } from '../menu-adapter'
-import { validateMenuTree } from '../menu-schema'
+import { adaptBackendMenusToRouteMenus } from '../menu/menu-adapter'
+import { validateMenuTree } from '../menu/menu-schema'
 
-vi.mock('../component-map', () => ({
+vi.mock('../component/component-map', () => ({
   layoutComponent: { name: 'Layout' },
   resolveComponent: (key: string) => ({ name: `View:${key}` }),
 }))

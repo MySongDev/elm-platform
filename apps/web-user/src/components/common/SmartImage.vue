@@ -1,8 +1,8 @@
 <script setup>
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { IMAGE_PRIORITY } from '@/config/imageLoading'
-import { buildImageCandidateUrls } from '@/utils/imageCandidates'
-import { scheduleImageTask } from '@/utils/imageLoadScheduler'
+import { buildImageCandidateUrls } from '@/utils/image/imageCandidates'
+import { scheduleImageTask } from '@/utils/image/imageLoadScheduler'
 
 const props = defineProps({
   src: {

@@ -5,12 +5,12 @@
  */
 
 import type { RouteRecordRaw } from 'vue-router'
-import type { RouteMenuNode } from './route-menu.types'
+import type { RouteMenuNode } from './types/route-menu.types'
 import type { UserMenuNode } from '@/entities/session'
-import { resolveRouteComponentKey } from './component-key'
-import { layoutComponent, resolveComponent } from './component-map'
-import { adaptBackendMenusToRouteMenus } from './menu-adapter'
-import { normalizeMenuTree } from './menu-schema'
+import { resolveRouteComponentKey } from './component/component-key'
+import { layoutComponent, resolveComponent } from './component/component-map'
+import { adaptBackendMenusToRouteMenus } from './menu/menu-adapter'
+import { normalizeMenuTree } from './menu/menu-schema'
 import { normalizePath } from './utils'
 
 /**

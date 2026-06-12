@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-import { getStore } from '@/untils/storage'
+import { getStore } from '@/utils/storage/storage'
 import { paymentEndpoints } from './endpoints/payment.endpoints'
 
 export const PAY_API_UNAVAILABLE_MESSAGE

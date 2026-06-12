@@ -23,7 +23,7 @@ vi.mock('axios', () => ({
   },
 }))
 
-vi.mock('@/untils/storage', () => ({
+vi.mock('@/utils/storage/storage', () => ({
   getStore: mocks.getStore,
 }))
 

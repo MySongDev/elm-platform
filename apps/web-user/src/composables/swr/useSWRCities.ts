@@ -1,5 +1,5 @@
 import { getGroupCity } from '@/services/api/index'
-import { formatCities } from '@/untils/formatCities'
+import { formatCities } from '@/utils/format/formatCities'
 import { useSWR } from './useSWR'
 
 export function useCities() {

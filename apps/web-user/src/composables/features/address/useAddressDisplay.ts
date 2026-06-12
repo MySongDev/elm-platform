@@ -1,7 +1,7 @@
 import type { Ref } from 'vue'
 import { computed } from 'vue'
 
-import { maskPhone } from '@/untils/format'
+import { maskPhone } from '@/utils/format/format'
 
 interface AddressItem {
   id?: string

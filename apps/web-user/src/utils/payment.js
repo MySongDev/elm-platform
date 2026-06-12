@@ -1,4 +1,4 @@
-import { getStore, removeStore, setStore } from './storage'
+import { getStore, removeStore, setStore } from './storage/storage'
 
 export const PAYMENT_CHECKOUT_DRAFT_KEY = 'payment_checkout_draft'
 export const PAYMENT_SUCCESS_CONTEXT_KEY = 'payment_success_context'

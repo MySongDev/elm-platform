@@ -1,4 +1,4 @@
-import { addErrorLog } from '@/untils/logger'
+import { addErrorLog } from '@/utils/storage/logger'
 
 const ROUTE_START_MARK = '__route_start_time__'
 const PERFORMANCE_REPORTED = '__performance_reported__'

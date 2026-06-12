@@ -2,7 +2,7 @@ import { defineStore } from 'pinia'
 import { computed, ref, watch } from 'vue'
 
 import { getImageUrl } from '@/config'
-import { getStore, removeStore, setStore } from '@/untils/storage'
+import { getStore, removeStore, setStore } from '@/utils/storage/storage'
 
 const CART_STORAGE_KEY = 'elm_cart_store_v1'
 const CART_PENDING_CHECKOUT_KEY = 'elm_cart_pending_checkout_v1'

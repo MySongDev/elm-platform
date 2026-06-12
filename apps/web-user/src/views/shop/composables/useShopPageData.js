@@ -1,6 +1,6 @@
 import { ref, watch } from 'vue'
 import { getFoodMenu, getShopDetails } from '@/services/api/api-shop'
-import { clearPaymentSuccessContext, getPaymentSuccessContext } from '@/untils/payment'
+import { clearPaymentSuccessContext, getPaymentSuccessContext } from '@/utils/payment'
 
 export function useShopPageData(options) {
   const { shopId, onPaidOrderConsumed } = options

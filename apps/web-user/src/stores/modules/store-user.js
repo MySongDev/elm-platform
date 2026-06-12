@@ -2,7 +2,7 @@ import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
 
 import { getUserInfo as getUserInfoApi } from '@/services/api'
-import { getStore, removeStore, setStore } from '@/untils/storage'
+import { getStore, removeStore, setStore } from '@/utils/storage/storage'
 
 const ACCESS_TOKEN_KEY = 'customer_token'
 const REFRESH_TOKEN_KEY = 'customer_refresh_token'

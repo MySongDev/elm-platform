@@ -5,7 +5,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { showAlert } from '@/components/common/AlterTip'
 import { getAlipayPaymentStatus } from '@/services/api/api-payment'
 import { useCartStore } from '@/stores/modules/store-cart'
-import { savePaymentSuccessContext } from '@/untils/payment'
+import { savePaymentSuccessContext } from '@/utils/payment'
 
 defineOptions({
   name: 'PaymentResult',

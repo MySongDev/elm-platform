@@ -1,4 +1,4 @@
-import { addErrorLog } from '@/untils/logger'
+import { addErrorLog } from '@/utils/storage/logger'
 
 import { getMeta } from './policies'
 

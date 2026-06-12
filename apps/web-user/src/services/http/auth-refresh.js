@@ -1,5 +1,5 @@
 import { authEndpoints } from '@/services/api/endpoints/auth.endpoints'
-import { getStore, setStore } from '@/untils/storage'
+import { getStore, setStore } from '@/utils/storage/storage'
 
 const ACCESS_TOKEN_KEY = 'customer_token'
 const REFRESH_TOKEN_KEY = 'customer_refresh_token'

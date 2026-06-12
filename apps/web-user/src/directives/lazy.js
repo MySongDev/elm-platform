@@ -1,5 +1,5 @@
 import { IMAGE_PRIORITY } from '@/config/imageLoading'
-import { scheduleImageTask } from '@/utils/imageLoadScheduler'
+import { scheduleImageTask } from '@/utils/image/imageLoadScheduler'
 
 // 并发加载上限
 const MAX_CONCURRENT = 8

@@ -4,8 +4,8 @@
  * @description 将后端菜单字段转换为前端内部 RouteMenuNode，后端协议变化应优先收敛在这一层。
  */
 
-import type { BackendMenuNode } from './build-routes'
-import type { RouteMenuNode } from './route-menu.types'
+import type { BackendMenuNode } from '../build-routes'
+import type { RouteMenuNode } from '../types/route-menu.types'
 import { resolveKnownRouteTitleKey, resolveRouteTitleFallback } from './route-title-map'
 
 /**

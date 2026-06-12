@@ -5,7 +5,7 @@ import { useRouter } from 'vue-router'
 import { showAlert } from '@/components/common/AlterTip'
 import { confirm } from '@/components/common/ConfirmDialog'
 import { navbarHeaderContextKey } from '@/layout/navbarHeaderContext'
-import { savePaymentCheckoutDraft } from '@/untils/payment'
+import { savePaymentCheckoutDraft } from '@/utils/payment'
 
 import CartBottomBar from './components/CartBottomBar.vue'
 import CartStoreCard from './components/CartStoreCard.vue'

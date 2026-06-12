@@ -1,7 +1,7 @@
 import type { Ref } from 'vue'
 import { onMounted, ref } from 'vue'
 
-import { getCache, setCache } from '@/untils/db'
+import { getCache, setCache } from '@/utils/storage/db'
 
 interface SWROptions<T> {
   key: string | (() => string)

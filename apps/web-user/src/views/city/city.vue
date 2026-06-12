@@ -4,7 +4,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { getCityInfo, searchCityInfo } from '@/services/api'
 
 import { useLocationStore } from '@/stores/modules/store-locations'
-import { clearAll, getSearchHistory, removeSearchItem, setSearchHistory } from '@/untils/SearchHistory'
+import { clearAll, getSearchHistory, removeSearchItem, setSearchHistory } from '@/utils/search/SearchHistory'
 
 defineOptions({
   name: 'CityDetail',

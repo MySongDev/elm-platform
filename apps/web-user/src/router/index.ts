@@ -4,7 +4,7 @@ import { createRouter, createWebHashHistory } from 'vue-router'
 import { pinia } from '@/stores'
 
 import { useUserStore } from '@/stores/modules/store-user'
-import NProgress from '../untils/NProgress/nprogress'
+import NProgress from '../utils/NProgress/nprogress'
 import './types'
 
 const modules = import.meta.glob('./modules/*.ts', {
