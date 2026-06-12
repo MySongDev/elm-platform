@@ -51,6 +51,7 @@ export default antfu(
       'apps/web-user/__screenshots__/**',
       'apps/web-user/cypress/screenshots/**',
       'apps/web-user/cypress/videos/**',
+      'docs',
     ],
     rules: sharedRules,
   },

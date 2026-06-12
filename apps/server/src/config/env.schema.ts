@@ -18,6 +18,7 @@ export const envSchema = z.object({
   REDIS_PORT: portSchema.default(6379),
   REDIS_PASSWORD: optionalString,
   REDIS_DB: z.coerce.number().int().min(0).default(0),
+  REDIS_TLS: z.enum(['true', 'false']).default('false').transform(value => value === 'true'),
 
   CUSTOMER_LOGIN_AUTO_REGISTER: z
     .enum(['true', 'false'])

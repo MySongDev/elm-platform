@@ -2,6 +2,18 @@
 
 基于 Vue 3 + NestJS 的外卖平台全栈项目，采用 pnpm monorepo 架构。
 
+## 线上访问
+
+| 页面 | 地址 | 说明 |
+|------|------|------|
+| 导航首页 | https://mysongdev.github.io/elm-platform/ | 选择进入管理后台或用户端 |
+| 管理后台 | https://mysongdev.github.io/elm-platform/admin/ | Vue 3 + Element Plus |
+| 用户端 | https://mysongdev.github.io/elm-platform/user/ | Vue 3 + Vant |
+| 后端 API | https://elm-platform.onrender.com/api | NestJS 服务 |
+| API 文档 | https://elm-platform.onrender.com/api-docs | Swagger 文档 |
+
+> 前端托管在 GitHub Pages，后端托管在 Render，数据库使用 Neon (PostgreSQL)，缓存使用 Upstash (Redis)。
+
 ## 项目结构
 
 ```
@@ -48,8 +60,8 @@ elm-platform/
 
 ### 环境要求
 
-- Node.js >= 18
-- pnpm >= 8
+- Node.js >= 22
+- pnpm >= 11
 
 ### 安装依赖
 

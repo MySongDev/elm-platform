@@ -14,6 +14,7 @@ export class RedisService implements OnModuleDestroy {
       port: this.configService.get<number>('redis.port', 6379),
       password: this.configService.get<string>('redis.password'),
       db: this.configService.get<number>('redis.db', 0),
+      tls: this.configService.get<boolean>('redis.tls', false) ? {} : undefined,
     })
 
     this.client.on('connect', () => {

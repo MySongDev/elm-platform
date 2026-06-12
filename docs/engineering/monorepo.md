@@ -1,84 +1,84 @@
-# Monorepo Engineering Guide
+# Monorepo 工程指南
 
-## Purpose
+## 目的
 
-This repository is a pnpm workspace Monorepo for the Elm Platform. The goal of this guide is to make package roles, command entrypoints, build order, and dependency boundaries explicit so local development and CI use the same workflow.
+本仓库是 Elm Platform 的 pnpm workspace Monorepo。本指南的目标是明确各包的职责、命令入口、构建顺序和依赖边界，使本地开发和 CI 使用相同的工作流程。
 
-## Workspace layout
+## 工作区布局
 
 ```text
 apps/
-  server      NestJS backend with Prisma, Redis, JWT/Passport, Swagger
-  web-admin   Vue 3 admin dashboard with Element Plus, Pinia, Vue Router, Vite
-  web-user    Vue 3 mobile app with Vant, Pinia, Vue Router, Vite, Vitest
+  server      NestJS 后端，使用 Prisma、Redis、JWT/Passport、Swagger
+  web-admin   Vue 3 管理后台，使用 Element Plus、Pinia、Vue Router、Vite
+  web-user    Vue 3 移动端应用，使用 Vant、Pinia、Vue Router、Vite、Vitest
 packages/
-  contracts   Shared business contracts, constants, and domain types
-  api-types   Generated OpenAPI TypeScript declarations
-  tsconfig    Shared TypeScript configuration files
-  vite-config Shared Vite helper utilities for web apps
+  contracts   共享业务契约、常量和领域类型
+  api-types   由工具生成的 OpenAPI TypeScript 类型声明
+  tsconfig    共享 TypeScript 配置文件
+  vite-config 共享 Vite 辅助工具函数，供 Web 应用使用
 ```
 
-The workspace membership is defined in `pnpm-workspace.yaml`. New apps should live under `apps/*`; reusable packages should live under `packages/*`.
+工作区成员定义在 `pnpm-workspace.yaml` 中。新的应用应放在 `apps/*` 下；可复用的包应放在 `packages/*` 下。
 
-## Shared package responsibilities
+## 共享包职责
 
 ### `@elm-platform/contracts`
 
-Use this package for runtime-safe shared domain contracts, constants, enums, and types that are consumed by more than one app. It is currently consumed by the backend and admin app.
+用于多个应用共享的运行时安全的领域契约、常量、枚举和类型。目前被后端和管理后台使用。
 
-Do not put framework-specific NestJS, Vue, Element Plus, Vant, or database implementation code here.
+不要将框架特定的 NestJS、Vue、Element Plus、Vant 或数据库实现代码放在这里。
 
 ### `@elm-platform/api-types`
 
-Use this package for generated OpenAPI TypeScript declarations. Update it through:
+用于由工具生成的 OpenAPI TypeScript 类型声明。通过以下命令更新：
 
 ```bash
 pnpm api:generate
 ```
 
-Do not manually duplicate generated API response types inside apps when the generated type can be reused.
+当生成的类型可以复用时，不要在应用中手动重复定义 API 响应类型。
 
 ### `@elm-platform/tsconfig`
 
-Use this package for shared TypeScript compiler settings. New TypeScript packages should extend one of these files instead of copying compiler options.
+用于共享的 TypeScript 编译器配置。新的 TypeScript 包应继承这些配置文件，而不是复制编译器选项。
 
 ### `@elm-platform/vite-config`
 
-Use this package for shared Vite configuration helpers such as source aliases, API proxy configuration, SCSS options, and SVG icon setup.
+用于共享的 Vite 配置辅助工具，如路径别名、API 代理配置、SCSS 选项和 SVG 图标设置。
 
-Web apps should import these helpers instead of duplicating equivalent Vite configuration.
+Web 应用应导入这些辅助函数，而不是重复编写相同的 Vite 配置。
 
-## Canonical commands
+## 标准命令
 
-Use root commands for common workflows.
+常用工作流使用根目录命令。
 
-| Command | Purpose |
+| 命令 | 用途 |
 |---|---|
-| `pnpm dev` | Run server, admin, and user apps in parallel. |
-| `pnpm build:packages` | Build buildable shared packages. |
-| `pnpm build:apps` | Build server, admin, and user apps. |
-| `pnpm build:all` | Build shared packages first, then apps. |
-| `pnpm build` | Compatibility entrypoint for app builds. |
-| `pnpm ci:lint` | Run ESLint and Stylelint for CI. |
-| `pnpm ci:type-check` | Run workspace type checks. |
-| `pnpm ci:test` | Run workspace tests. |
-| `pnpm ci:build` | Run full Monorepo build. |
-| `pnpm ci:coverage` | Run coverage commands. |
-| `pnpm ci:api-drift` | Generate API types for drift checks. |
-| `pnpm ci:workspace` | Validate workspace package metadata. |
-| `pnpm lint:boundaries` | Report current web-admin import boundary warnings. |
-| `pnpm turbo:build` | Build through the Turborepo task graph with caching. |
-| `pnpm turbo:type-check` | Type-check through the Turborepo task graph. |
-| `pnpm turbo:test` | Run `test` and `test:unit` through the Turborepo task graph. |
-| `pnpm turbo:lint` | Lint through the Turborepo task graph. |
+| `pnpm dev` | 并行运行 server、admin 和 user 应用 |
+| `pnpm build:packages` | 构建可构建的共享包 |
+| `pnpm build:apps` | 构建 server、admin 和 user 应用 |
+| `pnpm build:all` | 先构建共享包，再构建应用 |
+| `pnpm build` | 应用构建的兼容入口 |
+| `pnpm ci:lint` | 运行 ESLint 和 Stylelint（CI 用） |
+| `pnpm ci:type-check` | 运行工作区类型检查 |
+| `pnpm ci:test` | 运行工作区测试 |
+| `pnpm ci:build` | 运行完整 Monorepo 构建 |
+| `pnpm ci:coverage` | 运行覆盖率命令 |
+| `pnpm ci:api-drift` | 生成 API 类型用于漂移检查 |
+| `pnpm ci:workspace` | 校验工作区包的元数据 |
+| `pnpm lint:boundaries` | 报告当前 web-admin 的导入边界警告 |
+| `pnpm turbo:build` | 通过 Turborepo 任务图构建（带缓存） |
+| `pnpm turbo:type-check` | 通过 Turborepo 任务图进行类型检查 |
+| `pnpm turbo:test` | 通过 Turborepo 任务图运行 `test` 和 `test:unit` |
+| `pnpm turbo:lint` | 通过 Turborepo 任务图运行 lint |
 
-CI should call canonical root commands where practical instead of duplicating long package-specific command chains in workflow YAML.
+CI 应尽量使用标准根目录命令，而不是在工作流 YAML 中重复冗长的包特定命令链。
 
-## Build order
+## 构建顺序
 
-Buildable shared packages must be built before apps that consume their `dist` exports.
+可构建的共享包必须在消费其 `dist` 导出的应用之前构建。
 
-Recommended full local check:
+推荐的完整本地检查：
 
 ```bash
 pnpm build:all
@@ -86,23 +86,23 @@ pnpm ci:type-check
 pnpm ci:test
 ```
 
-When API types may be stale, run:
+当 API 类型可能过期时，运行：
 
 ```bash
 pnpm ci:api-drift
 ```
 
-Then inspect generated changes:
+然后检查生成的变更：
 
 ```bash
 git diff -- packages/api-types
 ```
 
-## Task orchestration with Turborepo
+## 使用 Turborepo 进行任务编排
 
-`turbo.json` defines the task graph. Turborepo reads `workspace:*` dependencies to infer build order, so shared packages build before the apps that consume them without any hand-written ordering.
+`turbo.json` 定义了任务图。Turborepo 读取 `workspace:*` 依赖来推断构建顺序，因此共享包会自动在消费它们的应用之前构建，无需手动编写顺序。
 
-Pilot commands:
+试运行命令：
 
 ```bash
 pnpm turbo:build
@@ -111,22 +111,22 @@ pnpm turbo:test
 pnpm turbo:lint
 ```
 
-Key task rules in `turbo.json`:
+`turbo.json` 中的关键任务规则：
 
-- `build` depends on `^build` (upstream package builds) and caches `dist/**`.
-- `type-check`, `test`, and `test:unit` depend on `^build` so consumers always see fresh package output.
-- `test:coverage` and `test:cov` cache `coverage/**`.
-- `generate` and `dev` disable caching; `dev` is marked persistent.
+- `build` 依赖 `^build`（上游包的构建），并缓存 `dist/**`。
+- `type-check`、`test` 和 `test:unit` 依赖 `^build`，确保消费者始终使用最新的包产物。
+- `test:coverage` 和 `test:cov` 缓存 `coverage/**`。
+- `generate` 和 `dev` 禁用缓存；`dev` 标记为持久运行。
 
-Caching is local-only for now. A clean run builds every package; an unchanged re-run replays cached output and reports `FULL TURBO`. The cache directory `.turbo/` is gitignored.
+目前缓存仅限本地。全新构建会编译所有包；未变更的重新运行会回放缓存产物并显示 `FULL TURBO`。缓存目录 `.turbo/` 已加入 `.gitignore`。
 
-These `turbo:*` scripts are a pilot that runs alongside the existing `pnpm build:all` and `pnpm ci:*` commands. The canonical `ci:*` entrypoints are not switched to Turborepo yet; that migration happens only after the pilot is confirmed stable.
+这些 `turbo:*` 脚本是试运行阶段，与现有的 `pnpm build:all` 和 `pnpm ci:*` 命令并行运行。标准的 `ci:*` 入口尚未切换到 Turborepo；只有在试运行确认稳定后才会迁移。
 
-## Affected-only tasks
+## 仅受影响的任务
 
-Turborepo can restrict a task to only the packages affected by changes relative to a base branch. This avoids rebuilding or retesting the whole repo for a small change.
+Turborepo 可以将任务限制为仅针对相对于基准分支发生变更的包。这避免了为一个小改动而重新构建或重新测试整个仓库。
 
-Pilot commands (default base is `main`):
+试运行命令（默认基准为 `main`）：
 
 ```bash
 pnpm turbo:affected:build
@@ -134,82 +134,82 @@ pnpm turbo:affected:test
 pnpm turbo:affected:lint
 ```
 
-`--affected` compares the working branch against `main` and selects changed packages plus everything that depends on them, using the same task graph as the full commands. Because it reuses the dependency graph, a change to `@elm-platform/contracts` correctly re-includes `server` and `web-admin`.
+`--affected` 将工作分支与 `main` 进行比较，选择发生变更的包以及所有依赖它们的包，使用与完整命令相同的任务图。由于复用了依赖图，修改 `@elm-platform/contracts` 会正确地重新包含 `server` 和 `web-admin`。
 
-In CI, the base ref can be overridden with the `TURBO_SCM_BASE` environment variable (for example the pull request base SHA), and the checkout must use sufficient git history (`fetch-depth: 0`) for the comparison to work.
+在 CI 中，基准 ref 可以通过 `TURBO_SCM_BASE` 环境变量覆盖（例如 pull request 的基准 SHA），并且 checkout 必须使用足够的 git 历史（`fetch-depth: 0`）才能使比较正常工作。
 
-This is a local pilot. It is not wired into the blocking CI jobs yet; the canonical CI commands still run the full workspace. Affected-only CI should be adopted only after the Turborepo pilot is confirmed stable, so that correctness is never traded away for speed prematurely.
+这是本地试运行。尚未接入阻塞式 CI 任务；标准 CI 命令仍然运行完整工作区。仅受影响的 CI 应在 Turborepo 试运行确认稳定后才采用，以确保不会过早地用正确性换取速度。
 
-## Dependency rules
+## 依赖规则
 
-- Apps may depend on shared packages under `packages/*`.
-- Shared packages must not depend on apps under `apps/*`.
-- Apps must not depend on other apps.
-- Internal dependencies should use `workspace:*`.
-- External dependency versions should use `catalog:` when the dependency is already governed by `pnpm-workspace.yaml`.
-- Shared packages should keep narrow responsibilities and avoid importing framework-specific code unless the package is explicitly framework-specific.
+- 应用可以依赖 `packages/*` 下的共享包。
+- 共享包不得依赖 `apps/*` 下的应用。
+- 应用不得依赖其他应用。
+- 内部依赖应使用 `workspace:*`。
+- 当外部依赖已在 `pnpm-workspace.yaml` 中统一管理时，版本应使用 `catalog:`。
+- 共享包应保持职责单一，避免导入框架特定代码，除非该包本身就是框架特定的。
 
-## Workspace metadata validation
+## 工作区元数据校验
 
-`scripts/validate-workspace.mjs` enforces the dependency rules above as an automated check. Run it locally with:
+`scripts/validate-workspace.mjs` 作为自动化检查来强制执行上述依赖规则。本地运行：
 
 ```bash
 pnpm workspace:validate
 ```
 
-CI runs the same check through `pnpm ci:workspace` in the lint job.
+CI 在 lint 任务中通过 `pnpm ci:workspace` 运行相同的检查。
 
-The validator fails when:
+校验器会在以下情况报错：
 
-- a workspace package is missing a `name`, or two packages share the same `name`,
-- an internal dependency uses a range other than `workspace:*`,
-- a package under `packages/*` depends on an app under `apps/*`,
-- an app depends on another app,
-- a package exposes `dist` output through `main`, `module`, `types`, `exports`, or `files` but has no `build` script.
+- 工作区包缺少 `name`，或两个包使用了相同的 `name`。
+- 内部依赖使用了 `workspace:*` 以外的版本范围。
+- `packages/*` 下的包依赖了 `apps/*` 下的应用。
+- 应用依赖了其他应用。
+- 包通过 `main`、`module`、`types`、`exports` 或 `files` 暴露了 `dist` 产物，但没有 `build` 脚本。
 
-Generated packages such as `@elm-platform/api-types` expose `generated` instead of `dist`, so they are not required to declare a `build` script.
+由工具生成的包（如 `@elm-platform/api-types`）暴露 `generated` 而非 `dist`，因此不需要声明 `build` 脚本。
 
-## Import boundary policy
+## 导入边界策略
 
-`apps/web-admin` currently has FSD-style import boundary rules in `eslint.config.mjs`:
+`apps/web-admin` 目前在 `eslint.config.mjs` 中配置了 FSD 风格的导入边界规则：
 
-- `shared` must not import upper layers.
-- `entities` may depend on `shared`, not on upper layers.
-- `features` may depend on `entities` and `shared`, not on `pages`, `widgets`, or `app`.
-- `widgets` may depend on `features`, `entities`, and `shared`, not on `pages` or `app`.
+- `shared` 不得导入上层模块。
+- `entities` 可以依赖 `shared`，不得依赖上层模块。
+- `features` 可以依赖 `entities` 和 `shared`，不得依赖 `pages`、`widgets` 或 `app`。
+- `widgets` 可以依赖 `features`、`entities` 和 `shared`，不得依赖 `pages` 或 `app`。
 
-These rules are currently warnings. Use this command for focused reporting:
+这些规则目前是警告级别。使用以下命令进行专项报告：
 
 ```bash
 pnpm lint:boundaries
 ```
 
-Do not turn historical warnings into blocking CI failures without a cleanup plan. The intended rollout is:
+在没有清理计划的情况下，不要将历史警告转变为阻塞式 CI 失败。预期的推进计划是：
 
-1. local/reporting command,
-2. non-blocking CI visibility,
-3. strict checks for changed files,
-4. full strict enforcement after violations are resolved.
+1. 本地/报告命令。
+2. 非阻塞式 CI 可见性。
+3. 对变更文件进行严格检查。
+4. 违规全部解决后全面严格执行。
 
-The full layer ordering, the current known-violations list, and the rollout plan are documented in `docs/architecture/import-boundaries.md`.
+完整的层级排序、当前已知违规列表和推进计划记录在 `docs/architecture/import-boundaries.md` 中。
 
-## Adding a new package
+## 添加新包
 
-1. Create it under `packages/<name>`.
-2. Give it a scoped package name such as `@elm-platform/<name>`.
-3. Use `workspace:*` for internal dependencies.
-4. Use `catalog:` for governed external dependencies.
-5. Extend `@elm-platform/tsconfig` when using TypeScript.
-6. Add a `build` script if the package exports files from `dist`.
-7. Document the package responsibility in this guide if it becomes a shared platform package.
+1. 在 `packages/<name>` 下创建。
+2. 使用作用域包名，如 `@elm-platform/<name>`。
+3. 内部依赖使用 `workspace:*`。
+4. 受管的外部依赖使用 `catalog:`。
+5. 使用 TypeScript 时继承 `@elm-platform/tsconfig`。
+6. 如果包从 `dist` 导出文件，添加 `build` 脚本。
+7. 如果包成为共享平台包，在本指南中记录其职责。
 
-## Release and API governance
+## 发布与 API 治理
 
-The Monorepo's release and API-contract rules live in dedicated documents and are referenced here so the workspace guide stays the single entry point:
+Monorepo 的发布和 API 契约规则在专门的文档中，此处引用以便工作区指南作为唯一入口：
 
-- API compatibility and breaking-change rules: `docs/api/versioning.md`. API contract changes must run `pnpm api:generate` and commit the resulting `packages/api-types` changes; CI fails on undetected drift.
-- Changelog and release notes: `docs/release/changelog.md`. Use `pnpm changelog:preview` during review and `pnpm changelog:update` when cutting a release.
-- Import boundaries: `docs/architecture/import-boundaries.md`.
+- API 兼容性和破坏性变更规则：`docs/api/versioning.md`。API 契约变更必须运行 `pnpm api:generate` 并提交生成的 `packages/api-types` 变更；CI 会在未检测到的漂移上失败。
+- 变更日志和发布说明：`docs/release/changelog.md`。在审查时使用 `pnpm changelog:preview`，发布时使用 `pnpm changelog:update`。
+- 导入边界：`docs/architecture/import-boundaries.md`。
+- CI 与部署工作流：`docs/engineering/github-actions-workflows.md`。包含 `ci.yml` 和 `deploy-pages.yml` 的完整语法讲解和编写依据。
 
-Release notes are repository-level for now. Per-package versioning and changelogs can be added later if packages need to be published or versioned independently.
-
+目前发布说明是仓库级别的。如果包需要独立发布或版本管理，后续可以添加按包的版本控制和变更日志。
