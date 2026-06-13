@@ -70,4 +70,29 @@ describe('createHttpClient', () => {
     })
     expect(axiosClient.get).toHaveBeenCalledWith('/users/1', undefined)
   })
+
+  it('notifies the caller with backend message when a 401 response is received', async () => {
+    const onUnauthorized = vi.fn()
+    const onError = vi.fn()
+    createHttpClient({
+      onUnauthorized,
+      onError,
+    })
+
+    const [, handleRejectedResponse] = axiosClient.interceptors.response.use.mock.calls[0]
+    vi.mocked(axios.isAxiosError).mockReturnValue(true)
+    const error = {
+      response: {
+        status: 401,
+        data: {
+          message: '用户名或密码错误',
+        },
+      },
+    }
+
+    await expect(handleRejectedResponse(error)).rejects.toBe(error)
+
+    expect(onUnauthorized).toHaveBeenCalledTimes(1)
+    expect(onError).toHaveBeenCalledWith('用户名或密码错误')
+  })
 })

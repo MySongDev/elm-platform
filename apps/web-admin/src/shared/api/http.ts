@@ -100,6 +100,9 @@ export function createHttpClient(options: HttpClientOptions): TypedHttpClient {
 
       if (status === 401) {
         options.onUnauthorized?.()
+        const message = getErrorMessage(error, '')
+        if (message)
+          options.onError?.(message)
       }
       else if (status === 403) {
         options.onForbidden?.(getErrorMessage(error, ''))
