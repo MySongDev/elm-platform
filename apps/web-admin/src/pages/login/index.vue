@@ -46,6 +46,9 @@ async function handleLogin() {
   if (!valid)
     return
 
+  loginForm.account = loginForm.account.trim()
+  loginForm.password = loginForm.password.trim()
+
   loading.value = true
 
   try {
