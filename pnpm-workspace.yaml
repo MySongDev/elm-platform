@@ -22,7 +22,7 @@ overrides:
   tmp@<0.2.6: 0.2.6
 
 catalog:
-  '@antfu/eslint-config': ^7.7.3
+  '@antfu/eslint-config': ^9.0.0
   '@commitlint/cli': ^19.8.1
   '@commitlint/config-conventional': ^19.8.1
   '@compodoc/compodoc': ^1.1.25
@@ -60,7 +60,7 @@ catalog:
   dotenv: ^16.6.1
   echarts: ^6.1.0
   element-plus: ^2.9.8
-  eslint: ^9.39.2
+  eslint: ^10.4.1
   express: ^5.1.0
   fast-glob: ^3.3.3
   globals: ^17.0.0
@@ -81,12 +81,12 @@ catalog:
   rxjs: ^7.8.1
   sass-embedded: ^1.97.3
   source-map-support: ^0.5.21
-  stylelint: ^16.21.0
-  stylelint-config-recess-order: ^5.0.1
+  stylelint: ^17.13.0
+  stylelint-config-recess-order: ^7.7.0
   stylelint-config-recommended-vue: ^1.6.1
-  stylelint-config-standard-scss: ^13.0.0
-  stylelint-order: ^6.0.4
-  stylelint-scss: ^6.0.0
+  stylelint-config-standard-scss: ^17.0.0
+  stylelint-order: ^8.1.1
+  stylelint-scss: ^7.2.0
   supertest: ^7.0.0
   swiper: ^12.1.2
   ts-jest: ^29.2.4
