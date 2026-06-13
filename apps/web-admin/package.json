@@ -9,6 +9,7 @@
   "scripts": {
     "dev": "vite --host",
     "build": "vue-tsc --noEmit && vite build",
+    "build:analyze": "vue-tsc --noEmit && VITE_ANALYZE=true vite build",
     "type-check": "vue-tsc --noEmit",
     "test:unit": "vitest run",
     "test:coverage": "vitest run --coverage",
@@ -40,6 +41,7 @@
     "@vitejs/plugin-vue": "catalog:",
     "@vitest/coverage-v8": "catalog:",
     "fast-glob": "catalog:",
+    "rollup-plugin-visualizer": "^7.0.1",
     "sass-embedded": "catalog:",
     "unplugin-auto-import": "catalog:",
     "unplugin-vue-components": "catalog:",
@@ -48,4 +50,3 @@
     "vue-tsc": "catalog:"
   }
 }
-

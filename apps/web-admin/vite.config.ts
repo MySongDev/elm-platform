@@ -1,6 +1,7 @@
 import { cwd } from 'node:process'
 import { createApiProxy, createElmSvgIconsPlugin, createScssOptions, createSrcAlias } from '@elm-platform/vite-config'
 import vue from '@vitejs/plugin-vue'
+import { visualizer } from 'rollup-plugin-visualizer'
 import AutoImport from 'unplugin-auto-import/vite'
 import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
 import Components from 'unplugin-vue-components/vite'
@@ -8,9 +9,20 @@ import { defineConfig, loadEnv } from 'vite'
 
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, cwd(), '')
+  const isAnalyze = env.VITE_ANALYZE === 'true'
 
   return {
     base: process.env.BASE_URL || '/',
+    build: {
+      rollupOptions: {
+        output: {
+          manualChunks: {
+            'vue-vendor': ['vue', 'vue-router', 'pinia', 'vue-i18n'],
+          },
+        },
+      },
+      chunkSizeWarningLimit: 600,
+    },
     server: {
       watch: {
         ignored: [
@@ -33,7 +45,12 @@ export default defineConfig(({ mode }) => {
         resolvers: [ElementPlusResolver()],
       }),
       createElmSvgIconsPlugin('src/shared/icons/svg'),
-    ],
+      isAnalyze && visualizer({
+        open: true,
+        brotliSize: true,
+        filename: 'stats.html',
+      }),
+    ].filter(Boolean),
     css: {
       preprocessorOptions: createScssOptions({
         mixinsPath: '@/shared/styles/_mixins.scss',
