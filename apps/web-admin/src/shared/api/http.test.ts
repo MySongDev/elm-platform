@@ -80,7 +80,9 @@ describe('createHttpClient', () => {
     })
 
     const [, handleRejectedResponse] = axiosClient.interceptors.response.use.mock.calls[0]
-    vi.mocked(axios.isAxiosError).mockReturnValue(true)
+    vi.mocked(axios.isAxiosError)
+      .mockReturnValueOnce(true)
+      .mockReturnValueOnce(true)
     const error = {
       response: {
         status: 401,
