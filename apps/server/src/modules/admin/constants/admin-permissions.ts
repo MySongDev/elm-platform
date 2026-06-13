@@ -172,6 +172,26 @@ export const buttonPermissions: ButtonPermissionRecord[] = [
     group: '业务管理',
   },
   {
+    code: 'merchant:onboarding:view',
+    name: '商家入驻审批查看',
+    group: '业务管理',
+  },
+  {
+    code: 'merchant:onboarding:review',
+    name: '商家入驻审批处理',
+    group: '业务管理',
+  },
+  {
+    code: 'merchant:onboarding:approve',
+    name: '商家入驻审批通过',
+    group: '业务管理',
+  },
+  {
+    code: 'merchant:onboarding:reject',
+    name: '商家入驻审批驳回',
+    group: '业务管理',
+  },
+  {
     code: 'monitor:online:view',
     name: '在线用户查看',
     group: '系统监控',
@@ -316,6 +336,13 @@ export const pagePermissions: PagePermissionRecord[] = [
     title: '订单管理',
     roles: ['admin'],
     auths: ['commerce:order:view'],
+  },
+  {
+    path: '/commerce/merchant-onboarding',
+    name: 'MerchantOnboardingView',
+    title: '商家入驻审批',
+    roles: ['admin'],
+    auths: ['merchant:onboarding:view'],
   },
   {
     path: '/platform/tenant',

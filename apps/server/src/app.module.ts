@@ -7,6 +7,7 @@ import { AdminModule } from './modules/admin/admin.module'
 import { AuthModule } from './modules/auth/auth.module'
 import { CustomerAuthModule } from './modules/customer-auth/customer-auth.module'
 import { ElmModule } from './modules/elm/elm.module'
+import { MerchantOnboardingModule } from './modules/merchant-onboarding/merchant-onboarding.module'
 import { PaymentModule } from './modules/payment/payment.module'
 import { TenantModule } from './modules/tenant/tenant.module'
 import { UserModule } from './modules/user/user.module'
@@ -36,6 +37,7 @@ import { RedisModule } from './redis/redis.module'
     CustomerAuthModule,
     AdminModule,
     ElmModule,
+    MerchantOnboardingModule,
     PaymentModule,
     TenantModule,
   ],

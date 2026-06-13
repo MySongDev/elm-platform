@@ -481,6 +481,18 @@ async function main() {
       status: 1,
     },
     {
+      id: 26,
+      parentId: 20,
+      title: '商家入驻审批',
+      path: '/commerce/merchant-onboarding',
+      name: 'MerchantOnboardingView',
+      icon: 'document',
+      permission: 'merchant:onboarding:view',
+      type: 'menu',
+      sort: 4,
+      status: 1,
+    },
+    {
       id: 24,
       parentId: null,
       title: '平台管理',
@@ -791,6 +803,36 @@ async function main() {
       sort: 1,
       status: 1,
     },
+    {
+      id: 180,
+      parentId: 26,
+      title: '开始审核',
+      path: '/commerce/merchant-onboarding',
+      permission: 'merchant:onboarding:review',
+      type: 'button',
+      sort: 1,
+      status: 1,
+    },
+    {
+      id: 181,
+      parentId: 26,
+      title: '审核通过',
+      path: '/commerce/merchant-onboarding',
+      permission: 'merchant:onboarding:approve',
+      type: 'button',
+      sort: 2,
+      status: 1,
+    },
+    {
+      id: 182,
+      parentId: 26,
+      title: '驳回申请',
+      path: '/commerce/merchant-onboarding',
+      permission: 'merchant:onboarding:reject',
+      type: 'button',
+      sort: 3,
+      status: 1,
+    },
   ]
 
   for (const menu of menuSeeds) {
@@ -800,6 +842,76 @@ async function main() {
       create: menu,
     })
   }
+
+  const merchantApplications = [
+    {
+      id: 'mapp_demo_pending',
+      merchantName: '鲜花蛋糕旗舰店',
+      contactName: '花店运营',
+      contactPhone: '13800000011',
+      businessCategory: '蛋糕甜品',
+      address: '上海市浦东新区世纪大道 100 号',
+      status: 'PENDING',
+      materials: [
+        {
+          id: 'mat_demo_license',
+          name: '营业执照占位图',
+          type: 'image',
+          url: 'https://example.com/mock/merchant-license.png',
+        },
+      ],
+    },
+    {
+      id: 'mapp_demo_reviewing',
+      merchantName: '快捷便当入驻店',
+      contactName: '便当运营',
+      contactPhone: '13800000012',
+      businessCategory: '快餐便当',
+      address: '上海市徐汇区漕溪北路 88 号',
+      status: 'UNDER_REVIEW',
+      materials: [
+        {
+          id: 'mat_demo_food_license',
+          name: '食品经营许可证占位文件',
+          type: 'file',
+          url: 'https://example.com/mock/food-license.pdf',
+        },
+      ],
+    },
+  ]
+
+  for (const application of merchantApplications) {
+    await prisma.merchantApplication.upsert({
+      where: { id: application.id },
+      update: application,
+      create: application,
+    })
+  }
+
+  await prisma.merchantApplicationActionLog.upsert({
+    where: { id: 'malog_demo_start_review' },
+    update: {
+      applicationId: 'mapp_demo_reviewing',
+      event: 'START_REVIEW',
+      fromStatus: 'PENDING',
+      toStatus: 'UNDER_REVIEW',
+      actorId: '1',
+      actorName: 'admin',
+      actorType: 'PLATFORM_ADMIN',
+      remark: 'Seeded review log',
+    },
+    create: {
+      id: 'malog_demo_start_review',
+      applicationId: 'mapp_demo_reviewing',
+      event: 'START_REVIEW',
+      fromStatus: 'PENDING',
+      toStatus: 'UNDER_REVIEW',
+      actorId: '1',
+      actorName: 'admin',
+      actorType: 'PLATFORM_ADMIN',
+      remark: 'Seeded review log',
+    },
+  })
 
   console.log('数据初始化完成')
 }

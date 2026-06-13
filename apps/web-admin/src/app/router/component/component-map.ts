@@ -4,7 +4,7 @@
  * @description 通过 Vite glob 建立页面组件索引，集中处理后端 component key 与本地页面文件的约定。
  */
 
-const modules = import.meta.glob('../../pages/**/index.vue')
+const modules = import.meta.glob('/src/pages/**/index.vue')
 const layoutComponent = () => import('@/layouts/index.vue')
 
 /**
@@ -16,7 +16,7 @@ export function resolveComponent(key: string | undefined) {
   if (!key)
     return layoutComponent
 
-  const path = `../../pages/${key}/index.vue`
+  const path = `/src/pages/${key}/index.vue`
   const component = modules[path]
 
   if (!component && import.meta.env.DEV) {

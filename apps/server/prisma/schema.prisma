@@ -76,6 +76,45 @@ model TenantActionLog {
   @@map("tenant_action_logs")
 }
 
+model MerchantApplication {
+  id               String   @id @default(cuid())
+  merchantName     String   @map("merchant_name")
+  contactName      String   @map("contact_name")
+  contactPhone     String   @map("contact_phone")
+  businessCategory String   @map("business_category")
+  address          String
+  status           String   @default("PENDING")
+  materials        Json?
+  createdAt        DateTime @default(now()) @map("created_at")
+  updatedAt        DateTime @updatedAt @map("updated_at")
+
+  actionLogs MerchantApplicationActionLog[]
+
+  @@index([status])
+  @@index([merchantName])
+  @@map("merchant_applications")
+}
+
+model MerchantApplicationActionLog {
+  id            String   @id @default(cuid())
+  applicationId String   @map("application_id")
+  event         String
+  fromStatus    String   @map("from_status")
+  toStatus      String   @map("to_status")
+  actorId       String   @map("actor_id")
+  actorName     String   @map("actor_name")
+  actorType     String   @map("actor_type")
+  reason        String?
+  remark        String?
+  requestId     String?  @map("request_id")
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  application MerchantApplication @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+
+  @@index([applicationId])
+  @@map("merchant_application_action_logs")
+}
+
 model CustomerUser {
   id          Int       @id @default(autoincrement())
   phone       String    @unique
