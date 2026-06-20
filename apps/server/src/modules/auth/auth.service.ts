@@ -4,6 +4,7 @@ import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library'
 import * as bcrypt from 'bcryptjs'
 import { PrismaService } from '../../prisma/prisma.service'
 import { RedisService } from '../../redis/redis.service'
+import { NotificationService } from '../notification/notification.service'
 
 export interface MenuNode {
   id: number
@@ -30,6 +31,7 @@ export class AuthService {
     private readonly prisma: PrismaService,
     private readonly jwtService: JwtService,
     private readonly redis: RedisService,
+    private readonly notificationService: NotificationService,
   ) {}
 
   /**
@@ -149,6 +151,7 @@ export class AuthService {
     }
 
     await this.recordLoginLog(user.id, ip, userAgent, 1, '登录成功')
+    await this.recordSecurityLoginNotification(user.id, ip, userAgent)
     const expiresIn = rememberMe ? REMEMBER_ME_SESSION_EXPIRES_IN : DEFAULT_SESSION_EXPIRES_IN
     const expiresInSeconds = rememberMe ? REMEMBER_ME_SESSION_TTL_SECONDS : DEFAULT_SESSION_TTL_SECONDS
 
@@ -216,6 +219,20 @@ export class AuthService {
     }
     catch {
       // logging should not break login flow
+    }
+  }
+
+  private async recordSecurityLoginNotification(userId: number, ip?: string, userAgent?: string) {
+    try {
+      const { browser, os } = this.parseUserAgent(userAgent)
+      await this.notificationService.createSecurityLoginNotification(userId, {
+        ip,
+        browser,
+        os,
+      })
+    }
+    catch {
+      // notification side-effect must not break login flow
     }
   }
 

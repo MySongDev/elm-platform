@@ -27,8 +27,9 @@ model User {
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
-  tenant    Tenant?    @relation(fields: [tenantId], references: [id], onDelete: SetNull)
-  loginLogs LoginLog[]
+  tenant        Tenant?        @relation(fields: [tenantId], references: [id], onDelete: SetNull)
+  loginLogs     LoginLog[]
+  notifications Notification[]
 
   @@index([tenantId])
   @@map("users")
@@ -130,27 +131,27 @@ model CustomerUser {
 }
 
 model PaymentOrder {
-  id                          Int      @id @default(autoincrement())
-  orderNo                     String   @unique
+  id                          Int       @id @default(autoincrement())
+  orderNo                     String    @unique
   userId                      String
   shopId                      String?
   shopName                    String
-  status                      String   @default("PENDING")
-  tradeStatus                 String   @default("WAIT_BUYER_PAY")
-  fulfillmentStatus           String   @default("PENDING_PAYMENT") @map("fulfillment_status")
-  refundStatus                String   @default("NONE") @map("refund_status")
-  refundBaseFulfillmentStatus String?  @map("refund_base_fulfillment_status")
-  refundReason                String?  @map("refund_reason")
-  refundRejectReason          String?  @map("refund_reject_reason")
+  status                      String    @default("PENDING")
+  tradeStatus                 String    @default("WAIT_BUYER_PAY")
+  fulfillmentStatus           String    @default("PENDING_PAYMENT") @map("fulfillment_status")
+  refundStatus                String    @default("NONE") @map("refund_status")
+  refundBaseFulfillmentStatus String?   @map("refund_base_fulfillment_status")
+  refundReason                String?   @map("refund_reason")
+  refundRejectReason          String?   @map("refund_reject_reason")
   tradeNo                     String?
   subject                     String
-  goodsAmount                 Decimal  @db.Decimal(10, 2)
-  deliveryFee                 Decimal  @db.Decimal(10, 2)
-  payableAmount               Decimal  @db.Decimal(10, 2)
+  goodsAmount                 Decimal   @db.Decimal(10, 2)
+  deliveryFee                 Decimal   @db.Decimal(10, 2)
+  payableAmount               Decimal   @db.Decimal(10, 2)
   cartItems                   Json
   notifyPayload               Json?
   queryPayload                Json?
-  buyerPayAmount              Decimal? @db.Decimal(10, 2)
+  buyerPayAmount              Decimal?  @db.Decimal(10, 2)
   paidAt                      DateTime?
   acceptedAt                  DateTime? @map("accepted_at")
   preparingAt                 DateTime? @map("preparing_at")
@@ -160,11 +161,11 @@ model PaymentOrder {
   refundRequestedAt           DateTime? @map("refund_requested_at")
   refundedAt                  DateTime? @map("refunded_at")
   refundRejectedAt            DateTime? @map("refund_rejected_at")
-  tenantId                    Int?     @map("tenant_id")
-  createdAt                   DateTime @default(now())
-  updatedAt                   DateTime @updatedAt
+  tenantId                    Int?      @map("tenant_id")
+  createdAt                   DateTime  @default(now())
+  updatedAt                   DateTime  @updatedAt
 
-  tenant    Tenant?          @relation(fields: [tenantId], references: [id], onDelete: SetNull)
+  tenant     Tenant?          @relation(fields: [tenantId], references: [id], onDelete: SetNull)
   actionLogs OrderActionLog[] @relation("PaymentOrderActionLogs")
 
   @@index([tenantId])
@@ -189,8 +190,8 @@ model OrderActionLog {
   tenantId              Int?     @map("tenant_id")
   createdAt             DateTime @default(now()) @map("created_at")
 
-  tenant Tenant? @relation(fields: [tenantId], references: [id], onDelete: SetNull)
-  order PaymentOrder @relation("PaymentOrderActionLogs", fields: [orderNo], references: [orderNo], onDelete: Cascade)
+  tenant Tenant?      @relation(fields: [tenantId], references: [id], onDelete: SetNull)
+  order  PaymentOrder @relation("PaymentOrderActionLogs", fields: [orderNo], references: [orderNo], onDelete: Cascade)
 
   @@index([tenantId])
   @@index([orderNo])
@@ -291,4 +292,25 @@ model SystemLog {
   createdAt DateTime @default(now())
 
   @@map("system_logs")
+}
+
+model Notification {
+  id          String    @id @default(cuid())
+  userId      Int       @map("user_id")
+  type        String
+  title       String
+  description String?
+  read        Boolean   @default(false)
+  avatar      String?
+  status      String?
+  source      String
+  sourceRef   String?   @map("source_ref")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  readAt      DateTime? @map("read_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+  @@index([userId, type, read])
+  @@map("notifications")
 }

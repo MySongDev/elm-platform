@@ -1,9 +1,17 @@
 import type { JwtService } from '@nestjs/jwt'
 import type { PrismaService } from '../../prisma/prisma.service'
 import type { RedisService } from '../../redis/redis.service'
+import type { NotificationService } from '../notification/notification.service'
 import { UnauthorizedException } from '@nestjs/common'
 import * as bcrypt from 'bcryptjs'
 import { AuthService } from './auth.service'
+
+function createNotificationService(): jest.Mocked<Pick<NotificationService, 'createSecurityLoginNotification'>> & NotificationService {
+  const mock = {
+    createSecurityLoginNotification: jest.fn().mockResolvedValue({} as any),
+  }
+  return mock as unknown as jest.Mocked<Pick<NotificationService, 'createSecurityLoginNotification'>> & NotificationService
+}
 
 describe('authService admin login', () => {
   const passwordHash = bcrypt.hashSync('admin123', 10)
@@ -44,11 +52,14 @@ describe('authService admin login', () => {
       del: jest.fn().mockResolvedValue(undefined),
     } as any
 
+    const notificationService = createNotificationService()
+
     return {
-      service: new AuthService(prisma, jwtService, redis),
+      service: new AuthService(prisma, jwtService, redis, notificationService),
       prisma,
       jwtService,
       redis,
+      notificationService,
     }
   }
 
@@ -117,6 +128,50 @@ describe('authService admin login', () => {
     const { service } = createService()
 
     await expect(service.login('admin', 'wrong-password')).rejects.toThrow(UnauthorizedException)
+  })
+
+  it('emits a security-login notification when login succeeds', async () => {
+    const { service, notificationService } = createService()
+
+    await service.login('admin', 'admin123', '10.0.0.1', 'Chrome')
+
+    expect(notificationService.createSecurityLoginNotification).toHaveBeenCalledTimes(1)
+    expect(notificationService.createSecurityLoginNotification).toHaveBeenCalledWith(
+      1,
+      expect.objectContaining({
+        ip: '10.0.0.1',
+        browser: 'Chrome',
+        os: expect.any(String),
+      }),
+    )
+  })
+
+  it('does not emit security-login notification when password is wrong', async () => {
+    const { service, notificationService } = createService()
+
+    await expect(service.login('admin', 'wrong-password')).rejects.toThrow(UnauthorizedException)
+    expect(notificationService.createSecurityLoginNotification).not.toHaveBeenCalled()
+  })
+
+  it('does not emit security-login notification when account is disabled', async () => {
+    const disabledAdmin = {
+      ...admin,
+      status: 0,
+    }
+    const { service, notificationService } = createService(disabledAdmin)
+
+    await expect(service.login('admin', 'admin123')).rejects.toThrow(UnauthorizedException)
+    expect(notificationService.createSecurityLoginNotification).not.toHaveBeenCalled()
+  })
+
+  it('does not block login when security-login notification creation throws', async () => {
+    const { service, jwtService, notificationService } = createService()
+    notificationService.createSecurityLoginNotification.mockRejectedValueOnce(new Error('db down'))
+
+    const result = await service.login('admin', 'admin123', '127.0.0.1', 'Chrome')
+
+    expect(result.token).toBe('signed-token')
+    expect(jwtService.sign).toHaveBeenCalled()
   })
 })
 
@@ -187,7 +242,7 @@ describe('authService menu permissions', () => {
     } as unknown as RedisService
 
     return {
-      service: new AuthService(prisma, jwtService, redis),
+      service: new AuthService(prisma, jwtService, redis, createNotificationService()),
       prisma,
     }
   }
@@ -261,7 +316,7 @@ describe('authService account center', () => {
     } as unknown as RedisService
 
     return {
-      service: new AuthService(prisma, jwtService, redis),
+      service: new AuthService(prisma, jwtService, redis, createNotificationService()),
       prisma,
     }
   }

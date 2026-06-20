@@ -913,6 +913,81 @@ async function main() {
     },
   })
 
+  // 通知中心：保留 web-admin 原 store 的 6 条演示数据
+  const seedNow = new Date()
+  const minutesAgo = (m: number) => new Date(seedNow.getTime() - m * 60_000)
+  const todayAt = (h: number) => {
+    const d = new Date(seedNow)
+    d.setHours(h, 0, 0, 0)
+    return d
+  }
+  const notificationSeeds = [
+    {
+      id: 'seed-notify-1',
+      type: 'notification',
+      title: '系统升级通知',
+      description: '系统将于今晚 22:00 进行维护升级，预计耗时 2 小时',
+      source: 'SEED',
+      createdAt: minutesAgo(10),
+    },
+    {
+      id: 'seed-notify-2',
+      type: 'notification',
+      title: '安全提醒',
+      description: '检测到您的账号在异地登录，如非本人操作请及时修改密码',
+      source: 'SEED',
+      createdAt: minutesAgo(60),
+    },
+    {
+      id: 'seed-notify-3',
+      type: 'message',
+      title: '张三',
+      description: '你好，关于上次讨论的方案我已经整理好了，请查看',
+      avatar: '',
+      source: 'SEED',
+      createdAt: minutesAgo(30),
+    },
+    {
+      id: 'seed-notify-4',
+      type: 'message',
+      title: '李四',
+      description: '明天的会议改到下午 3 点，请注意时间变更',
+      avatar: '',
+      source: 'SEED',
+      createdAt: minutesAgo(120),
+    },
+    {
+      id: 'seed-notify-5',
+      type: 'todo',
+      title: '审批待处理',
+      description: '有 3 条请假审批等待处理',
+      status: 'warning',
+      source: 'SEED',
+      createdAt: todayAt(18),
+    },
+    {
+      id: 'seed-notify-6',
+      type: 'todo',
+      title: '周报提交',
+      description: '本周周报尚未提交',
+      status: 'danger',
+      source: 'SEED',
+      createdAt: todayAt(24),
+    },
+  ]
+  for (const seed of notificationSeeds) {
+    await prisma.notification.upsert({
+      where: { id: seed.id },
+      update: seed,
+      create: {
+        ...seed,
+        userId: user.id,
+        read: false,
+      },
+    })
+  }
+  console.log('创建通知中心种子:', notificationSeeds.length, '条')
+
   console.log('数据初始化完成')
 }
 

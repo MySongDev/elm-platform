@@ -64,6 +64,9 @@ describe('admin login API contract', () => {
         prisma as unknown as PrismaService,
         jwtService as unknown as JwtService,
         redis as unknown as RedisService,
+        {
+          createSecurityLoginNotification: jest.fn().mockResolvedValue({} as any),
+        } as any,
       ),
     }
   }
