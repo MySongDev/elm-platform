@@ -1,4 +1,5 @@
 import type { MockMethod } from 'vite-plugin-mock'
+import type { NotificationItem } from '../src/entities/notification'
 import type { LoginResult } from '../src/entities/session/api/contracts'
 import type {
   SecurityLogResult,
@@ -7,10 +8,14 @@ import type {
 import type { UserInfo } from '../src/entities/user'
 import { beforeEach, describe, expect, it } from 'vitest'
 import { createAuthMockRoutes } from './routes/auth'
+import { createNotificationMockRoutes } from './routes/notifications'
+import { resetNotificationMockState } from './state/notification-state'
 
 interface MockRequestContext {
   body?: unknown
   query?: Record<string, unknown>
+  params?: Record<string, string>
+  headers?: Record<string, unknown>
 }
 
 interface MockEnvelope<T> {
@@ -21,30 +26,52 @@ interface MockEnvelope<T> {
 
 let routes: MockMethod[]
 
+function routeMatches(route: MockMethod, method: string, url: string) {
+  if (route.method !== method)
+    return false
+  const pattern = route.url.replace(/:[^/]+/g, '([^/]+)')
+  const regex = new RegExp(`^${pattern}$`)
+  return regex.test(url)
+}
+
 function invokeRoute<T>(method: string, url: string, context: MockRequestContext = {}) {
-  const route = routes.find(item => item.method === method && item.url === url)
+  const route = routes.find(item => routeMatches(item, method, url))
   if (!route)
     throw new Error(`Missing mock route: ${method.toUpperCase()} ${url}`)
   if (typeof route.response !== 'function')
     throw new TypeError(`Mock route response is not callable: ${method.toUpperCase()} ${url}`)
   const handler = route.response as (value: MockRequestContext) => MockEnvelope<T>
-  return handler(context)
+
+  const params: Record<string, string> = {}
+  const pattern = route.url.replace(/:[^/]+/g, '([^/]+)')
+  const regex = new RegExp(`^${pattern}$`)
+  const match = url.match(regex)
+  if (match) {
+    const paramNames = Array.from(route.url.matchAll(/:([^/]+)/g), m => m[1])
+    paramNames.forEach((name, i) => { params[name] = match[i + 1] })
+  }
+
+  return handler({
+    ...context,
+    params,
+  })
 }
 
 beforeEach(() => {
-  routes = createAuthMockRoutes()
+  resetNotificationMockState()
+  routes = [...createAuthMockRoutes(), ...createNotificationMockRoutes()]
 })
 
 describe('admin auth mock routes', () => {
-  it('registers five unique auth routes with the full API prefix', () => {
-    expect(routes.map(route => `${route.method} ${route.url}`)).toEqual([
-      'post /api/auth/login',
-      'get /api/auth/profile',
-      'patch /api/auth/profile',
-      'get /api/auth/menus',
-      'get /api/auth/security-logs',
-    ])
-    expect(new Set(routes.map(route => `${route.method} ${route.url}`)).size).toBe(5)
+  it('registers ten unique mock routes (5 auth + 5 notification) with the full API prefix', () => {
+    const keys = routes.map(route => `${route.method} ${route.url}`)
+    expect(keys).toContain('post /api/auth/login')
+    expect(keys).toContain('get /api/admin/notifications')
+    expect(keys).toContain('patch /api/admin/notifications/read-all')
+    expect(keys).toContain('patch /api/admin/notifications/:id/read')
+    expect(keys).toContain('delete /api/admin/notifications/:id')
+    expect(keys).toContain('delete /api/admin/notifications')
+    expect(new Set(keys).size).toBe(10)
   })
 
   it('reads login body and returns the remembered session ttl', () => {
@@ -104,5 +131,27 @@ describe('admin auth mock routes', () => {
         pageSize: 20,
       },
     })
+  })
+
+  it('appends a security-login notification when login succeeds', () => {
+    const before = invokeRoute<NotificationItem[]>('get', '/api/admin/notifications').data
+    expect(before).toHaveLength(6)
+
+    invokeRoute<LoginResult>('post', '/api/auth/login', {
+      body: {
+        account: 'admin',
+        password: 'admin123',
+      },
+      headers: { 'user-agent': 'Mozilla/5.0 (Macintosh) AppleWebKit Chrome' },
+    })
+
+    const after = invokeRoute<NotificationItem[]>('get', '/api/admin/notifications').data
+    expect(after).toHaveLength(7)
+    const head = after[0]
+    expect(head.title).toBe('安全登录提醒')
+    expect(head.source).toBe('SECURITY_LOGIN')
+    expect(head.type).toBe('notification')
+    expect(head.description).toContain('Chrome')
+    expect(head.description).toContain('macOS')
   })
 })

@@ -6,6 +6,7 @@ import {
   IconDelete as IconEpDelete,
 } from '@iconify-prerendered/vue-ep'
 import { useNotificationStore } from '@/entities/notification'
+import { formatRelativeTime } from '@/entities/notification/lib/format-relative-time'
 import TopNavigationAction from '../components/TopNavigationAction.vue'
 
 defineOptions({ name: 'NotificationBell' })
@@ -34,16 +35,16 @@ const tabs: Array<{
 
 const currentList = computed(() => notificationStore.getByType(activeType.value))
 
-function markAllRead() {
-  notificationStore.markAllAsRead(activeType.value)
+async function markAllRead() {
+  await notificationStore.markAllAsRead(activeType.value)
 }
 
-function clearCurrent() {
-  notificationStore.clearAll(activeType.value)
+async function clearCurrent() {
+  await notificationStore.clearAll(activeType.value)
 }
 
 onMounted(() => {
-  notificationStore.loadMockData()
+  notificationStore.loadNotifications()
 })
 </script>
 
@@ -107,7 +108,7 @@ onMounted(() => {
         >
           <span class="notification-item__title">{{ item.title }}</span>
           <span class="notification-item__desc">{{ item.description || '-' }}</span>
-          <span class="notification-item__time">{{ item.time }}</span>
+          <span class="notification-item__time">{{ formatRelativeTime(item.createdAt) }}</span>
         </button>
       </div>
       <el-empty v-else :description="t('notification.empty')" :image-size="72" />

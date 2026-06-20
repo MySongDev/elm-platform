@@ -6,6 +6,7 @@ import {
   DEV_MOCK_TIMESTAMP,
   getDevMockUserMenus,
 } from '../fixtures/session'
+import { sharedNotificationMockState } from '../state/notification-state'
 
 function success<T>(data: T) {
   return {
@@ -38,7 +39,7 @@ export function createAuthMockRoutes(): MockMethod[] {
     {
       url: '/api/auth/login',
       method: 'post',
-      response: ({ body }) => {
+      response: ({ body, headers }) => {
         const credentials = body && typeof body === 'object'
           ? body as {
             account?: string
@@ -50,6 +51,26 @@ export function createAuthMockRoutes(): MockMethod[] {
           credentials.rememberMe,
         )
         currentUser = { ...result.user }
+        const userAgent = (headers?.['user-agent'] as string | undefined) || ''
+        const browser = userAgent.includes('Firefox')
+          ? 'Firefox'
+          : userAgent.includes('Edg')
+            ? 'Edge'
+            : userAgent.includes('Chrome')
+              ? 'Chrome'
+              : '未知浏览器'
+        const os = userAgent.includes('Windows')
+          ? 'Windows'
+          : userAgent.includes('Mac OS') || userAgent.includes('Macintosh')
+            ? 'macOS'
+            : userAgent.includes('Linux')
+              ? 'Linux'
+              : '未知系统'
+        sharedNotificationMockState.addSecurityLoginNotification({
+          ip: '127.0.0.1',
+          browser,
+          os,
+        })
         return success(result)
       },
     },

@@ -65,3 +65,11 @@ export const merchantOnboardingEndpoints = {
   review: (id: string) => `/admin/merchant-applications/${id}/review`,
   actionLogs: (id: string) => `/admin/merchant-applications/${id}/action-logs`,
 } as const
+
+export const notificationEndpoints = {
+  list: '/admin/notifications',
+  markAllRead: '/admin/notifications/read-all',
+  markRead: (id: string) => `/admin/notifications/${id}/read`,
+  remove: (id: string) => `/admin/notifications/${id}`,
+  clear: '/admin/notifications',
+} as const

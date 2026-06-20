@@ -1,20 +1,25 @@
 /**
  * @file 通知中心状态
  * @domain entities/notification
- * @description 管理通知、消息和待办的前端聚合状态，当前包含 mock 数据加载入口。
+ * @description 管理通知、消息和待办的远端数据客户端状态，所有读写都经由 NotificationApi。
  */
 
+import type { NotificationApi } from '../api/contracts'
 import type { NotificationItem } from './types'
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
+import { notificationApi } from '../api'
 
 /**
- * @description 有副作用：创建通知 store，action 会生成本地通知 ID 并修改通知读写状态。
- * @returns 通知集合、未读统计和通知操作函数。
+ * @description 有副作用：创建通知 store，所有 action 通过注入的 NotificationApi 与服务端同步；本 store 不维护本地写入入口。
+ * @returns 通知集合、未读统计和远端操作函数。
  */
 export const useNotificationStore = defineStore('notification', () => {
   // state
   const notifications = ref<NotificationItem[]>([])
+  const loading = ref(false)
+  const loaded = ref(false)
+  const error = ref<Error | null>(null)
 
   // getters
   const unreadCount = computed(() =>
@@ -31,103 +36,105 @@ export const useNotificationStore = defineStore('notification', () => {
       notifications.value.filter(n => n.type === type && !n.read).length
   })
 
+  // internal
+  function pickApi(): NotificationApi {
+    return notificationApi
+  }
+
   // actions
-  function addNotification(item: Omit<NotificationItem, 'id' | 'read'>) {
-    notifications.value.unshift({
-      ...item,
-      id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
-      read: false,
-    })
-  }
-
-  function markAsRead(id: string) {
-    const item = notifications.value.find(n => n.id === id)
-    if (item)
-      item.read = true
-  }
-
-  function markAllAsRead(type?: NotificationItem['type']) {
-    notifications.value.forEach((n) => {
-      if (!type || n.type === type)
-        n.read = true
-    })
-  }
-
-  function removeNotification(id: string) {
-    const idx = notifications.value.findIndex(n => n.id === id)
-    if (idx !== -1)
-      notifications.value.splice(idx, 1)
-  }
-
-  function clearAll(type?: NotificationItem['type']) {
-    if (type) {
-      notifications.value = notifications.value.filter(n => n.type !== type)
-    }
-    else {
-      notifications.value = []
-    }
-  }
-
-  function loadMockData() {
-    if (notifications.value.length > 0)
+  async function loadNotifications(force = false) {
+    if (loaded.value && !force)
       return
+    loading.value = true
+    error.value = null
+    try {
+      notifications.value = await pickApi().list()
+      loaded.value = true
+    }
+    catch (caught) {
+      error.value = caught instanceof Error ? caught : new Error(String(caught))
+    }
+    finally {
+      loading.value = false
+    }
+  }
 
-    const mockData: Omit<NotificationItem, 'id' | 'read'>[] = [
-      {
-        type: 'notification',
-        title: '系统升级通知',
-        description: '系统将于今晚 22:00 进行维护升级，预计耗时 2 小时',
-        time: '10 分钟前',
-      },
-      {
-        type: 'notification',
-        title: '安全提醒',
-        description: '检测到您的账号在异地登录，如非本人操作请及时修改密码',
-        time: '1 小时前',
-      },
-      {
-        type: 'message',
-        title: '张三',
-        description: '你好，关于上次讨论的方案我已经整理好了，请查看',
-        time: '30 分钟前',
-        avatar: '',
-      },
-      {
-        type: 'message',
-        title: '李四',
-        description: '明天的会议改到下午 3 点，请注意时间变更',
-        time: '2 小时前',
-        avatar: '',
-      },
-      {
-        type: 'todo',
-        title: '审批待处理',
-        description: '有 3 条请假审批等待处理',
-        time: '截止今天 18:00',
-        status: 'warning',
-      },
-      {
-        type: 'todo',
-        title: '周报提交',
-        description: '本周周报尚未提交',
-        time: '截止今天 24:00',
-        status: 'danger',
-      },
-    ]
+  async function markAsRead(id: string) {
+    try {
+      const updated = await pickApi().markRead(id)
+      const idx = notifications.value.findIndex(n => n.id === id)
+      if (idx !== -1)
+        notifications.value[idx] = updated
+    }
+    catch (caught) {
+      error.value = caught instanceof Error ? caught : new Error(String(caught))
+    }
+  }
 
-    mockData.forEach(item => addNotification(item))
+  async function markAllAsRead(type?: NotificationItem['type']) {
+    try {
+      const { updatedCount } = await pickApi().markAllRead(type)
+      const readAt = new Date().toISOString()
+      notifications.value = notifications.value.map((n) => {
+        if (type && n.type !== type)
+          return n
+        if (n.read)
+          return n
+        return {
+          ...n,
+          read: true,
+          readAt,
+        }
+      })
+      void updatedCount
+    }
+    catch (caught) {
+      error.value = caught instanceof Error ? caught : new Error(String(caught))
+    }
+  }
+
+  async function removeNotification(id: string) {
+    try {
+      await pickApi().remove(id)
+      notifications.value = notifications.value.filter(n => n.id !== id)
+    }
+    catch (caught) {
+      error.value = caught instanceof Error ? caught : new Error(String(caught))
+    }
+  }
+
+  async function clearAll(type?: NotificationItem['type']) {
+    try {
+      await pickApi().clear(type)
+      notifications.value = type
+        ? notifications.value.filter(n => n.type !== type)
+        : []
+    }
+    catch (caught) {
+      error.value = caught instanceof Error ? caught : new Error(String(caught))
+    }
+  }
+
+  function reset() {
+    notifications.value = []
+    loading.value = false
+    loaded.value = false
+    error.value = null
   }
 
   return {
     notifications,
+    loading,
+    loaded,
+    error,
     unreadCount,
     getByType,
     unreadByType,
-    addNotification,
+    loadNotifications,
     markAsRead,
     markAllAsRead,
     removeNotification,
     clearAll,
-    loadMockData,
+    reset,
   }
 })

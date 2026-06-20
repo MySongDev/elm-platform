@@ -3,10 +3,13 @@ export interface NotificationItem {
   /** 通知类型：notification | message | todo */
   type: 'notification' | 'message' | 'todo'
   title: string
-  description?: string
-  time: string
-  read: boolean
-  avatar?: string
+  description?: string | null
+  avatar?: string | null
   /** 待办状态 */
-  status?: string
+  status?: string | null
+  read: boolean
+  /** ISO 时间戳，由前端格式化展示 */
+  createdAt: string
+  /** ISO 时间戳，首次标记已读时间 */
+  readAt?: string | null
 }

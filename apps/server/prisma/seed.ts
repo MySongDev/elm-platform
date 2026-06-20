@@ -919,6 +919,9 @@ async function main() {
   const todayAt = (h: number) => {
     const d = new Date(seedNow)
     d.setHours(h, 0, 0, 0)
+    if (d.getTime() > seedNow.getTime()) {
+      d.setDate(d.getDate() - 1)
+    }
     return d
   }
   const notificationSeeds = [
@@ -972,7 +975,7 @@ async function main() {
       description: '本周周报尚未提交',
       status: 'danger',
       source: 'SEED',
-      createdAt: todayAt(24),
+      createdAt: todayAt(20),
     },
   ]
   for (const seed of notificationSeeds) {
