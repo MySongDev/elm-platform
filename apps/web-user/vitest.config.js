@@ -7,7 +7,7 @@ export default defineConfig({
   test: {
     environment: 'happy-dom',
     globals: true,
-    include: ['src/**/*.test.{js,ts}'],
+    include: ['src/**/*.test.{js,ts}', 'mock/**/*.test.js'],
     setupFiles: ['src/test/setup.js'],
     coverage: {
       thresholds: {
