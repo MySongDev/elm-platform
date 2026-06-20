@@ -4,24 +4,19 @@
  * @description 管理登录 token、用户资料、后端菜单和动态路由加载状态，是权限系统的前端状态边界。
  */
 
-import type { paths } from '@elm-platform/api-types'
 import type { RouteRecordRaw } from 'vue-router'
+import type { LoginCredentials } from '../api'
 import type { UpdateProfileParams, UserMenuNode } from './types'
 import type { UserInfo } from '@/entities/user'
 import { defineStore } from 'pinia'
 import { computed, ref, shallowRef } from 'vue'
-import { authEndpoints } from '@/shared/api/endpoints'
-import request from '@/shared/api/request'
 import { hasPermission as checkPermission } from '@/shared/lib/permission'
-import { getUserMenus, updateProfile } from '../api'
-import { createDevMockLoginResult, createDevMockUserInfo, getDevMockUserMenus, isDevMockAuthEnabled } from './dev-auth'
-
-type ApiEnvelopeData<T> = T extends { data: infer Data } ? Data : never
-type AdminLoginOperation = paths['/api/auth/login']['post']
-type AdminLoginResponseBody = AdminLoginOperation['responses'][200]['content']['application/json']
-
-export type LoginResult = ApiEnvelopeData<AdminLoginResponseBody>
-export type LoginCredentials = AdminLoginOperation['requestBody']['content']['application/json']
+import {
+  getCurrentUser,
+  getUserMenus,
+  login as loginRequest,
+  updateProfile,
+} from '../api'
 
 const DEFAULT_SESSION_TTL_SECONDS = 24 * 60 * 60
 
@@ -70,9 +65,7 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   async function login(credentials: LoginCredentials) {
-    const res = isDevMockAuthEnabled()
-      ? createDevMockLoginResult(credentials.account, credentials.rememberMe)
-      : await request.post<LoginResult>(authEndpoints.login, credentials)
+    const res = await loginRequest(credentials)
     token.value = res.token
     tokenExpiresAt.value = Date.now() + (res.expiresIn ?? DEFAULT_SESSION_TTL_SECONDS) * 1000
     userInfo.value = res.user
@@ -83,12 +76,8 @@ export const useAuthStore = defineStore('auth', () => {
   async function getUserInfo() {
     if (!token.value)
       return
-    if (isDevMockAuthEnabled()) {
-      userInfo.value = createDevMockUserInfo()
-      return
-    }
     try {
-      userInfo.value = await request.get<UserInfo>('/auth/profile')
+      userInfo.value = await getCurrentUser()
     }
     catch (error) {
       const isAuthError = error instanceof Error
@@ -113,9 +102,7 @@ export const useAuthStore = defineStore('auth', () => {
       return loadingMenusPromise
 
     loadingMenusPromise = (async () => {
-      const menuTree = isDevMockAuthEnabled()
-        ? getDevMockUserMenus()
-        : await getUserMenus()
+      const menuTree = await getUserMenus()
       menus.value = menuTree
       return menuTree
     })()

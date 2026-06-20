@@ -1,9 +1,12 @@
-import type { LoginResult } from './store'
+import type { LoginResult } from '../api'
+import type { UserInfo } from '@/entities/user'
 import { createPinia, setActivePinia } from 'pinia'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { authEndpoints } from '@/shared/api/endpoints'
 
-let request: typeof import('@/shared/api/request').default
+let login: typeof import('../api').login
+let getCurrentUser: typeof import('../api').getCurrentUser
+let getUserMenus: typeof import('../api').getUserMenus
+let updateProfile: typeof import('../api').updateProfile
 let useAuthStore: typeof import('./store').useAuthStore
 
 describe('useAuthStore session expiry', () => {
@@ -20,24 +23,25 @@ describe('useAuthStore session expiry', () => {
     setActivePinia(createPinia())
     vi.useFakeTimers()
     vi.setSystemTime(new Date('2026-05-23T00:00:00.000Z'))
-    vi.doMock('@/shared/api/request', () => ({
-      default: {
-        get: vi.fn(),
-        post: vi.fn(),
-        patch: vi.fn(),
-      },
+    vi.doMock('../api', () => ({
+      login: vi.fn(),
+      getCurrentUser: vi.fn(),
+      getUserMenus: vi.fn(),
+      updateProfile: vi.fn(),
     }))
-    ;({ default: request } = await import('@/shared/api/request'))
+    ;({ login, getCurrentUser, getUserMenus, updateProfile } = await import('../api'))
     ;({ useAuthStore } = await import('./store'))
-    vi.mocked(request.get).mockReset()
-    vi.mocked(request.post).mockReset()
+    vi.mocked(login).mockReset()
+    vi.mocked(getCurrentUser).mockReset()
+    vi.mocked(getUserMenus).mockReset()
+    vi.mocked(updateProfile).mockReset()
   })
 
   afterEach(() => {
     vi.useRealTimers()
     vi.unstubAllEnvs()
     vi.unstubAllGlobals()
-    vi.doUnmock('@/shared/api/request')
+    vi.doUnmock('../api')
   })
 
   it('rejects restored tokens that do not have an expiry timestamp', () => {
@@ -74,21 +78,17 @@ describe('useAuthStore session expiry', () => {
         boundShopIds: ['shop-1'],
       },
     } satisfies LoginResult
-
-    vi.mocked(request.post).mockResolvedValueOnce(loginResult)
+    vi.mocked(login).mockResolvedValueOnce(loginResult)
 
     const store = useAuthStore()
-    const result = await store.login({
+    const credentials = {
       account: 'admin',
       password: 'admin123',
       rememberMe: true,
-    })
+    }
+    const result = await store.login(credentials)
 
-    expect(request.post).toHaveBeenCalledWith(authEndpoints.login, {
-      account: 'admin',
-      password: 'admin123',
-      rememberMe: true,
-    })
+    expect(login).toHaveBeenCalledWith(credentials)
     expect(result).toBe(loginResult)
     expect(store.token).toBe('remembered-token')
     expect(store.tokenExpiresAt).toBe(Date.now() + 7 * 24 * 60 * 60 * 1000)
@@ -103,42 +103,86 @@ describe('useAuthStore session expiry', () => {
     expect(store.isLoggedIn).toBe(true)
   })
 
-  it('uses local mock auth without requesting the backend when enabled for development', async () => {
-    vi.stubEnv('VITE_ADMIN_MOCK_AUTH', 'true')
+  it('loads user profile and menus through session api', async () => {
+    const user: UserInfo = {
+      id: 1,
+      username: 'admin',
+      role: 'admin',
+      status: 1,
+      permissions: ['*:*:*'],
+      email: 'admin@example.com',
+      phone: '13800138000',
+      avatar: null,
+    }
+    const menus = [
+      {
+        id: 1,
+        parentId: null,
+        title: 'Dashboard',
+        path: '/dashboard',
+        name: 'Dashboard',
+        icon: null,
+        permission: null,
+        component: null,
+        type: 'catalog' as const,
+        sort: 1,
+        status: 1,
+      },
+    ]
+    vi.mocked(getCurrentUser).mockResolvedValueOnce(user)
+    vi.mocked(getUserMenus).mockResolvedValueOnce(menus)
 
     const store = useAuthStore()
-    const result = await store.login({
-      account: 'dev-admin',
-      password: 'admin123',
-    })
-
-    expect(request.post).not.toHaveBeenCalled()
-    expect(result.token).toBe('dev-mock-admin-token')
-    expect(store.token).toBe('dev-mock-admin-token')
-    expect(store.userInfo?.username).toBe('dev-admin')
-    expect(store.permissions).toContain('*:*:*')
-    expect(store.isLoggedIn).toBe(true)
-  })
-
-  it('loads profile and menus locally without backend requests when mock auth is enabled', async () => {
-    vi.stubEnv('VITE_ADMIN_MOCK_AUTH', 'true')
-
-    const store = useAuthStore()
-    store.token = 'dev-mock-admin-token'
+    store.token = 'valid-token'
     store.tokenExpiresAt = Date.now() + 24 * 60 * 60 * 1000
 
     await store.getUserInfo()
-    const menus = await store.loadUserMenus()
+    const loadedMenus = await store.loadUserMenus()
 
-    expect(request.get).not.toHaveBeenCalled()
-    expect(store.userInfo?.role).toBe('admin')
-    expect(menus[0]).toMatchObject({
-      path: '/dashboard',
-      children: [
-        expect.objectContaining({
-          path: '/dashboard/index',
-        }),
-      ],
-    })
+    expect(getCurrentUser).toHaveBeenCalledOnce()
+    expect(getUserMenus).toHaveBeenCalledOnce()
+    expect(store.userInfo).toStrictEqual(user)
+    expect(loadedMenus).toStrictEqual(menus)
+  })
+
+  it('updates user info through session api', async () => {
+    const profilePatch = {
+      username: 'new-name',
+      email: 'new@example.com',
+      phone: '13900139000',
+    }
+    const updatedUser: UserInfo = {
+      id: 1,
+      username: 'new-name',
+      role: 'admin',
+      status: 1,
+      permissions: ['*:*:*'],
+      email: 'new@example.com',
+      phone: '13900139000',
+      avatar: null,
+    }
+    vi.mocked(updateProfile).mockResolvedValueOnce(updatedUser)
+
+    const store = useAuthStore()
+    const result = await store.updateUserInfo(profilePatch)
+
+    expect(updateProfile).toHaveBeenCalledWith(profilePatch)
+    expect(result).toStrictEqual(updatedUser)
+    expect(store.userInfo).toStrictEqual(updatedUser)
+  })
+
+  it('clears token on authentication error when loading user info', async () => {
+    const error = new Error('Unauthorized')
+    Object.assign(error, { response: { status: 401 } })
+    vi.mocked(getCurrentUser).mockRejectedValueOnce(error)
+
+    const store = useAuthStore()
+    store.token = 'expired-token'
+    store.tokenExpiresAt = Date.now() + 24 * 60 * 60 * 1000
+
+    await store.getUserInfo()
+
+    expect(store.token).toBe('')
+    expect(store.userInfo).toBeNull()
   })
 })

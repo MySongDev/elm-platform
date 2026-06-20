@@ -1,7 +1,7 @@
 import type { Router, RouteRecordRaw } from 'vue-router'
+import type { UserMenuNode } from '@/entities/session/model/types'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { createMemoryHistory, createRouter } from 'vue-router'
-import { getDevMockUserMenus } from '@/entities/session/model/dev-auth'
 import { getDashboardOverview } from '@/features/dashboard/api/dashboard'
 import { buildRoutes } from '../build-routes'
 import { registerDynamicRoutes, resetDynamicRoutes } from '../dynamic-routes'
@@ -10,6 +10,107 @@ vi.mock('@/locales', () => ({
   $t: (key: string) => key,
 }))
 
+const testMenus: UserMenuNode[] = [{
+  id: 1,
+  parentId: null,
+  title: 'Dashboard',
+  path: '/dashboard',
+  name: 'Dashboard',
+  icon: 'dashboard',
+  permission: null,
+  component: null,
+  type: 'catalog',
+  sort: 1,
+  status: 1,
+  children: [{
+    id: 2,
+    parentId: 1,
+    title: 'Overview',
+    path: '/dashboard/index',
+    name: 'DashboardView',
+    icon: 'dashboard',
+    permission: null,
+    component: null,
+    type: 'menu',
+    sort: 1,
+    status: 1,
+  }],
+}, {
+  id: 20,
+  parentId: null,
+  title: 'Commerce',
+  path: '/commerce',
+  name: 'Commerce',
+  icon: 'document',
+  permission: null,
+  component: null,
+  type: 'catalog',
+  sort: 35,
+  status: 1,
+  children: [{
+    id: 23,
+    parentId: 20,
+    title: 'Order',
+    path: '/commerce/order',
+    name: 'CommerceOrderView',
+    icon: 'document',
+    permission: 'commerce:order:view',
+    component: null,
+    type: 'menu',
+    sort: 3,
+    status: 1,
+  }],
+}, {
+  id: 25,
+  parentId: null,
+  title: 'route.platformManagement',
+  path: '/platform',
+  name: 'Platform',
+  icon: 'system',
+  permission: null,
+  component: null,
+  type: 'catalog',
+  sort: 36,
+  status: 1,
+  children: [{
+    id: 26,
+    parentId: 25,
+    title: 'route.tenantManagement',
+    path: '/platform/tenant',
+    name: 'TenantListView',
+    icon: 'system',
+    permission: 'platform:tenant:view',
+    component: null,
+    type: 'menu',
+    sort: 1,
+    status: 1,
+  }],
+}, {
+  id: 4,
+  parentId: null,
+  title: 'Monitor',
+  path: '/monitor',
+  name: 'Monitor',
+  icon: 'monitor',
+  permission: null,
+  component: null,
+  type: 'catalog',
+  sort: 30,
+  status: 1,
+  children: [{
+    id: 8,
+    parentId: 4,
+    title: 'System Logs',
+    path: '/monitor/system-logs',
+    name: 'SystemLogs',
+    icon: 'monitor',
+    permission: 'log:system:view',
+    component: null,
+    type: 'menu',
+    sort: 4,
+    status: 1,
+  }],
+}]
 function createRouterStub() {
   const addedRoutes: RouteRecordRaw[] = []
   const removers = [vi.fn(), vi.fn(), vi.fn()]
@@ -99,7 +200,7 @@ describe('dynamic routes', () => {
       history: createMemoryHistory(),
       routes: [],
     })
-    const routes = buildRoutes(getDevMockUserMenus())
+    const routes = buildRoutes(testMenus)
     const overview = await getDashboardOverview()
 
     registerDynamicRoutes(router, routes)

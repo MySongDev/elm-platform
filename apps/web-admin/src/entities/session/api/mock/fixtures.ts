@@ -1,4 +1,5 @@
-import type { UserInfo, UserMenuNode } from '../model/types'
+import type { UserInfo, UserMenuNode } from '../../model/types'
+import type { LoginResult } from '../contracts'
 
 export const DEV_MOCK_TOKEN = 'dev-mock-admin-token'
 export const DEV_MOCK_SESSION_TTL_SECONDS = 24 * 60 * 60
@@ -17,18 +18,21 @@ export function createDevMockUserInfo(account = 'dev-admin'): UserInfo {
     status: 1,
     role: 'admin',
     permissions: ['*:*:*'],
+    tenant: null,
+    dataScope: 'ALL',
+    boundShopIds: [],
     createdAt: DEV_MOCK_TIMESTAMP,
     updatedAt: DEV_MOCK_TIMESTAMP,
   }
 }
 
-export function createDevMockLoginResult(account: string, rememberMe?: boolean) {
+export function createDevMockLoginResult(account: string, rememberMe?: boolean): LoginResult {
   return {
     token: DEV_MOCK_TOKEN,
     expiresIn: rememberMe
       ? DEV_MOCK_REMEMBERED_SESSION_TTL_SECONDS
       : DEV_MOCK_SESSION_TTL_SECONDS,
-    user: createDevMockUserInfo(account),
+    user: createDevMockUserInfo(account) as LoginResult['user'],
   }
 }
 
