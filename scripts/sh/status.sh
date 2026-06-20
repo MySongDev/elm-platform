@@ -9,10 +9,12 @@ RED='\033[0;31m'
 NC='\033[0m'
 
 check() {
-    if eval "$2" &>/dev/null; then
-        echo -e "  ${GREEN}●${NC} $1: 运行中"
+    local label="$1"
+    local cmd="$2"
+    if eval "$cmd" &>/dev/null; then
+        echo -e "  ${GREEN}●${NC} $label: 运行中"
     else
-        echo -e "  ${RED}●${NC} $1: 未运行"
+        echo -e "  ${RED}●${NC} $label: 未运行"
     fi
 }
 
@@ -23,6 +25,7 @@ echo "  Elm Platform 状态"
 echo "  ─────────────────"
 check "PostgreSQL" "docker compose exec -T postgres pg_isready -U postgres"
 check "Redis"      "docker compose exec -T redis redis-cli ping"
-check "NestJS"     "curl -s http://localhost:3000/api-docs"
-check "Nginx"      "curl -s -o /dev/null -w '%{http_code}' http://localhost/"
+# /api-docs 首次会 301/302 重定向到 swagger-ui，200/301/302 都算健康
+check "NestJS"     "curl -s -o /dev/null -w '%{http_code}' http://localhost:3000/api-docs | grep -qE '^(200|301|302)$'"
+check "Nginx"      "curl -s -o /dev/null -w '%{http_code}' http://localhost/ | grep -qE '^(200|301|302)$'"
 echo ""
