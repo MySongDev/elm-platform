@@ -38,6 +38,14 @@ describe('session api', () => {
         email: 'admin@example.com',
         phone: '13800138000',
         avatar: null,
+        tenant: {
+          id: 1,
+          code: 'default',
+          name: 'Default Tenant',
+          status: 'ACTIVE',
+        },
+        dataScope: 'ALL',
+        boundShopIds: [],
       },
     }
     vi.mocked(request.post).mockResolvedValueOnce(loginResult)
