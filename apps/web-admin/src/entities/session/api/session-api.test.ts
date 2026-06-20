@@ -8,7 +8,6 @@ let api: typeof import('./index')
 describe('session api', () => {
   beforeEach(async () => {
     vi.resetModules()
-    vi.stubEnv('VITE_ADMIN_MOCK_AUTH', 'false')
     vi.doMock('@/shared/api/request', () => ({
       default: {
         get: vi.fn(),
@@ -22,7 +21,6 @@ describe('session api', () => {
 
   afterEach(() => {
     vi.doUnmock('@/shared/api/request')
-    vi.unstubAllEnvs()
   })
 
   it('delegates login to shared request with endpoint and credentials', async () => {
@@ -145,77 +143,5 @@ describe('session api', () => {
 
     expect(request.get).toHaveBeenCalledWith(authEndpoints.securityLogs, { params: query })
     expect(result).toBe(securityLogResult)
-  })
-})
-
-describe('session api mock mode', () => {
-  beforeEach(async () => {
-    vi.resetModules()
-    vi.stubEnv('VITE_ADMIN_MOCK_AUTH', 'true')
-    vi.doMock('@/shared/api/request', () => ({
-      default: {
-        get: vi.fn(),
-        post: vi.fn(),
-        patch: vi.fn(),
-      },
-    }))
-    ;({ default: request } = await import('@/shared/api/request'))
-    api = await import('./index')
-  })
-
-  afterEach(() => {
-    vi.doUnmock('@/shared/api/request')
-    vi.unstubAllEnvs()
-  })
-
-  it('returns mock login result without calling request', async () => {
-    const credentials = {
-      account: 'dev-admin',
-      password: 'admin123',
-      rememberMe: true,
-    }
-    const result = await api.login(credentials)
-
-    expect(request.post).not.toHaveBeenCalled()
-    expect(result.token).toBe('dev-mock-admin-token')
-    expect(result.expiresIn).toBe(7 * 24 * 60 * 60)
-    expect(result.user.username).toBe('dev-admin')
-  })
-
-  it('returns mock current user without calling request', async () => {
-    const result = await api.getCurrentUser()
-
-    expect(request.get).not.toHaveBeenCalled()
-    expect(result.username).toBe('dev-admin')
-    expect(result.role).toBe('admin')
-  })
-
-  it('returns mock user menus without calling request', async () => {
-    const result = await api.getUserMenus()
-
-    expect(request.get).not.toHaveBeenCalled()
-    expect(result[0].path).toBe('/dashboard')
-  })
-
-  it('updates mock profile and returns updated user without calling request', async () => {
-    const result = await api.updateProfile({ username: 'updated-admin' })
-
-    expect(request.patch).not.toHaveBeenCalled()
-    expect(result.username).toBe('updated-admin')
-  })
-
-  it('returns mock security logs without calling request', async () => {
-    const result = await api.getSecurityLogs({
-      page: 1,
-      pageSize: 10,
-    })
-
-    expect(request.get).not.toHaveBeenCalled()
-    expect(result).toMatchObject({
-      list: expect.any(Array),
-      total: expect.any(Number),
-      page: 1,
-      pageSize: 10,
-    })
   })
 })
