@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { FormInstance, FormRules } from 'element-plus'
 import { IconLock as IconEpLock, IconUser as IconEpUser } from '@iconify-prerendered/vue-ep'
+import { useTemplateRef } from 'vue'
 import { useAuthStore } from '@/entities/session'
 import { DEFAULT_HOME_PATH } from '@/shared/config/paths'
 
@@ -11,7 +12,7 @@ const route = useRoute()
 const { t } = useI18n()
 const authStore = useAuthStore()
 
-const loginFormRef = ref<FormInstance>()
+const loginFormRef = useTemplateRef<FormInstance>('loginFormRef')
 const loading = ref(false)
 
 const loginForm = reactive({
@@ -46,9 +47,6 @@ async function handleLogin() {
   if (!valid)
     return
 
-  loginForm.account = loginForm.account.trim()
-  loginForm.password = loginForm.password.trim()
-
   loading.value = true
 
   try {
@@ -76,13 +74,15 @@ async function handleLogin() {
         ref="loginFormRef"
         :model="loginForm"
         :rules="rules"
+        size="large"
         @keyup.enter="handleLogin"
       >
         <el-form-item prop="account">
           <el-input
             v-model="loginForm.account"
-            :placeholder="t('login.usernamePlaceholder')"
+            type="text"
             :prefix-icon="IconEpUser"
+            :placeholder="t('login.usernamePlaceholder')"
             size="large"
           />
         </el-form-item>

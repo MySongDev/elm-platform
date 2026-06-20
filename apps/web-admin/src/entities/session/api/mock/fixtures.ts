@@ -1,13 +1,9 @@
-import type { UserInfo, UserMenuNode } from './types'
+import type { UserInfo, UserMenuNode } from '../model/types'
 
-const DEV_MOCK_TOKEN = 'dev-mock-admin-token'
-const DEV_MOCK_SESSION_TTL_SECONDS = 24 * 60 * 60
-const DEV_MOCK_REMEMBERED_SESSION_TTL_SECONDS = 7 * 24 * 60 * 60
-const DEV_MOCK_TIMESTAMP = '2026-01-01T00:00:00.000Z'
-
-export function isDevMockAuthEnabled() {
-  return import.meta.env.DEV && import.meta.env.VITE_ADMIN_MOCK_AUTH === 'true'
-}
+export const DEV_MOCK_TOKEN = 'dev-mock-admin-token'
+export const DEV_MOCK_SESSION_TTL_SECONDS = 24 * 60 * 60
+export const DEV_MOCK_REMEMBERED_SESSION_TTL_SECONDS = 7 * 24 * 60 * 60
+export const DEV_MOCK_TIMESTAMP = '2026-01-01T00:00:00.000Z'
 
 export function createDevMockUserInfo(account = 'dev-admin'): UserInfo {
   const username = account.trim() || 'dev-admin'
