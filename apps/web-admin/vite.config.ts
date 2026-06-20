@@ -6,10 +6,12 @@ import AutoImport from 'unplugin-auto-import/vite'
 import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
 import Components from 'unplugin-vue-components/vite'
 import { defineConfig, loadEnv } from 'vite'
+import { viteMockServe } from 'vite-plugin-mock'
 
-export default defineConfig(({ mode }) => {
+export default defineConfig(({ command, mode }) => {
   const env = loadEnv(mode, cwd(), '')
   const isAnalyze = env.VITE_ANALYZE === 'true'
+  const enableMock = command === 'serve' && mode === 'mock'
 
   return {
     base: process.env.BASE_URL || '/',
@@ -34,6 +36,12 @@ export default defineConfig(({ mode }) => {
     },
     plugins: [
       vue(),
+      viteMockServe({
+        mockPath: 'mock/routes',
+        enable: enableMock,
+        watchFiles: true,
+        logger: true,
+      }),
       AutoImport({
         dts: 'src/typings/auto-imports.d.ts',
         imports: ['vue', 'vue-router', 'pinia', 'vue-i18n'],
