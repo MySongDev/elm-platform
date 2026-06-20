@@ -60,6 +60,7 @@ catalog:
   dotenv: ^16.6.1
   echarts: ^6.1.0
   element-plus: ^2.9.8
+  esbuild: ^0.27.7
   eslint: ^9.39.2
   express: ^5.1.0
   fast-glob: ^3.3.3
@@ -70,6 +71,7 @@ catalog:
   jest: ^29.7.0
   lint-staged: ^15.5.2
   mitt: ^3.0.1
+  mockjs: ^1.1.0
   nprogress: ^0.2.0
   openapi-typescript: ^7.8.0
   passport: ^0.7.0
@@ -102,6 +104,7 @@ catalog:
   unplugin-vue-components: ^31.0.0
   vant: ^4.9.22
   vite: ^7.3.1
+  vite-plugin-mock: ^3.0.2
   vite-plugin-svg-icons: ^2.0.1
   vite-plugin-vue-devtools: ^8.0.5
   vitest: ^4.1.6

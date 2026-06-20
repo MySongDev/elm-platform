@@ -8,6 +8,7 @@
   },
   "scripts": {
     "dev": "vite --host",
+    "dev:mock": "vite --mode mock --host",
     "build": "vue-tsc --noEmit && vite build",
     "build:analyze": "vue-tsc --noEmit && VITE_ANALYZE=true vite build",
     "type-check": "vue-tsc --noEmit",
@@ -40,12 +41,15 @@
     "@types/nprogress": "catalog:",
     "@vitejs/plugin-vue": "catalog:",
     "@vitest/coverage-v8": "catalog:",
+    "esbuild": "catalog:",
     "fast-glob": "catalog:",
+    "mockjs": "catalog:",
     "rollup-plugin-visualizer": "^7.0.1",
     "sass-embedded": "catalog:",
     "unplugin-auto-import": "catalog:",
     "unplugin-vue-components": "catalog:",
     "vite": "catalog:",
+    "vite-plugin-mock": "catalog:",
     "vitest": "catalog:",
     "vue-tsc": "catalog:"
   }

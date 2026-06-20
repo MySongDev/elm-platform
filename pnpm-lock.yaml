@@ -120,6 +120,9 @@ catalogs:
     element-plus:
       specifier: ^2.9.8
       version: 2.14.1
+    esbuild:
+      specifier: ^0.27.7
+      version: 0.27.7
     eslint:
       specifier: ^9.39.2
       version: 9.39.4
@@ -150,6 +153,9 @@ catalogs:
     mitt:
       specifier: ^3.0.1
       version: 3.0.1
+    mockjs:
+      specifier: ^1.1.0
+      version: 1.1.0
     nprogress:
       specifier: ^0.2.0
       version: 0.2.0
@@ -246,6 +252,9 @@ catalogs:
     vite:
       specifier: ^7.3.1
       version: 7.3.5
+    vite-plugin-mock:
+      specifier: ^3.0.2
+      version: 3.0.2
     vite-plugin-svg-icons:
       specifier: ^2.0.1
       version: 2.0.1
@@ -529,9 +538,15 @@ importers:
       '@vitest/coverage-v8':
         specifier: 'catalog:'
         version: 4.1.8(vitest@4.1.8)
+      esbuild:
+        specifier: 'catalog:'
+        version: 0.27.7
       fast-glob:
         specifier: 'catalog:'
         version: 3.3.3
+      mockjs:
+        specifier: 'catalog:'
+        version: 1.1.0
       rollup-plugin-visualizer:
         specifier: ^7.0.1
         version: 7.0.1(rollup@4.61.1)
@@ -547,6 +562,9 @@ importers:
       vite:
         specifier: 'catalog:'
         version: 7.3.5(@types/node@20.19.41)(jiti@2.6.1)(sass-embedded@1.100.0)(sass@1.100.0)(terser@5.48.0)(tsx@4.22.4)(yaml@2.9.0)
+      vite-plugin-mock:
+        specifier: 'catalog:'
+        version: 3.0.2(esbuild@0.27.7)(mockjs@1.1.0)(vite@7.3.5(@types/node@20.19.41)(jiti@2.6.1)(sass-embedded@1.100.0)(sass@1.100.0)(terser@5.48.0)(tsx@4.22.4)(yaml@2.9.0))
       vitest:
         specifier: 'catalog:'
         version: 4.1.8(@types/node@20.19.41)(@vitest/coverage-v8@4.1.8)(happy-dom@20.10.1)(vite@7.3.5(@types/node@20.19.41)(jiti@2.6.1)(sass-embedded@1.100.0)(sass@1.100.0)(terser@5.48.0)(tsx@4.22.4)(yaml@2.9.0))
@@ -3573,6 +3591,12 @@ packages:
     resolution: {integrity: sha512-tjwM5exMg6BGRI+kNmTntNsvdZS1X8BFYS6tnJ2hdH0kVxM6/eVZ2xy+FqStSWvYmtfFMDLIxurorHwDKfDz5Q==}
     engines: {node: '>=18'}
 
+  bundle-require@4.2.1:
+    resolution: {integrity: sha512-7Q/6vkyYAwOmQNRw75x+4yRtZCZJXUDmHHlFdkiV0wgv/reNjtJwpu1jPJ0w2kbEpIM0uoKI3S4/f39dU7AjSA==}
+    engines: {node: ^12.20.0 || ^14.13.1 || >=16.0.0}
+    peerDependencies:
+      esbuild: '>=0.17'
+
   bundle-require@5.1.0:
     resolution: {integrity: sha512-3WrrOuZiyaaZPWiEt4G3+IffISVC9HYlWueJEBWED4ZH4aIAC2PnkdnuRrR94M+w6yGWn4AglWtJtBI8YqvgoA==}
     engines: {node: ^12.20.0 || ^14.13.1 || >=16.0.0}
@@ -6374,6 +6398,10 @@ packages:
   mlly@1.8.2:
     resolution: {integrity: sha512-d+ObxMQFmbt10sretNDytwt85VrbkhhUA/JBGm1MPaWJ65Cl4wOgLaB1NYvJSZ0Ef03MMEU/0xpPMXUIQ29UfA==}
 
+  mockjs@1.1.0:
+    resolution: {integrity: sha512-eQsKcWzIaZzEZ07NuEyO4Nw65g0hdWAyurVol1IPl1gahRwY+svqzfgfey8U8dahLwG44d6/RwEzuK52rSa/JQ==}
+    hasBin: true
+
   module-replacements@2.11.0:
     resolution: {integrity: sha512-j5sNQm3VCpQQ7nTqGeOZtoJtV3uKERgCBm9QRhmGRiXiqkf7iRFOkfxdJRZWLkqYY8PNf4cDQF/WfXUYLENrRA==}
 
@@ -6731,6 +6759,9 @@ packages:
 
   path-to-regexp@3.3.0:
     resolution: {integrity: sha512-qyCH421YQPS2WFDxDjftfc1ZR5WKQzVzqsp4n9M2kQhVOo/ByahFoUNJfl58kOcEGfQ//7weFTDhm+ss8Ecxgw==}
+
+  path-to-regexp@6.3.0:
+    resolution: {integrity: sha512-Yhpw4T9C6hPpgPeA28us07OJeqZ5EzQTkbfwuhsUg0c237RomFoETJgmp2sa3F/41gfLE6G5cqcYwznmeEeOlQ==}
 
   path-to-regexp@8.4.2:
     resolution: {integrity: sha512-qRcuIdP69NPm4qbACK+aDogI5CBDMi1jKe0ry5rSQJz8JVLsC7jV8XpiJjGRLLol3N+R5ihGYcrPLTno6pAdBA==}
@@ -8391,6 +8422,14 @@ packages:
     peerDependenciesMeta:
       '@nuxt/kit':
         optional: true
+
+  vite-plugin-mock@3.0.2:
+    resolution: {integrity: sha512-bD//HvkTygGmk+LsIAdf0jGNlCv4iWv0kZlH9UEgWT6QYoUwfjQAE4SKxHRw2tfLgVhbPQVv/+X3YlNWvueGUA==}
+    engines: {node: '>=16.0.0'}
+    peerDependencies:
+      esbuild: '>=0.17'
+      mockjs: '>=1.1.0'
+      vite: '>=4.0.0'
 
   vite-plugin-svg-icons@2.0.1:
     resolution: {integrity: sha512-6ktD+DhV6Rz3VtedYvBKKVA2eXF+sAQVaKkKLDSqGUfnhqXl3bj5PPkVTl3VexfTuZy66PmINi8Q6eFnVfRUmA==}
@@ -12108,6 +12147,11 @@ snapshots:
     dependencies:
       run-applescript: 7.1.0
 
+  bundle-require@4.2.1(esbuild@0.27.7):
+    dependencies:
+      esbuild: 0.27.7
+      load-tsconfig: 0.2.5
+
   bundle-require@5.1.0(esbuild@0.27.7):
     dependencies:
       esbuild: 0.27.7
@@ -15526,6 +15570,10 @@ snapshots:
       pkg-types: 1.3.1
       ufo: 1.6.4
 
+  mockjs@1.1.0:
+    dependencies:
+      commander: 14.0.3
+
   module-replacements@2.11.0: {}
 
   moment@2.30.1: {}
@@ -15891,6 +15939,8 @@ snapshots:
   path-to-regexp@0.1.13: {}
 
   path-to-regexp@3.3.0: {}
+
+  path-to-regexp@6.3.0: {}
 
   path-to-regexp@8.4.2: {}
 
@@ -17671,6 +17721,21 @@ snapshots:
       unplugin-utils: 0.3.1
       vite: 7.3.5(@types/node@20.19.41)(jiti@2.6.1)(sass-embedded@1.100.0)(sass@1.100.0)(terser@5.48.0)(tsx@4.22.4)(yaml@2.9.0)
       vite-dev-rpc: 2.0.0(vite@7.3.5(@types/node@20.19.41)(jiti@2.6.1)(sass-embedded@1.100.0)(sass@1.100.0)(terser@5.48.0)(tsx@4.22.4)(yaml@2.9.0))
+
+  vite-plugin-mock@3.0.2(esbuild@0.27.7)(mockjs@1.1.0)(vite@7.3.5(@types/node@20.19.41)(jiti@2.6.1)(sass-embedded@1.100.0)(sass@1.100.0)(terser@5.48.0)(tsx@4.22.4)(yaml@2.9.0)):
+    dependencies:
+      bundle-require: 4.2.1(esbuild@0.27.7)
+      chokidar: 3.6.0
+      connect: 3.7.0
+      debug: 4.4.3(supports-color@10.2.2)
+      esbuild: 0.27.7
+      fast-glob: 3.3.3
+      mockjs: 1.1.0
+      path-to-regexp: 6.3.0
+      picocolors: 1.1.1
+      vite: 7.3.5(@types/node@20.19.41)(jiti@2.6.1)(sass-embedded@1.100.0)(sass@1.100.0)(terser@5.48.0)(tsx@4.22.4)(yaml@2.9.0)
+    transitivePeerDependencies:
+      - supports-color
 
   vite-plugin-svg-icons@2.0.1(vite@7.3.5(@types/node@20.19.41)(jiti@2.6.1)(sass-embedded@1.100.0)(sass@1.100.0)(terser@5.48.0)(tsx@4.22.4)(yaml@2.9.0)):
     dependencies:
