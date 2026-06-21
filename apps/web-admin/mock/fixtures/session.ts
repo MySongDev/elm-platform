@@ -258,7 +258,7 @@ const devMockUserMenus: UserMenuNode[] = [
         parentId: 25,
         title: 'route.tenantManagement',
         path: '/platform/tenant',
-        name: 'TenantListView',
+        name: 'PlatformTenantView',
         icon: 'system',
         permission: 'platform:tenant:view',
         component: null,

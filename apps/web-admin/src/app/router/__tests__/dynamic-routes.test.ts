@@ -77,7 +77,7 @@ const testMenus: UserMenuNode[] = [{
     parentId: 25,
     title: 'route.tenantManagement',
     path: '/platform/tenant',
-    name: 'TenantListView',
+    name: 'PlatformTenantView',
     icon: 'system',
     permission: 'platform:tenant:view',
     component: null,
@@ -195,7 +195,7 @@ describe('dynamic routes', () => {
     expect(notFoundRemove).toHaveBeenCalledTimes(1)
   })
 
-  it('registers dev mock routes used by dashboard pending work navigation', async () => {
+  it('resolves dashboard pending work against real backend menu route names', async () => {
     const router = createRouter({
       history: createMemoryHistory(),
       routes: [],
@@ -209,7 +209,7 @@ describe('dynamic routes', () => {
       .map(item => item.routeName)
       .filter((name): name is string => Boolean(name))
 
-    expect(pendingRouteNames).toContain('TenantListView')
+    expect(pendingRouteNames).toContain('PlatformTenantView')
     expect(
       pendingRouteNames.map(name => router.resolve({ name }).path),
     ).toEqual([

@@ -133,7 +133,7 @@ const dashboardOverview: DashboardOverview = {
       key: 'tenants',
       titleKey: 'dashboard.pendingTenants',
       count: 2,
-      routeName: 'TenantListView',
+      routeName: 'PlatformTenantView',
     },
     {
       key: 'alerts',

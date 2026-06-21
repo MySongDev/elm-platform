@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { TenantManagementPage } from '@/features/tenant-management'
 
-defineOptions({ name: 'TenantListView' })
+defineOptions({ name: 'PlatformTenantView' })
 </script>
 
 <template>
