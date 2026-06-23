@@ -64,4 +64,8 @@ apps/server/prisma/*.db-journal
 *.tsbuildinfo
 
 # Docs
-docs
+docs/learning/
+docs/report-templates/
+docs/reports/
+docs/superpowers/
+apps/*/docs
