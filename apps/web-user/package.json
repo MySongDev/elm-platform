@@ -9,9 +9,6 @@
   "scripts": {
     "dev": "vite --host",
     "dev:mock": "vite --mode mock  --host ",
-    "dev:pay": "node server/dev.js",
-    "server:dev": "node --watch server/index.js",
-    "server:start": "node server/index.js",
     "type-check": "vue-tsc --noEmit",
     "build": "vue-tsc --noEmit && vite build",
     "preview": "vite preview",
@@ -23,10 +20,7 @@
   },
   "dependencies": {
     "@vant/area-data": "catalog:",
-    "alipay-sdk": "catalog:",
     "axios": "catalog:",
-    "dotenv": "catalog:",
-    "express": "catalog:",
     "nprogress": "catalog:",
     "pinia": "catalog:",
     "pinia-plugin-persistedstate": "catalog:",
@@ -54,4 +48,3 @@
     "vue-tsc": "catalog:"
   }
 }
-

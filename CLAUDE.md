@@ -67,14 +67,12 @@ pnpm --filter @elm-platform/web-admin run preview
 ```bash
 pnpm --filter @elm-platform/web-user run dev            # proxies API to local backend
 pnpm --filter @elm-platform/web-user run dev:mock       # enables vite-plugin-mock
-pnpm --filter @elm-platform/web-user run server:dev     # local Alipay sandbox service on port 3001
 pnpm --filter @elm-platform/web-user run build          # runs vue-tsc before vite build
 pnpm --filter @elm-platform/web-user run type-check
 pnpm --filter @elm-platform/web-user run test
 pnpm --filter @elm-platform/web-user exec vitest run src/services/http/policies.test.js
 pnpm --filter @elm-platform/web-user run test:watch
 pnpm --filter @elm-platform/web-user run lint
-pnpm --filter @elm-platform/web-user run format
 pnpm --filter @elm-platform/web-user run preview
 ```
 
@@ -110,7 +108,7 @@ Pinia stores live in `src/stores/modules` for user/session, addresses, locations
 
 - Both web apps use `@` as an alias for their local `src` directory.
 - `apps/web-admin/vite.config.ts` proxies `/api` to `http://127.0.0.1:3000` and auto-imports Vue, Vue Router, Pinia, Vue I18n, and Element Plus APIs/components.
-- `apps/web-user/vite.config.js` proxies `/api` and `/ele-api` to the local backend and `/pay-api` to the local Alipay sandbox service; `dev:mock` enables mocks from `apps/web-user/mock`.
+- `apps/web-user/vite.config.js` proxies `/api`, `/ele-api`, and `/pay-api` to the local Nest backend on port `3000`; `dev:mock` enables mocks from `apps/web-user/mock`.
 - Web builds run `vue-tsc --noEmit` before `vite build`; fix type errors before treating a build as successful.
 - User-web Vitest runs in `happy-dom` and matches `src/**/*.test.{js,ts}`. Admin Vitest runs in `node` and matches `src/**/*.{test,spec}.ts`. Backend Jest matches `apps/server/src/**/*.spec.ts` via the package-local Jest config.
 

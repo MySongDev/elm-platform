@@ -33,6 +33,7 @@ Thumbs.db
 # Environment
 .env
 .env.local
+.env.alipay
 .env.*.local
 
 # Logs
@@ -52,6 +53,9 @@ coverage/
 .eslintcache
 test-results/
 playwright-report/
+__screenshots__/
+cypress/videos/
+cypress/screenshots/
 
 # Prisma
 apps/server/prisma/*.db

@@ -37,13 +37,6 @@ pnpm install
 pnpm preview
 ```
 
-### 本地支付服务（可选）
-
-项目包含一�?Express 支付宝沙箱服务，用于调试支付流程�?
-```bash
-pnpm server:dev
-```
-
 ### 代码质量
 
 ```bash
@@ -65,7 +58,6 @@ pnpm test:watch
 ```
 @elm-platform/web-user/
 ├── mock/                    Mock 数据（动态生成）
-├── server/                  本地支付宝沙箱服�?├── docs/                    架构说明文档
 ├── src/
 �?  ├── assets/              静态资�?& 全局样式
 �?  �?  └── styles/          SCSS 变量、Mixin、Reset
@@ -195,15 +187,14 @@ composables/
 
 | 文档 | 说明 |
 |------|------|
-| [项目亮点](docs/project-highlights.md) | 设计决策与面试讲�?|
-| [UI 状态规范](docs/ui-state-guidelines.md) | 页面状态管理规�?|
-| [Loading 架构](docs/loading-architecture.md) | Loading 系统设计 |
+| [项目亮点](../../docs/architecture/web-user/project-highlights.md) | 设计决策与面试讲�?|
+| [UI 状态规范](../../docs/architecture/web-user/ui-state-guidelines.md) | 页面状态管理规�?|
+| [Loading 架构](../../docs/architecture/web-user/loading-architecture.md) | Loading 系统设计 |
 
 ## 环境变量
 
 开发环境通过 Vite 代理转发 API 请求，无需额外配置。Mock 模式下所有接口由本地 Mock 服务响应�?
-支付服务需要配置支付宝沙箱密钥，详�?`server/config.js`�?
+支付接口通过 `/pay-api` 代理到 Nest 后端；支付宝沙箱密钥在 `apps/server/.env` 中配置，参考 `apps/server/.env.example`�?
 ## License
 
 MIT
-
