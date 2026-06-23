@@ -1,3 +1,5 @@
+import type { ProxyOptions } from 'vite'
+
 export interface ApiProxyOptions {
   target?: string
   prefixes?: Record<string, {
@@ -6,16 +8,10 @@ export interface ApiProxyOptions {
   }>
 }
 
-type ApiProxyEntry = string | {
-  target: string
-  changeOrigin: boolean
-  rewrite?: (path: string) => string
-}
-
-export function createApiProxy(options: ApiProxyOptions = {}): Record<string, ApiProxyEntry> {
+export function createApiProxy(options: ApiProxyOptions = {}): Record<string, ProxyOptions> {
   const target = options.target ?? 'http://127.0.0.1:3000'
 
-  const proxy: Record<string, ApiProxyEntry> = {
+  const proxy: Record<string, ProxyOptions> = {
     '/api': {
       target,
       changeOrigin: true,

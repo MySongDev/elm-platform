@@ -236,4 +236,3 @@ finally {
   await Promise.all(startedProcesses.reverse().map(killProcessTree))
   process.exit(exitCode)
 }
-

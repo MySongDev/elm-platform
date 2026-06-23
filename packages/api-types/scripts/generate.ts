@@ -50,6 +50,7 @@ async function generate() {
  */
 
 ${astToString(ast)}`
+
   writeFileSync(OUTPUT_FILE, output)
   console.log(`✓ Generated types at ${OUTPUT_FILE}`)
 }

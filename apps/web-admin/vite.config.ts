@@ -16,10 +16,15 @@ export default defineConfig(({ command, mode }) => {
   return {
     base: process.env.BASE_URL || '/',
     build: {
-      rollupOptions: {
+      rolldownOptions: {
         output: {
-          manualChunks: {
-            'vue-vendor': ['vue', 'vue-router', 'pinia', 'vue-i18n'],
+          codeSplitting: {
+            groups: [
+              {
+                name: 'vue-vendor',
+                test: /[\\/]node_modules[\\/](?:@vue|vue|vue-router|pinia|vue-i18n)[\\/]/,
+              },
+            ],
           },
         },
       },
@@ -38,6 +43,7 @@ export default defineConfig(({ command, mode }) => {
       vue(),
       viteMockServe({
         mockPath: 'mock/routes',
+        ignore: /\.test\.[cm]?[jt]s$/,
         enable: enableMock,
         watchFiles: true,
         logger: true,

@@ -42,10 +42,6 @@ async function markAllRead() {
 async function clearCurrent() {
   await notificationStore.clearAll(activeType.value)
 }
-
-onMounted(() => {
-  notificationStore.loadNotifications()
-})
 </script>
 
 <template>

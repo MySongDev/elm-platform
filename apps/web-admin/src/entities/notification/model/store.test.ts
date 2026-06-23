@@ -47,6 +47,17 @@ describe('useNotificationStore', () => {
     vi.restoreAllMocks()
   })
 
+  it('starts from a real empty state without requesting notifications', () => {
+    const store = useNotificationStore()
+
+    expect(store.notifications).toEqual([])
+    expect(store.unreadCount).toBe(0)
+    expect(store.loading).toBe(false)
+    expect(store.loaded).toBe(false)
+    expect(store.error).toBeNull()
+    expect(notificationApi.list).not.toHaveBeenCalled()
+  })
+
   it('loadNotifications fetches and stores list once; second call is a no-op', async () => {
     const items = [buildItem({ id: 'a' }), buildItem({
       id: 'b',

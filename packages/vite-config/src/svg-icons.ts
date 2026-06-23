@@ -2,7 +2,7 @@ import path from 'node:path'
 import { cwd } from 'node:process'
 import { createSvgIconsPlugin } from 'vite-plugin-svg-icons'
 
-export function createElmSvgIconsPlugin(iconDir: string) {
+export function createElmSvgIconsPlugin(iconDir: string): ReturnType<typeof createSvgIconsPlugin> {
   return createSvgIconsPlugin({
     iconDirs: [path.resolve(cwd(), iconDir)],
     symbolId: 'icon-[name]',
