@@ -160,7 +160,7 @@ export class LoginLogResponseDto {
   status: number
 
   @ApiProperty({
-    description: '消息',
+    description: '登录结果消息，如登录成功、密码错误',
     nullable: true,
     type: String,
   })

@@ -46,7 +46,7 @@ export class CustomerProfileResponseDto {
   avatar: string
 
   @ApiProperty({
-    description: '状态',
+    description: '状态：1 启用 0 停用',
     example: 1,
   })
   status: number

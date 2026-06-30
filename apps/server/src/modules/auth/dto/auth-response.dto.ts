@@ -63,7 +63,7 @@ export class AdminProfileResponseDto {
   avatar: string | null
 
   @ApiProperty({
-    description: '状态',
+    description: '状态：1 启用 0 停用',
     example: 1,
   })
   status: number
@@ -152,7 +152,7 @@ export class AdminUpdatedProfileResponseDto {
   avatar: string | null
 
   @ApiProperty({
-    description: '状态',
+    description: '状态：1 启用 0 停用',
     example: 1,
   })
   status: number
@@ -245,7 +245,7 @@ export class AdminMenuResponseDto {
   sort: number
 
   @ApiProperty({
-    description: '状态',
+    description: '状态：1 启用 0 停用',
     example: 1,
   })
   status: number
@@ -304,7 +304,7 @@ export class SecurityLogItemResponseDto {
   status: number
 
   @ApiProperty({
-    description: '消息',
+    description: '登录结果消息，如登录成功、密码错误',
     example: '登录成功',
   })
   message: string | null
