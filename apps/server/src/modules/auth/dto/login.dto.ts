@@ -119,17 +119,3 @@ export class LoginResponseDto {
   @ApiProperty({ type: LoginUserDto })
   user: LoginUserDto
 }
-
-export class LoginHttpResponseDto {
-  @ApiProperty({ example: 200 })
-  code: number
-
-  @ApiProperty({ example: 'success' })
-  message: string
-
-  @ApiProperty({ type: LoginResponseDto })
-  data: LoginResponseDto
-
-  @ApiProperty({ example: '2026-06-08T00:00:00.000Z' })
-  timestamp: string
-}

@@ -11,9 +11,16 @@ import {
   Request,
   UseGuards,
 } from '@nestjs/common'
-import { ApiBearerAuth, ApiOkResponse, ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger'
+import { ApiBearerAuth, ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger'
+import { ApiArrayResponse, ApiEmptyResponse, ApiErrorResponses, ApiSuccessResponse } from '../../common/swagger/api-response.decorator'
 import { AuthService } from './auth.service'
-import { LoginDto, LoginHttpResponseDto } from './dto/login.dto'
+import {
+  AdminMenuResponseDto,
+  AdminProfileResponseDto,
+  AdminUpdatedProfileResponseDto,
+  SecurityLogsResponseDto,
+} from './dto/auth-response.dto'
+import { LoginDto, LoginResponseDto } from './dto/login.dto'
 import { UpdateProfileDto } from './dto/update-profile.dto'
 import { AdminAuthGuard } from './guards/admin-auth.guard'
 
@@ -25,10 +32,8 @@ export class AuthController {
   @Post('login')
   @HttpCode(200)
   @ApiOperation({ summary: '用户登录' })
-  @ApiOkResponse({
-    description: 'Admin login response envelope',
-    type: LoginHttpResponseDto,
-  })
+  @ApiSuccessResponse(LoginResponseDto)
+  @ApiErrorResponses(400, 401, 500)
   async login(@Body() loginDto: LoginDto, @Request() req: any) {
     const ip = req.ip || req.headers['x-forwarded-for'] || req.connection?.remoteAddress
     const userAgent = req.headers['user-agent']
@@ -40,6 +45,8 @@ export class AuthController {
   @UseGuards(AdminAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: '获取当前用户信息' })
+  @ApiSuccessResponse(AdminProfileResponseDto)
+  @ApiErrorResponses(401, 500)
   async getProfile(@Request() req: any) {
     return this.authService.getProfile(req.user.id)
   }
@@ -48,6 +55,8 @@ export class AuthController {
   @UseGuards(AdminAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: '获取当前用户可访问的菜单树' })
+  @ApiArrayResponse(AdminMenuResponseDto)
+  @ApiErrorResponses(401, 500)
   async getMenus(@Request() req: any) {
     return this.authService.getUserMenus(req.user.id)
   }
@@ -56,6 +65,8 @@ export class AuthController {
   @UseGuards(AdminAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: '更新当前用户信息' })
+  @ApiSuccessResponse(AdminUpdatedProfileResponseDto)
+  @ApiErrorResponses(400, 401, 409, 500)
   async updateProfile(@Request() req: any, @Body() updateProfileDto: UpdateProfileDto) {
     return this.authService.updateProfile(req.user.id, updateProfileDto)
   }
@@ -64,6 +75,8 @@ export class AuthController {
   @UseGuards(AdminAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: '退出登录' })
+  @ApiEmptyResponse()
+  @ApiErrorResponses(401, 500)
   async logout(@Request() req: any) {
     return this.authService.logout(req.user.id)
   }
@@ -84,6 +97,8 @@ export class AuthController {
     type: Number,
     example: 10,
   })
+  @ApiSuccessResponse(SecurityLogsResponseDto)
+  @ApiErrorResponses(400, 401, 500)
   async getSecurityLogs(
     @Request() req: any,
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
