@@ -11,14 +11,30 @@ import {
   UseGuards,
 } from '@nestjs/common'
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger'
+import {
+  ApiArrayResponse,
+  ApiErrorResponses,
+  ApiSuccessResponse,
+} from '../../common/swagger/api-response.decorator'
 import { RequirePermissions } from '../auth/decorators/permissions.decorator'
 import { AdminAuthGuard } from '../auth/guards/admin-auth.guard'
 import { RolesGuard } from '../auth/guards/roles.guard'
-import { CreateTenantDto, TenantEventParamDto, TenantTransitionDto, UpdateTenantDto } from './dto/tenant.dto'
+import {
+  TenantActionLogResponseDto,
+  TenantDetailResponseDto,
+  TenantResponseDto,
+} from './dto/tenant-response.dto'
+import {
+  CreateTenantDto,
+  TenantEventParamDto,
+  TenantTransitionDto,
+  UpdateTenantDto,
+} from './dto/tenant.dto'
 import { TenantService } from './tenant.service'
 
 @ApiTags('租户管理')
 @ApiBearerAuth()
+@ApiErrorResponses(401, 403, 500)
 @Controller('admin/tenants')
 @UseGuards(AdminAuthGuard, RolesGuard)
 export class TenantController {
@@ -27,6 +43,7 @@ export class TenantController {
   @Get()
   @RequirePermissions('platform:tenant:view')
   @ApiOperation({ summary: '租户列表' })
+  @ApiArrayResponse(TenantResponseDto)
   listTenants() {
     return this.tenantService.listTenants()
   }
@@ -34,6 +51,8 @@ export class TenantController {
   @Post()
   @RequirePermissions('platform:tenant:create')
   @ApiOperation({ summary: '创建租户' })
+  @ApiSuccessResponse(TenantResponseDto, { status: 201 })
+  @ApiErrorResponses(400)
   createTenant(@Body() dto: CreateTenantDto) {
     return this.tenantService.createTenant(dto)
   }
@@ -41,6 +60,8 @@ export class TenantController {
   @Get(':id')
   @RequirePermissions('platform:tenant:view')
   @ApiOperation({ summary: '租户详情' })
+  @ApiSuccessResponse(TenantDetailResponseDto)
+  @ApiErrorResponses(400, 404)
   getTenantDetail(@Param('id', ParseIntPipe) id: number) {
     return this.tenantService.getTenantDetail(id)
   }
@@ -48,6 +69,8 @@ export class TenantController {
   @Patch(':id')
   @RequirePermissions('platform:tenant:update')
   @ApiOperation({ summary: '更新租户' })
+  @ApiSuccessResponse(TenantResponseDto)
+  @ApiErrorResponses(400, 404)
   updateTenant(@Param('id', ParseIntPipe) id: number, @Body() dto: UpdateTenantDto) {
     return this.tenantService.updateTenant(id, dto)
   }
@@ -55,6 +78,8 @@ export class TenantController {
   @Post(':id/events/:event')
   @RequirePermissions('platform:tenant:transition')
   @ApiOperation({ summary: '触发租户状态事件' })
+  @ApiSuccessResponse(TenantResponseDto, { status: 201 })
+  @ApiErrorResponses(400, 404, 409)
   transitionTenant(
     @Param('id', ParseIntPipe) id: number,
     @Param() params: TenantEventParamDto,
@@ -76,6 +101,8 @@ export class TenantController {
   @Get(':id/action-logs')
   @RequirePermissions('platform:tenant:view')
   @ApiOperation({ summary: '租户状态动作日志' })
+  @ApiArrayResponse(TenantActionLogResponseDto)
+  @ApiErrorResponses(400, 404)
   getTenantActionLogs(@Param('id', ParseIntPipe) id: number) {
     return this.tenantService.getTenantActionLogs(id)
   }
