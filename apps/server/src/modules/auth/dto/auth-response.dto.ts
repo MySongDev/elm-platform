@@ -298,7 +298,7 @@ export class SecurityLogItemResponseDto {
   os: string
 
   @ApiProperty({
-    description: '状态',
+    description: '状态：1 成功 0 失败',
     example: 1,
   })
   status: number
