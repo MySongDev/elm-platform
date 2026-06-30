@@ -1,14 +1,17 @@
 import { Body, Controller, Get, HttpCode, Param, Post, Query, Request, UseGuards } from '@nestjs/common'
-import { ApiBearerAuth, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger'
+import { ApiBearerAuth, ApiOperation, ApiTags, ApiResponse as SwaggerApiResponse } from '@nestjs/swagger'
 import { rawResponse } from '../../common/interceptors/transform.interceptor'
+import { ApiErrorResponses, ApiRawResponse } from '../../common/swagger/api-response.decorator'
 import { CustomerAuthGuard } from '../customer-auth/guards/customer-auth.guard'
 import { RequestRefundDto } from '../order/dto/request-refund.dto'
 import { OrderWorkflowService } from '../order/order-workflow.service'
 import { CreateAlipayWapPaymentDto } from './dto/create-alipay-wap-payment.dto'
 import {
-  ResumeAlipayWapPaymentDto,
-  ResumeAlipayWapPaymentResponseDto,
-} from './dto/resume-alipay-wap-payment.dto'
+  AlipayWapPaymentResponseDto,
+  PaymentOrdersResponseDto,
+  PaymentOrderSummaryResponseDto,
+} from './dto/payment-response.dto'
+import { ResumeAlipayWapPaymentDto } from './dto/resume-alipay-wap-payment.dto'
 import { PaymentService } from './payment.service'
 
 @ApiTags('支付')
@@ -23,6 +26,8 @@ export class PaymentController {
   @UseGuards(CustomerAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: '创建支付宝 WAP 支付单' })
+  @ApiRawResponse(AlipayWapPaymentResponseDto, { status: 201 })
+  @ApiErrorResponses(400, 401, 500)
   async createAlipayWapPayment(@Body() dto: CreateAlipayWapPaymentDto, @Request() req: any) {
     const result = await this.paymentService.createAlipayWapPayment({
       ...dto,
@@ -35,7 +40,8 @@ export class PaymentController {
   @UseGuards(CustomerAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: '继续支付宝 WAP 支付单' })
-  @ApiOkResponse({ type: ResumeAlipayWapPaymentResponseDto })
+  @ApiRawResponse(AlipayWapPaymentResponseDto)
+  @ApiErrorResponses(400, 401, 404, 500)
   @HttpCode(200)
   async resumeAlipayWapPayment(@Body() dto: ResumeAlipayWapPaymentDto, @Request() req: any) {
     const result = await this.paymentService.resumeAlipayWapPayment({
@@ -49,6 +55,8 @@ export class PaymentController {
   @UseGuards(CustomerAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: '查询支付宝支付状态' })
+  @ApiRawResponse(PaymentOrderSummaryResponseDto)
+  @ApiErrorResponses(401, 404, 500)
   async getAlipayPaymentStatus(
     @Param('orderNo') orderNo: string,
     @Query('refresh') refresh?: string,
@@ -62,6 +70,8 @@ export class PaymentController {
   @UseGuards(CustomerAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: '用户申请订单退款' })
+  @ApiRawResponse(PaymentOrderSummaryResponseDto, { status: 201 })
+  @ApiErrorResponses(400, 401, 404, 409, 500)
   async requestRefund(
     @Param('orderNo') orderNo: string,
     @Body() dto: RequestRefundDto,
@@ -82,6 +92,15 @@ export class PaymentController {
 
   @Post('payments/alipay/notify')
   @ApiOperation({ summary: '支付宝异步通知' })
+  @SwaggerApiResponse({
+    status: 201,
+    description: '处理结果',
+    schema: {
+      type: 'string',
+      enum: ['success', 'failure'],
+    },
+  })
+  @ApiErrorResponses(500)
   async handleAlipayNotify(@Body() body: Record<string, unknown>) {
     const ok = await this.paymentService.handleAlipayNotify(body)
     return rawResponse(ok ? 'success' : 'failure')
@@ -91,6 +110,8 @@ export class PaymentController {
   @UseGuards(CustomerAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: '用户支付订单列表' })
+  @ApiRawResponse(PaymentOrdersResponseDto)
+  @ApiErrorResponses(401, 500)
   async listOrders(@Request() req: any, @Query('limit') limit?: string) {
     const result = await this.paymentService.listOrders(String(req.user.id), limit)
     return rawResponse(result)
