@@ -10,20 +10,23 @@ import {
   Request,
   UseGuards,
 } from '@nestjs/common'
+import { ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger'
 import {
-  ApiOperation,
-  ApiParam,
-  ApiResponse,
-  ApiTags,
-} from '@nestjs/swagger'
+  ApiArrayResponse,
+  ApiEmptyResponse,
+  ApiErrorResponses,
+  ApiSuccessResponse,
+} from '../../common/swagger/api-response.decorator'
 import { Roles } from '../auth/decorators/roles.decorator'
 import { AdminAuthGuard } from '../auth/guards/admin-auth.guard'
 import { RolesGuard } from '../auth/guards/roles.guard'
 import { TenantContextService } from '../tenant/tenant-context.service'
 import { CreateUserDto, UpdateUserDto } from './dto/create-user.dto'
+import { UserResponseDto } from './dto/user-response.dto'
 import { UserService } from './user.service'
 
 @ApiTags('用户管理')
+@ApiErrorResponses(401, 403, 500)
 @Controller('users')
 @UseGuards(AdminAuthGuard, RolesGuard)
 export class UserController {
@@ -35,14 +38,8 @@ export class UserController {
   @Post()
   @Roles('admin')
   @ApiOperation({ summary: '创建用户' })
-  @ApiResponse({
-    status: 201,
-    description: '创建成功',
-  })
-  @ApiResponse({
-    status: 409,
-    description: '用户名已存在',
-  })
+  @ApiSuccessResponse(UserResponseDto, { status: 201 })
+  @ApiErrorResponses(400, 409)
   async create(@Body() createUserDto: CreateUserDto, @Request() req: any) {
     const context = await this.tenantContext.fromRequestUser(req.user)
     return this.userService.create(createUserDto, context)
@@ -51,10 +48,7 @@ export class UserController {
   @Get()
   @Roles('admin', 'user')
   @ApiOperation({ summary: '获取所有用户' })
-  @ApiResponse({
-    status: 200,
-    description: '获取成功',
-  })
+  @ApiArrayResponse(UserResponseDto)
   findAll() {
     return this.userService.findAll()
   }
@@ -67,14 +61,8 @@ export class UserController {
     description: '用户 ID',
     example: 1,
   })
-  @ApiResponse({
-    status: 200,
-    description: '获取成功',
-  })
-  @ApiResponse({
-    status: 404,
-    description: '用户不存在',
-  })
+  @ApiSuccessResponse(UserResponseDto)
+  @ApiErrorResponses(400, 404)
   findOne(@Param('id', ParseIntPipe) id: number) {
     return this.userService.findOne(id)
   }
@@ -87,14 +75,8 @@ export class UserController {
     description: '用户 ID',
     example: 1,
   })
-  @ApiResponse({
-    status: 200,
-    description: '更新成功',
-  })
-  @ApiResponse({
-    status: 404,
-    description: '用户不存在',
-  })
+  @ApiSuccessResponse(UserResponseDto)
+  @ApiErrorResponses(400, 404, 409)
   async update(@Param('id', ParseIntPipe) id: number, @Body() updateUserDto: UpdateUserDto, @Request() req: any) {
     const context = await this.tenantContext.fromRequestUser(req.user)
     return this.userService.update(id, updateUserDto, context)
@@ -108,14 +90,8 @@ export class UserController {
     description: '用户 ID',
     example: 1,
   })
-  @ApiResponse({
-    status: 200,
-    description: '删除成功',
-  })
-  @ApiResponse({
-    status: 404,
-    description: '用户不存在',
-  })
+  @ApiEmptyResponse()
+  @ApiErrorResponses(400, 404)
   remove(@Param('id', ParseIntPipe) id: number) {
     return this.userService.remove(id)
   }
