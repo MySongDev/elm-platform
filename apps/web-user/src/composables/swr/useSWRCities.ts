@@ -1,4 +1,4 @@
-import { getGroupCity } from '@/services/api/index'
+import { chinaCities, citiesByLetter } from '@/data/china-cities'
 import { formatCities } from '@/utils/format/formatCities'
 import { useSWR } from './useSWR'
 
@@ -6,7 +6,7 @@ export function useCities() {
   return useSWR({
     key: 'cities_all',
     fetcher: async () => {
-      const res = await getGroupCity()
+      const res = citiesByLetter
       return formatCities(res)
     },
     expire: 24 * 60 * 60 * 1000,

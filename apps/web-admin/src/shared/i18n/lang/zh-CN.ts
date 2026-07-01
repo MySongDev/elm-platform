@@ -85,11 +85,12 @@ export default {
   },
   notification: {
     title: '通知',
+    notification: '通知',
     message: '消息',
     todo: '待办',
     markAllRead: '全部已读',
     clear: '清空',
-    empty: '暂无',
+    empty: '暂无通知',
     urgent: '紧急',
     pending: '待处理',
   },

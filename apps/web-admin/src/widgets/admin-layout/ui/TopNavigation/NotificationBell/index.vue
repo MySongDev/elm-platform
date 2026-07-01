@@ -20,7 +20,7 @@ const tabs: Array<{
   value: NotificationItem['type']
 }> = [
   {
-    label: 'notification.message',
+    label: 'notification.notification',
     value: 'notification',
   },
   {

@@ -16,7 +16,7 @@ export interface ApiSuccessOptions {
 
 export type ErrorStatus = 400 | 401 | 403 | 404 | 409 | 429 | 500
 
-export const ERROR_DESCRIPTIONS: Record<ErrorStatus, string> = {
+export const ERROR_DESCRIPTIONS: Readonly<Record<ErrorStatus, string>> = {
   400: '请求参数错误',
   401: '未认证或认证已失效',
   403: '无权访问该资源',
@@ -108,11 +108,22 @@ export function ApiRawResponse<T>(
 
 export function ApiErrorResponses(...statuses: ErrorStatus[]) {
   return applyDecorators(
+    ApiExtraModels(ApiErrorResponseDto),
     ...statuses.map(status =>
       ApiResponse({
         status,
         description: ERROR_DESCRIPTIONS[status],
-        type: ApiErrorResponseDto,
+        schema: {
+          allOf: [
+            { $ref: getSchemaPath(ApiErrorResponseDto) },
+            {
+              properties: {
+                code: { example: status },
+                message: { example: ERROR_DESCRIPTIONS[status] },
+              },
+            },
+          ],
+        },
       }),
     ),
   )
