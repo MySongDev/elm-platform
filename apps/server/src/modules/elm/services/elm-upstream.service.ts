@@ -1,6 +1,14 @@
 import { BadGatewayException, Injectable, Logger } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 
+function appendQuery(url: URL, query: Record<string, unknown>): void {
+  for (const [key, value] of Object.entries(query)) {
+    const values = Array.isArray(value) ? value : [value]
+    for (const item of values.filter(item => item !== null && item !== undefined))
+      url.searchParams.append(key, String(item))
+  }
+}
+
 @Injectable()
 export class ElmUpstreamService {
   private readonly logger = new Logger(ElmUpstreamService.name)
@@ -20,20 +28,27 @@ export class ElmUpstreamService {
     path: `/${string}`,
     query: Record<string, unknown> = {},
   ): Promise<T> {
-    const url = new URL(path.slice(1), `${this.baseUrl}/`)
-
-    for (const [key, value] of Object.entries(query)) {
-      const values = Array.isArray(value) ? value : [value]
-      for (const item of values) {
-        if (item !== null && item !== undefined)
-          url.searchParams.append(key, String(item))
-      }
-    }
-
-    const controller = new AbortController()
-    const timeout = setTimeout(() => controller.abort(), this.timeoutMs)
+    let timeout: ReturnType<typeof setTimeout> | undefined
 
     try {
+      if (path.startsWith('//'))
+        throw new Error('Elm upstream path must not be protocol-relative')
+
+      const baseUrl = new URL(this.baseUrl)
+      if (!['http:', 'https:'].includes(baseUrl.protocol))
+        throw new Error('Elm upstream base URL must use HTTP or HTTPS')
+      if (baseUrl.search || baseUrl.hash)
+        throw new Error('Elm upstream base URL must not contain query or fragment')
+
+      baseUrl.pathname = `${baseUrl.pathname.replace(/\/+$/, '')}/`
+      const url = new URL(path.slice(1), baseUrl)
+      if (url.origin !== baseUrl.origin)
+        throw new Error('Elm upstream URL changed origin')
+
+      appendQuery(url, query)
+
+      const controller = new AbortController()
+      timeout = setTimeout(() => controller.abort(), this.timeoutMs)
       const response = await fetch(url.toString(), {
         method: 'GET',
         headers: {
@@ -42,8 +57,10 @@ export class ElmUpstreamService {
         signal: controller.signal,
       })
 
-      if (!response.ok)
+      if (!response.ok) {
+        await response.body?.cancel()
         throw new Error(`Elm upstream responded with status ${response.status}`)
+      }
 
       return await response.json() as T
     }
@@ -57,7 +74,8 @@ export class ElmUpstreamService {
       )
     }
     finally {
-      clearTimeout(timeout)
+      if (timeout !== undefined)
+        clearTimeout(timeout)
     }
   }
 }

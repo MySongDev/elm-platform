@@ -68,24 +68,85 @@ describe('elm upstream service', () => {
     }))
   })
 
+  it('rejects a protocol-relative path without calling fetch', async () => {
+    const fetchMock = jest.fn()
+    globalThis.fetch = fetchMock
+    const service = new ElmUpstreamService(createConfigService({
+      'elmApi.baseUrl': 'https://elm.example.test',
+    }))
+
+    await expect(service.get('///attacker.test/x'))
+      .rejects
+      .toBeInstanceOf(BadGatewayException)
+    expect(fetchMock).not.toHaveBeenCalled()
+  })
+
+  it.each([
+    ['an invalid URL', 'not a url'],
+    ['a non-HTTP URL', 'mailto:ops@elm.example.test'],
+    ['a URL with query', 'https://elm.example.test?token=secret'],
+    ['a URL with fragment', 'https://elm.example.test#internal'],
+  ])('rejects %s base URL without calling fetch', async (_description, baseUrl) => {
+    const fetchMock = jest.fn()
+    globalThis.fetch = fetchMock
+    const service = new ElmUpstreamService(createConfigService({
+      'elmApi.baseUrl': baseUrl,
+    }))
+
+    await expect(service.get('/shopping/restaurants'))
+      .rejects
+      .toBeInstanceOf(BadGatewayException)
+    expect(fetchMock).not.toHaveBeenCalled()
+    expect(Logger.prototype.error).toHaveBeenCalled()
+  })
+
+  it('preserves a valid base URL path prefix', async () => {
+    const fetchMock = jest.fn().mockResolvedValue(
+      createResponse(200, async () => ({ ok: true })),
+    )
+    globalThis.fetch = fetchMock
+    const service = new ElmUpstreamService(createConfigService({
+      'elmApi.baseUrl': 'https://elm.example.test/api/',
+    }))
+
+    await service.get('/shopping/restaurants')
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      'https://elm.example.test/api/shopping/restaurants',
+      expect.any(Object),
+    )
+  })
+
   it('converts a non-2xx response to BadGatewayException', async () => {
+    const cancel = jest.fn().mockResolvedValue(undefined)
     globalThis.fetch = jest.fn().mockResolvedValue(
-      createResponse(503, async () => ({ error: 'unavailable' })),
+      {
+        ...createResponse(503, async () => ({ error: 'unavailable' })),
+        body: { cancel },
+      } as unknown as Response,
     )
     const service = new ElmUpstreamService(createConfigService({}))
 
     await expect(service.get('/shopping/restaurants'))
       .rejects
       .toBeInstanceOf(BadGatewayException)
+    expect(cancel).toHaveBeenCalledTimes(1)
   })
 
   it('converts a network rejection to BadGatewayException', async () => {
     globalThis.fetch = jest.fn().mockRejectedValue(new Error('socket closed'))
     const service = new ElmUpstreamService(createConfigService({}))
+    const path = '/shopping/restaurants'
 
-    await expect(service.get('/shopping/restaurants'))
-      .rejects
-      .toBeInstanceOf(BadGatewayException)
+    const error = await service.get(path).catch((error: unknown) => error)
+
+    expect(error).toBeInstanceOf(BadGatewayException)
+    expect((error as BadGatewayException).message).toContain(path)
+    expect((error as BadGatewayException).message).not.toContain('socket closed')
+    expect(Logger.prototype.error).toHaveBeenCalledWith(
+      expect.stringContaining(path),
+      expect.stringContaining('socket closed'),
+    )
   })
 
   it('converts invalid upstream JSON to BadGatewayException', async () => {
