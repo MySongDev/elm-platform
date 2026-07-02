@@ -49,6 +49,19 @@ describe('elm API configuration', () => {
     })
   })
 
+  it('parses scientific notation consistently', () => {
+    process.env.ELM_API_TIMEOUT_MS = '1e3'
+
+    const validated = validateEnv(process.env)
+    const config = configuration() as Record<string, unknown>
+
+    expect(validated.ELM_API_TIMEOUT_MS).toBe(1000)
+    expect(config.elmApi).toEqual({
+      baseUrl: 'https://elm.cangdu.org',
+      timeoutMs: 1000,
+    })
+  })
+
   it.each([
     ['an invalid upstream URL', { ELM_API_BASE_URL: 'not-a-url' }],
     ['a zero timeout', { ELM_API_TIMEOUT_MS: '0' }],
