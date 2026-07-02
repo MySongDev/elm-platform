@@ -9,6 +9,11 @@ export default () => ({
     prefix: process.env.APP_PREFIX || 'api',
   },
 
+  elmApi: {
+    baseUrl: process.env.ELM_API_BASE_URL || 'https://elm.cangdu.org',
+    timeoutMs: Number.parseInt(process.env.ELM_API_TIMEOUT_MS || '8000', 10),
+  },
+
   // 数据库配置
   database: {
     url: process.env.DATABASE_URL,
