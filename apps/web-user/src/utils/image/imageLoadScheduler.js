@@ -11,7 +11,7 @@ import { IMAGE_LOAD_BASE_CONCURRENCY } from '@/config/imageLoading'
 let maxConcurrent = resolveAdaptiveMax(IMAGE_LOAD_BASE_CONCURRENCY)
 let active = 0
 
-/** @type {Array<{ priority: number, cancelled: () => boolean, run: (release: () => void) => void }>} */
+/** @type {Array<{ priority: number, state: 'queued' | 'running' | 'settled' | 'cancelled', run: (release: () => void) => void }>} */
 const queue = []
 
 function resolveAdaptiveMax(base) {
@@ -41,14 +41,28 @@ function pump() {
 
   while (active < maxConcurrent && queue.length > 0) {
     const task = queue.shift()
-    if (task.cancelled())
+    if (task.state !== 'queued')
       continue
 
+    task.state = 'running'
     active++
-    task.run(() => {
+    let released = false
+    const release = () => {
+      if (released)
+        return
+
+      released = true
+      task.state = 'settled'
       active--
       pump()
-    })
+    }
+
+    try {
+      task.run(release)
+    }
+    catch {
+      release()
+    }
   }
 }
 
@@ -63,22 +77,33 @@ if (typeof window !== 'undefined' && navigator.connection) {
 
 /**
  * @param {{ priority?: number, run: (release: () => void) => void }} opts
- * @returns {() => void} cancel — 标记取消；若已在队列中则跳过，若已执行则无法中断浏览器加载
+ * @returns {{ cancel: () => void, updatePriority: (priority: number) => void }}
  */
 export function scheduleImageTask({ priority = 10, run }) {
-  let cancelled = false
-
   const task = {
     priority,
-    cancelled: () => cancelled,
+    state: 'queued',
     run,
   }
 
   queue.push(task)
   pump()
 
-  return () => {
-    cancelled = true
+  return {
+    cancel() {
+      if (task.state !== 'queued')
+        return
+
+      task.state = 'cancelled'
+      pump()
+    },
+    updatePriority(nextPriority) {
+      if (task.state !== 'queued')
+        return
+
+      task.priority = nextPriority
+      pump()
+    },
   }
 }
 
