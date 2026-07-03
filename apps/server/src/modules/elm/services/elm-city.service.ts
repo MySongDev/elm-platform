@@ -49,16 +49,35 @@ export class ElmCityService {
     })
   }
 
-  getPoi(geohash?: string, latitude?: number, longitude?: number) {
+  async getPoi(geohash?: string, latitude?: number, longitude?: number) {
     const [lat, lng] = parseGeoHash(geohash, latitude, longitude)
 
-    return {
-      address: '上海市黄浦区西藏中路',
-      city: '上海市',
-      geohash: `${lat},${lng}`,
-      latitude: String(lat),
-      longitude: String(lng),
-      name: '黄浦区上海人民广场',
+    try {
+      const url = `https://h5.ele.me/restapi/bgs/poi/reverse_geo_coding?latitude=${lat}&longitude=${lng}`
+      const response = await fetch(url, {
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120.0.0.0',
+          'Referer': 'https://h5.ele.me/',
+        },
+      })
+
+      if (!response.ok) {
+        throw new Error(`elm API responded with status: ${response.status}`)
+      }
+
+      const data = await response.json()
+      return data
+    }
+    catch {
+      // 降级到模拟数据
+      return {
+        address: '上海市黄浦区西藏中路',
+        city: '上海市',
+        geohash: `${lat},${lng}`,
+        latitude: String(lat),
+        longitude: String(lng),
+        name: '黄浦区上海人民广场',
+      }
     }
   }
 
