@@ -27042,9 +27042,11 @@ export const chinaCities: CityRecord[] = [
 export const citiesByLetter: Record<string, CityRecord[]> = {}
 for (const city of chinaCities) {
   const letter = city.pinyin.charAt(0).toUpperCase()
-  if (!citiesByLetter[letter]) citiesByLetter[letter] = []
+  if (!citiesByLetter[letter])
+    citiesByLetter[letter] = []
   citiesByLetter[letter].push(city)
 }
-
 // 热门城市（返回排序号靠前的 10 个）
-export const hotCities: CityRecord[] = chinaCities.slice(0, 10)
+export const hotCities = [...chinaCities]
+  .sort((a, b) => a.id - b.id)
+  .slice(0, 12)

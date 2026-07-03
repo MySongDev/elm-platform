@@ -18,9 +18,6 @@ export default defineConfig(({ command, mode }) => {
     server: {
       proxy: createApiProxy({
         prefixes: {
-          '/ele-api': {
-            rewrite: path => path.replace(/^\/ele-api/, '/api'),
-          },
           '/pay-api': {
             target: `${localApiTarget}/api`,
             rewrite: path => path.replace(/^\/pay-api/, ''),

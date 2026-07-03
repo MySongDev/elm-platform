@@ -3,15 +3,16 @@ import { onMounted, shallowRef } from 'vue'
 import { useRouter } from 'vue-router'
 
 import { useHomeLocation } from '@/composables/features/home'
-import { useCities } from '@/composables/swr'
-import { getHotCity } from '@/services/api'
+// import { useCities } from '@/composables/swr'
+import { getGroupCity, getHotCity } from '@/services/api'
 
 defineOptions({
   name: 'Home',
 })
 
 const router = useRouter()
-const { data: cities } = useCities()
+const GroupCityList = ref({})
+// const { data: cities } = useCities()
 const {
   locationStore,
   locationText,
@@ -22,10 +23,15 @@ const {
 
 const hotCityList = shallowRef([])
 
-getHotCity().then((res) => {
-  hotCityList.value = res
-})
+getHotCity().then(res =>
+  hotCityList.value = res,
+)
+console.log(hotCityList.value)
 
+getGroupCity().then(res => GroupCityList.value = res,
+)
+// getReverseGeoCoding(11.222, 33.555).then(res => console.log(res),
+// )
 function nextPage(item, navigate) {
   setCityLocation(item.latitude, item.longitude, {
     city: item.name,
@@ -81,7 +87,7 @@ onMounted(loadCurrentLocation)
       </ul>
 
       <ul class="city_list">
-        <li v-for="(value, key, index) in cities" :key="key" class="city_li">
+        <li v-for="(value, key, index) in GroupCityList" :key="key" class="city_li">
           <h4 class="city_title">
             {{ key }}
             <span v-if="index === 0">（按字母排序）</span>

@@ -1,19 +1,22 @@
-import { get } from '../http/http'
+// import { chinaCities, citiesByLetter } from '@/data/china-cities'
+import { citiesByLetter, hotCities } from '@/data/china-cities'
 
+import { get } from '../http/http'
 import { cityEndpoints } from './endpoints/city.endpoints'
-import { chinaCities, citiesByLetter } from '@/data/china-cities'
 
 /** 获取定位城市 */
 export const getGuessCity = () => get(cityEndpoints.cities, { type: 'guess' })
 
 /** 逆地理编码 */
 export function getReverseGeoCoding(latitude, longitude) {
-  return fetch(`${cityEndpoints.reverseGeoCoding}?latitude=${latitude}&longitude=${longitude}`)
-    .then(res => res.json())
+  return get(cityEndpoints.reverseGeoCoding, {
+    latitude,
+    longitude,
+  })
 }
 
 /** 获取热门城市 - 使用本地数据 */
-export const getHotCity = () => Promise.resolve(chinaCities.slice(0, 10))
+export const getHotCity = () => Promise.resolve(hotCities)
 
 /** 获取所有城市 - 使用本地数据 */
 export const getGroupCity = () => Promise.resolve(citiesByLetter)
