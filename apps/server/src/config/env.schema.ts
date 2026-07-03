@@ -6,12 +6,37 @@ const optionalString = z.union([z.string().trim().min(1), optionalEmptyString]).
 
 const portSchema = z.coerce.number().int().min(1).max(65535)
 
+const elmApiBaseUrlSchema = z.url().superRefine((value, context) => {
+  let url: URL
+
+  try {
+    url = new URL(value)
+  }
+  catch {
+    return
+  }
+
+  if (url.protocol !== 'http:' && url.protocol !== 'https:') {
+    context.addIssue({
+      code: 'custom',
+      message: 'ELM_API_BASE_URL must use the http or https protocol',
+    })
+  }
+
+  if (url.search || url.hash) {
+    context.addIssue({
+      code: 'custom',
+      message: 'ELM_API_BASE_URL must not include a query string or fragment',
+    })
+  }
+})
+
 export const envSchema = z.object({
   NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
 
   APP_PORT: portSchema.default(3000),
   APP_PREFIX: z.string().trim().min(1).default('api'),
-  ELM_API_BASE_URL: z.url().default('https://elm.cangdu.org'),
+  ELM_API_BASE_URL: elmApiBaseUrlSchema.default('https://elm.cangdu.org'),
   ELM_API_TIMEOUT_MS: z.coerce.number().int().positive().default(8000),
 
   DATABASE_URL: z.string().trim().min(1, 'DATABASE_URL is required'),

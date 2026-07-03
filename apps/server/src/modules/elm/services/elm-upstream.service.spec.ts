@@ -68,6 +68,21 @@ describe('elm upstream service', () => {
     }))
   })
 
+  it('disables automatic redirects', async () => {
+    const payload = { restaurants: [] }
+    const fetchMock = jest.fn().mockResolvedValue(
+      createResponse(200, async () => payload),
+    )
+    globalThis.fetch = fetchMock
+    const service = new ElmUpstreamService(createConfigService({}))
+
+    const result = await service.get('/shopping/restaurants')
+    const [, init] = fetchMock.mock.calls[0]
+
+    expect(result).toBe(payload)
+    expect(init?.redirect).toBe('error')
+  })
+
   it('rejects a protocol-relative path without calling fetch', async () => {
     const fetchMock = jest.fn()
     globalThis.fetch = fetchMock

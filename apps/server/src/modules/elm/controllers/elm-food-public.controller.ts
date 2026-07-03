@@ -3,16 +3,22 @@ import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Query } from 
 import { ApiOperation, ApiTags } from '@nestjs/swagger'
 import { rawResponse } from '../../../common/interceptors/transform.interceptor'
 import { ElmFoodService } from '../services/elm-food.service'
+import { ElmUpstreamService } from '../services/elm-upstream.service'
 
 @ApiTags('Elm 兼容接口 - 商品')
 @Controller()
 export class ElmFoodPublicController {
-  constructor(private readonly foodService: ElmFoodService) {}
+  constructor(
+    private readonly foodService: ElmFoodService,
+    private readonly upstream: ElmUpstreamService,
+  ) {}
 
   @Get('shopping/v2/menu')
   @ApiOperation({ summary: '获取菜单列表' })
-  getMenu(@Query('restaurant_id', ParseIntPipe) restaurantId: number) {
-    return rawResponse(this.foodService.getFoodMenus(restaurantId))
+  async getMenu(@Query('restaurant_id', ParseIntPipe) restaurantId: number) {
+    return rawResponse(await this.upstream.get('/shopping/v2/menu', {
+      restaurant_id: restaurantId,
+    }))
   }
 
   @Get('shopping/getcategory/:restaurantId')

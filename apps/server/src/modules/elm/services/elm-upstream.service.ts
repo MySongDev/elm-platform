@@ -54,6 +54,7 @@ export class ElmUpstreamService {
         headers: {
           Accept: 'application/json',
         },
+        redirect: 'error',
         signal: controller.signal,
       })
 

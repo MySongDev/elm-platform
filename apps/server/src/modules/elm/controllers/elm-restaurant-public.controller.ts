@@ -4,6 +4,7 @@ import { ApiOperation, ApiTags } from '@nestjs/swagger'
 import { rawResponse } from '../../../common/interceptors/transform.interceptor'
 import { ElmCityService } from '../services/elm-city.service'
 import { ElmRestaurantService } from '../services/elm-restaurant.service'
+import { ElmUpstreamService } from '../services/elm-upstream.service'
 
 @ApiTags('Elm 兼容接口 - 商家')
 @Controller()
@@ -11,12 +12,13 @@ export class ElmRestaurantPublicController {
   constructor(
     private readonly cityService: ElmCityService,
     private readonly restaurantService: ElmRestaurantService,
+    private readonly upstream: ElmUpstreamService,
   ) {}
 
   @Get('shopping/restaurants')
   @ApiOperation({ summary: '获取商铺列表' })
-  getRestaurants(@Query() query: Record<string, unknown>) {
-    return rawResponse(this.restaurantService.listRestaurants(query))
+  async getRestaurants(@Query() query: Record<string, unknown>) {
+    return rawResponse(await this.upstream.get('/shopping/restaurants', query))
   }
 
   @Get('shopping/restaurants/count')
@@ -54,8 +56,8 @@ export class ElmRestaurantPublicController {
 
   @Get('shopping/restaurant/:shopId')
   @ApiOperation({ summary: '餐馆详情' })
-  getRestaurant(@Param('shopId', ParseIntPipe) shopId: number) {
-    return rawResponse(this.restaurantService.getRestaurant(shopId))
+  async getRestaurant(@Param('shopId', ParseIntPipe) shopId: number) {
+    return rawResponse(await this.upstream.get(`/shopping/restaurant/${shopId}`))
   }
 
   @Post('shopping/addshop')

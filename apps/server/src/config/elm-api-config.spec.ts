@@ -33,18 +33,18 @@ describe('elm API configuration', () => {
   })
 
   it('maps custom validated upstream settings', () => {
-    process.env.ELM_API_BASE_URL = 'https://elm.example.test'
+    process.env.ELM_API_BASE_URL = 'https://elm.example.test/api'
     process.env.ELM_API_TIMEOUT_MS = '2500'
 
     const validated = validateEnv(process.env)
     const config = configuration() as Record<string, unknown>
 
     expect(validated).toMatchObject({
-      ELM_API_BASE_URL: 'https://elm.example.test',
+      ELM_API_BASE_URL: 'https://elm.example.test/api',
       ELM_API_TIMEOUT_MS: 2500,
     })
     expect(config.elmApi).toEqual({
-      baseUrl: 'https://elm.example.test',
+      baseUrl: 'https://elm.example.test/api',
       timeoutMs: 2500,
     })
   })
@@ -64,6 +64,9 @@ describe('elm API configuration', () => {
 
   it.each([
     ['an invalid upstream URL', { ELM_API_BASE_URL: 'not-a-url' }],
+    ['an FTP upstream URL', { ELM_API_BASE_URL: 'ftp://elm.example.test' }],
+    ['an upstream URL with a query', { ELM_API_BASE_URL: 'https://elm.example.test?token=secret' }],
+    ['an upstream URL with a fragment', { ELM_API_BASE_URL: 'https://elm.example.test#internal' }],
     ['a zero timeout', { ELM_API_TIMEOUT_MS: '0' }],
   ])('rejects %s', (_description, overrides) => {
     expect(() =>
