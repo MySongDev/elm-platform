@@ -1,6 +1,6 @@
 <script setup>
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
-import { IMAGE_PRIORITY } from '@/config/imageLoading'
+import { IMAGE_PRIORITY, IMAGE_VIEWPORT_PRIORITY_OFFSET } from '@/config/imageLoading'
 import { buildImageCandidateUrls } from '@/utils/image/imageCandidates'
 import { scheduleImageTask } from '@/utils/image/imageLoadScheduler'
 
@@ -56,22 +56,39 @@ const candidateIndex = ref(0)
 const loaded = ref(false)
 const failed = ref(false)
 
-let io = null
-let cancelSchedule = null
+let preloadObserver = null
+let viewportObserver = null
+let imageTask = null
 let delayTimer = null
 
-function cleanupObserver() {
-  if (io && rootEl.value) {
-    io.unobserve(rootEl.value)
-    io.disconnect()
+// 状态跟踪
+let inPreloadZone = false
+let inViewport = false
+let requestStarted = false
+
+function cleanupObservers() {
+  if (preloadObserver && rootEl.value) {
+    preloadObserver.unobserve(rootEl.value)
+    preloadObserver.disconnect()
   }
-  io = null
+  if (viewportObserver && rootEl.value) {
+    viewportObserver.unobserve(rootEl.value)
+    viewportObserver.disconnect()
+  }
+  preloadObserver = null
+  viewportObserver = null
 }
 
 function cleanupSchedule() {
-  if (cancelSchedule) {
-    cancelSchedule()
-    cancelSchedule = null
+  if (imageTask) {
+    imageTask = null
+  }
+}
+
+function cancelTask() {
+  if (imageTask) {
+    imageTask.cancel()
+    imageTask = null
   }
 }
 
@@ -105,8 +122,11 @@ function attachLoadHandlers(img, url, release) {
   }
 }
 
-function runLoadAttempt() {
-  cleanupSchedule()
+function runLoadAttempt(priority) {
+  if (requestStarted)
+    return
+
+  cancelTask()
   const url = candidates.value[candidateIndex.value]
   if (!url) {
     failed.value = true
@@ -118,8 +138,9 @@ function runLoadAttempt() {
   if (!img)
     return
 
-  cancelSchedule = scheduleImageTask({
-    priority: props.priority,
+  requestStarted = true
+  imageTask = scheduleImageTask({
+    priority: priority ?? props.priority,
     run(release) {
       attachLoadHandlers(img, url, release)
       img.src = url
@@ -127,51 +148,147 @@ function runLoadAttempt() {
   })
 }
 
+function scheduleCurrentCandidate(priority) {
+  if (imageTask) {
+    imageTask.updatePriority(priority)
+    return
+  }
+
+  const url = candidates.value[candidateIndex.value]
+  if (!url) {
+    failed.value = true
+    emit('error', { src: props.src })
+    return
+  }
+
+  const img = imgEl.value
+  if (!img)
+    return
+
+  imageTask = scheduleImageTask({
+    priority,
+    run(release) {
+      attachLoadHandlers(img, url, release)
+      img.src = url
+    },
+  })
+}
+
+function getPreloadPriority() {
+  return inViewport ? props.priority + IMAGE_VIEWPORT_PRIORITY_OFFSET : props.priority
+}
+
+function onPreloadZoneChange(hit) {
+  inPreloadZone = hit
+
+  if (hit) {
+    // 首次进入预加载区：启动延迟
+    cleanupDelayTimer()
+
+    if (props.eager || !props.loadDelay) {
+      if (inViewport) {
+        runLoadAttempt(getPreloadPriority())
+      }
+      else {
+        scheduleCurrentCandidate(getPreloadPriority())
+      }
+      return
+    }
+
+    delayTimer = setTimeout(() => {
+      delayTimer = null
+      if (inPreloadZone && !requestStarted) {
+        scheduleCurrentCandidate(getPreloadPriority())
+      }
+    }, props.loadDelay)
+  }
+  else {
+    // 离开预加载区：取消延迟和尚未执行的任务
+    cleanupDelayTimer()
+    if (!requestStarted) {
+      cancelTask()
+    }
+  }
+}
+
+function onViewportChange(hit) {
+  inViewport = hit
+
+  if (hit) {
+    // 进入真实视口：取消延迟，立即提升优先级
+    cleanupDelayTimer()
+
+    if (!requestStarted) {
+      if (imageTask) {
+        imageTask.updatePriority(props.priority + IMAGE_VIEWPORT_PRIORITY_OFFSET)
+      }
+      else {
+        runLoadAttempt(props.priority + IMAGE_VIEWPORT_PRIORITY_OFFSET)
+      }
+    }
+  }
+  else {
+    // 离开真实视口但仍在预加载区：降级
+    if (imageTask && !requestStarted) {
+      imageTask.updatePriority(props.priority)
+    }
+  }
+}
+
 function startWhenVisible() {
   cleanupDelayTimer()
 
   if (props.eager) {
-    runLoadAttempt()
+    runLoadAttempt(props.priority)
     return
   }
 
   if (!rootEl.value)
     return
 
-  cleanupObserver()
-  io = new IntersectionObserver(
+  if (typeof IntersectionObserver !== 'function') {
+    runLoadAttempt(props.priority)
+    return
+  }
+
+  cleanupObservers()
+
+  // 预加载区观察器
+  preloadObserver = new IntersectionObserver(
     (entries) => {
       const hit = entries.some(e => e.isIntersecting)
-      if (!hit) {
-        // 离开视口：取消 delay 和调度，不发请求
-        cleanupDelayTimer()
-        cleanupSchedule()
-        return
-      }
-
-      // 进入视口：延迟后再做一次确认，防止快速滑过
-      cleanupObserver()
-      delayTimer = setTimeout(() => {
-        delayTimer = null
-        // 延迟结束后再次检查：DOM 可能已被卸载或已离开视口
-        if (!rootEl.value)
-          return
-        runLoadAttempt()
-      }, props.loadDelay)
+      onPreloadZoneChange(hit)
     },
     {
       rootMargin: props.rootMargin,
       threshold: 0.01,
     },
   )
-  io.observe(rootEl.value)
+  preloadObserver.observe(rootEl.value)
+
+  // 真实视口观察器
+  viewportObserver = new IntersectionObserver(
+    (entries) => {
+      const hit = entries.some(e => e.isIntersecting)
+      onViewportChange(hit)
+    },
+    {
+      rootMargin: '0px',
+      threshold: 0.01,
+    },
+  )
+  viewportObserver.observe(rootEl.value)
 }
 
 watch(
   () => props.src,
   () => {
     cleanupDelayTimer()
-    cleanupSchedule()
+    cancelTask()
+    cleanupObservers()
+    requestStarted = false
+    inPreloadZone = false
+    inViewport = false
     candidateIndex.value = 0
     loaded.value = false
     failed.value = false
@@ -194,8 +311,8 @@ watch(
 
 onBeforeUnmount(() => {
   cleanupDelayTimer()
-  cleanupSchedule()
-  cleanupObserver()
+  cancelTask()
+  cleanupObservers()
 })
 
 onMounted(() => {
