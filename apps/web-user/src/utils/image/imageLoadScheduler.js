@@ -11,7 +11,9 @@ import { IMAGE_LOAD_BASE_CONCURRENCY } from '@/config/imageLoading'
 let maxConcurrent = resolveAdaptiveMax(IMAGE_LOAD_BASE_CONCURRENCY)
 let active = 0
 
-/** @type {Array<{ priority: number, cancelled: () => boolean, run: (release: () => void) => void }>} */
+/** @typedef {'queued'|'running'|'settled'|'cancelled'} TaskState */
+
+/** @type {Array<{ priority: number, state: TaskState, run: (release: () => void) => void }>} */
 const queue = []
 
 function resolveAdaptiveMax(base) {
@@ -41,11 +43,17 @@ function pump() {
 
   while (active < maxConcurrent && queue.length > 0) {
     const task = queue.shift()
-    if (task.cancelled())
+    if (task.state !== 'queued')
       continue
 
+    task.state = 'running'
     active++
+    let released = false
     task.run(() => {
+      if (released)
+        return
+      released = true
+      task.state = 'settled'
       active--
       pump()
     })
@@ -63,22 +71,31 @@ if (typeof window !== 'undefined' && navigator.connection) {
 
 /**
  * @param {{ priority?: number, run: (release: () => void) => void }} opts
- * @returns {() => void} cancel — 标记取消；若已在队列中则跳过，若已执行则无法中断浏览器加载
+ * @returns {{ cancel: () => void, updatePriority: (priority: number) => void }} 任务句柄
  */
 export function scheduleImageTask({ priority = 10, run }) {
-  let cancelled = false
-
   const task = {
     priority,
-    cancelled: () => cancelled,
+    state: 'queued',
     run,
   }
 
   queue.push(task)
   pump()
 
-  return () => {
-    cancelled = true
+  return {
+    cancel() {
+      if (task.state !== 'queued')
+        return
+      task.state = 'cancelled'
+      pump()
+    },
+    updatePriority(newPriority) {
+      if (task.state !== 'queued')
+        return
+      task.priority = newPriority
+      pump()
+    },
   }
 }
 
@@ -97,10 +114,10 @@ export function setImageLoadMaxConcurrent(n) {
  * @returns {{ promise: Promise<void>, cancel: () => void }} Promise 在加载完成时 resolve；cancel 用于取消排队中的任务
  */
 export function preloadImageUrl(url, { priority = 0 } = {}) {
-  let cancel = () => {}
+  const taskHandle = { current: null }
 
   const promise = new Promise((resolve, reject) => {
-    cancel = scheduleImageTask({
+    taskHandle.current = scheduleImageTask({
       priority,
       run(release) {
         const img = new Image()
@@ -121,6 +138,6 @@ export function preloadImageUrl(url, { priority = 0 } = {}) {
 
   return {
     promise,
-    cancel,
+    cancel: () => taskHandle.current?.cancel(),
   }
 }
