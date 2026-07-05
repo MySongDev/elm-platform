@@ -1,5 +1,5 @@
 <script setup>
-import SmartImage from '@/components/common/SmartImage.vue'
+import SmartImage from '@/components/common/SmartImage/SmartImage.vue'
 import StarRating from '@/components/common/StarRating.vue'
 import { IMAGE_BASE_URL } from '@/config'
 import { IMAGE_PRIORITY } from '@/config/imageLoading'
