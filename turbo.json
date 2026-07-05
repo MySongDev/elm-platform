@@ -5,6 +5,10 @@
       "dependsOn": ["^build"],
       "outputs": ["dist/**", "generated/**"]
     },
+    "dev": {
+      "cache": false,
+      "persistent": true
+    },
     "type-check": {
       "dependsOn": ["^build"],
       "outputs": []
@@ -28,14 +32,6 @@
     "lint": {
       "dependsOn": ["^build"],
       "outputs": []
-    },
-    "generate": {
-      "cache": false,
-      "outputs": ["generated/**"]
-    },
-    "dev": {
-      "cache": false,
-      "persistent": true
     }
   }
 }
