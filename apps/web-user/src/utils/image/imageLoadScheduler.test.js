@@ -116,6 +116,33 @@ describe('imageLoadScheduler', () => {
     expect(queuedRun).not.toHaveBeenCalled()
   })
 
+  it('cancels a queued preload through its public cancel function', async () => {
+    const { preloadImageUrl, scheduleImageTask } = await createScheduler()
+    const OriginalImage = globalThis.Image
+    const ImageMock = vi.fn()
+    let releaseBlocker
+
+    globalThis.Image = ImageMock
+
+    try {
+      scheduleImageTask({
+        run(release) {
+          releaseBlocker = release
+        },
+      })
+      const preload = preloadImageUrl('/queued-image.png')
+
+      preload.cancel()
+      releaseBlocker()
+
+      expect(ImageMock).not.toHaveBeenCalled()
+    }
+    finally {
+      releaseBlocker?.()
+      globalThis.Image = OriginalImage
+    }
+  })
+
   it('does not interrupt or rerun a running task when updated or cancelled', async () => {
     const { scheduleImageTask } = await createScheduler()
     const running = vi.fn()

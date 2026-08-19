@@ -1,9 +1,6 @@
 import { IMAGE_PRIORITY } from '@/config/imageLoading'
 import { scheduleImageTask } from '@/utils/image/imageLoadScheduler'
 
-// 并发加载上限
-const MAX_CONCURRENT = 8
-
 // 透明占位 GIF（避免 img 无 src 时显示裂图）
 const TRANSPARENT_GIF = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7'
 // const TRANSPARENT_GIF = './loading.gif'
@@ -12,13 +9,10 @@ const ERROR_PLACEHOLDER = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/20
 
 const imgMap = new Map()
 const elPriority = new WeakMap()
-const pendingCancel = new WeakMap()
+const pendingAttempt = new WeakMap()
 const delayTimer = new WeakMap()
 
 let observer = null
-
-const queue = []
-let activeCount = 0
 
 function readPriority(binding) {
   if (binding.modifiers.critical)
@@ -36,16 +30,13 @@ function clearElementState(el) {
   }
 }
 
-function processQueue() {
-  if (activeCount >= MAX_CONCURRENT || queue.length === 0)
-    return
+function releaseAttempt(attempt) {
+  const release = attempt.release
+  attempt.release = null
+  release?.()
+}
 
-  queue.sort((a, b) => a.priority - b.priority)
-  const task = queue.shift()
-  activeCount++
-
-  const { el, src, priority } = task
-
+function scheduleElement(el, src, priority) {
   // 开始真正加载，确保加载类存在（可能由延迟阶段已添加）
   el.classList.add('img-loading')
   el.classList.remove('img-error')
@@ -53,40 +44,41 @@ function processQueue() {
     el.src = TRANSPARENT_GIF
   }
 
-  const cancel = scheduleImageTask({
+  const attempt = {
+    release: null,
+    started: false,
+    task: null,
+  }
+  pendingAttempt.set(el, attempt)
+
+  const task = scheduleImageTask({
     priority,
     run(release) {
+      attempt.started = true
+      attempt.release = release
+
       const onLoad = () => {
         el.onload = el.onerror = null
         el.classList.remove('img-loading', 'img-error')
-        release()
-        activeCount--
-        processQueue()
+        if (pendingAttempt.get(el) === attempt)
+          pendingAttempt.delete(el)
+        releaseAttempt(attempt)
       }
       const onError = () => {
         el.onload = el.onerror = null
         el.classList.remove('img-loading')
         el.classList.add('img-error')
         el.src = ERROR_PLACEHOLDER
-        release()
-        activeCount--
-        processQueue()
+        if (pendingAttempt.get(el) === attempt)
+          pendingAttempt.delete(el)
+        releaseAttempt(attempt)
       }
       el.onload = onLoad
       el.onerror = onError
       el.src = src
     },
   })
-  pendingCancel.set(el, cancel)
-}
-
-function enqueue(el, src, priority) {
-  queue.push({
-    el,
-    src,
-    priority,
-  })
-  processQueue()
+  attempt.task = task
 }
 
 function cancelElement(el) {
@@ -96,8 +88,16 @@ function cancelElement(el) {
     delayTimer.delete(el)
   }
 
-  pendingCancel.get(el)?.()
-  pendingCancel.delete(el)
+  const attempt = pendingAttempt.get(el)
+  if (attempt) {
+    pendingAttempt.delete(el)
+    attempt.task?.cancel()
+
+    if (attempt.started)
+      releaseAttempt(attempt)
+
+    el.onload = el.onerror = null
+  }
 
   clearElementState(el)
 }
@@ -128,7 +128,7 @@ function getObserver() {
             observer.unobserve(el)
             imgMap.delete(el)
             const priority = elPriority.get(el) ?? IMAGE_PRIORITY.NORMAL
-            enqueue(el, src, priority)
+            scheduleElement(el, src, priority)
           }, delay)
           delayTimer.set(el, timer)
         }

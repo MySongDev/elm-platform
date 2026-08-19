@@ -122,10 +122,10 @@ export function setImageLoadMaxConcurrent(n) {
  * @returns {{ promise: Promise<void>, cancel: () => void }} Promise 在加载完成时 resolve；cancel 用于取消排队中的任务
  */
 export function preloadImageUrl(url, { priority = 0 } = {}) {
-  let cancel = () => {}
+  let task
 
   const promise = new Promise((resolve, reject) => {
-    cancel = scheduleImageTask({
+    task = scheduleImageTask({
       priority,
       run(release) {
         const img = new Image()
@@ -146,6 +146,8 @@ export function preloadImageUrl(url, { priority = 0 } = {}) {
 
   return {
     promise,
-    cancel,
+    cancel() {
+      task.cancel()
+    },
   }
 }
