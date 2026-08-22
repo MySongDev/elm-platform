@@ -147,6 +147,75 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/admin/notifications": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 获取当前管理员通知列表 */
+        get: operations["NotificationController_list"];
+        put?: never;
+        post?: never;
+        /** 按类型清空通知 */
+        delete: operations["NotificationController_clear"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/notifications/read-all": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** 按类型批量标记已读 */
+        patch: operations["NotificationController_markAllRead"];
+        trace?: never;
+    };
+    "/api/admin/notifications/{id}/read": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** 标记单条通知已读 */
+        patch: operations["NotificationController_markRead"];
+        trace?: never;
+    };
+    "/api/admin/notifications/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** 删除单条通知 */
+        delete: operations["NotificationController_remove"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/admin/tenants": {
         parameters: {
             query?: never;
@@ -1520,10 +1589,227 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/admin/merchant-applications": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Merchant application list */
+        get: operations["MerchantOnboardingController_listApplications"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/merchant-applications/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Merchant application detail */
+        get: operations["MerchantOnboardingController_getApplicationDetail"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/merchant-applications/{id}/review": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Review merchant application */
+        post: operations["MerchantOnboardingController_reviewApplication"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/merchant-applications/{id}/action-logs": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Merchant application action logs */
+        get: operations["MerchantOnboardingController_getApplicationActionLogs"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        ApiErrorResponseDto: {
+            /**
+             * @description HTTP 错误状态码
+             * @example 400
+             */
+            code: number;
+            /**
+             * @description 错误原因
+             * @example 请求参数错误
+             */
+            message: string;
+            /**
+             * Format: date-time
+             * @description 错误发生时间，ISO 8601 格式
+             * @example 2026-07-01T08:00:00.000Z
+             */
+            timestamp: string;
+            /**
+             * @description 请求路径
+             * @example /api/users/1
+             */
+            path: string;
+        };
+        ApiResponseEnvelopeDto: {
+            /**
+             * @description 业务成功码，固定为 200
+             * @example 200
+             */
+            code: number;
+            /**
+             * @description 响应消息
+             * @example success
+             */
+            message: string;
+            /**
+             * Format: date-time
+             * @description 响应时间，ISO 8601 格式
+             * @example 2026-07-01T08:00:00.000Z
+             */
+            timestamp: string;
+        };
+        HealthDependencyResponseDto: {
+            /**
+             * @description 依赖状态
+             * @example ok
+             * @enum {string}
+             */
+            status: "ok" | "error";
+            /**
+             * @description 详细说明
+             * @example SELECT 1 ok
+             */
+            detail: string;
+        };
+        HealthDependenciesResponseDto: {
+            /** @description 数据库状态 */
+            database: components["schemas"]["HealthDependencyResponseDto"];
+            /** @description Redis 状态 */
+            redis: components["schemas"]["HealthDependencyResponseDto"];
+        };
+        HealthResponseDto: {
+            /**
+             * @description 服务状态
+             * @example ok
+             * @enum {string}
+             */
+            status: "ok" | "degraded";
+            /**
+             * Format: date-time
+             * @description 检查时间
+             * @example 2026-07-01T00:00:00.000Z
+             */
+            timestamp: string;
+            /**
+             * @description 运行时长（秒）
+             * @example 3600
+             */
+            uptime: number;
+            /** @description 依赖状态 */
+            dependencies: components["schemas"]["HealthDependenciesResponseDto"];
+        };
+        UserResponseDto: {
+            /**
+             * @description 用户 ID
+             * @example 1
+             */
+            id: number;
+            /**
+             * @description 用户名
+             * @example admin
+             */
+            username: string;
+            /**
+             * @description 邮箱
+             * @example admin@example.com
+             */
+            email: string | null;
+            /**
+             * @description 手机号
+             * @example 13800138000
+             */
+            phone: string | null;
+            /** @description 头像 */
+            avatar: string | null;
+            /**
+             * @description 状态：1 启用 0 停用
+             * @example 1
+             */
+            status: number;
+            /**
+             * @description 角色
+             * @example admin
+             */
+            role: string;
+            /**
+             * @description 权限列表
+             * @example [
+             *       "*:*:*"
+             *     ]
+             */
+            permissions: string[];
+            /**
+             * @description 租户 ID
+             * @example 1
+             */
+            tenantId: number | null;
+            /**
+             * @description 数据范围
+             * @example ALL
+             */
+            dataScope: string;
+            /**
+             * @description 绑定的店铺 ID 列表
+             * @example [
+             *       "shop-1"
+             *     ]
+             */
+            boundShopIds: string[];
+            /**
+             * Format: date-time
+             * @description 创建时间
+             */
+            createdAt: string;
+            /**
+             * Format: date-time
+             * @description 更新时间
+             */
+            updatedAt: string;
+        };
         CreateUserDto: {
             /**
              * @description 用户名
@@ -1631,28 +1917,6 @@ export interface components {
              */
             boundShopIds?: string[];
         };
-        LoginDto: {
-            /**
-             * @description 用户名或手机号
-             * @example admin
-             */
-            account: string;
-            /**
-             * @description 兼容旧字段：用户名
-             * @example admin
-             */
-            username?: string;
-            /**
-             * @description 密码
-             * @example 123456
-             */
-            password: string;
-            /**
-             * @description 是否签发 7 天免登录 token
-             * @example true
-             */
-            rememberMe?: boolean;
-        };
         LoginTenantDto: {
             /** @example 1 */
             id: number;
@@ -1704,14 +1968,210 @@ export interface components {
             expiresIn: number;
             user: components["schemas"]["LoginUserDto"];
         };
-        LoginHttpResponseDto: {
-            /** @example 200 */
-            code: number;
-            /** @example success */
-            message: string;
-            data: components["schemas"]["LoginResponseDto"];
-            /** @example 2026-06-08T00:00:00.000Z */
-            timestamp: string;
+        LoginDto: {
+            /**
+             * @description 用户名或手机号
+             * @example admin
+             */
+            account: string;
+            /**
+             * @description 兼容旧字段：用户名
+             * @example admin
+             */
+            username?: string;
+            /**
+             * @description 密码
+             * @example 123456
+             */
+            password: string;
+            /**
+             * @description 是否签发 7 天免登录 token
+             * @example true
+             */
+            rememberMe?: boolean;
+        };
+        AdminTenantResponseDto: {
+            /**
+             * @description 租户ID
+             * @example 1
+             */
+            id: number;
+            /**
+             * @description 租户编码
+             * @example default
+             */
+            code: string;
+            /**
+             * @description 租户名称
+             * @example Default Tenant
+             */
+            name: string;
+            /**
+             * @description 租户状态
+             * @example ACTIVE
+             */
+            status: string;
+        };
+        AdminProfileResponseDto: {
+            /**
+             * @description 用户ID
+             * @example 1
+             */
+            id: number;
+            /**
+             * @description 用户名
+             * @example admin
+             */
+            username: string;
+            /**
+             * @description 邮箱
+             * @example admin@example.com
+             */
+            email: string | null;
+            /**
+             * @description 手机号
+             * @example 13800138000
+             */
+            phone: string | null;
+            /** @description 头像 */
+            avatar: string | null;
+            /**
+             * @description 状态：1 启用 0 停用
+             * @example 1
+             */
+            status: number;
+            /**
+             * @description 角色
+             * @example admin
+             * @enum {string}
+             */
+            role: "admin" | "user";
+            /**
+             * @description 权限列表
+             * @example [
+             *       "*:*:*"
+             *     ]
+             */
+            permissions: string[];
+            /**
+             * @description 数据范围
+             * @example ALL
+             */
+            dataScope: string;
+            /**
+             * @description 绑定的店铺ID列表
+             * @example [
+             *       "shop-1"
+             *     ]
+             */
+            boundShopIds: string[];
+            /** @description 所属租户 */
+            tenant: components["schemas"]["AdminTenantResponseDto"] | null;
+            /**
+             * Format: date-time
+             * @description 创建时间
+             */
+            createdAt: string;
+            /**
+             * Format: date-time
+             * @description 更新时间
+             */
+            updatedAt: string;
+        };
+        AdminMenuResponseDto: {
+            /**
+             * @description 菜单ID
+             * @example 1
+             */
+            id: number;
+            /** @description 父菜单ID */
+            parentId: number | null;
+            /**
+             * @description 菜单标题
+             * @example 用户管理
+             */
+            title: string;
+            /**
+             * @description 菜单路径
+             * @example /system/user
+             */
+            path: string;
+            /** @description 路由名称 */
+            name: string | null;
+            /** @description 图标 */
+            icon: string | null;
+            /** @description 权限标识 */
+            permission: string | null;
+            /**
+             * @description 菜单类型
+             * @example menu
+             * @enum {string}
+             */
+            type: "catalog" | "menu" | "button";
+            /**
+             * @description 排序号
+             * @example 1
+             */
+            sort: number;
+            /**
+             * @description 状态：1 启用 0 停用
+             * @example 1
+             */
+            status: number;
+            /** @description 子菜单列表 */
+            children?: components["schemas"]["AdminMenuResponseDto"][];
+        };
+        AdminUpdatedProfileResponseDto: {
+            /**
+             * @description 用户ID
+             * @example 1
+             */
+            id: number;
+            /**
+             * @description 用户名
+             * @example admin
+             */
+            username: string;
+            /**
+             * @description 邮箱
+             * @example admin@example.com
+             */
+            email: string | null;
+            /**
+             * @description 手机号
+             * @example 13800138000
+             */
+            phone: string | null;
+            /** @description 头像 */
+            avatar: string | null;
+            /**
+             * @description 状态：1 启用 0 停用
+             * @example 1
+             */
+            status: number;
+            /**
+             * @description 角色
+             * @example admin
+             * @enum {string}
+             */
+            role: "admin" | "user";
+            /**
+             * @description 权限列表
+             * @example [
+             *       "*:*:*"
+             *     ]
+             */
+            permissions: string[];
+            /**
+             * Format: date-time
+             * @description 创建时间
+             */
+            createdAt: string;
+            /**
+             * Format: date-time
+             * @description 更新时间
+             */
+            updatedAt: string;
         };
         UpdateProfileDto: {
             /**
@@ -1730,9 +2190,367 @@ export interface components {
              */
             phone?: Record<string, never>;
         };
+        SecurityLogItemResponseDto: {
+            /**
+             * @description 日志ID
+             * @example 1
+             */
+            id: number;
+            /**
+             * @description 用户ID
+             * @example 1
+             */
+            userId: number;
+            /**
+             * @description IP地址
+             * @example 127.0.0.1
+             */
+            ip: Record<string, never>;
+            /**
+             * @description 浏览器
+             * @example Chrome
+             */
+            browser: string;
+            /**
+             * @description 操作系统
+             * @example Windows
+             */
+            os: string;
+            /**
+             * @description 状态：1 成功 0 失败
+             * @example 1
+             */
+            status: number;
+            /**
+             * @description 登录结果消息，如登录成功、密码错误
+             * @example 登录成功
+             */
+            message: Record<string, never>;
+            /**
+             * Format: date-time
+             * @description 创建时间
+             */
+            createdAt: string;
+        };
+        SecurityLogsResponseDto: {
+            /** @description 日志列表 */
+            list: components["schemas"]["SecurityLogItemResponseDto"][];
+            /**
+             * @description 总记录数
+             * @example 100
+             */
+            total: number;
+            /**
+             * @description 当前页码
+             * @example 1
+             */
+            page: number;
+            /**
+             * @description 每页条数
+             * @example 10
+             */
+            pageSize: number;
+        };
+        NotificationItemResponseDto: {
+            /**
+             * @description 通知 ID
+             * @example cuid-001
+             */
+            id: string;
+            /**
+             * @description 用户 ID
+             * @example 1
+             */
+            userId: number;
+            /**
+             * @description 通知类型
+             * @example notification
+             * @enum {string}
+             */
+            type: "notification" | "message" | "todo";
+            /**
+             * @description 标题
+             * @example 安全登录提醒
+             */
+            title: string;
+            /**
+             * @description 描述内容
+             * @example 127.0.0.1（Chrome / Windows）
+             */
+            description: string | null;
+            /**
+             * @description 是否已读
+             * @example false
+             */
+            read: boolean;
+            /**
+             * @description 来源
+             * @example SECURITY_LOGIN
+             */
+            source: string;
+            /**
+             * Format: date-time
+             * @description 创建时间
+             */
+            createdAt: string;
+            /**
+             * Format: date-time
+             * @description 更新时间
+             */
+            updatedAt: string;
+        };
+        UpdatedCountResponseDto: {
+            /**
+             * @description 已更新通知数量
+             * @example 5
+             */
+            updatedCount: number;
+        };
+        MarkAllReadDto: Record<string, never>;
+        NotificationSuccessResponseDto: {
+            /**
+             * @description 是否成功
+             * @example true
+             */
+            success: boolean;
+        };
+        DeletedCountResponseDto: {
+            /**
+             * @description 已删除通知数量
+             * @example 10
+             */
+            deletedCount: number;
+        };
+        TenantResponseDto: {
+            /**
+             * @description 租户 ID
+             * @example 1
+             */
+            id: number;
+            /**
+             * @description 租户编码
+             * @example default
+             */
+            code: string;
+            /**
+             * @description 租户名称
+             * @example Default Tenant
+             */
+            name: string;
+            /**
+             * @description 租户状态
+             * @example ACTIVE
+             * @enum {string}
+             */
+            status: "PENDING" | "ACTIVE" | "SUSPENDED" | "DISABLED" | "EXPIRED" | "ARCHIVED";
+            /**
+             * @description 联系人姓名
+             * @example 张三
+             */
+            contactName: string | null;
+            /**
+             * @description 联系人电话
+             * @example 13800138000
+             */
+            contactPhone: string | null;
+            /**
+             * @description 联系人邮箱
+             * @example contact@example.com
+             */
+            contactEmail: string | null;
+            /**
+             * @description 套餐编码
+             * @example standard
+             */
+            planCode: string;
+            /**
+             * @description 租户设置
+             * @example {}
+             */
+            settings: Record<string, never> | null;
+            /**
+             * @description 备注
+             * @example 测试租户
+             */
+            remark: string | null;
+            /**
+             * Format: date-time
+             * @description 创建时间
+             */
+            createdAt: string;
+            /**
+             * Format: date-time
+             * @description 更新时间
+             */
+            updatedAt: string;
+            /**
+             * @description 可用操作
+             * @example [
+             *       "SUSPEND",
+             *       "DISABLE"
+             *     ]
+             */
+            availableActions: string[];
+        };
         CreateTenantDto: Record<string, never>;
+        TenantCountResponseDto: {
+            /**
+             * @description 用户数
+             * @example 5
+             */
+            users: number;
+            /**
+             * @description 订单数
+             * @example 100
+             */
+            orders: number;
+        };
+        TenantDetailResponseDto: {
+            /**
+             * @description 租户 ID
+             * @example 1
+             */
+            id: number;
+            /**
+             * @description 租户编码
+             * @example default
+             */
+            code: string;
+            /**
+             * @description 租户名称
+             * @example Default Tenant
+             */
+            name: string;
+            /**
+             * @description 租户状态
+             * @example ACTIVE
+             * @enum {string}
+             */
+            status: "PENDING" | "ACTIVE" | "SUSPENDED" | "DISABLED" | "EXPIRED" | "ARCHIVED";
+            /**
+             * @description 联系人姓名
+             * @example 张三
+             */
+            contactName: string | null;
+            /**
+             * @description 联系人电话
+             * @example 13800138000
+             */
+            contactPhone: string | null;
+            /**
+             * @description 联系人邮箱
+             * @example contact@example.com
+             */
+            contactEmail: string | null;
+            /**
+             * @description 套餐编码
+             * @example standard
+             */
+            planCode: string;
+            /**
+             * @description 租户设置
+             * @example {}
+             */
+            settings: Record<string, never> | null;
+            /**
+             * @description 备注
+             * @example 测试租户
+             */
+            remark: string | null;
+            /**
+             * Format: date-time
+             * @description 创建时间
+             */
+            createdAt: string;
+            /**
+             * Format: date-time
+             * @description 更新时间
+             */
+            updatedAt: string;
+            /**
+             * @description 可用操作
+             * @example [
+             *       "SUSPEND",
+             *       "DISABLE"
+             *     ]
+             */
+            availableActions: string[];
+            /** @description 统计信息 */
+            _count: components["schemas"]["TenantCountResponseDto"];
+        };
         UpdateTenantDto: Record<string, never>;
         TenantTransitionDto: Record<string, never>;
+        TenantActionLogResponseDto: {
+            /**
+             * @description 日志 ID
+             * @example 1
+             */
+            id: number;
+            /**
+             * @description 租户 ID
+             * @example 1
+             */
+            tenantId: number;
+            /**
+             * @description 事件类型
+             * @example APPROVE
+             */
+            event: string;
+            /**
+             * @description 变更前状态
+             * @example PENDING
+             */
+            fromStatus: string;
+            /**
+             * @description 变更后状态
+             * @example ACTIVE
+             */
+            toStatus: string;
+            /**
+             * @description 操作者 ID
+             * @example 1
+             */
+            actorId: string;
+            /**
+             * @description 操作者名称
+             * @example admin
+             */
+            actorName: string;
+            /**
+             * @description 操作者类型
+             * @example PLATFORM_ADMIN
+             */
+            actorType: string;
+            /**
+             * @description 原因
+             * @example 审核通过
+             */
+            reason: string | null;
+            /**
+             * @description 备注
+             * @example 已核实
+             */
+            remark: string | null;
+            /** @description 请求 ID */
+            requestId: string | null;
+            /**
+             * Format: date-time
+             * @description 创建时间
+             */
+            createdAt: string;
+        };
+        SmsSendResponseDto: {
+            /**
+             * @description 是否成功
+             * @example true
+             */
+            success: boolean;
+            /**
+             * @description 调试验证码（仅 mock 模式下返回）
+             * @example 123456
+             */
+            debugCode: string | null;
+        };
         SendSmsDto: {
             /**
              * @description 手机号
@@ -1744,6 +2562,77 @@ export interface components {
              * @enum {string}
              */
             scene: "login" | "register" | "reset_password";
+        };
+        CustomerProfileResponseDto: {
+            /**
+             * @description 用户ID
+             * @example 1
+             */
+            id: number;
+            /**
+             * @description 用户ID（别名）
+             * @example 1
+             */
+            user_id: number;
+            /**
+             * @description 手机号
+             * @example 13800138000
+             */
+            phone: string;
+            /**
+             * @description 手机号（别名）
+             * @example 13800138000
+             */
+            mobile: string;
+            /**
+             * @description 用户名
+             * @example john_doe
+             */
+            username: string;
+            /**
+             * @description 昵称
+             * @example 小明
+             */
+            nickname: string | null;
+            /**
+             * @description 头像
+             * @example https://example.com/avatar.jpg
+             */
+            avatar: string;
+            /**
+             * @description 状态：1 启用 0 停用
+             * @example 1
+             */
+            status: number;
+        };
+        CustomerTokenResponseDto: {
+            /**
+             * @description 访问令牌
+             * @example eyJhbGciOiJIUzI1NiIs...
+             */
+            token: string;
+            /**
+             * @description 访问令牌（别名）
+             * @example eyJhbGciOiJIUzI1NiIs...
+             */
+            accessToken: string;
+            /**
+             * @description 令牌有效期（秒）
+             * @example 1800
+             */
+            expiresIn: number;
+            /**
+             * @description 刷新令牌
+             * @example uuid.randomsecret
+             */
+            refreshToken: string;
+            /**
+             * @description 刷新令牌有效期（秒）
+             * @example 2592000
+             */
+            refreshExpiresIn: number;
+            /** @description 用户信息 */
+            user: components["schemas"]["CustomerProfileResponseDto"];
         };
         CustomerRegisterDto: {
             /**
@@ -1794,6 +2683,258 @@ export interface components {
             /** @description 刷新令牌 */
             refreshToken?: string;
         };
+        PagePermissionResponseDto: {
+            /**
+             * @description 页面路径
+             * @example /system/user
+             */
+            path: string;
+            /**
+             * @description 路由名称
+             * @example UserList
+             */
+            name: string;
+            /**
+             * @description 页面标题
+             * @example 用户管理
+             */
+            title: string;
+            /**
+             * @description 角色列表
+             * @example [
+             *       "admin"
+             *     ]
+             */
+            roles: string[];
+            /**
+             * @description 权限码列表
+             * @example [
+             *       "user:view"
+             *     ]
+             */
+            auths: string[];
+        };
+        ButtonPermissionResponseDto: {
+            /**
+             * @description 权限编码
+             * @example user:view
+             */
+            code: string;
+            /**
+             * @description 权限名称
+             * @example 用户查看
+             */
+            name: string;
+            /**
+             * @description 所属分组
+             * @example 系统管理
+             */
+            group: string;
+        };
+        OnlineUserResponseDto: {
+            /**
+             * @description 用户 ID
+             * @example 1
+             */
+            id: number;
+            /**
+             * @description 用户名
+             * @example admin
+             */
+            username: string;
+            /**
+             * @description 角色
+             * @example admin
+             */
+            role: string;
+            /**
+             * @description IP 地址
+             * @example 127.0.0.1
+             */
+            ip: string | null;
+            /**
+             * @description 浏览器
+             * @example Chrome
+             */
+            browser: string;
+            /**
+             * @description 操作系统
+             * @example Windows
+             */
+            os: string;
+            /**
+             * Format: date-time
+             * @description 登录时间
+             */
+            loginTime: string;
+            /**
+             * Format: date-time
+             * @description 最后活跃时间
+             */
+            lastActiveAt: string;
+        };
+        SuccessResponseDto: {
+            /**
+             * @description 是否成功
+             * @example true
+             */
+            success: boolean;
+        };
+        LoginLogResponseDto: {
+            /**
+             * @description 日志 ID
+             * @example 1
+             */
+            id: number;
+            /**
+             * @description 用户 ID
+             * @example 1
+             */
+            userId: number;
+            /**
+             * @description 用户名
+             * @example admin
+             */
+            username: string;
+            /** @description IP 地址 */
+            ip: string | null;
+            /** @description 地址 */
+            address: string | null;
+            /** @description 浏览器 */
+            browser: string | null;
+            /** @description 操作系统 */
+            os: string | null;
+            /**
+             * @description 状态：1 成功 0 失败
+             * @example 1
+             */
+            status: number;
+            /** @description 登录结果消息，如登录成功、密码错误 */
+            message: string | null;
+            /**
+             * Format: date-time
+             * @description 创建时间
+             */
+            createdAt: string;
+        };
+        OperationLogResponseDto: {
+            /**
+             * @description 日志 ID
+             * @example 1
+             */
+            id: number;
+            /**
+             * @description 用户名
+             * @example admin
+             */
+            username: string;
+            /**
+             * @description 操作模块
+             * @example 用户管理
+             */
+            module: string;
+            /**
+             * @description 操作动作
+             * @example 新增用户
+             */
+            action: string;
+            /**
+             * @description 请求方法
+             * @example POST
+             */
+            method: string;
+            /**
+             * @description 请求路径
+             * @example /api/users
+             */
+            path: string;
+            /** @description IP 地址 */
+            ip: string | null;
+            /**
+             * @description 操作状态：1 成功 0 失败
+             * @example 1
+             */
+            status: number;
+            /**
+             * @description 持续时间（毫秒）
+             * @example 120
+             */
+            duration: number;
+            /** @description 租户 ID */
+            tenantId: number | null;
+            /** @description 租户编码 */
+            tenantCode: string | null;
+            /**
+             * Format: date-time
+             * @description 创建时间
+             */
+            createdAt: string;
+        };
+        SystemLogResponseDto: {
+            /**
+             * @description 日志 ID
+             * @example 1
+             */
+            id: number;
+            /**
+             * @description 日志级别
+             * @example info
+             */
+            level: string;
+            /**
+             * @description 日志来源
+             * @example NestJS
+             */
+            source: string;
+            /**
+             * @description 日志消息
+             * @example 后台管理服务运行中
+             */
+            message: string;
+            /** @description 详细内容 */
+            detail: string | null;
+            /**
+             * Format: date-time
+             * @description 创建时间
+             */
+            createdAt: Record<string, never>;
+        };
+        RoleResponseDto: {
+            /**
+             * @description 角色 ID
+             * @example 1
+             */
+            id: number;
+            /**
+             * @description 角色名称
+             * @example 管理员
+             */
+            name: string;
+            /**
+             * @description 角色编码
+             * @example admin
+             */
+            code: string;
+            /**
+             * @description 状态：1 启用 0 停用
+             * @example 1
+             */
+            status: number;
+            /** @description 备注 */
+            remark: string | null;
+            /**
+             * @description 权限码列表
+             * @example [
+             *       "*:*:*"
+             *     ]
+             */
+            permissions: string[];
+            /**
+             * Format: date-time
+             * @description 创建时间
+             */
+            createdAt: Record<string, never>;
+        };
         UpsertRoleDto: {
             /** @description ID（更新时传入） */
             id?: number;
@@ -1807,6 +2948,54 @@ export interface components {
             remark?: string;
             /** @description 权限码列表 */
             permissions?: string[];
+        };
+        MenuResponseDto: {
+            /**
+             * @description 菜单 ID
+             * @example 1
+             */
+            id: number;
+            /** @description 父菜单 ID */
+            parentId: number | null;
+            /**
+             * @description 菜单标题
+             * @example 用户管理
+             */
+            title: string;
+            /**
+             * @description 菜单路径
+             * @example /system/user
+             */
+            path: string;
+            /** @description 路由名称 */
+            name: string | null;
+            /** @description 图标 */
+            icon: string | null;
+            /** @description 权限标识 */
+            permission: string | null;
+            /**
+             * @description 组件路径
+             * @example system/user
+             */
+            component: string | null;
+            /**
+             * @description 菜单类型
+             * @example menu
+             * @enum {string}
+             */
+            type: "catalog" | "menu" | "button";
+            /**
+             * @description 排序号
+             * @example 1
+             */
+            sort: number;
+            /**
+             * @description 状态：1 启用 0 停用
+             * @example 1
+             */
+            status: number;
+            /** @description 子菜单列表 */
+            children?: components["schemas"]["MenuResponseDto"][];
         };
         UpsertMenuDto: {
             /** @description ID（更新时传入） */
@@ -1823,12 +3012,46 @@ export interface components {
             icon?: string;
             /** @description 权限标识 */
             permission?: string;
+            /** @description 组件路径 */
+            component?: string;
             /** @description 菜单类型 */
             type?: string;
             /** @description 排序 */
             sort?: number;
             /** @description 状态：1启用 0停用 */
             status?: number;
+        };
+        DeptResponseDto: {
+            /**
+             * @description 部门 ID
+             * @example 1
+             */
+            id: number;
+            /** @description 父部门 ID */
+            parentId: number | null;
+            /**
+             * @description 部门名称
+             * @example 技术部
+             */
+            name: string;
+            /** @description 负责人 */
+            leader: string | null;
+            /** @description 电话 */
+            phone: string | null;
+            /** @description 邮箱 */
+            email: string | null;
+            /**
+             * @description 排序号
+             * @example 1
+             */
+            sort: number;
+            /**
+             * @description 状态：1 启用 0 停用
+             * @example 1
+             */
+            status: number;
+            /** @description 子部门列表 */
+            children?: components["schemas"]["DeptResponseDto"][];
         };
         UpsertDeptDto: {
             /** @description ID（更新时传入） */
@@ -1960,6 +3183,23 @@ export interface components {
         };
         ApproveRefundDto: Record<string, never>;
         RejectRefundDto: Record<string, never>;
+        AlipayWapPaymentResponseDto: {
+            /**
+             * @description 支付订单号
+             * @example ELMALI202605241200000001
+             */
+            orderNo: string;
+            /**
+             * @description 唤起支付宝的支付链接
+             * @example https://openapi.alipaydev.com/gateway.do
+             */
+            payUrl: string;
+            /**
+             * @description 应付金额
+             * @example 39.8
+             */
+            payableAmount: number;
+        };
         CreateAlipayWapPaymentDto: Record<string, never>;
         ResumeAlipayWapPaymentDto: {
             /**
@@ -1968,24 +3208,303 @@ export interface components {
              */
             orderNo: string;
         };
-        ResumeAlipayWapPaymentResponseDto: {
+        PaymentCartItemResponseDto: {
             /**
-             * @description Payment order number.
+             * @description 商品项 ID
+             * @example item-001
+             */
+            itemId: string;
+            /**
+             * @description SKU ID
+             * @example sku-001
+             */
+            skuId: string;
+            /**
+             * @description 商品标题
+             * @example 香辣鸡腿堡
+             */
+            title: string;
+            /**
+             * @description 数量
+             * @example 2
+             */
+            qty: number;
+            /**
+             * @description 单价
+             * @example 19.9
+             */
+            unitPrice: number;
+            /**
+             * @description 小计金额
+             * @example 39.8
+             */
+            totalPrice: number;
+        };
+        PaymentOrderSummaryResponseDto: {
+            /**
+             * @description 订单 ID
+             * @example 1
+             */
+            id: number;
+            /**
+             * @description 订单号
              * @example ELMALI202605241200000001
              */
             orderNo: string;
             /**
-             * @description Redirect URL for continuing the Alipay WAP payment.
-             * @example https://openapi-sandbox.dl.alipaydev.com/gateway.do?method=alipay.trade.wap.pay
+             * @description 用户 ID
+             * @example 1
              */
-            payUrl: string;
+            userId: string;
             /**
-             * @description Amount still payable by the customer.
-             * @example 29
+             * @description 店铺 ID
+             * @example shop-001
+             */
+            shopId: string | null;
+            /**
+             * @description 店铺名称
+             * @example 麦当劳
+             */
+            shopName: string;
+            /**
+             * @description 订单状态：PENDING 待支付, PAID 已支付, CLOSED 已关闭
+             * @example PENDING
+             */
+            status: string;
+            /**
+             * @description 支付宝交易状态
+             * @example WAIT_BUYER_PAY
+             */
+            tradeStatus: string;
+            /**
+             * @description 履约状态
+             * @example PENDING_PAYMENT
+             */
+            fulfillmentStatus: string;
+            /**
+             * @description 退款状态
+             * @example NONE
+             */
+            refundStatus: string;
+            /** @description 退款基准履约状态 */
+            refundBaseFulfillmentStatus: string | null;
+            /** @description 退款原因 */
+            refundReason: string | null;
+            /** @description 退款驳回原因 */
+            refundRejectReason: string | null;
+            /**
+             * @description 应付金额
+             * @example 39.8
              */
             payableAmount: number;
+            /**
+             * @description 商品金额
+             * @example 39.8
+             */
+            goodsAmount: number;
+            /**
+             * @description 配送费
+             * @example 0
+             */
+            deliveryFee: number;
+            /** @description 购物车商品列表 */
+            cartItems: components["schemas"]["PaymentCartItemResponseDto"][];
+            /**
+             * @description 总数量
+             * @example 2
+             */
+            totalQty: number;
+            /**
+             * Format: date-time
+             * @description 支付时间
+             */
+            paidAt: Record<string, never> | null;
+            /**
+             * Format: date-time
+             * @description 接单时间
+             */
+            acceptedAt: Record<string, never> | null;
+            /**
+             * Format: date-time
+             * @description 备餐时间
+             */
+            preparingAt: Record<string, never> | null;
+            /**
+             * Format: date-time
+             * @description 配送时间
+             */
+            deliveringAt: Record<string, never> | null;
+            /**
+             * Format: date-time
+             * @description 完成时间
+             */
+            completedAt: Record<string, never> | null;
+            /**
+             * Format: date-time
+             * @description 取消时间
+             */
+            canceledAt: Record<string, never> | null;
+            /**
+             * Format: date-time
+             * @description 退款申请时间
+             */
+            refundRequestedAt: Record<string, never> | null;
+            /**
+             * Format: date-time
+             * @description 退款时间
+             */
+            refundedAt: Record<string, never> | null;
+            /**
+             * Format: date-time
+             * @description 退款驳回时间
+             */
+            refundRejectedAt: Record<string, never> | null;
+            /**
+             * Format: date-time
+             * @description 创建时间
+             */
+            createdAt: string;
+            /**
+             * Format: date-time
+             * @description 更新时间
+             */
+            updatedAt: string;
+            /** @description 支付宝交易号 */
+            tradeNo: string | null;
+            /** @description 管理员可用操作 */
+            availableActions: string[];
+            /** @description 用户可用操作 */
+            customerAvailableActions: string[];
         };
         RequestRefundDto: Record<string, never>;
+        PaymentOrdersResponseDto: {
+            /** @description 订单列表 */
+            orders: components["schemas"]["PaymentOrderSummaryResponseDto"][];
+        };
+        MerchantMaterialResponseDto: {
+            /**
+             * @description 材料 ID
+             * @example mat-001
+             */
+            id: string;
+            /**
+             * @description 材料名称
+             * @example 营业执照
+             */
+            name: string;
+            /**
+             * @description 材料类型
+             * @example image
+             * @enum {string}
+             */
+            type: "image" | "pdf" | "file";
+            /**
+             * @description 材料链接
+             * @example https://example.com/license.jpg
+             */
+            url: string;
+        };
+        MerchantApplicationResponseDto: {
+            /**
+             * @description 申请 ID
+             * @example app-001
+             */
+            id: string;
+            /**
+             * @description 商户名称
+             * @example 麦当劳
+             */
+            merchantName: string;
+            /**
+             * @description 联系人姓名
+             * @example 张三
+             */
+            contactName: string | null;
+            /**
+             * @description 联系人电话
+             * @example 13800138000
+             */
+            contactPhone: string | null;
+            /**
+             * @description 经营品类
+             * @example 餐饮
+             */
+            businessCategory: string | null;
+            /**
+             * @description 地址
+             * @example 北京市朝阳区
+             */
+            address: string | null;
+            /**
+             * @description 申请状态
+             * @example PENDING
+             * @enum {string}
+             */
+            status: "PENDING" | "UNDER_REVIEW" | "SUPPLEMENT_REQUESTED" | "APPROVED" | "REJECTED" | "CANCELED";
+            /**
+             * @description 可用操作
+             * @example [
+             *       "START_REVIEW"
+             *     ]
+             */
+            availableActions: string[];
+            /** @description 申请材料列表 */
+            materials: components["schemas"]["MerchantMaterialResponseDto"][];
+            /**
+             * Format: date-time
+             * @description 创建时间
+             */
+            createdAt: string;
+            /**
+             * Format: date-time
+             * @description 更新时间
+             */
+            updatedAt: string;
+        };
+        ReviewMerchantApplicationDto: Record<string, never>;
+        MerchantApplicationActionLogResponseDto: {
+            /**
+             * @description 日志 ID
+             * @example log-001
+             */
+            id: string;
+            /**
+             * @description 事件类型
+             * @example APPROVE
+             * @enum {string}
+             */
+            event: "START_REVIEW" | "APPROVE" | "REJECT" | "REQUEST_SUPPLEMENT";
+            /**
+             * @description 变更前状态
+             * @example UNDER_REVIEW
+             */
+            fromStatus: string;
+            /**
+             * @description 变更后状态
+             * @example APPROVED
+             */
+            toStatus: string;
+            /**
+             * @description 操作者名称
+             * @example admin
+             */
+            actorName: string;
+            /**
+             * @description 原因
+             * @example 资料齐全
+             */
+            reason: string | null;
+            /**
+             * @description 备注
+             * @example 已核实
+             */
+            remark: string | null;
+            /**
+             * Format: date-time
+             * @description 创建时间
+             */
+            createdAt: string;
+        };
     };
     responses: never;
     parameters: never;
@@ -2004,11 +3523,30 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
+            /** @description 请求成功 */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["ApiResponseEnvelopeDto"] & {
+                        data: components["schemas"]["HealthResponseDto"];
+                    };
+                };
+            };
+            /** @description 服务器内部错误 */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 500 */
+                        code?: unknown;
+                        /** @example 服务器内部错误 */
+                        message?: unknown;
+                    };
+                };
             };
         };
     };
@@ -2021,12 +3559,58 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description 获取成功 */
+            /** @description 请求成功 */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["ApiResponseEnvelopeDto"] & {
+                        data: components["schemas"]["UserResponseDto"][];
+                    };
+                };
+            };
+            /** @description 未认证或认证已失效 */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 401 */
+                        code?: unknown;
+                        /** @example 未认证或认证已失效 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 无权访问该资源 */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 403 */
+                        code?: unknown;
+                        /** @example 无权访问该资源 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 服务器内部错误 */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 500 */
+                        code?: unknown;
+                        /** @example 服务器内部错误 */
+                        message?: unknown;
+                    };
+                };
             };
         };
     };
@@ -2043,19 +3627,86 @@ export interface operations {
             };
         };
         responses: {
-            /** @description 创建成功 */
+            /** @description 请求成功 */
             201: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["ApiResponseEnvelopeDto"] & {
+                        data: components["schemas"]["UserResponseDto"];
+                    };
+                };
             };
-            /** @description 用户名已存在 */
+            /** @description 请求参数错误 */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 400 */
+                        code?: unknown;
+                        /** @example 请求参数错误 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 未认证或认证已失效 */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 401 */
+                        code?: unknown;
+                        /** @example 未认证或认证已失效 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 无权访问该资源 */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 403 */
+                        code?: unknown;
+                        /** @example 无权访问该资源 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 资源状态冲突 */
             409: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 409 */
+                        code?: unknown;
+                        /** @example 资源状态冲突 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 服务器内部错误 */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 500 */
+                        code?: unknown;
+                        /** @example 服务器内部错误 */
+                        message?: unknown;
+                    };
+                };
             };
         };
     };
@@ -2071,19 +3722,86 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description 获取成功 */
+            /** @description 请求成功 */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["ApiResponseEnvelopeDto"] & {
+                        data: components["schemas"]["UserResponseDto"];
+                    };
+                };
             };
-            /** @description 用户不存在 */
+            /** @description 请求参数错误 */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 400 */
+                        code?: unknown;
+                        /** @example 请求参数错误 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 未认证或认证已失效 */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 401 */
+                        code?: unknown;
+                        /** @example 未认证或认证已失效 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 无权访问该资源 */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 403 */
+                        code?: unknown;
+                        /** @example 无权访问该资源 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 请求的资源不存在 */
             404: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 404 */
+                        code?: unknown;
+                        /** @example 请求的资源不存在 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 服务器内部错误 */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 500 */
+                        code?: unknown;
+                        /** @example 服务器内部错误 */
+                        message?: unknown;
+                    };
+                };
             };
         };
     };
@@ -2099,19 +3817,84 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description 删除成功 */
+            /** @description 请求成功 */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["ApiResponseEnvelopeDto"];
+                };
             };
-            /** @description 用户不存在 */
+            /** @description 请求参数错误 */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 400 */
+                        code?: unknown;
+                        /** @example 请求参数错误 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 未认证或认证已失效 */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 401 */
+                        code?: unknown;
+                        /** @example 未认证或认证已失效 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 无权访问该资源 */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 403 */
+                        code?: unknown;
+                        /** @example 无权访问该资源 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 请求的资源不存在 */
             404: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 404 */
+                        code?: unknown;
+                        /** @example 请求的资源不存在 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 服务器内部错误 */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 500 */
+                        code?: unknown;
+                        /** @example 服务器内部错误 */
+                        message?: unknown;
+                    };
+                };
             };
         };
     };
@@ -2131,19 +3914,100 @@ export interface operations {
             };
         };
         responses: {
-            /** @description 更新成功 */
+            /** @description 请求成功 */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["ApiResponseEnvelopeDto"] & {
+                        data: components["schemas"]["UserResponseDto"];
+                    };
+                };
             };
-            /** @description 用户不存在 */
+            /** @description 请求参数错误 */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 400 */
+                        code?: unknown;
+                        /** @example 请求参数错误 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 未认证或认证已失效 */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 401 */
+                        code?: unknown;
+                        /** @example 未认证或认证已失效 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 无权访问该资源 */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 403 */
+                        code?: unknown;
+                        /** @example 无权访问该资源 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 请求的资源不存在 */
             404: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 404 */
+                        code?: unknown;
+                        /** @example 请求的资源不存在 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 资源状态冲突 */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 409 */
+                        code?: unknown;
+                        /** @example 资源状态冲突 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 服务器内部错误 */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 500 */
+                        code?: unknown;
+                        /** @example 服务器内部错误 */
+                        message?: unknown;
+                    };
+                };
             };
         };
     };
@@ -2160,13 +4024,57 @@ export interface operations {
             };
         };
         responses: {
-            /** @description Admin login response envelope */
+            /** @description 请求成功 */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["LoginHttpResponseDto"];
+                    "application/json": components["schemas"]["ApiResponseEnvelopeDto"] & {
+                        data: components["schemas"]["LoginResponseDto"];
+                    };
+                };
+            };
+            /** @description 请求参数错误 */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 400 */
+                        code?: unknown;
+                        /** @example 请求参数错误 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 未认证或认证已失效 */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 401 */
+                        code?: unknown;
+                        /** @example 未认证或认证已失效 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 服务器内部错误 */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 500 */
+                        code?: unknown;
+                        /** @example 服务器内部错误 */
+                        message?: unknown;
+                    };
                 };
             };
         };
@@ -2180,11 +4088,44 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
+            /** @description 请求成功 */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["ApiResponseEnvelopeDto"] & {
+                        data: components["schemas"]["AdminProfileResponseDto"];
+                    };
+                };
+            };
+            /** @description 未认证或认证已失效 */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 401 */
+                        code?: unknown;
+                        /** @example 未认证或认证已失效 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 服务器内部错误 */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 500 */
+                        code?: unknown;
+                        /** @example 服务器内部错误 */
+                        message?: unknown;
+                    };
+                };
             };
         };
     };
@@ -2201,11 +4142,72 @@ export interface operations {
             };
         };
         responses: {
+            /** @description 请求成功 */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["ApiResponseEnvelopeDto"] & {
+                        data: components["schemas"]["AdminUpdatedProfileResponseDto"];
+                    };
+                };
+            };
+            /** @description 请求参数错误 */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 400 */
+                        code?: unknown;
+                        /** @example 请求参数错误 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 未认证或认证已失效 */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 401 */
+                        code?: unknown;
+                        /** @example 未认证或认证已失效 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 资源状态冲突 */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 409 */
+                        code?: unknown;
+                        /** @example 资源状态冲突 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 服务器内部错误 */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 500 */
+                        code?: unknown;
+                        /** @example 服务器内部错误 */
+                        message?: unknown;
+                    };
+                };
             };
         };
     };
@@ -2218,11 +4220,44 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
+            /** @description 请求成功 */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["ApiResponseEnvelopeDto"] & {
+                        data: components["schemas"]["AdminMenuResponseDto"][];
+                    };
+                };
+            };
+            /** @description 未认证或认证已失效 */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 401 */
+                        code?: unknown;
+                        /** @example 未认证或认证已失效 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 服务器内部错误 */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 500 */
+                        code?: unknown;
+                        /** @example 服务器内部错误 */
+                        message?: unknown;
+                    };
+                };
             };
         };
     };
@@ -2235,11 +4270,42 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            201: {
+            /** @description 请求成功 */
+            200: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["ApiResponseEnvelopeDto"];
+                };
+            };
+            /** @description 未认证或认证已失效 */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 401 */
+                        code?: unknown;
+                        /** @example 未认证或认证已失效 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 服务器内部错误 */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 500 */
+                        code?: unknown;
+                        /** @example 服务器内部错误 */
+                        message?: unknown;
+                    };
+                };
             };
         };
     };
@@ -2255,11 +4321,386 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
+            /** @description 请求成功 */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["ApiResponseEnvelopeDto"] & {
+                        data: components["schemas"]["SecurityLogsResponseDto"];
+                    };
+                };
+            };
+            /** @description 请求参数错误 */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 400 */
+                        code?: unknown;
+                        /** @example 请求参数错误 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 未认证或认证已失效 */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 401 */
+                        code?: unknown;
+                        /** @example 未认证或认证已失效 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 服务器内部错误 */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 500 */
+                        code?: unknown;
+                        /** @example 服务器内部错误 */
+                        message?: unknown;
+                    };
+                };
+            };
+        };
+    };
+    NotificationController_list: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description 请求成功 */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResponseEnvelopeDto"] & {
+                        data: components["schemas"]["NotificationItemResponseDto"][];
+                    };
+                };
+            };
+            /** @description 请求参数错误 */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 400 */
+                        code?: unknown;
+                        /** @example 请求参数错误 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 未认证或认证已失效 */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 401 */
+                        code?: unknown;
+                        /** @example 未认证或认证已失效 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 服务器内部错误 */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 500 */
+                        code?: unknown;
+                        /** @example 服务器内部错误 */
+                        message?: unknown;
+                    };
+                };
+            };
+        };
+    };
+    NotificationController_clear: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description 请求成功 */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResponseEnvelopeDto"] & {
+                        data: components["schemas"]["DeletedCountResponseDto"];
+                    };
+                };
+            };
+            /** @description 请求参数错误 */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 400 */
+                        code?: unknown;
+                        /** @example 请求参数错误 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 未认证或认证已失效 */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 401 */
+                        code?: unknown;
+                        /** @example 未认证或认证已失效 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 服务器内部错误 */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 500 */
+                        code?: unknown;
+                        /** @example 服务器内部错误 */
+                        message?: unknown;
+                    };
+                };
+            };
+        };
+    };
+    NotificationController_markAllRead: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MarkAllReadDto"];
+            };
+        };
+        responses: {
+            /** @description 请求成功 */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResponseEnvelopeDto"] & {
+                        data: components["schemas"]["UpdatedCountResponseDto"];
+                    };
+                };
+            };
+            /** @description 请求参数错误 */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 400 */
+                        code?: unknown;
+                        /** @example 请求参数错误 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 未认证或认证已失效 */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 401 */
+                        code?: unknown;
+                        /** @example 未认证或认证已失效 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 服务器内部错误 */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 500 */
+                        code?: unknown;
+                        /** @example 服务器内部错误 */
+                        message?: unknown;
+                    };
+                };
+            };
+        };
+    };
+    NotificationController_markRead: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description 请求成功 */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResponseEnvelopeDto"] & {
+                        data: components["schemas"]["NotificationItemResponseDto"];
+                    };
+                };
+            };
+            /** @description 未认证或认证已失效 */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 401 */
+                        code?: unknown;
+                        /** @example 未认证或认证已失效 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 请求的资源不存在 */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 404 */
+                        code?: unknown;
+                        /** @example 请求的资源不存在 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 服务器内部错误 */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 500 */
+                        code?: unknown;
+                        /** @example 服务器内部错误 */
+                        message?: unknown;
+                    };
+                };
+            };
+        };
+    };
+    NotificationController_remove: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description 请求成功 */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResponseEnvelopeDto"] & {
+                        data: components["schemas"]["NotificationSuccessResponseDto"];
+                    };
+                };
+            };
+            /** @description 未认证或认证已失效 */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 401 */
+                        code?: unknown;
+                        /** @example 未认证或认证已失效 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 请求的资源不存在 */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 404 */
+                        code?: unknown;
+                        /** @example 请求的资源不存在 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 服务器内部错误 */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 500 */
+                        code?: unknown;
+                        /** @example 服务器内部错误 */
+                        message?: unknown;
+                    };
+                };
             };
         };
     };
@@ -2272,11 +4713,58 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
+            /** @description 请求成功 */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["ApiResponseEnvelopeDto"] & {
+                        data: components["schemas"]["TenantResponseDto"][];
+                    };
+                };
+            };
+            /** @description 未认证或认证已失效 */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 401 */
+                        code?: unknown;
+                        /** @example 未认证或认证已失效 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 无权访问该资源 */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 403 */
+                        code?: unknown;
+                        /** @example 无权访问该资源 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 服务器内部错误 */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 500 */
+                        code?: unknown;
+                        /** @example 服务器内部错误 */
+                        message?: unknown;
+                    };
+                };
             };
         };
     };
@@ -2293,11 +4781,72 @@ export interface operations {
             };
         };
         responses: {
+            /** @description 请求成功 */
             201: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["ApiResponseEnvelopeDto"] & {
+                        data: components["schemas"]["TenantResponseDto"];
+                    };
+                };
+            };
+            /** @description 请求参数错误 */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 400 */
+                        code?: unknown;
+                        /** @example 请求参数错误 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 未认证或认证已失效 */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 401 */
+                        code?: unknown;
+                        /** @example 未认证或认证已失效 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 无权访问该资源 */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 403 */
+                        code?: unknown;
+                        /** @example 无权访问该资源 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 服务器内部错误 */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 500 */
+                        code?: unknown;
+                        /** @example 服务器内部错误 */
+                        message?: unknown;
+                    };
+                };
             };
         };
     };
@@ -2312,11 +4861,86 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
+            /** @description 请求成功 */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["ApiResponseEnvelopeDto"] & {
+                        data: components["schemas"]["TenantDetailResponseDto"];
+                    };
+                };
+            };
+            /** @description 请求参数错误 */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 400 */
+                        code?: unknown;
+                        /** @example 请求参数错误 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 未认证或认证已失效 */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 401 */
+                        code?: unknown;
+                        /** @example 未认证或认证已失效 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 无权访问该资源 */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 403 */
+                        code?: unknown;
+                        /** @example 无权访问该资源 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 请求的资源不存在 */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 404 */
+                        code?: unknown;
+                        /** @example 请求的资源不存在 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 服务器内部错误 */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 500 */
+                        code?: unknown;
+                        /** @example 服务器内部错误 */
+                        message?: unknown;
+                    };
+                };
             };
         };
     };
@@ -2335,11 +4959,86 @@ export interface operations {
             };
         };
         responses: {
+            /** @description 请求成功 */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["ApiResponseEnvelopeDto"] & {
+                        data: components["schemas"]["TenantResponseDto"];
+                    };
+                };
+            };
+            /** @description 请求参数错误 */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 400 */
+                        code?: unknown;
+                        /** @example 请求参数错误 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 未认证或认证已失效 */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 401 */
+                        code?: unknown;
+                        /** @example 未认证或认证已失效 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 无权访问该资源 */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 403 */
+                        code?: unknown;
+                        /** @example 无权访问该资源 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 请求的资源不存在 */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 404 */
+                        code?: unknown;
+                        /** @example 请求的资源不存在 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 服务器内部错误 */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 500 */
+                        code?: unknown;
+                        /** @example 服务器内部错误 */
+                        message?: unknown;
+                    };
+                };
             };
         };
     };
@@ -2358,11 +5057,100 @@ export interface operations {
             };
         };
         responses: {
+            /** @description 请求成功 */
             201: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["ApiResponseEnvelopeDto"] & {
+                        data: components["schemas"]["TenantResponseDto"];
+                    };
+                };
+            };
+            /** @description 请求参数错误 */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 400 */
+                        code?: unknown;
+                        /** @example 请求参数错误 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 未认证或认证已失效 */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 401 */
+                        code?: unknown;
+                        /** @example 未认证或认证已失效 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 无权访问该资源 */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 403 */
+                        code?: unknown;
+                        /** @example 无权访问该资源 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 请求的资源不存在 */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 404 */
+                        code?: unknown;
+                        /** @example 请求的资源不存在 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 资源状态冲突 */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 409 */
+                        code?: unknown;
+                        /** @example 资源状态冲突 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 服务器内部错误 */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 500 */
+                        code?: unknown;
+                        /** @example 服务器内部错误 */
+                        message?: unknown;
+                    };
+                };
             };
         };
     };
@@ -2377,11 +5165,86 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
+            /** @description 请求成功 */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["ApiResponseEnvelopeDto"] & {
+                        data: components["schemas"]["TenantActionLogResponseDto"][];
+                    };
+                };
+            };
+            /** @description 请求参数错误 */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 400 */
+                        code?: unknown;
+                        /** @example 请求参数错误 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 未认证或认证已失效 */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 401 */
+                        code?: unknown;
+                        /** @example 未认证或认证已失效 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 无权访问该资源 */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 403 */
+                        code?: unknown;
+                        /** @example 无权访问该资源 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 请求的资源不存在 */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 404 */
+                        code?: unknown;
+                        /** @example 请求的资源不存在 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 服务器内部错误 */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 500 */
+                        code?: unknown;
+                        /** @example 服务器内部错误 */
+                        message?: unknown;
+                    };
+                };
             };
         };
     };
@@ -2398,11 +5261,58 @@ export interface operations {
             };
         };
         responses: {
+            /** @description 请求成功 */
             201: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["ApiResponseEnvelopeDto"] & {
+                        data: components["schemas"]["SmsSendResponseDto"];
+                    };
+                };
+            };
+            /** @description 请求参数错误 */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 400 */
+                        code?: unknown;
+                        /** @example 请求参数错误 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 请求过于频繁 */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 429 */
+                        code?: unknown;
+                        /** @example 请求过于频繁 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 服务器内部错误 */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 500 */
+                        code?: unknown;
+                        /** @example 服务器内部错误 */
+                        message?: unknown;
+                    };
+                };
             };
         };
     };
@@ -2419,11 +5329,58 @@ export interface operations {
             };
         };
         responses: {
+            /** @description 请求成功 */
             201: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["ApiResponseEnvelopeDto"] & {
+                        data: components["schemas"]["CustomerTokenResponseDto"];
+                    };
+                };
+            };
+            /** @description 请求参数错误 */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 400 */
+                        code?: unknown;
+                        /** @example 请求参数错误 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 资源状态冲突 */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 409 */
+                        code?: unknown;
+                        /** @example 资源状态冲突 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 服务器内部错误 */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 500 */
+                        code?: unknown;
+                        /** @example 服务器内部错误 */
+                        message?: unknown;
+                    };
+                };
             };
         };
     };
@@ -2440,11 +5397,58 @@ export interface operations {
             };
         };
         responses: {
+            /** @description 请求成功 */
             201: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["ApiResponseEnvelopeDto"] & {
+                        data: components["schemas"]["CustomerTokenResponseDto"];
+                    };
+                };
+            };
+            /** @description 请求参数错误 */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 400 */
+                        code?: unknown;
+                        /** @example 请求参数错误 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 未认证或认证已失效 */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 401 */
+                        code?: unknown;
+                        /** @example 未认证或认证已失效 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 服务器内部错误 */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 500 */
+                        code?: unknown;
+                        /** @example 服务器内部错误 */
+                        message?: unknown;
+                    };
+                };
             };
         };
     };
@@ -2461,11 +5465,58 @@ export interface operations {
             };
         };
         responses: {
+            /** @description 请求成功 */
             201: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["ApiResponseEnvelopeDto"] & {
+                        data: components["schemas"]["CustomerTokenResponseDto"];
+                    };
+                };
+            };
+            /** @description 请求参数错误 */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 400 */
+                        code?: unknown;
+                        /** @example 请求参数错误 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 未认证或认证已失效 */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 401 */
+                        code?: unknown;
+                        /** @example 未认证或认证已失效 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 服务器内部错误 */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 500 */
+                        code?: unknown;
+                        /** @example 服务器内部错误 */
+                        message?: unknown;
+                    };
+                };
             };
         };
     };
@@ -2482,11 +5533,58 @@ export interface operations {
             };
         };
         responses: {
+            /** @description 请求成功 */
             201: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["ApiResponseEnvelopeDto"] & {
+                        data: components["schemas"]["CustomerTokenResponseDto"];
+                    };
+                };
+            };
+            /** @description 请求参数错误 */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 400 */
+                        code?: unknown;
+                        /** @example 请求参数错误 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 未认证或认证已失效 */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 401 */
+                        code?: unknown;
+                        /** @example 未认证或认证已失效 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 服务器内部错误 */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 500 */
+                        code?: unknown;
+                        /** @example 服务器内部错误 */
+                        message?: unknown;
+                    };
+                };
             };
         };
     };
@@ -2503,11 +5601,42 @@ export interface operations {
             };
         };
         responses: {
-            201: {
+            /** @description 请求成功 */
+            200: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["ApiResponseEnvelopeDto"];
+                };
+            };
+            /** @description 请求参数错误 */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 400 */
+                        code?: unknown;
+                        /** @example 请求参数错误 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 服务器内部错误 */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 500 */
+                        code?: unknown;
+                        /** @example 服务器内部错误 */
+                        message?: unknown;
+                    };
+                };
             };
         };
     };
@@ -2520,11 +5649,44 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
+            /** @description 请求成功 */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["ApiResponseEnvelopeDto"] & {
+                        data: components["schemas"]["CustomerProfileResponseDto"];
+                    };
+                };
+            };
+            /** @description 未认证或认证已失效 */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 401 */
+                        code?: unknown;
+                        /** @example 未认证或认证已失效 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 服务器内部错误 */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 500 */
+                        code?: unknown;
+                        /** @example 服务器内部错误 */
+                        message?: unknown;
+                    };
+                };
             };
         };
     };
@@ -2537,11 +5699,58 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
+            /** @description 请求成功 */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["ApiResponseEnvelopeDto"] & {
+                        data: components["schemas"]["PagePermissionResponseDto"][];
+                    };
+                };
+            };
+            /** @description 未认证或认证已失效 */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 401 */
+                        code?: unknown;
+                        /** @example 未认证或认证已失效 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 无权访问该资源 */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 403 */
+                        code?: unknown;
+                        /** @example 无权访问该资源 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 服务器内部错误 */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 500 */
+                        code?: unknown;
+                        /** @example 服务器内部错误 */
+                        message?: unknown;
+                    };
+                };
             };
         };
     };
@@ -2554,11 +5763,58 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
+            /** @description 请求成功 */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["ApiResponseEnvelopeDto"] & {
+                        data: components["schemas"]["ButtonPermissionResponseDto"][];
+                    };
+                };
+            };
+            /** @description 未认证或认证已失效 */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 401 */
+                        code?: unknown;
+                        /** @example 未认证或认证已失效 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 无权访问该资源 */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 403 */
+                        code?: unknown;
+                        /** @example 无权访问该资源 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 服务器内部错误 */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 500 */
+                        code?: unknown;
+                        /** @example 服务器内部错误 */
+                        message?: unknown;
+                    };
+                };
             };
         };
     };
@@ -2571,11 +5827,58 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
+            /** @description 请求成功 */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["ApiResponseEnvelopeDto"] & {
+                        data: components["schemas"]["OnlineUserResponseDto"][];
+                    };
+                };
+            };
+            /** @description 未认证或认证已失效 */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 401 */
+                        code?: unknown;
+                        /** @example 未认证或认证已失效 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 无权访问该资源 */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 403 */
+                        code?: unknown;
+                        /** @example 无权访问该资源 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 服务器内部错误 */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 500 */
+                        code?: unknown;
+                        /** @example 服务器内部错误 */
+                        message?: unknown;
+                    };
+                };
             };
         };
     };
@@ -2590,11 +5893,72 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
+            /** @description 请求成功 */
             201: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["ApiResponseEnvelopeDto"] & {
+                        data: components["schemas"]["SuccessResponseDto"];
+                    };
+                };
+            };
+            /** @description 请求参数错误 */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 400 */
+                        code?: unknown;
+                        /** @example 请求参数错误 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 未认证或认证已失效 */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 401 */
+                        code?: unknown;
+                        /** @example 未认证或认证已失效 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 无权访问该资源 */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 403 */
+                        code?: unknown;
+                        /** @example 无权访问该资源 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 服务器内部错误 */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 500 */
+                        code?: unknown;
+                        /** @example 服务器内部错误 */
+                        message?: unknown;
+                    };
+                };
             };
         };
     };
@@ -2607,11 +5971,58 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
+            /** @description 请求成功 */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["ApiResponseEnvelopeDto"] & {
+                        data: components["schemas"]["LoginLogResponseDto"][];
+                    };
+                };
+            };
+            /** @description 未认证或认证已失效 */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 401 */
+                        code?: unknown;
+                        /** @example 未认证或认证已失效 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 无权访问该资源 */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 403 */
+                        code?: unknown;
+                        /** @example 无权访问该资源 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 服务器内部错误 */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 500 */
+                        code?: unknown;
+                        /** @example 服务器内部错误 */
+                        message?: unknown;
+                    };
+                };
             };
         };
     };
@@ -2624,11 +6035,58 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
+            /** @description 请求成功 */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["ApiResponseEnvelopeDto"] & {
+                        data: components["schemas"]["OperationLogResponseDto"][];
+                    };
+                };
+            };
+            /** @description 未认证或认证已失效 */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 401 */
+                        code?: unknown;
+                        /** @example 未认证或认证已失效 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 无权访问该资源 */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 403 */
+                        code?: unknown;
+                        /** @example 无权访问该资源 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 服务器内部错误 */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 500 */
+                        code?: unknown;
+                        /** @example 服务器内部错误 */
+                        message?: unknown;
+                    };
+                };
             };
         };
     };
@@ -2641,11 +6099,58 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
+            /** @description 请求成功 */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["ApiResponseEnvelopeDto"] & {
+                        data: components["schemas"]["SystemLogResponseDto"][];
+                    };
+                };
+            };
+            /** @description 未认证或认证已失效 */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 401 */
+                        code?: unknown;
+                        /** @example 未认证或认证已失效 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 无权访问该资源 */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 403 */
+                        code?: unknown;
+                        /** @example 无权访问该资源 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 服务器内部错误 */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 500 */
+                        code?: unknown;
+                        /** @example 服务器内部错误 */
+                        message?: unknown;
+                    };
+                };
             };
         };
     };
@@ -2658,11 +6163,58 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
+            /** @description 请求成功 */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["ApiResponseEnvelopeDto"] & {
+                        data: components["schemas"]["RoleResponseDto"][];
+                    };
+                };
+            };
+            /** @description 未认证或认证已失效 */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 401 */
+                        code?: unknown;
+                        /** @example 未认证或认证已失效 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 无权访问该资源 */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 403 */
+                        code?: unknown;
+                        /** @example 无权访问该资源 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 服务器内部错误 */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 500 */
+                        code?: unknown;
+                        /** @example 服务器内部错误 */
+                        message?: unknown;
+                    };
+                };
             };
         };
     };
@@ -2679,11 +6231,72 @@ export interface operations {
             };
         };
         responses: {
+            /** @description 请求成功 */
             201: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["ApiResponseEnvelopeDto"] & {
+                        data: components["schemas"]["RoleResponseDto"];
+                    };
+                };
+            };
+            /** @description 请求参数错误 */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 400 */
+                        code?: unknown;
+                        /** @example 请求参数错误 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 未认证或认证已失效 */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 401 */
+                        code?: unknown;
+                        /** @example 未认证或认证已失效 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 无权访问该资源 */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 403 */
+                        code?: unknown;
+                        /** @example 无权访问该资源 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 服务器内部错误 */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 500 */
+                        code?: unknown;
+                        /** @example 服务器内部错误 */
+                        message?: unknown;
+                    };
+                };
             };
         };
     };
@@ -2698,11 +6311,72 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
+            /** @description 请求成功 */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["ApiResponseEnvelopeDto"] & {
+                        data: components["schemas"]["SuccessResponseDto"];
+                    };
+                };
+            };
+            /** @description 请求参数错误 */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 400 */
+                        code?: unknown;
+                        /** @example 请求参数错误 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 未认证或认证已失效 */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 401 */
+                        code?: unknown;
+                        /** @example 未认证或认证已失效 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 无权访问该资源 */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 403 */
+                        code?: unknown;
+                        /** @example 无权访问该资源 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 服务器内部错误 */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 500 */
+                        code?: unknown;
+                        /** @example 服务器内部错误 */
+                        message?: unknown;
+                    };
+                };
             };
         };
     };
@@ -2721,11 +6395,86 @@ export interface operations {
             };
         };
         responses: {
+            /** @description 请求成功 */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["ApiResponseEnvelopeDto"] & {
+                        data: components["schemas"]["RoleResponseDto"];
+                    };
+                };
+            };
+            /** @description 请求参数错误 */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 400 */
+                        code?: unknown;
+                        /** @example 请求参数错误 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 未认证或认证已失效 */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 401 */
+                        code?: unknown;
+                        /** @example 未认证或认证已失效 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 无权访问该资源 */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 403 */
+                        code?: unknown;
+                        /** @example 无权访问该资源 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 请求的资源不存在 */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 404 */
+                        code?: unknown;
+                        /** @example 请求的资源不存在 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 服务器内部错误 */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 500 */
+                        code?: unknown;
+                        /** @example 服务器内部错误 */
+                        message?: unknown;
+                    };
+                };
             };
         };
     };
@@ -2738,11 +6487,58 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
+            /** @description 请求成功 */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["ApiResponseEnvelopeDto"] & {
+                        data: components["schemas"]["MenuResponseDto"][];
+                    };
+                };
+            };
+            /** @description 未认证或认证已失效 */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 401 */
+                        code?: unknown;
+                        /** @example 未认证或认证已失效 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 无权访问该资源 */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 403 */
+                        code?: unknown;
+                        /** @example 无权访问该资源 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 服务器内部错误 */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 500 */
+                        code?: unknown;
+                        /** @example 服务器内部错误 */
+                        message?: unknown;
+                    };
+                };
             };
         };
     };
@@ -2759,11 +6555,72 @@ export interface operations {
             };
         };
         responses: {
+            /** @description 请求成功 */
             201: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["ApiResponseEnvelopeDto"] & {
+                        data: components["schemas"]["MenuResponseDto"];
+                    };
+                };
+            };
+            /** @description 请求参数错误 */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 400 */
+                        code?: unknown;
+                        /** @example 请求参数错误 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 未认证或认证已失效 */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 401 */
+                        code?: unknown;
+                        /** @example 未认证或认证已失效 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 无权访问该资源 */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 403 */
+                        code?: unknown;
+                        /** @example 无权访问该资源 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 服务器内部错误 */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 500 */
+                        code?: unknown;
+                        /** @example 服务器内部错误 */
+                        message?: unknown;
+                    };
+                };
             };
         };
     };
@@ -2778,11 +6635,72 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
+            /** @description 请求成功 */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["ApiResponseEnvelopeDto"] & {
+                        data: components["schemas"]["SuccessResponseDto"];
+                    };
+                };
+            };
+            /** @description 请求参数错误 */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 400 */
+                        code?: unknown;
+                        /** @example 请求参数错误 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 未认证或认证已失效 */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 401 */
+                        code?: unknown;
+                        /** @example 未认证或认证已失效 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 无权访问该资源 */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 403 */
+                        code?: unknown;
+                        /** @example 无权访问该资源 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 服务器内部错误 */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 500 */
+                        code?: unknown;
+                        /** @example 服务器内部错误 */
+                        message?: unknown;
+                    };
+                };
             };
         };
     };
@@ -2801,11 +6719,86 @@ export interface operations {
             };
         };
         responses: {
+            /** @description 请求成功 */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["ApiResponseEnvelopeDto"] & {
+                        data: components["schemas"]["MenuResponseDto"];
+                    };
+                };
+            };
+            /** @description 请求参数错误 */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 400 */
+                        code?: unknown;
+                        /** @example 请求参数错误 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 未认证或认证已失效 */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 401 */
+                        code?: unknown;
+                        /** @example 未认证或认证已失效 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 无权访问该资源 */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 403 */
+                        code?: unknown;
+                        /** @example 无权访问该资源 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 请求的资源不存在 */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 404 */
+                        code?: unknown;
+                        /** @example 请求的资源不存在 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 服务器内部错误 */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 500 */
+                        code?: unknown;
+                        /** @example 服务器内部错误 */
+                        message?: unknown;
+                    };
+                };
             };
         };
     };
@@ -2818,11 +6811,58 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
+            /** @description 请求成功 */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["ApiResponseEnvelopeDto"] & {
+                        data: components["schemas"]["DeptResponseDto"][];
+                    };
+                };
+            };
+            /** @description 未认证或认证已失效 */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 401 */
+                        code?: unknown;
+                        /** @example 未认证或认证已失效 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 无权访问该资源 */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 403 */
+                        code?: unknown;
+                        /** @example 无权访问该资源 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 服务器内部错误 */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 500 */
+                        code?: unknown;
+                        /** @example 服务器内部错误 */
+                        message?: unknown;
+                    };
+                };
             };
         };
     };
@@ -2839,11 +6879,72 @@ export interface operations {
             };
         };
         responses: {
+            /** @description 请求成功 */
             201: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["ApiResponseEnvelopeDto"] & {
+                        data: components["schemas"]["DeptResponseDto"];
+                    };
+                };
+            };
+            /** @description 请求参数错误 */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 400 */
+                        code?: unknown;
+                        /** @example 请求参数错误 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 未认证或认证已失效 */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 401 */
+                        code?: unknown;
+                        /** @example 未认证或认证已失效 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 无权访问该资源 */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 403 */
+                        code?: unknown;
+                        /** @example 无权访问该资源 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 服务器内部错误 */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 500 */
+                        code?: unknown;
+                        /** @example 服务器内部错误 */
+                        message?: unknown;
+                    };
+                };
             };
         };
     };
@@ -2858,11 +6959,72 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
+            /** @description 请求成功 */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["ApiResponseEnvelopeDto"] & {
+                        data: components["schemas"]["SuccessResponseDto"];
+                    };
+                };
+            };
+            /** @description 请求参数错误 */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 400 */
+                        code?: unknown;
+                        /** @example 请求参数错误 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 未认证或认证已失效 */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 401 */
+                        code?: unknown;
+                        /** @example 未认证或认证已失效 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 无权访问该资源 */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 403 */
+                        code?: unknown;
+                        /** @example 无权访问该资源 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 服务器内部错误 */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 500 */
+                        code?: unknown;
+                        /** @example 服务器内部错误 */
+                        message?: unknown;
+                    };
+                };
             };
         };
     };
@@ -2881,11 +7043,86 @@ export interface operations {
             };
         };
         responses: {
+            /** @description 请求成功 */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["ApiResponseEnvelopeDto"] & {
+                        data: components["schemas"]["DeptResponseDto"];
+                    };
+                };
+            };
+            /** @description 请求参数错误 */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 400 */
+                        code?: unknown;
+                        /** @example 请求参数错误 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 未认证或认证已失效 */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 401 */
+                        code?: unknown;
+                        /** @example 未认证或认证已失效 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 无权访问该资源 */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 403 */
+                        code?: unknown;
+                        /** @example 无权访问该资源 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 请求的资源不存在 */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 404 */
+                        code?: unknown;
+                        /** @example 请求的资源不存在 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 服务器内部错误 */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 500 */
+                        code?: unknown;
+                        /** @example 服务器内部错误 */
+                        message?: unknown;
+                    };
+                };
             };
         };
     };
@@ -3908,11 +8145,56 @@ export interface operations {
             };
         };
         responses: {
+            /** @description 请求成功 */
             201: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["AlipayWapPaymentResponseDto"];
+                };
+            };
+            /** @description 请求参数错误 */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 400 */
+                        code?: unknown;
+                        /** @example 请求参数错误 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 未认证或认证已失效 */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 401 */
+                        code?: unknown;
+                        /** @example 未认证或认证已失效 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 服务器内部错误 */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 500 */
+                        code?: unknown;
+                        /** @example 服务器内部错误 */
+                        message?: unknown;
+                    };
+                };
             };
         };
     };
@@ -3929,12 +8211,69 @@ export interface operations {
             };
         };
         responses: {
+            /** @description 请求成功 */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["ResumeAlipayWapPaymentResponseDto"];
+                    "application/json": components["schemas"]["AlipayWapPaymentResponseDto"];
+                };
+            };
+            /** @description 请求参数错误 */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 400 */
+                        code?: unknown;
+                        /** @example 请求参数错误 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 未认证或认证已失效 */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 401 */
+                        code?: unknown;
+                        /** @example 未认证或认证已失效 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 请求的资源不存在 */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 404 */
+                        code?: unknown;
+                        /** @example 请求的资源不存在 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 服务器内部错误 */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 500 */
+                        code?: unknown;
+                        /** @example 服务器内部错误 */
+                        message?: unknown;
+                    };
                 };
             };
         };
@@ -3952,11 +8291,56 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
+            /** @description 请求成功 */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PaymentOrderSummaryResponseDto"];
+                };
+            };
+            /** @description 未认证或认证已失效 */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 401 */
+                        code?: unknown;
+                        /** @example 未认证或认证已失效 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 请求的资源不存在 */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 404 */
+                        code?: unknown;
+                        /** @example 请求的资源不存在 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 服务器内部错误 */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 500 */
+                        code?: unknown;
+                        /** @example 服务器内部错误 */
+                        message?: unknown;
+                    };
+                };
             };
         };
     };
@@ -3975,11 +8359,84 @@ export interface operations {
             };
         };
         responses: {
+            /** @description 请求成功 */
             201: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PaymentOrderSummaryResponseDto"];
+                };
+            };
+            /** @description 请求参数错误 */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 400 */
+                        code?: unknown;
+                        /** @example 请求参数错误 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 未认证或认证已失效 */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 401 */
+                        code?: unknown;
+                        /** @example 未认证或认证已失效 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 请求的资源不存在 */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 404 */
+                        code?: unknown;
+                        /** @example 请求的资源不存在 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 资源状态冲突 */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 409 */
+                        code?: unknown;
+                        /** @example 资源状态冲突 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 服务器内部错误 */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 500 */
+                        code?: unknown;
+                        /** @example 服务器内部错误 */
+                        message?: unknown;
+                    };
+                };
             };
         };
     };
@@ -3992,11 +8449,28 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
+            /** @description 处理结果 */
             201: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": "success" | "failure";
+                };
+            };
+            /** @description 服务器内部错误 */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 500 */
+                        code?: unknown;
+                        /** @example 服务器内部错误 */
+                        message?: unknown;
+                    };
+                };
             };
         };
     };
@@ -4011,11 +8485,392 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
+            /** @description 请求成功 */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PaymentOrdersResponseDto"];
+                };
+            };
+            /** @description 未认证或认证已失效 */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 401 */
+                        code?: unknown;
+                        /** @example 未认证或认证已失效 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 服务器内部错误 */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 500 */
+                        code?: unknown;
+                        /** @example 服务器内部错误 */
+                        message?: unknown;
+                    };
+                };
+            };
+        };
+    };
+    MerchantOnboardingController_listApplications: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description 请求成功 */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResponseEnvelopeDto"] & {
+                        data: components["schemas"]["MerchantApplicationResponseDto"][];
+                    };
+                };
+            };
+            /** @description 请求参数错误 */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 400 */
+                        code?: unknown;
+                        /** @example 请求参数错误 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 未认证或认证已失效 */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 401 */
+                        code?: unknown;
+                        /** @example 未认证或认证已失效 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 无权访问该资源 */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 403 */
+                        code?: unknown;
+                        /** @example 无权访问该资源 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 服务器内部错误 */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 500 */
+                        code?: unknown;
+                        /** @example 服务器内部错误 */
+                        message?: unknown;
+                    };
+                };
+            };
+        };
+    };
+    MerchantOnboardingController_getApplicationDetail: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description 请求成功 */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResponseEnvelopeDto"] & {
+                        data: components["schemas"]["MerchantApplicationResponseDto"];
+                    };
+                };
+            };
+            /** @description 未认证或认证已失效 */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 401 */
+                        code?: unknown;
+                        /** @example 未认证或认证已失效 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 无权访问该资源 */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 403 */
+                        code?: unknown;
+                        /** @example 无权访问该资源 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 请求的资源不存在 */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 404 */
+                        code?: unknown;
+                        /** @example 请求的资源不存在 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 服务器内部错误 */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 500 */
+                        code?: unknown;
+                        /** @example 服务器内部错误 */
+                        message?: unknown;
+                    };
+                };
+            };
+        };
+    };
+    MerchantOnboardingController_reviewApplication: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReviewMerchantApplicationDto"];
+            };
+        };
+        responses: {
+            /** @description 请求成功 */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResponseEnvelopeDto"] & {
+                        data: components["schemas"]["MerchantApplicationResponseDto"];
+                    };
+                };
+            };
+            /** @description 请求参数错误 */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 400 */
+                        code?: unknown;
+                        /** @example 请求参数错误 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 未认证或认证已失效 */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 401 */
+                        code?: unknown;
+                        /** @example 未认证或认证已失效 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 无权访问该资源 */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 403 */
+                        code?: unknown;
+                        /** @example 无权访问该资源 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 请求的资源不存在 */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 404 */
+                        code?: unknown;
+                        /** @example 请求的资源不存在 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 资源状态冲突 */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 409 */
+                        code?: unknown;
+                        /** @example 资源状态冲突 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 服务器内部错误 */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 500 */
+                        code?: unknown;
+                        /** @example 服务器内部错误 */
+                        message?: unknown;
+                    };
+                };
+            };
+        };
+    };
+    MerchantOnboardingController_getApplicationActionLogs: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description 请求成功 */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResponseEnvelopeDto"] & {
+                        data: components["schemas"]["MerchantApplicationActionLogResponseDto"][];
+                    };
+                };
+            };
+            /** @description 未认证或认证已失效 */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 401 */
+                        code?: unknown;
+                        /** @example 未认证或认证已失效 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 无权访问该资源 */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 403 */
+                        code?: unknown;
+                        /** @example 无权访问该资源 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 请求的资源不存在 */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 404 */
+                        code?: unknown;
+                        /** @example 请求的资源不存在 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 服务器内部错误 */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 500 */
+                        code?: unknown;
+                        /** @example 服务器内部错误 */
+                        message?: unknown;
+                    };
+                };
             };
         };
     };
