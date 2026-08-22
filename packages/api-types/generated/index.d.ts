@@ -3071,6 +3071,81 @@ export interface components {
             /** @description 状态：1启用 0停用 */
             status?: number;
         };
+        AdminOrderSummaryDto: {
+            /** @example 1 */
+            id: number;
+            /** @example ELMDEMO202606020001 */
+            orderNo: string;
+            /** @example 42 */
+            userId: string;
+            /** @example 1 */
+            shopId: string | null;
+            /** @example Demo Shop */
+            shopName: string;
+            /**
+             * @example PAID
+             * @enum {string}
+             */
+            status: "PENDING" | "PAID" | "CLOSED";
+            /** @example TRADE_SUCCESS */
+            tradeStatus: string;
+            /**
+             * @example AWAITING_ACCEPTANCE
+             * @enum {string}
+             */
+            fulfillmentStatus: "PENDING_PAYMENT" | "AWAITING_ACCEPTANCE" | "ACCEPTED" | "PREPARING" | "DELIVERING" | "COMPLETED" | "CANCELED";
+            /**
+             * @example NONE
+             * @enum {string}
+             */
+            refundStatus: "NONE" | "REQUESTED" | "APPROVED" | "REJECTED";
+            /** @enum {string|null} */
+            refundBaseFulfillmentStatus: "PENDING_PAYMENT" | "AWAITING_ACCEPTANCE" | "ACCEPTED" | "PREPARING" | "DELIVERING" | "COMPLETED" | "CANCELED" | null;
+            refundReason: string | null;
+            refundRejectReason: string | null;
+            tradeNo: string | null;
+            /** @example 29 */
+            payableAmount: number;
+            /** @example 24 */
+            goodsAmount: number;
+            /** @example 5 */
+            deliveryFee: number;
+            cartItems: {
+                [key: string]: unknown;
+            }[];
+            /** @example 2 */
+            totalQty: number;
+            paidAt: string | null;
+            acceptedAt: string | null;
+            preparingAt: string | null;
+            deliveringAt: string | null;
+            completedAt: string | null;
+            canceledAt: string | null;
+            refundRequestedAt: string | null;
+            refundedAt: string | null;
+            refundRejectedAt: string | null;
+            /**
+             * Format: date-time
+             * @example 2026-06-02T09:55:00.000Z
+             */
+            createdAt: string;
+            /**
+             * Format: date-time
+             * @example 2026-06-02T10:00:00.000Z
+             */
+            updatedAt: string;
+            availableActions: ("ACCEPT" | "START_PREPARING" | "START_DELIVERY" | "COMPLETE" | "APPROVE_REFUND" | "REJECT_REFUND")[];
+            customerAvailableActions: "REQUEST_REFUND"[];
+        };
+        AdminOrderListHttpResponseDto: {
+            /** @example 200 */
+            code: number;
+            /** @example success */
+            message: string;
+            data: components["schemas"]["AdminOrderSummaryDto"][];
+            /** @example 2026-06-08T00:00:00.000Z */
+            timestamp: string;
+        };
         AdminOrderActionLogDto: {
             /** @example 1 */
             id: number;
@@ -7980,11 +8055,14 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
+            /** @description Admin order list response envelope */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["AdminOrderListHttpResponseDto"];
+                };
             };
         };
     };
