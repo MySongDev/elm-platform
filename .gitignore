@@ -69,8 +69,7 @@ apps/server/prisma/*.db-journal
 .worktrees/
 
 # Docs
-docs/learning/
-docs/report-templates/
-docs/reports/
-docs/superpowers/
+docs/*
+!docs/engineering
 apps/*/docs
+reports/

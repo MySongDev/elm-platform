@@ -56,3 +56,4 @@ pids
 /documentation
 
 # Prisma
+src/generated/*
