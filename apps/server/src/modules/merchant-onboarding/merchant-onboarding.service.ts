@@ -1,4 +1,4 @@
-import type { MerchantApplication, MerchantApplicationActionLog, Prisma } from '@prisma/client'
+import type { MerchantApplication, MerchantApplicationActionLog, Prisma } from '../../generated/prisma/client'
 import type {
   ApplicationMaterial,
   MerchantApplicationActor,

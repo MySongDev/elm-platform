@@ -62,7 +62,7 @@ export class CustomerTokenService {
       const used = await this.redis.getObject<{ userId: number }>(this.usedRefreshKey(tokenId))
       if (used?.userId) {
         await this.revokeAll(used.userId)
-        await this.redis.getClient().del(this.usedRefreshKey(tokenId))
+        await this.redis.del(this.usedRefreshKey(tokenId))
       }
       throw new UnauthorizedException('登录状态已失效，请重新登录')
     }
@@ -74,7 +74,7 @@ export class CustomerTokenService {
 
     await this.redis.del(this.refreshKey(tokenId))
     await this.redis.set(this.usedRefreshKey(tokenId), { userId: record.userId }, CUSTOMER_REFRESH_TOKEN_TTL_SECONDS)
-    await this.redis.getClient().srem(this.userRefreshSetKey(record.userId), tokenId)
+    await this.redis.removeFromSet(this.userRefreshSetKey(record.userId), tokenId)
 
     return { userId: record.userId }
   }
@@ -91,22 +91,21 @@ export class CustomerTokenService {
     }
 
     await this.redis.del(this.refreshKey(parsed.tokenId))
-    await this.redis.getClient().srem(this.userRefreshSetKey(record.userId), parsed.tokenId)
+    await this.redis.removeFromSet(this.userRefreshSetKey(record.userId), parsed.tokenId)
     return true
   }
 
   async revokeAll(userId: number) {
-    const client = this.redis.getClient()
     const userKey = this.userRefreshSetKey(userId)
-    const tokenIds = await client.smembers(userKey)
+    const tokenIds = await this.redis.getSetMembers(userKey)
 
     await Promise.all(
       tokenIds.flatMap(tokenId => [
-        client.del(this.refreshKey(tokenId)),
-        client.del(this.usedRefreshKey(tokenId)),
+        this.redis.del(this.refreshKey(tokenId)),
+        this.redis.del(this.usedRefreshKey(tokenId)),
       ]),
     )
-    await client.del(userKey)
+    await this.redis.del(userKey)
   }
 
   toProfile(user: CustomerUserLike) {
@@ -137,8 +136,8 @@ export class CustomerTokenService {
       },
       CUSTOMER_REFRESH_TOKEN_TTL_SECONDS,
     )
-    await this.redis.getClient().sadd(userKey, tokenId)
-    await this.redis.getClient().expire(userKey, CUSTOMER_REFRESH_TOKEN_TTL_SECONDS)
+    await this.redis.addToSet(userKey, tokenId)
+    await this.redis.expire(userKey, CUSTOMER_REFRESH_TOKEN_TTL_SECONDS)
 
     return refreshToken
   }

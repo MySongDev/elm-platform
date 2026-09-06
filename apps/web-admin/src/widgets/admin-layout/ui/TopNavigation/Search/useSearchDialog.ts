@@ -1,13 +1,14 @@
 import type { Ref } from 'vue'
-import type { SearchDisplayItem, SearchHistoryItem } from './types'
-import type { FlatRoute } from '@/shared/lib/menu'
+import type { FlatRoute } from './lib/flatten-menu'
+import type { SearchDisplayItem } from './types'
 import { useLocalStorage } from '@vueuse/core'
 import { computed, nextTick, onMounted, onUnmounted, shallowRef, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/entities/session'
 import { transformI18n } from '@/shared/i18n'
-import { flattenRoutes } from '@/shared/lib/menu'
+import { flattenRoutes } from './lib/flatten-menu'
+import { isSearchHistoryItem } from './types'
 
 const HISTORY_KEY = 'elm-admin-search-history'
 const MAX_HISTORY = 8
@@ -21,10 +22,6 @@ function createNextHistory(history: readonly string[], keyword: string): string[
     value,
     ...history.filter(item => item !== value),
   ].slice(0, MAX_HISTORY)
-}
-
-function isHistoryItem(item: SearchDisplayItem): item is SearchHistoryItem {
-  return 'isHistory' in item && item.isHistory
 }
 
 export function useSearchDialog(inputRef: Ref<HTMLInputElement | null>) {
@@ -77,7 +74,7 @@ export function useSearchDialog(inputRef: Ref<HTMLInputElement | null>) {
     if (!item)
       return
 
-    if (isHistoryItem(item)) {
+    if (isSearchHistoryItem(item)) {
       keyword.value = item.title
       activeIndex.value = 0
       return

@@ -3,12 +3,10 @@
  * @domain app/router
  * @description 有副作用：页面刷新后加载用户信息和后端菜单，构建并注册动态路由。
  */
-
 import type { Router } from 'vue-router'
 import { useAuthStore } from '@/entities/session'
 import { LOGIN_PATH, SERVER_ERROR_PATH } from '@/shared/config/paths'
-import { buildRoutes } from '../build-routes'
-import { registerDynamicRoutes, resetDynamicRoutes } from '../dynamic-routes'
+import { buildRoutes, registerDynamicRoutes, resetDynamicRoutes } from '../permission'
 
 export function setupDynamicRouteGuard(router: Router) {
   router.beforeEach(async (to) => {
@@ -33,9 +31,10 @@ export function setupDynamicRouteGuard(router: Router) {
 
       if (!authStore.routesLoaded) {
         const menus = await authStore.loadUserMenus()
+        // 构建路由并标记已加载，避免重复请求
         const routes = buildRoutes(menus)
         authStore.setMenuRoutes(routes)
-        registerDynamicRoutes(router, routes)
+        registerDynamicRoutes(router, menus)
         return {
           path: to.fullPath,
           replace: true,

@@ -1,5 +1,5 @@
 <script setup>
-import { computed, ref, watch } from 'vue'
+import { computed, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import BackTop from '@/components/common/BackTop/BackTop.vue'
 
@@ -67,22 +67,22 @@ function onScrollCategory(id) {
   activeCategoryId.value = Number(id)
 }
 
-watch(
-  shopData,
-  (shop) => {
-    if (!shop || !shopId.value)
-      return
+// watch(
+//   shopData,
+//   (shop) => {
+//     if (!shop || !shopId.value)
+//       return
 
-    setShopMeta({
-      shopName: shop.name,
-      deliveryFee: shop.float_delivery_fee || 0,
-      minAmount: shop.float_minimum_order_amount || 20,
-      deliveryTime: shop.order_lead_time ? `${shop.order_lead_time}分钟` : '',
-      distance: shop.distance,
-    })
-  },
-  { immediate: true },
-)
+//     setShopMeta({
+//       shopName: shop.name,
+//       deliveryFee: shop.float_delivery_fee || 0,
+//       minAmount: shop.float_minimum_order_amount || 20,
+//       deliveryTime: shop.order_lead_time ? `${shop.order_lead_time}分钟` : '',
+//       distance: shop.distance,
+//     })
+//   },
+//   { immediate: true },
+// )
 </script>
 
 <template>

@@ -1,4 +1,5 @@
-import { describe, expect, it, vi } from 'vitest'
+import { ElMessage, ElMessageBox } from 'element-plus'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { effectScope, nextTick } from 'vue'
 import { useConfigCrud } from '../useConfigCrud'
 
@@ -10,6 +11,10 @@ vi.mock('element-plus', () => ({
     confirm: vi.fn(() => Promise.resolve()),
   },
 }))
+
+beforeEach(() => {
+  vi.clearAllMocks()
+})
 
 interface Row {
   id: number
@@ -54,14 +59,10 @@ function runInScope<T>(factory: () => T) {
   }
 }
 
-describe('useConfigCrud feedback adapter', () => {
-  it('uses injected feedback for save success instead of importing UI side effects', async () => {
-    const notifySaveSuccess = vi.fn()
+describe('useConfigCrud', () => {
+  it('shows an Element Plus success message after saving', async () => {
     const options = createCrudOptions({
       saveSuccessMessage: '保存好了',
-      feedback: {
-        notifySaveSuccess,
-      },
     })
 
     const { result: crud, dispose } = runInScope(() => useConfigCrud<Row, Query, FormState>(options))
@@ -72,7 +73,7 @@ describe('useConfigCrud feedback adapter', () => {
       await crud.submitForm()
 
       expect(options.createItem).toHaveBeenCalledWith(crud.form)
-      expect(notifySaveSuccess).toHaveBeenCalledWith('保存好了')
+      expect(ElMessage.success).toHaveBeenCalledWith('保存好了')
     }
     finally {
       dispose()
@@ -80,12 +81,8 @@ describe('useConfigCrud feedback adapter', () => {
   })
 
   it('resolves save success messages from the current save mode', async () => {
-    const notifySaveSuccess = vi.fn()
     const options = createCrudOptions({
       saveSuccessMessage: ({ isEdit }) => isEdit ? '更新好了' : '创建好了',
-      feedback: {
-        notifySaveSuccess,
-      },
     })
 
     const { result: crud, dispose } = runInScope(() => useConfigCrud<Row, Query, FormState>(options))
@@ -95,7 +92,7 @@ describe('useConfigCrud feedback adapter', () => {
       await crud.submitForm()
 
       expect(options.createItem).toHaveBeenCalledWith(crud.form)
-      expect(notifySaveSuccess).toHaveBeenLastCalledWith('创建好了')
+      expect(ElMessage.success).toHaveBeenLastCalledWith('创建好了')
 
       crud.openEditDialog({
         id: 1,
@@ -104,22 +101,16 @@ describe('useConfigCrud feedback adapter', () => {
       await crud.submitForm()
 
       expect(options.updateItem).toHaveBeenCalledWith(1, crud.form)
-      expect(notifySaveSuccess).toHaveBeenLastCalledWith('更新好了')
+      expect(ElMessage.success).toHaveBeenLastCalledWith('更新好了')
     }
     finally {
       dispose()
     }
   })
 
-  it('lets injected feedback cancel delete before the delete action runs', async () => {
-    const confirmDelete = vi.fn().mockResolvedValue(false)
-    const notifyDeleteSuccess = vi.fn()
-    const options = createCrudOptions({
-      feedback: {
-        confirmDelete,
-        notifyDeleteSuccess,
-      },
-    })
+  it('skips the delete action when the confirmation is canceled', async () => {
+    vi.mocked(ElMessageBox.confirm).mockRejectedValueOnce(new Error('canceled'))
+    const options = createCrudOptions()
 
     const { result: crud, dispose } = runInScope(() => useConfigCrud<Row, Query, FormState>(options))
 
@@ -130,9 +121,9 @@ describe('useConfigCrud feedback adapter', () => {
       })
       await nextTick()
 
-      expect(confirmDelete).toHaveBeenCalledWith('删除 Alice?')
+      expect(ElMessageBox.confirm).toHaveBeenCalledWith('删除 Alice?', '提示', { type: 'warning' })
       expect(options.deleteItem).not.toHaveBeenCalled()
-      expect(notifyDeleteSuccess).not.toHaveBeenCalled()
+      expect(ElMessage.success).not.toHaveBeenCalled()
     }
     finally {
       dispose()
@@ -165,6 +156,73 @@ describe('useConfigCrud feedback adapter', () => {
         id: 1,
         name: 'Alice',
       }])
+    }
+    finally {
+      dispose()
+    }
+  })
+
+  it('fetchRows always calls fetchList without pagination parameters', async () => {
+    const options = createCrudOptions({
+      fetchList: vi.fn()
+        .mockResolvedValue([{
+          id: 1,
+          name: 'Alice',
+        }]),
+    })
+
+    const { result: crud, dispose } = runInScope(() => useConfigCrud<Row, Query, FormState>(options))
+
+    try {
+      await crud.fetchRows()
+
+      expect(options.fetchList).toHaveBeenCalledTimes(1)
+      expect(options.fetchList).toHaveBeenCalledWith()
+    }
+    finally {
+      dispose()
+    }
+  })
+
+  it('openCreateDialog applies the seed on top of a reset form without losing edit state', async () => {
+    const options = createCrudOptions()
+
+    const { result: crud, dispose } = runInScope(() => useConfigCrud<Row, Query, FormState>(options))
+
+    try {
+      crud.openEditDialog({
+        id: 1,
+        name: 'Alice',
+      })
+      expect(crud.isEdit.value).toBe(true)
+
+      crud.openCreateDialog({ name: 'Bob' })
+
+      expect(crud.dialogVisible.value).toBe(true)
+      expect(crud.isEdit.value).toBe(false)
+      expect(crud.form.name).toBe('Bob')
+      expect(crud.form.id).toBe(0)
+    }
+    finally {
+      dispose()
+    }
+  })
+
+  it('openCreateDialog without a seed resets the form to defaults', async () => {
+    const options = createCrudOptions()
+
+    const { result: crud, dispose } = runInScope(() => useConfigCrud<Row, Query, FormState>(options))
+
+    try {
+      crud.openEditDialog({
+        id: 1,
+        name: 'Alice',
+      })
+      crud.openCreateDialog()
+
+      expect(crud.dialogVisible.value).toBe(true)
+      expect(crud.isEdit.value).toBe(false)
+      expect(crud.form.name).toBe('')
     }
     finally {
       dispose()

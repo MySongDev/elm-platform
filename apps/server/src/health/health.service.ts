@@ -51,7 +51,7 @@ export class HealthService {
     detail: string
   }> {
     try {
-      const pong = await this.redis.getClient().ping()
+      const pong = await this.redis.ping()
       return {
         status: 'ok',
         detail: `PING ${pong}`,

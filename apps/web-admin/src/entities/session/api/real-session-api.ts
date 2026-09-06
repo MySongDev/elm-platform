@@ -12,6 +12,7 @@ import request from '@/shared/api/request'
 
 export const realSessionApi: SessionApi = {
   login: credentials => request.post<LoginResult>(authEndpoints.login, credentials),
+  logout: () => request.post<void>(authEndpoints.logout),
   getCurrentUser: () => request.get<UserInfo>(authEndpoints.profile),
   getUserMenus: () => request.get<UserMenuNode[]>(authEndpoints.menus),
   updateProfile: data => request.patch<UserInfo>(authEndpoints.profile, data),

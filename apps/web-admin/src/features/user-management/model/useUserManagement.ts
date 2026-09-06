@@ -6,7 +6,7 @@
 
 import type { FormRules } from 'element-plus'
 import type { UserFormState } from './payload'
-import type { CreateUserParams, UpdateUserParams, UserInfo, UserListQuery } from '@/entities/user'
+import type { CreateUserParams, UserInfo, UserListQuery } from '@/entities/user'
 import { ElMessage } from 'element-plus'
 import { getButtonPermissions } from '@/entities/permission'
 import { useAuthStore } from '@/entities/session'
@@ -14,7 +14,7 @@ import { getTenantList } from '@/entities/tenant'
 import { createUser, deleteUser, getUserList, updateUser } from '@/entities/user'
 import { adminEndpoints } from '@/shared/api/endpoints'
 import request from '@/shared/api/request'
-import { createElementPlusCrudFeedback, useConfigCrud } from '@/shared/config-crud'
+import { useConfigCrud } from '@/shared/config-crud'
 import { toUserPayload } from './payload'
 
 export type { UserFormState } from './payload'
@@ -53,7 +53,7 @@ export function useUserManagement() {
     value: string
   }[]>([])
 
-  const crud = useConfigCrud<UserInfo, UserListQuery, UserFormState, CreateUserParams | UpdateUserParams, number>({
+  const crud = useConfigCrud<UserInfo, UserListQuery, UserFormState, number>({
     getDefaultQuery: () => ({
       username: '',
       role: '' as UserListQuery['role'],
@@ -107,7 +107,6 @@ export function useUserManagement() {
     deleteConfirm: row => t('user.deleteConfirm', { name: row.username }),
     saveSuccessMessage: ({ isEdit }) => t(isEdit ? 'user.updateSuccess' : 'user.createSuccess'),
     deleteSuccessMessage: t('user.deleteSuccess'),
-    feedback: createElementPlusCrudFeedback(),
   })
 
   const rules = computed<FormRules>(() => ({

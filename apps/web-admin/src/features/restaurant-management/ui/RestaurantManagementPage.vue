@@ -79,7 +79,7 @@ onMounted(fetchRows)
           v-auth="Permissions.COMMERCE_RESTAURANT_ADD"
           type="primary"
           :icon="IconEpPlus"
-          @click="openCreateDialog"
+          @click="openCreateDialog()"
         >
           {{ t('commerce.restaurant.add') }}
         </el-button>

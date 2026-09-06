@@ -65,6 +65,7 @@ export default defineConfig(({ command, mode }) => {
         filename: 'stats.html',
       }),
     ].filter(Boolean),
+    // css预处理，可以在所有css样式中添加公共样式
     css: {
       preprocessorOptions: createScssOptions({
         mixinsPath: '@/shared/styles/_mixins.scss',
@@ -73,22 +74,6 @@ export default defineConfig(({ command, mode }) => {
     },
     resolve: {
       alias: createSrcAlias(import.meta.url),
-    },
-    optimizeDeps: {
-      include: [
-        '@vueuse/core',
-        'axios',
-        'element-plus',
-        'element-plus/es/locale/lang/en',
-        'element-plus/es/locale/lang/zh-cn',
-        'mitt',
-        'nprogress',
-        'pinia',
-        'pinia-plugin-persistedstate',
-        'vue',
-        'vue-i18n',
-        'vue-router',
-      ],
     },
   }
 })

@@ -1,163 +1,28 @@
 import { defineStore } from 'pinia'
-import { computed, ref, watch } from 'vue'
+import { computed, ref } from 'vue'
 
-import { getImageUrl } from '@/config'
-import { getStore, removeStore, setStore } from '@/utils/storage/storage'
+import { createProductId, normalizeStore, productFromFood, toNumber, toText } from '@/utils/cart'
 
-const CART_STORAGE_KEY = 'elm_cart_store_v1'
-const CART_PENDING_CHECKOUT_KEY = 'elm_cart_pending_checkout_v1'
-const LEGACY_SHOP_CART_PREFIX = 'shop_cart_'
+import { getStore } from '@/utils/storage/storage'
+
+// v1 遗留数据源：仅用于首次迁移到 v2（见下方 persist 配置），不再写入
+// const LEGACY_CART_STORAGE_KEY = 'elm_cart_store_v1'
+const LEGACY_PENDING_CHECKOUT_KEY = 'elm_cart_pending_checkout_v1'
 const CART_CHECKOUT_SHOP_ID = 'cart-checkout'
 
-function toText(value, fallback = '') {
-  if (value === null || value === undefined)
-    return fallback
+// v2 无数据时以 v1 为初始值，首次持久化自动迁移
+// function loadStores() {
+//   const savedStores = getStore(LEGACY_CART_STORAGE_KEY)
+//   if (Array.isArray(savedStores))
+//     return savedStores.map(normalizeStore).filter(store => store.id && store.products.length)
 
-  return String(value)
-}
-
-function toNumber(value, fallback = 0) {
-  const numberValue = Number(value)
-  return Number.isFinite(numberValue) ? numberValue : fallback
-}
-
-function getCurrentSpec(food, specIndex = 0) {
-  return food?.specfoods?.[specIndex] || food?.specfoods?.[0] || {}
-}
-
-function getSpecLabel(spec = {}) {
-  if (spec.specs_name)
-    return spec.specs_name
-
-  const labels = (spec.specs || [])
-    .map(item => item?.value)
-    .filter(Boolean)
-
-  return labels.join(' / ')
-}
-
-function createProductId(shopId, food, specIndex = 0) {
-  const spec = getCurrentSpec(food, specIndex)
-  const skuId = spec.sku_id || spec.food_id || spec.item_id || specIndex
-  return `${shopId}-${food?.item_id || food?._id || food?.name}-${skuId}`
-}
-
-function normalizeProduct(product = {}) {
-  const quantity = Math.max(1, toNumber(product.quantity ?? product.qty, 1))
-  const price = toNumber(product.price ?? product.unitPrice, 0)
-
-  return {
-    id: toText(product.id || product.productId || product.itemId || product.skuId),
-    itemId: toText(product.itemId || product.food?.item_id || product.id),
-    skuId: toText(product.skuId || product.id),
-    name: toText(product.name || product.title || product.food?.name, '商品'),
-    spec: toText(product.spec),
-    image: toText(product.image || getImageUrl(product.food?.image_path)),
-    price,
-    originPrice: toNumber(product.originPrice || product.originalPrice, 0),
-    quantity,
-    selected: Boolean(product.selected),
-    tag: toText(product.tag),
-    specIndex: toNumber(product.specIndex, 0),
-    food: product.food || null,
-  }
-}
-
-function normalizeStore(store = {}) {
-  const id = toText(store.id || store.shopId)
-  const products = Array.isArray(store.products)
-    ? store.products.map(normalizeProduct).filter(product => product.id && product.price > 0)
-    : []
-
-  return {
-    id,
-    name: toText(store.name || store.shopName, '当前商家'),
-    deliveryFee: toNumber(store.deliveryFee, 0),
-    minAmount: toNumber(store.minAmount, 20),
-    deliveryTime: toText(store.deliveryTime),
-    distance: toText(store.distance),
-    reserveText: toText(store.reserveText),
-    deliveryText: toText(store.deliveryText),
-    products,
-  }
-}
-
-function productFromFood(shopId, food, specIndex = 0, selected = false) {
-  const spec = getCurrentSpec(food, specIndex)
-  const specLabel = getSpecLabel(spec)
-
-  return normalizeProduct({
-    id: createProductId(shopId, food, specIndex),
-    itemId: food?.item_id || food?._id,
-    skuId: spec.sku_id || spec.food_id || food?.item_id,
-    name: food?.name,
-    spec: specLabel ? `规格:${specLabel}` : '',
-    image: getImageUrl(food?.image_path),
-    price: spec.price,
-    originPrice: spec.original_price,
-    quantity: 1,
-    selected,
-    tag: food?.attributes?.[0]?.icon_name || '',
-    specIndex,
-    food,
-  })
-}
-
-function loadLegacyStores() {
-  if (typeof window === 'undefined')
-    return []
-
-  const stores = []
-
-  for (let index = 0; index < window.localStorage.length; index += 1) {
-    const key = window.localStorage.key(index)
-    if (!key?.startsWith(LEGACY_SHOP_CART_PREFIX))
-      continue
-
-    try {
-      const shopId = key.replace(LEGACY_SHOP_CART_PREFIX, '')
-      const value = JSON.parse(window.localStorage.getItem(key) || '{}')
-      const products = (value.items || [])
-        .map(([, item]) => {
-          const product = productFromFood(shopId, item.food, item.specIndex || 0, false)
-          product.quantity = Math.max(1, toNumber(item.qty, 1))
-          return product
-        })
-        .filter(product => product.id && product.price > 0)
-
-      if (products.length) {
-        stores.push(normalizeStore({
-          id: shopId,
-          name: `商家 ${shopId}`,
-          products,
-        }))
-      }
-    }
-    catch {
-    }
-  }
-
-  return stores
-}
-
-function loadStores() {
-  const savedStores = getStore(CART_STORAGE_KEY)
-  if (Array.isArray(savedStores))
-    return savedStores.map(normalizeStore).filter(store => store.id && store.products.length)
-
-  return loadLegacyStores()
-}
-
-function cloneStores(stores) {
-  return stores.map(store => ({
-    ...store,
-    products: store.products.map(product => ({ ...product })),
-  }))
-}
+//   return []
+// }
 
 export const useCartStore = defineStore('cart', () => {
-  const stores = ref(loadStores())
-  const pendingCheckout = ref(getStore(CART_PENDING_CHECKOUT_KEY) || null)
+  const stores = ref([])
+  const pendingCheckout = ref(getStore(LEGACY_PENDING_CHECKOUT_KEY) || null)
+  const pendingMeta = new Map()
 
   const products = computed(() => stores.value.flatMap(store => store.products))
   const totalCount = computed(() => products.value.length)
@@ -191,17 +56,6 @@ export const useCartStore = defineStore('cart', () => {
         }))
     })
   })
-
-  function persist() {
-    setStore(CART_STORAGE_KEY, cloneStores(stores.value))
-  }
-
-  function persistPendingCheckout() {
-    if (pendingCheckout.value)
-      setStore(CART_PENDING_CHECKOUT_KEY, pendingCheckout.value)
-    else
-      removeStore(CART_PENDING_CHECKOUT_KEY)
-  }
 
   function findStore(shopId) {
     return stores.value.find(store => String(store.id) === String(shopId))
@@ -253,14 +107,22 @@ export const useCartStore = defineStore('cart', () => {
     if (!shopId)
       return
 
-    ensureStore(shopId, meta)
+    pendingMeta.set(shopId, {
+      ...pendingMeta.get(shopId),
+      ...meta,
+    })
   }
 
   function addShopFood(shopId, food, specIndex = 0, meta = {}) {
     if (!shopId || !food)
       return
 
-    const store = ensureStore(shopId, meta)
+    const mergedMeta = {
+      ...pendingMeta.get(shopId),
+      ...meta,
+    }
+    const store = ensureStore(shopId, mergedMeta)
+    pendingMeta.delete(shopId)
     const normalizedSpecIndex = toNumber(specIndex, 0)
     const productId = createProductId(shopId, food, normalizedSpecIndex)
     const existing = store.products.find(product => product.id === productId)
@@ -416,9 +278,6 @@ export const useCartStore = defineStore('cart', () => {
     pendingCheckout.value = null
   }
 
-  watch(stores, persist, { deep: true })
-  watch(pendingCheckout, persistPendingCheckout, { deep: true })
-
   return {
     stores,
     products,
@@ -449,4 +308,10 @@ export const useCartStore = defineStore('cart', () => {
     markPendingCheckout,
     consumePaidCheckout,
   }
+}, {
+  persist: {
+    // v1 为数组格式，与插件序列化的对象格式不兼容，必须换 key
+    key: 'elm_cart_store_v2',
+    pick: ['stores', 'pendingCheckout'],
+  },
 })

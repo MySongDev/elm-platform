@@ -59,6 +59,14 @@ describe('session api', () => {
     expect(result).toBe(loginResult)
   })
 
+  it('delegates logout to shared request logout endpoint', async () => {
+    vi.mocked(request.post).mockResolvedValueOnce(undefined)
+
+    await api.logout()
+
+    expect(request.post).toHaveBeenCalledWith(authEndpoints.logout)
+  })
+
   it('delegates getCurrentUser to shared request profile endpoint', async () => {
     const user = {
       id: 1,

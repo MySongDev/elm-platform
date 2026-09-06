@@ -7,7 +7,7 @@
 import type { FormRules } from 'element-plus'
 import type { DeptItem } from '@/entities/department'
 import { createDept, deleteDept, getDepts, updateDept } from '@/entities/department'
-import { createElementPlusCrudFeedback, useConfigCrud } from '@/shared/config-crud'
+import { useConfigCrud } from '@/shared/config-crud'
 import { filterTree, flattenTree } from '@/shared/lib/tree'
 
 interface DeptQuery {
@@ -44,7 +44,7 @@ const defaultForm: DeptFormState = {
 export function useDeptManagement() {
   const { t } = useI18n()
 
-  const crud = useConfigCrud<DeptItem, DeptQuery, DeptFormState, Partial<DeptItem>>({
+  const crud = useConfigCrud<DeptItem, DeptQuery, DeptFormState>({
     getDefaultQuery: () => ({
       name: '',
       status: '',
@@ -74,7 +74,6 @@ export function useDeptManagement() {
     deleteConfirm: row => t('dept.deleteConfirm', { name: row.name }),
     saveSuccessMessage: t('crud.saveSuccess'),
     deleteSuccessMessage: t('crud.deleteSuccess'),
-    feedback: createElementPlusCrudFeedback(),
   })
 
   const rules: FormRules = {
@@ -88,10 +87,7 @@ export function useDeptManagement() {
   const parentOptions = computed(() => flattenTree(crud.tableData.value).filter(item => item.id !== crud.form.id))
 
   function openCreateDialog(parent?: DeptItem) {
-    crud.resetForm()
-    if (parent)
-      crud.form.parentId = parent.id
-    crud.dialogVisible.value = true
+    crud.openCreateDialog(parent ? { parentId: parent.id } : undefined)
   }
 
   return {

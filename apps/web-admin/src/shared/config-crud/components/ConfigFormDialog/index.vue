@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { FormInstance } from 'element-plus'
 import type {
   ActionOptions,
   ConfigFormField,
@@ -6,13 +7,12 @@ import type {
   DialogOptions,
   FormOptions,
 } from '../../model/form'
+import FormFieldRenderer from '@/shared/ui/form/FieldRenderer/index.vue'
 import {
   DEFAULT_ACTION_OPTIONS,
   DEFAULT_DIALOG_OPTIONS,
   DEFAULT_FORM_OPTIONS,
 } from '../../model/form'
-import ConfigFormFields from './ConfigFormFields.vue'
-import CrudFormDialog from './CrudFormDialog.vue'
 
 defineOptions({ name: 'ConfigFormDialog' })
 
@@ -36,6 +36,8 @@ const emit = defineEmits<{
 
 const visible = defineModel<boolean>('visible', { required: true })
 const model = defineModel<ConfigFormModel>('model', { required: true })
+const formRef = ref<FormInstance>()
+const { t } = useI18n()
 
 const dialogOptions = computed<DialogOptions & typeof DEFAULT_DIALOG_OPTIONS>(() => ({
   ...DEFAULT_DIALOG_OPTIONS,
@@ -51,28 +53,72 @@ const actionConfig = computed<ActionOptions & typeof DEFAULT_ACTION_OPTIONS>(() 
   ...DEFAULT_ACTION_OPTIONS,
   ...props.action,
 }))
+
+const visibleFields = computed(() => props.fields.filter(field => !field.showWhen || field.showWhen(model.value)))
+
+const resolvedConfirmText = computed(() => actionConfig.value.confirmText ?? t('crud.save'))
+const resolvedCancelText = computed(() => actionConfig.value.cancelText ?? t('crud.cancel'))
+const resolvedTitle = computed(() => dialogOptions.value.dialogTitle ?? (props.isEdit ? t('crud.editTitle', { title: dialogOptions.value.title }) : t('crud.addTitle', { title: dialogOptions.value.title })))
+
+watch(visible, (value) => {
+  if (value)
+    nextTick(() => formRef.value?.clearValidate())
+})
+
+async function handleSubmit() {
+  const valid = await formRef.value?.validate().catch(() => false)
+  if (valid)
+    emit('submit')
+}
 </script>
 
 <template>
-  <CrudFormDialog
-    v-model:visible="visible"
-    :title="dialogOptions.title"
-    :dialog-title="dialogOptions.dialogTitle"
-    :is-edit="isEdit"
-    :saving="saving"
+  <el-dialog
+    v-model="visible"
+    append-to-body
+    class="crud-form-dialog"
+    body-class="crud-form-dialog__body"
+    top="5vh"
+    :title="resolvedTitle"
     :width="dialogOptions.width"
-    :model="model"
-    :rules="formOptions.rules"
-    :label-width="formOptions.labelWidth"
-    :confirm-text="actionConfig.confirmText"
-    :cancel-text="actionConfig.cancelText"
     :destroy-on-close="dialogOptions.destroyOnClose"
-    @submit="emit('submit')"
   >
-    <ConfigFormFields v-model:model="model" :fields="fields">
-      <template v-for="(_, slotName) in $slots" #[slotName]="slotProps">
-        <slot :name="slotName" v-bind="slotProps" />
-      </template>
-    </ConfigFormFields>
-  </CrudFormDialog>
+    <el-form
+      ref="formRef"
+      :model="model"
+      :rules="formOptions.rules"
+      :label-width="formOptions.labelWidth"
+    >
+      <el-form-item
+        v-for="field in visibleFields"
+        :key="field.prop"
+        :label="field.label"
+        :prop="field.prop"
+      >
+        <FormFieldRenderer v-model="model[field.prop]" :field="field" />
+      </el-form-item>
+    </el-form>
+    <template #footer>
+      <el-button @click="visible = false">
+        {{ resolvedCancelText }}
+      </el-button>
+      <el-button type="primary" :loading="saving" @click="handleSubmit">
+        {{ resolvedConfirmText }}
+      </el-button>
+    </template>
+  </el-dialog>
 </template>
+
+<style lang="scss">
+.crud-form-dialog {
+  display: flex;
+  flex-direction: column;
+  max-height: 90vh;
+  margin-bottom: 0;
+
+  .crud-form-dialog__body {
+    flex: 1;
+    overflow-y: auto;
+  }
+}
+</style>

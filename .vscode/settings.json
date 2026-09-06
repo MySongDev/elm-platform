@@ -8,6 +8,7 @@
   "[vue]": {
     "editor.formatOnSave": false
   },
+  "editor.guides.bracketPairs": "active",
   "stylelint.configFile": "stylelint.config.mjs",
   "stylelint.validate": [
     "css",

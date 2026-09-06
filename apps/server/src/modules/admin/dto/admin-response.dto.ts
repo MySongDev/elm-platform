@@ -383,6 +383,14 @@ export class MenuResponseDto {
   permission: string | null
 
   @ApiProperty({
+    description: '组件路径',
+    nullable: true,
+    type: String,
+    example: 'system/user',
+  })
+  component: string | null
+
+  @ApiProperty({
     description: '菜单类型',
     enum: ['catalog', 'menu', 'button'],
     example: 'menu',

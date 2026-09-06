@@ -1,4 +1,4 @@
-import type { FlatRoute } from '@/shared/lib/menu'
+import type { FlatRoute } from './lib/flatten-menu'
 
 export interface SearchHistoryItem {
   path: ''
@@ -8,3 +8,7 @@ export interface SearchHistoryItem {
 }
 
 export type SearchDisplayItem = FlatRoute | SearchHistoryItem
+
+export function isSearchHistoryItem(item: SearchDisplayItem): item is SearchHistoryItem {
+  return 'isHistory' in item && item.isHistory
+}

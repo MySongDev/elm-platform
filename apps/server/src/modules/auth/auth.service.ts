@@ -1,7 +1,7 @@
 import { ConflictException, Injectable, UnauthorizedException } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
-import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library'
 import * as bcrypt from 'bcryptjs'
+import { Prisma } from '../../generated/prisma/client'
 import { PrismaService } from '../../prisma/prisma.service'
 import { RedisService } from '../../redis/redis.service'
 import { NotificationService } from '../notification/notification.service'
@@ -275,7 +275,7 @@ export class AuthService {
     }
   }
 
-  private async recordOnlineUser(user: any, ip?: string, userAgent?: string, ttlSeconds = DEFAULT_SESSION_TTL_SECONDS) {
+  private async recordOnlineUser(user: any, ip?: string | string[], userAgent?: string, ttlSeconds = DEFAULT_SESSION_TTL_SECONDS) {
     try {
       const { browser, os } = this.parseUserAgent(userAgent)
       await this.redis.set(
@@ -397,7 +397,7 @@ export class AuthService {
       }
     }
     catch (error) {
-      if (error instanceof PrismaClientKnownRequestError && error.code === 'P2002') {
+      if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') {
         throw new ConflictException('用户名已存在')
       }
       throw error

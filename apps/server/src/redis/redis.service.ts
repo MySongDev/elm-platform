@@ -31,10 +31,38 @@ export class RedisService implements OnModuleDestroy {
   }
 
   /**
-   * 获取 Redis 客户端实例
+   * 查找匹配模式的键
    */
-  getClient(): Redis {
-    return this.client
+  async keys(pattern: string): Promise<string[]> {
+    return this.client.keys(pattern)
+  }
+
+  /**
+   * 检查 Redis 连通性
+   */
+  async ping(): Promise<string> {
+    return this.client.ping()
+  }
+
+  /**
+   * 向集合添加成员
+   */
+  async addToSet(key: string, ...members: string[]): Promise<number> {
+    return this.client.sadd(key, ...members)
+  }
+
+  /**
+   * 从集合移除成员
+   */
+  async removeFromSet(key: string, ...members: string[]): Promise<number> {
+    return this.client.srem(key, ...members)
+  }
+
+  /**
+   * 获取集合中的全部成员
+   */
+  async getSetMembers(key: string): Promise<string[]> {
+    return this.client.smembers(key)
   }
 
   /**
@@ -45,7 +73,7 @@ export class RedisService implements OnModuleDestroy {
    */
   async set(key: string, value: string | number | object, ttl?: number): Promise<void> {
     const val = typeof value === 'object' ? JSON.stringify(value) : String(value)
-    if (ttl) {
+    if (ttl !== undefined) {
       await this.client.set(key, val, 'EX', ttl)
     }
     else {

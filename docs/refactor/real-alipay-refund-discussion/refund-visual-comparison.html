@@ -1,0 +1,480 @@
+<title>真实支付宝退款</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+  :root {
+    --ground: #FAFBFC;
+    --surface: #FFFFFF;
+    --surface-sunk: #F1F4F7;
+    --ink: #14202E;
+    --ink-soft: #4A5A6A;
+    --ink-faint: #8494A3;
+    --line: #DCE3EA;
+    --line-strong: #C3CDD7;
+    --accent: #0B6E8F;
+    --accent-soft: #E3F0F4;
+    --good: #1B8F5A;
+    --good-soft: #E2F2EA;
+    --warn: #C67C0B;
+    --warn-soft: #FAEFD8;
+    --bad: #C43D2E;
+    --bad-soft: #FBE7E4;
+    --shadow: 0 1px 2px rgba(20,32,46,.05), 0 8px 24px rgba(20,32,46,.06);
+    --radius: 10px;
+    --maxw: 1080px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ground: #0D141C;
+      --surface: #141F2A;
+      --surface-sunk: #0F1821;
+      --ink: #E6ECF2;
+      --ink-soft: #A6B4C2;
+      --ink-faint: #6D7E8E;
+      --line: #24323F;
+      --line-strong: #33475A;
+      --accent: #46B6D6;
+      --accent-soft: #10333E;
+      --good: #4FBE88;
+      --good-soft: #102C20;
+      --warn: #E0A544;
+      --warn-soft: #2E230F;
+      --bad: #E7695A;
+      --bad-soft: #34160F;
+      --shadow: 0 1px 2px rgba(0,0,0,.3), 0 10px 30px rgba(0,0,0,.35);
+    }
+  }
+  :root[data-theme="dark"] {
+    --ground: #0D141C;
+    --surface: #141F2A;
+    --surface-sunk: #0F1821;
+    --ink: #E6ECF2;
+    --ink-soft: #A6B4C2;
+    --ink-faint: #6D7E8E;
+    --line: #24323F;
+    --line-strong: #33475A;
+    --accent: #46B6D6;
+    --accent-soft: #10333E;
+    --good: #4FBE88;
+    --good-soft: #102C20;
+    --warn: #E0A544;
+    --warn-soft: #2E230F;
+    --bad: #E7695A;
+    --bad-soft: #34160F;
+    --shadow: 0 1px 2px rgba(0,0,0,.3), 0 10px 30px rgba(0,0,0,.35);
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--ground);
+    color: var(--ink);
+    font-family: "IBM Plex Sans", system-ui, sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: var(--maxw); margin: 0 auto; padding: 0 24px; }
+  .narrow { max-width: 720px; }
+
+  h1, h2, h3 { font-family: "Archivo", system-ui, sans-serif; text-wrap: balance; line-height: 1.15; margin: 0; }
+  code, .mono, .amt { font-family: "IBM Plex Mono", ui-monospace, monospace; font-variant-numeric: tabular-nums; }
+  .amt { font-variant-numeric: tabular-nums; }
+
+  /* ---------- Header ---------- */
+  header {
+    border-bottom: 1px solid var(--line);
+    background: linear-gradient(180deg, var(--surface), var(--ground));
+  }
+  .eyebrow {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 12px;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 18px;
+  }
+  header h1 { font-size: clamp(30px, 5vw, 46px); font-weight: 700; letter-spacing: -.02em; }
+  .lede { color: var(--ink-soft); font-size: clamp(16px, 2.2vw, 19px); margin-top: 18px; max-width: 640px; }
+  .header-inner { padding: 64px 0 52px; }
+  .flags { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 28px; }
+  .flag {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 12.5px;
+    padding: 6px 12px;
+    border-radius: 999px;
+    border: 1px solid var(--line-strong);
+    color: var(--ink-soft);
+    background: var(--surface);
+  }
+  .flag b { color: var(--ink); font-weight: 600; }
+
+  /* ---------- Section scaffolding ---------- */
+  section { padding: 56px 0; border-bottom: 1px solid var(--line); }
+  .sec-label {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 12px; letter-spacing: .14em; text-transform: uppercase;
+    color: var(--ink-faint); display: flex; align-items: center; gap: 12px; margin-bottom: 14px;
+  }
+  .sec-label::before { content: ""; width: 22px; height: 1px; background: var(--line-strong); }
+  section h2 { font-size: clamp(22px, 3.4vw, 30px); font-weight: 600; letter-spacing: -.01em; }
+  .sec-intro { color: var(--ink-soft); margin-top: 14px; max-width: 640px; }
+
+  /* ---------- Before / After split ---------- */
+  .split { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 34px; }
+  @media (max-width: 760px) { .split { grid-template-columns: 1fr; } }
+  .panel {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+  .panel-head {
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--line);
+    display: flex; align-items: center; justify-content: space-between; gap: 10px;
+  }
+  .panel-head h3 { font-size: 16px; font-weight: 600; }
+  .panel-body { padding: 20px; }
+  .tag { font-family: "IBM Plex Mono", monospace; font-size: 11.5px; padding: 4px 9px; border-radius: 6px; font-weight: 500; white-space: nowrap; }
+  .tag-now { background: var(--bad-soft); color: var(--bad); }
+  .tag-real { background: var(--good-soft); color: var(--good); }
+
+  .code {
+    background: var(--surface-sunk);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 16px;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 13px;
+    line-height: 1.65;
+    overflow-x: auto;
+    white-space: pre;
+    color: var(--ink-soft);
+    margin: 0;
+  }
+  .code .k { color: var(--accent); }
+  .code .s { color: var(--good); }
+  .code .c { color: var(--ink-faint); font-style: italic; }
+  .code .add { color: var(--bad); font-weight: 600; }
+
+  .note { margin-top: 16px; font-size: 14px; color: var(--ink-soft); display: flex; gap: 10px; }
+  .note .dot { flex: none; width: 8px; height: 8px; border-radius: 50%; margin-top: 8px; }
+  .dot-bad { background: var(--bad); }
+  .dot-good { background: var(--good); }
+
+  /* ---------- Sequence flow ---------- */
+  .flow { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 34px; }
+  @media (max-width: 760px) { .flow { grid-template-columns: 1fr; } }
+  .steps { list-style: none; margin: 18px 0 0; padding: 0; display: flex; flex-direction: column; gap: 0; }
+  .step { display: grid; grid-template-columns: 30px 1fr; gap: 14px; padding: 0 0 20px; position: relative; }
+  .step:not(:last-child)::before {
+    content: ""; position: absolute; left: 14px; top: 28px; bottom: 0; width: 2px; background: var(--line);
+  }
+  .step .num {
+    grid-row: span 2; width: 28px; height: 28px; border-radius: 50%;
+    display: grid; place-items: center; font-family: "IBM Plex Mono", monospace; font-size: 12px; font-weight: 600;
+    background: var(--surface); border: 1.5px solid var(--line-strong); color: var(--ink-soft); z-index: 1;
+  }
+  .step.hl .num { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .step .st { font-weight: 600; font-size: 14.5px; }
+  .step .sd { font-size: 13.5px; color: var(--ink-soft); margin-top: 2px; }
+  .step .sd .mono { font-size: 12.5px; color: var(--accent); }
+
+  /* ---------- UI mockups ---------- */
+  .mocks { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-top: 34px; }
+  @media (max-width: 860px) { .mocks { grid-template-columns: 1fr; } }
+  .mock {
+    background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius);
+    box-shadow: var(--shadow); overflow: hidden; display: flex; flex-direction: column;
+  }
+  .mock-cap {
+    padding: 11px 16px; font-family: "IBM Plex Mono", monospace; font-size: 11.5px; letter-spacing: .04em;
+    text-transform: uppercase; color: var(--ink-faint); border-bottom: 1px solid var(--line); background: var(--surface-sunk);
+  }
+  .mock-screen { padding: 20px 18px; flex: 1; display: flex; flex-direction: column; gap: 14px; }
+  .order-row { display: flex; justify-content: space-between; align-items: baseline; }
+  .order-row .shop { font-weight: 600; font-size: 14px; }
+  .order-row .on { font-family: "IBM Plex Mono", monospace; font-size: 11px; color: var(--ink-faint); }
+  .price { font-family: "IBM Plex Mono", monospace; font-size: 22px; font-weight: 600; letter-spacing: -.01em; }
+  .price .cur { font-size: 13px; color: var(--ink-faint); }
+  .statusline { display: flex; align-items: center; gap: 8px; font-size: 13px; }
+  .pill { font-size: 12px; padding: 3px 10px; border-radius: 999px; font-weight: 500; display: inline-flex; align-items: center; gap: 6px; }
+  .pill-neutral { background: var(--surface-sunk); color: var(--ink-soft); border: 1px solid var(--line); }
+  .pill-warn { background: var(--warn-soft); color: var(--warn); }
+  .pill-good { background: var(--good-soft); color: var(--good); }
+  .pill-bad { background: var(--bad-soft); color: var(--bad); }
+  .pill .spin { width: 10px; height: 10px; border-radius: 50%; border: 2px solid currentColor; border-right-color: transparent; animation: sp .8s linear infinite; }
+  @keyframes sp { to { transform: rotate(360deg); } }
+  @media (prefers-reduced-motion: reduce) { .pill .spin { animation: none; } }
+  .btn { padding: 9px 14px; border-radius: 8px; font-size: 13.5px; font-weight: 600; border: 1px solid transparent; font-family: inherit; text-align: center; }
+  .btn-primary { background: var(--accent); color: #fff; }
+  .btn-retry { background: var(--bad-soft); color: var(--bad); border-color: var(--bad); }
+  .kv { border-top: 1px dashed var(--line-strong); padding-top: 12px; display: flex; flex-direction: column; gap: 7px; }
+  .kv .row { display: flex; justify-content: space-between; font-size: 12.5px; }
+  .kv .row span:first-child { color: var(--ink-faint); }
+  .kv .row span:last-child { font-family: "IBM Plex Mono", monospace; color: var(--ink); }
+  .toast { font-size: 12.5px; padding: 8px 12px; border-radius: 8px; display: flex; gap: 8px; align-items: center; }
+  .toast-good { background: var(--good-soft); color: var(--good); }
+  .toast-bad { background: var(--bad-soft); color: var(--bad); }
+
+  /* ---------- Impact table ---------- */
+  .tablewrap { margin-top: 32px; overflow-x: auto; border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; min-width: 560px; background: var(--surface); }
+  th, td { text-align: left; padding: 13px 16px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  thead th { font-family: "IBM Plex Mono", monospace; font-size: 11.5px; letter-spacing: .06em; text-transform: uppercase; color: var(--ink-faint); font-weight: 500; background: var(--surface-sunk); }
+  tbody tr:last-child td { border-bottom: none; }
+  td .layer { font-weight: 600; }
+  .diff { font-family: "IBM Plex Mono", monospace; font-size: 12px; padding: 3px 8px; border-radius: 6px; white-space: nowrap; }
+  .d-low { background: var(--good-soft); color: var(--good); }
+  .d-mid { background: var(--warn-soft); color: var(--warn); }
+  .d-high { background: var(--bad-soft); color: var(--bad); }
+
+  /* ---------- Callout ---------- */
+  .callout { margin-top: 30px; background: var(--accent-soft); border: 1px solid var(--accent); border-radius: var(--radius); padding: 20px 22px; }
+  .callout h3 { font-size: 15px; color: var(--accent); font-family: "IBM Plex Sans", sans-serif; font-weight: 600; margin-bottom: 8px; }
+  .callout p { margin: 0; font-size: 14px; color: var(--ink-soft); }
+  .callout code { color: var(--accent); background: var(--surface); padding: 1px 6px; border-radius: 4px; font-size: 12.5px; }
+
+  /* ---------- Footer ---------- */
+  footer { padding: 44px 0 60px; color: var(--ink-faint); font-size: 13px; }
+  footer a { color: var(--accent); text-decoration: none; border-bottom: 1px solid var(--line-strong); }
+  footer a:hover { border-bottom-color: var(--accent); }
+  .disclaimer { background: var(--surface-sunk); border: 1px solid var(--line); border-left: 3px solid var(--warn); border-radius: 8px; padding: 14px 18px; font-size: 13.5px; color: var(--ink-soft); margin-top: 20px; }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
+</style>
+
+<header>
+  <div class="wrap header-inner">
+    <div class="eyebrow">订单模块 · 支付宝集成 · 讨论稿</div>
+    <h1>真实支付宝退款：现在长什么样，该长什么样</h1>
+    <p class="lede">当前"同意退款"只改了一行数据库状态，钱其实没退。这份对照展示接入 <code>alipay.trade.refund</code> 之后，后端流程、订单状态、以及管理端 / 用户端界面会发生什么变化。</p>
+    <div class="flags">
+      <span class="flag">当前退款 <b>纯状态流转</b></span>
+      <span class="flag">目标 <b>原路退回真金白银</b></span>
+      <span class="flag">核心接口 <b>alipay.trade.refund</b></span>
+      <span class="flag">本页 <b>不改业务代码</b></span>
+    </div>
+  </div>
+</header>
+
+<!-- 1. 核心差距 -->
+<section>
+  <div class="wrap">
+    <div class="sec-label">对照一 · 后端行为</div>
+    <h2>同一个"同意退款"，两种截然不同的后果</h2>
+    <p class="sec-intro">左边是仓库里现在的真实代码，右边是接入支付宝后的目标形态。差别不在结构，而在中间那几行"真的调了支付宝没有"。</p>
+
+    <div class="split">
+      <div class="panel">
+        <div class="panel-head">
+          <h3>现在 · approveRefund()</h3>
+          <span class="tag tag-now">钱没动</span>
+        </div>
+        <div class="panel-body">
+<pre class="code"><span class="k">async</span> approveRefund(orderNo, operator) {
+  <span class="k">const</span> order = <span class="k">await</span> findOrder(orderNo)
+  assertRefundReviewAllowed(order)
+
+  <span class="k">return</span> prisma.$transaction(<span class="k">async</span> tx => {
+    <span class="c">// 只是把字段改成"已退款"</span>
+    <span class="k">await</span> tx.paymentOrder.update({
+      data: {
+        refundStatus: <span class="s">'APPROVED'</span>,
+        refundedAt: <span class="k">new</span> Date(),
+      },
+    })
+    <span class="k">await</span> tx.orderActionLog.create({ ... })
+  })
+}</pre>
+          <div class="note"><span class="dot dot-bad"></span><div>全程<b>没有一行</b>调用支付宝。数据库写着"已退款"，用户支付宝账户余额纹丝不动。演示够用，真上线即是资损。</div></div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head">
+          <h3>目标 · approveRefund()</h3>
+          <span class="tag tag-real">原路退回</span>
+        </div>
+        <div class="panel-body">
+<pre class="code"><span class="k">async</span> approveRefund(orderNo, operator) {
+  <span class="k">const</span> order = <span class="k">await</span> findOrder(orderNo)
+  assertRefundReviewAllowed(order)
+  <span class="add">if (order.refundStatus === 'APPROVED') return  // 幂等</span>
+
+  <span class="add">// ① 先向支付宝发起真实退款(事务外)</span>
+  <span class="add">const r = await alipay.refund({</span>
+  <span class="add">  outTradeNo: order.orderNo,</span>
+  <span class="add">  refundAmount: order.payableAmount,</span>
+  <span class="add">  outRequestNo: `${order.orderNo}_R1`,</span>
+  <span class="add">})</span>
+  <span class="add">if (r.code !== '10000') throw BadRequest(r.sub_msg)</span>
+
+  <span class="k">return</span> prisma.$transaction(<span class="k">async</span> tx => {
+    <span class="k">await</span> tx.paymentOrder.update({ data: {
+      refundStatus: <span class="s">'APPROVED'</span>, refundedAt: <span class="k">new</span> Date(),
+      <span class="add">refundTradeNo: r.trade_no,  // 新增流水</span>
+    }})
+    <span class="k">await</span> tx.orderActionLog.create({ ... })
+  })
+}</pre>
+          <div class="note"><span class="dot dot-good"></span><div>先调 <code class="mono">alipay.trade.refund</code> 真退钱，成功（<span class="mono">code=10000</span>）才落库，并存下支付宝退款流水号 <span class="mono">trade_no</span>。</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 2. 时序对照 -->
+<section>
+  <div class="wrap">
+    <div class="sec-label">对照二 · 调用时序</div>
+    <h2>点击"同意"之后，发生的事</h2>
+    <p class="sec-intro">当前是一步到位（因为不出网），真实退款多了"出网退钱—等结果—按成败落库"这段，也正是所有复杂度的来源。</p>
+
+    <div class="flow">
+      <div class="panel">
+        <div class="panel-head"><h3>现在</h3><span class="tag tag-now">1 步</span></div>
+        <div class="panel-body">
+          <ol class="steps">
+            <li class="step"><span class="num">1</span><div class="st">改数据库字段</div><div class="sd">refundStatus → <span class="mono">APPROVED</span>，写日志，返回。约 10ms。</div></li>
+          </ol>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head"><h3>目标</h3><span class="tag tag-real">4 步</span></div>
+        <div class="panel-body">
+          <ol class="steps">
+            <li class="step"><span class="num">1</span><div class="st">幂等前置检查</div><div class="sd">已是 APPROVED？直接返回，绝不二次退款。</div></li>
+            <li class="step hl"><span class="num">2</span><div class="st">调支付宝退款（出网）</div><div class="sd"><span class="mono">alipay.trade.refund</span>，携带 <span class="mono">out_request_no</span> 幂等号。约 1–3s。</div></li>
+            <li class="step"><span class="num">3</span><div class="st">按返回码分流</div><div class="sd"><span class="mono">10000</span> → 继续；否则记失败日志并抛错，状态不变。</div></li>
+            <li class="step"><span class="num">4</span><div class="st">短事务落库</div><div class="sd">成功后才写 APPROVED + 退款流水号，与现在同构。</div></li>
+          </ol>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout">
+      <h3>为什么第 2 步要"出事务"</h3>
+      <p>支付宝接口耗时几百毫秒到数秒。若把它裹进 <code>$transaction</code>，数据库连接和行锁会被网络等待占住，高并发下拖垮连接池。正确做法：<b>网络调用在事务外</b>，拿到成功结果后再开一个短事务落库。</p>
+    </div>
+  </div>
+</section>
+
+<!-- 3. UI 样式对照 -->
+<section>
+  <div class="wrap">
+    <div class="sec-label">对照三 · 管理端界面</div>
+    <h2>管理员看到的"同意退款"</h2>
+    <p class="sec-intro">当前点完瞬间变一个绿标签。真实退款因为要等支付宝，界面必须表达"进行中 / 成功带流水 / 失败可重试"三种结果。</p>
+
+    <div class="mocks">
+      <div class="mock">
+        <div class="mock-cap">现在 · 瞬间完成</div>
+        <div class="mock-screen">
+          <div class="order-row"><span class="shop">湘辣馆 · 长沙</span><span class="on">#20260823-8841</span></div>
+          <div class="price"><span class="cur">¥</span>38.00</div>
+          <div class="statusline"><span class="pill pill-good">● 退款已同意</span></div>
+          <div class="kv"><div class="row"><span>退款流水</span><span>—</span></div><div class="row"><span>到账</span><span>无（未真退）</span></div></div>
+        </div>
+      </div>
+
+      <div class="mock">
+        <div class="mock-cap">目标 · 处理中</div>
+        <div class="mock-screen">
+          <div class="order-row"><span class="shop">湘辣馆 · 长沙</span><span class="on">#20260823-8841</span></div>
+          <div class="price"><span class="cur">¥</span>38.00</div>
+          <div class="statusline"><span class="pill pill-warn"><span class="spin"></span> 正在向支付宝发起退款</span></div>
+          <div class="btn btn-primary" style="opacity:.55">处理中…</div>
+        </div>
+      </div>
+
+      <div class="mock">
+        <div class="mock-cap">目标 · 成功 / 失败</div>
+        <div class="mock-screen">
+          <div class="toast toast-good">✓ 退款成功，已原路退回</div>
+          <div class="kv">
+            <div class="row"><span>退款流水</span><span>2013…21536</span></div>
+            <div class="row"><span>实退金额</span><span>¥38.00</span></div>
+            <div class="row"><span>退款时间</span><span>08-23 14:32</span></div>
+          </div>
+          <div class="toast toast-bad">✕ 退款失败：交易已退款</div>
+          <div class="btn btn-retry">重试退款</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 4. 用户端 -->
+<section>
+  <div class="wrap">
+    <div class="sec-label">对照四 · 用户端界面</div>
+    <h2>用户在订单里看到的退款状态</h2>
+    <p class="sec-intro">状态从一个静态标签，细化成一条能追踪"钱到哪了"的进度。</p>
+    <div class="mocks">
+      <div class="mock">
+        <div class="mock-cap">现在</div>
+        <div class="mock-screen">
+          <div class="order-row"><span class="shop">湘辣馆</span><span class="on">已完成</span></div>
+          <div class="statusline"><span class="pill pill-good">退款已同意</span></div>
+          <div class="sd" style="font-size:12.5px;color:var(--ink-faint)">仅一个标签，用户不知道钱到没到。</div>
+        </div>
+      </div>
+      <div class="mock">
+        <div class="mock-cap">目标 · 处理中</div>
+        <div class="mock-screen">
+          <div class="order-row"><span class="shop">湘辣馆</span><span class="on">退款中</span></div>
+          <div class="statusline"><span class="pill pill-warn"><span class="spin"></span> 退款处理中</span></div>
+          <div class="sd" style="font-size:12.5px;color:var(--ink-soft)">支付宝正在原路退回，预计几分钟内到账。</div>
+        </div>
+      </div>
+      <div class="mock">
+        <div class="mock-cap">目标 · 已到账</div>
+        <div class="mock-screen">
+          <div class="order-row"><span class="shop">湘辣馆</span><span class="on">已退款</span></div>
+          <div class="statusline"><span class="pill pill-good">✓ ¥38.00 已退回</span></div>
+          <div class="kv"><div class="row"><span>退回至</span><span>支付宝余额</span></div><div class="row"><span>时间</span><span>08-23 14:32</span></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 5. 连锁改动 -->
+<section>
+  <div class="wrap">
+    <div class="sec-label">对照五 · 改动范围</div>
+    <h2>真实退款牵动的 6 个层面</h2>
+    <p class="sec-intro">不是加一个函数就完事。按依赖顺序排列，标注难度——第 1–5 层构成"能讲清、能演示"的闭环，第 6 层是生产级加分项。</p>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>层面</th><th>要做什么</th><th>难度</th><th>为什么绕不开</th></tr></thead>
+        <tbody>
+          <tr><td><span class="layer">AlipayService</span></td><td>加 <code class="mono">refund()</code> / <code class="mono">queryRefund()</code></td><td><span class="diff d-low">低</span></td><td>照抄现有 queryTrade 模式</td></tr>
+          <tr><td><span class="layer">Prisma schema</span></td><td>加退款流水 / 请求号 / 金额字段 + 迁移</td><td><span class="diff d-low">低</span></td><td>对账、客服、幂等都要</td></tr>
+          <tr><td><span class="layer">幂等设计</span></td><td>out_request_no + 状态前置判断</td><td><span class="diff d-mid">中</span></td><td>点两次不能退两次钱</td></tr>
+          <tr><td><span class="layer">失败处理</span></td><td>失败不改状态、记日志、可重试</td><td><span class="diff d-high">中高</span></td><td>资损场景，必须严谨</td></tr>
+          <tr><td><span class="layer">契约 + 前端</span></td><td>错误类型 + 管理端 loading/成功/失败</td><td><span class="diff d-mid">中</span></td><td>前后端一致 + 体验</td></tr>
+          <tr><td><span class="layer">对账兜底</span></td><td>定时用 queryRefund 核对"处理中"退款</td><td><span class="diff d-high">高</span></td><td>异步/抖动的最终一致性（可后补）</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="callout">
+      <h3>状态机要不要加 REFUNDING 态</h3>
+      <p>支付宝退款多数同步返回（<code>fund_change=Y</code> 即到账）。作品集可先按同步处理 <code>REQUESTED → APPROVED</code>，在注释里标注"生产需补 REFUNDING + 对账"——这与本项目状态机"拒绝过度设计"的一贯风格一致。</p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap narrow">
+    <p>字段与返回码依据支付宝官方文档：<a href="https://opendocs.alipay.com/open/03w0ai">统一收单交易退款 alipay.trade.refund</a> · <a href="https://opendocs.alipay.com/open/07dsf1">退款响应参数</a>。代码现状引自 <span class="mono">order-workflow.service.ts</span> / <span class="mono">alipay.service.ts</span> / <span class="mono">schema.prisma</span>。</p>
+    <div class="disclaimer"><b>讨论稿</b>：本页仅用于设计讨论，示意代码非最终实现，<b>未改动任何业务代码</b>。配套设计文档见 <span class="mono">design-discussion.md</span>。</div>
+  </div>
+</footer>

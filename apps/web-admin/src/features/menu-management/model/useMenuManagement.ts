@@ -6,7 +6,7 @@
 
 import type { MenuItem } from '@/entities/system-menu'
 import { createMenu, deleteMenu, getMenus, updateMenu } from '@/entities/system-menu'
-import { createElementPlusCrudFeedback, useConfigCrud } from '@/shared/config-crud'
+import { useConfigCrud } from '@/shared/config-crud'
 import { filterTree, flattenTree } from '@/shared/lib/tree'
 import { createMenuFormRules } from '../config/fields'
 
@@ -48,7 +48,7 @@ const defaultForm: MenuFormState = {
 export function useMenuManagement() {
   const { t } = useI18n()
 
-  const crud = useConfigCrud<MenuItem, MenuQuery, MenuFormState, Partial<MenuItem>>({
+  const crud = useConfigCrud<MenuItem, MenuQuery, MenuFormState>({
     getDefaultQuery: () => ({
       title: '',
       status: '',
@@ -80,7 +80,6 @@ export function useMenuManagement() {
     deleteConfirm: row => t('menu.deleteConfirm', { name: row.title }),
     saveSuccessMessage: t('crud.saveSuccess'),
     deleteSuccessMessage: t('crud.deleteSuccess'),
-    feedback: createElementPlusCrudFeedback(),
   })
 
   const rules = computed(() => createMenuFormRules(t))
@@ -88,32 +87,14 @@ export function useMenuManagement() {
   const parentOptions = computed(() => flattenTree(crud.tableData.value).filter(item => item.id !== crud.form.id))
 
   function openCreateDialog(parent?: MenuItem) {
-    crud.resetForm()
-    if (parent)
-      crud.form.parentId = parent.id
-    crud.dialogVisible.value = true
+    crud.openCreateDialog(parent ? { parentId: parent.id } : undefined)
   }
 
   return {
-    loading: crud.loading,
-    saving: crud.saving,
-    dialogVisible: crud.dialogVisible,
-    tableData: crud.tableData,
-    query: crud.query,
-    form: crud.form,
-    isEdit: crud.isEdit,
-    filteredData: crud.filteredData,
-    pagination: crud.pagination,
-    resetQuery: crud.resetQuery,
-    resetForm: crud.resetForm,
-    openCreateDialog,
-    openEditDialog: crud.openEditDialog,
-    fetchMenus: crud.fetchRows,
-    submitForm: crud.submitForm,
-    handleDelete: crud.handleDelete,
-    handlePageChange: crud.handlePageChange,
-    handleSizeChange: crud.handleSizeChange,
+    ...crud,
     rules,
     parentOptions,
+    openCreateDialog,
+    fetchMenus: crud.fetchRows,
   }
 }

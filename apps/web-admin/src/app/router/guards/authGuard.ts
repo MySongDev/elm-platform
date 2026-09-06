@@ -7,7 +7,7 @@
 import type { Router } from 'vue-router'
 import { useAuthStore } from '@/entities/session'
 import { DEFAULT_HOME_PATH, LOGIN_PATH } from '@/shared/config/paths'
-import { resetDynamicRoutes } from '../dynamic-routes'
+import { resetDynamicRoutes } from '../permission'
 
 export function setupAuthGuard(router: Router) {
   router.beforeEach((to) => {

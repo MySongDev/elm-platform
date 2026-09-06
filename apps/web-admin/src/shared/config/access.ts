@@ -52,10 +52,7 @@ export const Permissions = {
   PLATFORM_TENANT_CREATE: 'platform:tenant:create',
   PLATFORM_TENANT_UPDATE: 'platform:tenant:update',
   PLATFORM_TENANT_TRANSITION: 'platform:tenant:transition',
-  MERCHANT_ONBOARDING_VIEW: 'merchant:onboarding:view',
-  MERCHANT_ONBOARDING_REVIEW: 'merchant:onboarding:review',
-  MERCHANT_ONBOARDING_APPROVE: 'merchant:onboarding:approve',
-  MERCHANT_ONBOARDING_REJECT: 'merchant:onboarding:reject',
+  MERCHANT_ONBOARDING_MANAGE: 'merchant:onboarding:manage',
 } as const
 
 export type Permission = (typeof Permissions)[keyof typeof Permissions]

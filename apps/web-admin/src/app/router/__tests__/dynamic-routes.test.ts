@@ -1,16 +1,15 @@
 import type { Router, RouteRecordRaw } from 'vue-router'
-import type { UserMenuNode } from '@/entities/session/model/types'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { createMemoryHistory, createRouter } from 'vue-router'
 import { getDashboardOverview } from '@/features/dashboard/api/dashboard'
-import { buildRoutes } from '../build-routes'
-import { registerDynamicRoutes, resetDynamicRoutes } from '../dynamic-routes'
+import { registerDynamicRoutes, resetDynamicRoutes } from '../permission'
 
 vi.mock('@/locales', () => ({
   $t: (key: string) => key,
 }))
 
-const testMenus: UserMenuNode[] = [{
+/** 测试用后端菜单数据（符合 BackendMenu 类型） */
+const testMenus = [{
   id: 1,
   parentId: null,
   title: 'Dashboard',
@@ -19,7 +18,7 @@ const testMenus: UserMenuNode[] = [{
   icon: 'dashboard',
   permission: null,
   component: null,
-  type: 'catalog',
+  type: 'catalog' as const,
   sort: 1,
   status: 1,
   children: [{
@@ -31,7 +30,7 @@ const testMenus: UserMenuNode[] = [{
     icon: 'dashboard',
     permission: null,
     component: null,
-    type: 'menu',
+    type: 'menu' as const,
     sort: 1,
     status: 1,
   }],
@@ -44,7 +43,7 @@ const testMenus: UserMenuNode[] = [{
   icon: 'document',
   permission: null,
   component: null,
-  type: 'catalog',
+  type: 'catalog' as const,
   sort: 35,
   status: 1,
   children: [{
@@ -56,7 +55,7 @@ const testMenus: UserMenuNode[] = [{
     icon: 'document',
     permission: 'commerce:order:view',
     component: null,
-    type: 'menu',
+    type: 'menu' as const,
     sort: 3,
     status: 1,
   }],
@@ -69,7 +68,7 @@ const testMenus: UserMenuNode[] = [{
   icon: 'system',
   permission: null,
   component: null,
-  type: 'catalog',
+  type: 'catalog' as const,
   sort: 36,
   status: 1,
   children: [{
@@ -81,7 +80,7 @@ const testMenus: UserMenuNode[] = [{
     icon: 'system',
     permission: 'platform:tenant:view',
     component: null,
-    type: 'menu',
+    type: 'menu' as const,
     sort: 1,
     status: 1,
   }],
@@ -94,7 +93,7 @@ const testMenus: UserMenuNode[] = [{
   icon: 'monitor',
   permission: null,
   component: null,
-  type: 'catalog',
+  type: 'catalog' as const,
   sort: 30,
   status: 1,
   children: [{
@@ -106,14 +105,16 @@ const testMenus: UserMenuNode[] = [{
     icon: 'monitor',
     permission: 'log:system:view',
     component: null,
-    type: 'menu',
+    type: 'menu' as const,
     sort: 4,
     status: 1,
   }],
 }]
+
 function createRouterStub() {
   const addedRoutes: RouteRecordRaw[] = []
-  const removers = [vi.fn(), vi.fn(), vi.fn()]
+  // 预先创建足够的移除函数（最多 5 个路由 + 1 个 404 = 6 个）
+  const removers = Array.from({ length: 10 }).fill(vi.fn())
   const addRoute = vi.fn((route: RouteRecordRaw) => {
     addedRoutes.push(route)
     return removers.shift() ?? vi.fn()
@@ -126,36 +127,28 @@ function createRouterStub() {
   }
 }
 
-describe('dynamic routes', () => {
+describe('dynamic routes - registerDynamicRoutes 集成测试', () => {
   beforeEach(() => {
     resetDynamicRoutes()
   })
 
-  it('registers dynamic routes and the not-found route', () => {
+  it('接收 BackendMenu[]，内部构建并注册路由 + 404 兜底', () => {
     const { router, addRoute, addedRoutes } = createRouterStub()
-    const routes: RouteRecordRaw[] = [
-      {
-        path: '/system',
-        component: {},
-      },
-      {
-        path: '/monitor',
-        component: {},
-      },
-    ]
 
-    registerDynamicRoutes(router, routes)
+    registerDynamicRoutes(router, testMenus)
 
-    expect(addRoute).toHaveBeenCalledTimes(3)
-    expect(addedRoutes[0]).toBe(routes[0])
-    expect(addedRoutes[1]).toBe(routes[1])
-    expect(addedRoutes[2]).toMatchObject({
+    // 4 个根级菜单 + 1 个 404 兜底
+    expect(addRoute).toHaveBeenCalledTimes(5)
+    // 第一个是 dashboard catalog
+    expect(addedRoutes[0].path).toBe('/dashboard')
+    // 最后一个是 404
+    expect(addedRoutes[4]).toMatchObject({
       path: '/:pathMatch(.*)*',
-      redirect: '/404',
+      component: expect.any(Function),
     })
   })
 
-  it('removes previously registered routes before registering new ones', () => {
+  it('重复调用会先清理旧路由', () => {
     const firstRemove = vi.fn()
     const secondRemove = vi.fn()
     const addRoute = vi.fn()
@@ -164,14 +157,8 @@ describe('dynamic routes', () => {
       .mockReturnValue(vi.fn())
     const router = { addRoute } as unknown as Router
 
-    registerDynamicRoutes(router, [{
-      path: '/first',
-      component: {},
-    }])
-    registerDynamicRoutes(router, [{
-      path: '/second',
-      component: {},
-    }])
+    registerDynamicRoutes(router, testMenus)
+    registerDynamicRoutes(router, testMenus)
 
     expect(firstRemove).toHaveBeenCalledTimes(1)
     expect(secondRemove).toHaveBeenCalledTimes(1)
@@ -180,15 +167,14 @@ describe('dynamic routes', () => {
   it('resets all registered dynamic route handlers', () => {
     const routeRemove = vi.fn()
     const notFoundRemove = vi.fn()
+    // registerDynamicRoutes 会调用 addRoute 5 次（4 个菜单 + 1 个 404）
     const addRoute = vi.fn()
       .mockReturnValueOnce(routeRemove)
       .mockReturnValueOnce(notFoundRemove)
+      .mockReturnValue(vi.fn()) // 其余调用返回 fn
     const router = { addRoute } as unknown as Router
 
-    registerDynamicRoutes(router, [{
-      path: '/system',
-      component: {},
-    }])
+    registerDynamicRoutes(router, testMenus)
     resetDynamicRoutes()
 
     expect(routeRemove).toHaveBeenCalledTimes(1)
@@ -200,10 +186,11 @@ describe('dynamic routes', () => {
       history: createMemoryHistory(),
       routes: [],
     })
-    const routes = buildRoutes(testMenus)
-    const overview = await getDashboardOverview()
 
-    registerDynamicRoutes(router, routes)
+    // 直接传菜单，内部会 buildRoutes 并注册
+    registerDynamicRoutes(router, testMenus)
+
+    const overview = await getDashboardOverview()
 
     const pendingRouteNames = overview.pendingItems
       .map(item => item.routeName)

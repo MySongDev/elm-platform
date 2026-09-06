@@ -104,6 +104,10 @@ Pinia stores live in `src/stores/modules` for user/session, addresses, locations
 
 `apps/web-user` has its own existing `CLAUDE.md` and `AGENTS.md`; consult them when working only inside that app because they contain more detailed mobile-app guidance.
 
+## Git Conventions
+
+- **禁止**在 commit message 中添加 `Co-Authored-By` 或任何 AI 署名行。不论使用哪个模型，commit 信息中都不得包含 AI 工具的归属信息。
+
 ## Configuration Notes
 
 - Both web apps use `@` as an alias for their local `src` directory.

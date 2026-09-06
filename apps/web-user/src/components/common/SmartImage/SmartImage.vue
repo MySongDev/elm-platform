@@ -1,8 +1,7 @@
 <script setup>
-import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
-import { IMAGE_PRIORITY, IMAGE_VIEWPORT_PRIORITY_OFFSET } from '@/config/imageLoading'
-import { buildImageCandidateUrls } from '@/utils/image/imageCandidates'
-import { scheduleImageTask } from '@/utils/image/imageLoadScheduler'
+import { useTemplateRef } from 'vue'
+import { IMAGE_PRIORITY } from '@/config/imageLoading'
+import { useSmartImage } from './useSmartImage'
 
 const props = defineProps({
   src: {
@@ -13,12 +12,10 @@ const props = defineProps({
     type: String,
     default: '',
   },
-  /** 跳过可视判断，立即参与调度 */
   eager: {
     type: Boolean,
     default: false,
   },
-  /** 数值越小越先加载 */
   priority: {
     type: Number,
     default: IMAGE_PRIORITY.NORMAL,
@@ -27,7 +24,6 @@ const props = defineProps({
     type: Boolean,
     default: true,
   },
-  /** 加载完成前模糊，完成后过渡清晰 */
   progressive: {
     type: Boolean,
     default: true,
@@ -36,10 +32,6 @@ const props = defineProps({
     type: String,
     default: '0px 0px 200px 0px',
   },
-  /**
-   * IO 触发后延迟多久才真正调度加载（ms）。
-   * 快速滑过的图片在此期间离开视口会被取消，避免发起无效请求。
-   */
   loadDelay: {
     type: Number,
     default: 150,
@@ -48,275 +40,19 @@ const props = defineProps({
 
 const emit = defineEmits(['load', 'error'])
 
-const rootEl = ref(null)
-const imgEl = ref(null)
+const rootEl = useTemplateRef('rootEl')
+const imgEl = useTemplateRef('imgEl')
 
-const candidates = computed(() => buildImageCandidateUrls(props.src))
-const candidateIndex = ref(0)
-const loaded = ref(false)
-const failed = ref(false)
-
-let preloadObserver = null
-let viewportObserver = null
-let imageTask = null
-let delayTimer = null
-
-// 状态跟踪
-let inPreloadZone = false
-let inViewport = false
-let requestStarted = false
-
-function cleanupObservers() {
-  if (preloadObserver && rootEl.value) {
-    preloadObserver.unobserve(rootEl.value)
-    preloadObserver.disconnect()
-  }
-  if (viewportObserver && rootEl.value) {
-    viewportObserver.unobserve(rootEl.value)
-    viewportObserver.disconnect()
-  }
-  preloadObserver = null
-  viewportObserver = null
-}
-
-function cleanupSchedule() {
-  if (imageTask) {
-    imageTask = null
-  }
-}
-
-function cancelTask() {
-  if (imageTask) {
-    imageTask.cancel()
-    imageTask = null
-  }
-}
-
-function cleanupDelayTimer() {
-  if (delayTimer) {
-    clearTimeout(delayTimer)
-    delayTimer = null
-  }
-}
-
-function attachLoadHandlers(img, url, release) {
-  img.onload = () => {
-    img.onload = img.onerror = null
-    loaded.value = true
-    failed.value = false
-    emit('load', { src: url })
-    release()
-  }
-  img.onerror = () => {
-    img.onload = img.onerror = null
-    release()
-    const next = candidateIndex.value + 1
-    if (next < candidates.value.length) {
-      candidateIndex.value = next
-      runLoadAttempt()
-    }
-    else {
-      failed.value = true
-      emit('error', { src: url })
-    }
-  }
-}
-
-function runLoadAttempt(priority) {
-  if (requestStarted)
-    return
-
-  cancelTask()
-  const url = candidates.value[candidateIndex.value]
-  if (!url) {
-    failed.value = true
-    emit('error', { src: props.src })
-    return
-  }
-
-  const img = imgEl.value
-  if (!img)
-    return
-
-  requestStarted = true
-  imageTask = scheduleImageTask({
-    priority: priority ?? props.priority,
-    run(release) {
-      attachLoadHandlers(img, url, release)
-      img.src = url
-    },
-  })
-}
-
-function scheduleCurrentCandidate(priority) {
-  if (imageTask) {
-    imageTask.updatePriority(priority)
-    return
-  }
-
-  const url = candidates.value[candidateIndex.value]
-  if (!url) {
-    failed.value = true
-    emit('error', { src: props.src })
-    return
-  }
-
-  const img = imgEl.value
-  if (!img)
-    return
-
-  imageTask = scheduleImageTask({
-    priority,
-    run(release) {
-      attachLoadHandlers(img, url, release)
-      img.src = url
-    },
-  })
-}
-
-function getPreloadPriority() {
-  return inViewport ? props.priority + IMAGE_VIEWPORT_PRIORITY_OFFSET : props.priority
-}
-
-function onPreloadZoneChange(hit) {
-  inPreloadZone = hit
-
-  if (hit) {
-    // 首次进入预加载区：启动延迟
-    cleanupDelayTimer()
-
-    if (props.eager || !props.loadDelay) {
-      if (inViewport) {
-        runLoadAttempt(getPreloadPriority())
-      }
-      else {
-        scheduleCurrentCandidate(getPreloadPriority())
-      }
-      return
-    }
-
-    delayTimer = setTimeout(() => {
-      delayTimer = null
-      if (inPreloadZone && !requestStarted) {
-        scheduleCurrentCandidate(getPreloadPriority())
-      }
-    }, props.loadDelay)
-  }
-  else {
-    // 离开预加载区：取消延迟和尚未执行的任务
-    cleanupDelayTimer()
-    if (!requestStarted) {
-      cancelTask()
-    }
-  }
-}
-
-function onViewportChange(hit) {
-  inViewport = hit
-
-  if (hit) {
-    // 进入真实视口：取消延迟，立即提升优先级
-    cleanupDelayTimer()
-
-    if (!requestStarted) {
-      if (imageTask) {
-        imageTask.updatePriority(props.priority + IMAGE_VIEWPORT_PRIORITY_OFFSET)
-      }
-      else {
-        runLoadAttempt(props.priority + IMAGE_VIEWPORT_PRIORITY_OFFSET)
-      }
-    }
-  }
-  else {
-    // 离开真实视口但仍在预加载区：降级
-    if (imageTask && !requestStarted) {
-      imageTask.updatePriority(props.priority)
-    }
-  }
-}
-
-function startWhenVisible() {
-  cleanupDelayTimer()
-
-  if (props.eager) {
-    runLoadAttempt(props.priority)
-    return
-  }
-
-  if (!rootEl.value)
-    return
-
-  if (typeof IntersectionObserver !== 'function') {
-    runLoadAttempt(props.priority)
-    return
-  }
-
-  cleanupObservers()
-
-  // 预加载区观察器
-  preloadObserver = new IntersectionObserver(
-    (entries) => {
-      const hit = entries.some(e => e.isIntersecting)
-      onPreloadZoneChange(hit)
-    },
-    {
-      rootMargin: props.rootMargin,
-      threshold: 0.01,
-    },
-  )
-  preloadObserver.observe(rootEl.value)
-
-  // 真实视口观察器
-  viewportObserver = new IntersectionObserver(
-    (entries) => {
-      const hit = entries.some(e => e.isIntersecting)
-      onViewportChange(hit)
-    },
-    {
-      rootMargin: '0px',
-      threshold: 0.01,
-    },
-  )
-  viewportObserver.observe(rootEl.value)
-}
-
-watch(
-  () => props.src,
-  () => {
-    cleanupDelayTimer()
-    cancelTask()
-    cleanupObservers()
-    requestStarted = false
-    inPreloadZone = false
-    inViewport = false
-    candidateIndex.value = 0
-    loaded.value = false
-    failed.value = false
-    if (imgEl.value) {
-      imgEl.value.removeAttribute('src')
-      imgEl.value.onload = imgEl.value.onerror = null
-    }
-    nextTick(() => startWhenVisible())
-  },
-)
-
-watch(
-  () => [props.eager, props.priority],
-  () => {
-    if (loaded.value)
-      return
-    nextTick(() => startWhenVisible())
-  },
-)
-
-onBeforeUnmount(() => {
-  cleanupDelayTimer()
-  cancelTask()
-  cleanupObservers()
-})
-
-onMounted(() => {
-  nextTick(() => startWhenVisible())
+const { loaded, failed } = useSmartImage({
+  src: () => props.src,
+  eager: () => props.eager,
+  priority: () => props.priority,
+  rootMargin: () => props.rootMargin,
+  loadDelay: () => props.loadDelay,
+  rootEl,
+  imgEl,
+  onLoad: payload => emit('load', payload),
+  onError: payload => emit('error', payload),
 })
 </script>
 

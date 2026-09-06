@@ -25,6 +25,7 @@ describe('useAuthStore session expiry', () => {
     vi.setSystemTime(new Date('2026-05-23T00:00:00.000Z'))
     vi.doMock('../api', () => ({
       login: vi.fn(),
+      logout: vi.fn(),
       getCurrentUser: vi.fn(),
       getUserMenus: vi.fn(),
       updateProfile: vi.fn(),

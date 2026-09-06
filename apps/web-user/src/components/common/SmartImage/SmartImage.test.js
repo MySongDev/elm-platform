@@ -21,7 +21,10 @@ vi.mock('./useSmartImage', () => ({
 async function mountSmartImage(props = {}) {
   const root = document.createElement('div')
   document.body.appendChild(root)
-  const events = { load: vi.fn(), error: vi.fn() }
+  const events = {
+    load: vi.fn(),
+    error: vi.fn(),
+  }
   const app = createApp(SmartImage, {
     src: 'https://img.example.test/a.jpg',
     onLoad: events.load,
@@ -40,7 +43,7 @@ async function mountSmartImage(props = {}) {
   }
 }
 
-describe('SmartImage facade', () => {
+describe('smartImage facade', () => {
   it('加载前显示骨架并保留渐进式类名', async () => {
     facade.loaded = false
     facade.failed = false

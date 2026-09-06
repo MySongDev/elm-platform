@@ -3,17 +3,17 @@ import {
   IconArrowLeft as IconEpArrowLeft,
   IconArrowRight as IconEpArrowRight,
 } from '@iconify-prerendered/vue-ep'
-import { computed, onMounted, onUnmounted, watch } from 'vue'
+import { onMounted, onUnmounted, useTemplateRef, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { isTabClosable, useTabsStore } from '@/entities/tab'
 import { transformI18n } from '@/shared/i18n'
-import emitter from '@/shared/lib/mitt'
-import TabBarActions from './TabBarActions.vue'
-import TabBarContextMenu from './TabBarContextMenu.vue'
-import TabBarItem from './TabBarItem.vue'
-import { useMenuManager } from './useMenu'
-import { useScrollManager } from './useScroll'
-import { useTabActions } from './useTabActions'
+import { useMenuManager } from './composables/useMenu'
+import { useScrollManager } from './composables/useScroll'
+import { useTabActions } from './composables/useTabActions'
+import { useTabCommandState } from './composables/useTabCommandState'
+import TabBarActions from './ui/TabBarActions.vue'
+import TabBarContextMenu from './ui/TabBarContextMenu.vue'
+import TabBarItem from './ui/TabBarItem.vue'
 
 defineOptions({ name: 'TabBar' })
 
@@ -22,30 +22,12 @@ const router = useRouter()
 const tabsStore = useTabsStore()
 const { t } = useI18n()
 
-// 基础计算属性
-const isOnlyOneTab = computed(() => tabsStore.tabs.length <= 1)
-const closableCount = computed(() => tabsStore.tabs.filter(isTabClosable).length)
-const currentTab = computed(() => tabsStore.tabs.find(t => t.fullPath === route.fullPath))
-const isCurrentFixed = computed(() => currentTab.value?.fixed ?? false)
-const isCurrentClosable = computed(() =>
-  currentTab.value ? isTabClosable(currentTab.value) : false,
-)
-const currentTabIndex = computed(() =>
-  tabsStore.tabs.findIndex(tab => tab.fullPath === route.fullPath),
-)
-const isCurrentFirstNonFixed = computed(() => {
-  const index = currentTabIndex.value
-  return index <= 0 || tabsStore.tabs.slice(0, index).every(tab => !isTabClosable(tab))
-})
-const isCurrentLastNonFixed = computed(() => {
-  const index = currentTabIndex.value
-  return index === -1 || tabsStore.tabs.slice(index + 1).every(tab => !isTabClosable(tab))
-})
+// DOM 所有权留在视图层：模板 ref 名称必须与 useTemplateRef 参数一致
+const scrollContainerRef = useTemplateRef<HTMLElement>('scrollContainerRef')
+const tabTrackRef = useTemplateRef<HTMLElement>('tabTrackRef')
 
-// 组合式函数
+// 组合式函数：滚动能力只接收 DOM，不创建 DOM ref
 const {
-  scrollContainer,
-  tabTrack,
   canScrollLeft,
   canScrollRight,
   isOverflow,
@@ -55,18 +37,26 @@ const {
   scrollActiveIntoView,
   setupScrollListeners,
   cleanupScrollListeners,
-} = useScrollManager()
+} = useScrollManager(scrollContainerRef, tabTrackRef)
 
+// 菜单组件实例：expose 了 rootEl，供测量真实菜单宽高
+const contextMenuRef = useTemplateRef<{ rootEl: HTMLElement | null }>('contextMenuRef')
+
+// 菜单只负责定位与 dismiss 会话；命令状态另由 useTabCommandState 计算
 const {
   contextMenu,
-  targetTab,
-  isFirstNonFixed,
-  isLastNonFixed,
   openContextMenu,
   closeContextMenu,
-  setupMenuListeners,
-  cleanupMenuListeners,
-} = useMenuManager(tabsStore)
+} = useMenuManager({
+  // 模板 ref 访问 expose 的 ref 时会被自动解包为 HTMLElement | null
+  getMenuElement: () => contextMenuRef.value?.rootEl ?? null,
+})
+
+const dropdownCommandState = useTabCommandState(() => route.fullPath)
+
+const contextCommandState = useTabCommandState(
+  () => contextMenu.targetPath,
+)
 
 const {
   handleCloseTab,
@@ -81,27 +71,19 @@ const {
   closeContextMenu,
 })
 
-function handleLayoutRouteChange(path: string) {
-  const tab = tabsStore.tabs.find(tab => tab.path === path || tab.fullPath === path)
-  if (tab)
-    router.push(tab.fullPath)
-}
-
 function isActiveTab(fullPath: string) {
   return fullPath === route.fullPath
 }
 
 onMounted(() => {
-  setupScrollListeners(scrollContainer, tabTrack)
-  setupMenuListeners()
-  emitter.on('changeLayoutRoute', handleLayoutRouteChange)
+  // setup 无参：DOM 关联已在 useScrollManager(scrollContainerRef, tabTrackRef) 完成
+  setupScrollListeners()
   scrollActiveIntoView()
 })
 
 onUnmounted(() => {
-  emitter.off('changeLayoutRoute', handleLayoutRouteChange)
   cleanupScrollListeners()
-  cleanupMenuListeners()
+  // 菜单监听由 useMenuManager 在 close / 作用域销毁时自行释放
 })
 
 watch(() => tabsStore.tabs.length, () => scrollActiveIntoView())
@@ -131,9 +113,9 @@ watch(
       </el-icon>
     </button>
 
-    <div ref="scrollContainer" class="tab-scroll-container" @wheel="handleWheel">
+    <div ref="scrollContainerRef" class="tab-scroll-container" @wheel="handleWheel">
       <div
-        ref="tabTrack"
+        ref="tabTrackRef"
         class="tab-track"
         role="tablist"
         :aria-label="t('tabs.openedPages')"
@@ -144,7 +126,7 @@ watch(
           :tab="tab"
           :title="tabsStore.getTitle(tab, transformI18n)"
           :active="isActiveTab(tab.fullPath)"
-          :closable="!isOnlyOneTab && isTabClosable(tab)"
+          :closable="!dropdownCommandState.onlyOneTab && isTabClosable(tab)"
           @click="handleTabClick(tab.fullPath)"
           @contextmenu="openContextMenu($event, tab.fullPath)"
           @close="handleCloseTab(tab.fullPath)"
@@ -167,25 +149,16 @@ watch(
     </button>
 
     <TabBarActions
-      :current-fixed="isCurrentFixed"
-      :current-closable="isCurrentClosable"
-      :first-non-fixed="isCurrentFirstNonFixed"
-      :last-non-fixed="isCurrentLastNonFixed"
-      :only-one-tab="isOnlyOneTab"
-      :closable-count="closableCount"
+      :state="dropdownCommandState"
       @command="handleDropdownCommand"
     />
 
     <TabBarContextMenu
+      ref="contextMenuRef"
       :visible="contextMenu.visible"
       :x="contextMenu.x"
       :y="contextMenu.y"
-      :target-tab="targetTab"
-      :target-closable="targetTab ? isTabClosable(targetTab) : false"
-      :first-non-fixed="isFirstNonFixed"
-      :last-non-fixed="isLastNonFixed"
-      :only-one-tab="isOnlyOneTab"
-      :closable-count="closableCount"
+      :state="contextCommandState"
       @command="handleContextMenuCommand"
     />
   </div>

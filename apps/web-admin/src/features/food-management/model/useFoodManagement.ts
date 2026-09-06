@@ -5,9 +5,9 @@
  */
 
 import type { FormRules } from 'element-plus'
-import type { FoodItem, FoodPayload } from '@/entities/food'
+import type { FoodItem } from '@/entities/food'
 import { createCommerceFood, deleteCommerceFood, getCommerceFoods, updateCommerceFood } from '@/entities/food'
-import { createElementPlusCrudFeedback, useConfigCrud } from '@/shared/config-crud'
+import { useConfigCrud } from '@/shared/config-crud'
 
 export interface FoodQuery {
   name: string
@@ -60,7 +60,7 @@ export function getFoodPrice(row: FoodItem) {
 export function useFoodManagement() {
   const { t } = useI18n()
 
-  const crud = useConfigCrud<FoodItem, FoodQuery, FoodFormState, FoodPayload>({
+  const crud = useConfigCrud<FoodItem, FoodQuery, FoodFormState>({
     getDefaultQuery: () => ({
       name: '',
       restaurantId: '',
@@ -113,7 +113,6 @@ export function useFoodManagement() {
     deleteConfirm: row => t('commerce.food.deleteConfirm', { name: row.name }),
     saveSuccessMessage: t('commerce.saveSuccess'),
     deleteSuccessMessage: t('commerce.deleteSuccess'),
-    feedback: createElementPlusCrudFeedback(),
   })
 
   const rules: FormRules = {
