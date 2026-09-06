@@ -1,4 +1,3 @@
-export { useAlert } from './useAlert'
 export { useBackTop } from './useBackTop'
 export { useElementSize } from './useElementSize'
 export { useFormValidator } from './useFormValidator'

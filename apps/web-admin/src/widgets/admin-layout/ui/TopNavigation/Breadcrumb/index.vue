@@ -13,7 +13,6 @@ const breadcrumbs = computed(() => {
       path: item.path,
     }))
 })
-console.log(route.matched)
 </script>
 
 <template>

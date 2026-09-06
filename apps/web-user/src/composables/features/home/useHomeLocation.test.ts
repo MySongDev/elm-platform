@@ -5,9 +5,9 @@ import { normalizeLocatedCity } from './useHomeLocation'
 describe('normalizeLocatedCity', () => {
   it('normalizes Ele.me reverse geocoding response fields', () => {
     const location = normalizeLocatedCity({
-      name: '月河镇中心小学',
-      address: '河南省南阳市桐柏县月河镇中心小学',
-      city: '南阳市',
+      name: 'xxxxxxx',
+      address: 'xxxxxxx',
+      city: 'xxxxxxx',
       city_id: 1667,
       latitude: 32.352996,
       longitude: 113.541179,
@@ -19,10 +19,10 @@ describe('normalizeLocatedCity', () => {
       latitude: 32.352996,
       longitude: 113.541179,
       geohash: 'wtb8p9wjv5x6',
-      city: '南阳市',
+      city: 'xxxxxxx',
       cityId: 1667,
-      address: '河南省南阳市桐柏县月河镇中心小学',
-      name: '月河镇中心小学',
+      address: 'xxxxxxx',
+      name: 'xxxxxxx',
       districtId: 1667,
     })
   })

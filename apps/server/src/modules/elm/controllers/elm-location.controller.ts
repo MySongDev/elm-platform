@@ -2,11 +2,15 @@ import { Controller, Get, Param, ParseIntPipe, Query } from '@nestjs/common'
 import { ApiOperation, ApiTags } from '@nestjs/swagger'
 import { rawResponse } from '../../../common/interceptors/transform.interceptor'
 import { ElmCityService } from '../services/elm-city.service'
+import { ElmUpstreamService } from '../services/elm-upstream.service'
 
 @ApiTags('Elm 兼容接口 - 城市定位')
 @Controller()
 export class ElmLocationController {
-  constructor(private readonly cityService: ElmCityService) {}
+  constructor(
+    private readonly cityService: ElmCityService,
+    private readonly upstream: ElmUpstreamService,
+  ) {}
 
   @Get('v1/cities')
   @ApiOperation({ summary: '获取城市列表' })
@@ -52,7 +56,7 @@ export class ElmLocationController {
 
   @Get('v2/index_entry')
   @ApiOperation({ summary: '食品分类列表' })
-  getIndexEntry() {
-    return rawResponse(this.cityService.getIndexEntries())
+  async getIndexEntry() {
+    return rawResponse(await this.upstream.get('/v2/index_entry'))
   }
 }

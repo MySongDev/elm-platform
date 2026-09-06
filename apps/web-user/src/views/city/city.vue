@@ -154,28 +154,18 @@ history()
 
 <style lang="scss" scoped>
 .nav {
-  // padding-top: 13.3333vw;
   box-shadow: 0 0 2.6667vw $e4;
 
   .change_city {
-    // position: absolute;
-    // @include wh(16vw, 10.6667vw);
-
-    // top: 1vw;
-    // right: 2.6667vw;
-
-    // line-height: 40px;
     @include size-color(3.7493vw, $ff);
   }
 
   .city_form {
-    // width: 100%;
     background-color: $ff;
     border-top: 0.2667vw solid $e4;
     border-bottom: 0.2667vw solid $e4;
 
     div {
-      // margin: 0 auto;
       text-align: center;
 
       .input_style {

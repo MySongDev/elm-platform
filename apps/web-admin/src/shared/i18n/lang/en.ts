@@ -85,11 +85,12 @@ export default {
   },
   notification: {
     title: 'Notifications',
+    notification: 'Notifications',
     message: 'Messages',
     todo: 'Todo',
     markAllRead: 'Mark All Read',
     clear: 'Clear',
-    empty: 'No',
+    empty: 'No notifications yet',
     urgent: 'Urgent',
     pending: 'Pending',
   },

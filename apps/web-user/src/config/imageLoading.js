@@ -14,6 +14,9 @@ export const IMAGE_PRIORITY = {
   BELOW: 20,
 }
 
+/** 真实视口任务相对调用方优先级的提升量 */
+export const IMAGE_VIEWPORT_PRIORITY_OFFSET = -100
+
 /**
  * 与 `getImageUrl` 结果配合：当主 host 失败时按顺序替换 origin
  * 留空则只做调度与骨架，不做域名回退

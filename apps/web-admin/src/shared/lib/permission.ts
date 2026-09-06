@@ -102,7 +102,7 @@ export function canAccessRoute(route: RouteAccessTarget, user: RouteAccessUser):
 
 /**
  * @description 判断用户权限集合是否覆盖目标权限；`*:*:*` 作为超级权限保留给管理员场景。
- * @param userPermissions 当前用户拥有的权限码。
+ * @param userPermissions 当前用户拥有的权限码(由后端返回)。
  * @param required 单个或多个目标权限码。
  * @returns 用户是否拥有全部目标权限。
  */
@@ -114,5 +114,6 @@ export function hasPermission(userPermissions: string[], required: string | stri
     return true
 
   const requiredList = Array.isArray(required) ? required : [required]
+  // 检查 requiredList 数组里的每一项，是否全都存在于 userPermissions 数组中。如果是，返回 true；只要有一项不在，就返回 false。
   return requiredList.every(p => userPermissions.includes(p))
 }

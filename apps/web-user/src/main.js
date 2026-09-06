@@ -2,7 +2,7 @@ import piniaPersist from 'pinia-plugin-persistedstate'
 
 import { createApp } from 'vue'
 import BaseState from '@/components/common/BaseState/BaseState.vue'
-import SmartImage from '@/components/common/SmartImage.vue'
+import SmartImage from '@/components/common/SmartImage/SmartImage.vue'
 import FootGuide from '@/components/footer/footGuide.vue'
 import HeadTop from '@/components/header/head.vue'
 import SvgIcon from '@/components/SvgIcon/index.vue'

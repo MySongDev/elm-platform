@@ -5,21 +5,23 @@ import { Swiper, SwiperSlide } from 'swiper/vue'
 import { computed, onActivated, onBeforeUnmount, onDeactivated, onMounted, ref, useTemplateRef } from 'vue'
 import { useRouter } from 'vue-router'
 import BackTop from '@/components/common/BackTop/BackTop.vue'
-// import ShopList from '@/components/common/ShopList/index.vue'
 import ShopList from '@/components/common/ShopList/ShopList.vue'
 
 import { useAuthRedirect, useLoadMore } from '@/composables/app'
-import { useFoodCategory } from '@/composables/swr'
 import { useScrollPosition } from '@/composables/ui'
-// import { useElementSize } from '@/composables/ui'
-import { getShopList } from '@/services/api/api-miste'
+import { getFoodCategoryList, getShopList } from '@/services/api/api-miste'
+import { useLocationStore } from '@/stores/modules/store-locations'
 import 'swiper/css'
 import 'swiper/css/pagination'
 
 defineOptions({ name: 'Msite' })
 const router = useRouter()
+const LocationStore = useLocationStore()
 const { isAuthenticated, redirectToLogin } = useAuthRedirect()
-const { data } = useFoodCategory()
+
+const FoodCategoryList = ref([])
+
+getFoodCategoryList().then(res => FoodCategoryList.value = res)
 
 const imgBaseUrl = 'https://fuss10.elemecdn.com'
 
@@ -32,7 +34,7 @@ const {
 } = useLoadMore(
   ({ page, pageSize }) => {
     const offset = (page - 1) * pageSize
-    return getShopList(31.22299, 121.36025, offset, pageSize)
+    return getShopList(LocationStore.latitude, LocationStore.longitude, offset, pageSize)
   },
   { pageSize: 20 },
 )
@@ -40,7 +42,6 @@ const {
 // ========== Refs ==========
 const msiteRef = useTemplateRef('msiteRef')
 const headerRef = useTemplateRef('headerRef')
-const shopListRef = useTemplateRef('shopListRef')
 
 // 记录页面滚动位置（使用 msiteRef 作为滚动容器）
 useScrollPosition(msiteRef)
@@ -106,7 +107,7 @@ function handleLoadMore() {
 const PAGE_SIZE = 8
 
 const paginatedFoodList = computed(() => {
-  const list = data.value || []
+  const list = FoodCategoryList.value || []
   return Array.from(
     { length: Math.ceil(list.length / PAGE_SIZE) },
     (_, i) => list.slice(i * PAGE_SIZE, (i + 1) * PAGE_SIZE),
@@ -179,7 +180,7 @@ onDeactivated(() => {
         附近商家
       </h2>
 
-      <ShopList ref="shopListRef" :list="shopList" :loading="loading" :finished="finished" :page-ref="msiteRef"
+      <ShopList :list="shopList" :loading="loading" :finished="finished" :page-ref="msiteRef"
         :enable-back-top="false" @reach-bottom="handleLoadMore" @item-click="toShop" />
     </div>
 

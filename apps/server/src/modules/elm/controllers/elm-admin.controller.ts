@@ -18,6 +18,7 @@ import { Roles } from '../../auth/decorators/roles.decorator'
 import { AdminAuthGuard } from '../../auth/guards/admin-auth.guard'
 import { RolesGuard } from '../../auth/guards/roles.guard'
 import { AdminOrderDetailHttpResponseDto } from '../../order/dto/admin-order-detail.dto'
+import { AdminOrderListHttpResponseDto } from '../../order/dto/admin-order-list.dto'
 import { ApproveRefundDto, RejectRefundDto } from '../../order/dto/reject-refund.dto'
 import { OrderWorkflowService } from '../../order/order-workflow.service'
 import { PaymentService } from '../../payment/payment.service'
@@ -113,6 +114,10 @@ export class ElmAdminController {
   @Get('orders')
   @RequirePermissions('commerce:order:view')
   @ApiOperation({ summary: '管理端真实支付订单列表' })
+  @ApiOkResponse({
+    description: 'Admin order list response envelope',
+    type: AdminOrderListHttpResponseDto,
+  })
   async getOrders(@Request() req: any, @Query() query: Record<string, unknown> = {}) {
     const context = await this.tenantContext.fromRequestUser(req.user)
     return this.paymentService.listAdminOrders(query.limit, context, query as any)

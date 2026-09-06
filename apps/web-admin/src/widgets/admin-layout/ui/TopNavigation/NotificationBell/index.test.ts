@@ -11,6 +11,7 @@ import {
   ssrContextKey,
 } from 'vue'
 import { renderToString } from 'vue/server-renderer'
+import en from '@/shared/i18n/lang/en'
 import NotificationBell from './index.vue'
 
 interface HostNode {
@@ -109,7 +110,16 @@ const EmptyStub = defineComponent({
     description: String,
   },
   setup(props) {
-    return () => h('empty-state', { description: props.description })
+    return () => h('empty-state', { description: props.description }, props.description)
+  },
+})
+
+const TabPaneStub = defineComponent({
+  props: {
+    label: String,
+  },
+  setup(props) {
+    return () => h('tab-pane', props.label)
   },
 })
 
@@ -120,10 +130,20 @@ function registerElementStubs<THost>(app: App<THost>) {
     'el-icon',
     'el-button',
     'el-tabs',
-    'el-tab-pane',
   ]
   passThroughComponents.forEach(name => app.component(name, PassThroughStub))
+  app.component('el-tab-pane', TabPaneStub)
   app.component('el-empty', EmptyStub)
+}
+
+function translate(key: string): string {
+  return key
+    .split('.')
+    .reduce<unknown>((current, segment) => {
+      if (current && typeof current === 'object' && segment in current)
+        return (current as Record<string, unknown>)[segment]
+      return undefined
+    }, en) as string | undefined ?? key
 }
 
 describe('notification bell', () => {
@@ -134,7 +154,7 @@ describe('notification bell', () => {
     vi.stubGlobal('computed', computed)
     vi.stubGlobal('onMounted', onMounted)
     vi.stubGlobal('ref', ref)
-    vi.stubGlobal('useI18n', () => ({ t: (key: string) => key }))
+    vi.stubGlobal('useI18n', () => ({ t: translate }))
   })
 
   afterEach(() => {
@@ -142,7 +162,7 @@ describe('notification bell', () => {
     vi.unstubAllGlobals()
   })
 
-  it('renders the empty state without loading notifications on mount', async () => {
+  it('renders localized tab labels and the empty state without loading notifications on mount', async () => {
     const root = createHostNode('root')
     app = renderer.createApp(NotificationBell as Component)
     app.provide(ssrContextKey, { modules: new Set() })
@@ -156,7 +176,10 @@ describe('notification bell', () => {
     registerElementStubs(ssrApp)
     const html = await renderToString(ssrApp)
 
-    expect(html).toContain('description="notification.empty"')
+    expect(html).toContain('Notifications (0)')
+    expect(html).toContain('Messages (0)')
+    expect(html).toContain('Todo (0)')
+    expect(html).toContain('No notifications yet')
     expect(html).not.toContain('notification-item')
   })
 })

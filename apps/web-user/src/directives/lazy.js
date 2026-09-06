@@ -12,7 +12,7 @@ const ERROR_PLACEHOLDER = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/20
 
 const imgMap = new Map()
 const elPriority = new WeakMap()
-const pendingCancel = new WeakMap()
+const pendingTask = new WeakMap()
 const delayTimer = new WeakMap()
 
 let observer = null
@@ -53,7 +53,7 @@ function processQueue() {
     el.src = TRANSPARENT_GIF
   }
 
-  const cancel = scheduleImageTask({
+  const imageTask = scheduleImageTask({
     priority,
     run(release) {
       const onLoad = () => {
@@ -77,7 +77,7 @@ function processQueue() {
       el.src = src
     },
   })
-  pendingCancel.set(el, cancel)
+  pendingTask.set(el, imageTask)
 }
 
 function enqueue(el, src, priority) {
@@ -96,8 +96,8 @@ function cancelElement(el) {
     delayTimer.delete(el)
   }
 
-  pendingCancel.get(el)?.()
-  pendingCancel.delete(el)
+  pendingTask.get(el)?.cancel()
+  pendingTask.delete(el)
 
   clearElementState(el)
 }

@@ -66,6 +66,7 @@ apps/server/prisma/*.db-journal
 
 # Misc
 *.tsbuildinfo
+.worktrees/
 
 # Docs
 docs/learning/

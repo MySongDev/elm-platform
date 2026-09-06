@@ -1,6 +1,6 @@
 import { computed, ref } from 'vue'
 
-import { API_BASE_URL } from '@/config'
+import { getReverseGeoCoding } from '@/services/api/api-city'
 import { useLocationStore } from '@/stores/modules/store-locations'
 
 interface LocatedLocation {
@@ -32,9 +32,8 @@ interface UseHomeLocationOptions {
   reverseGeoCoding?: (latitude: number, longitude: number) => Promise<LocatedLocation>
 }
 
-function defaultReverseGeoCoding(latitude: number, longitude: number): Promise<LocatedLocation> {
-  return fetch(`${API_BASE_URL}/restapi/bgs/poi/reverse_geo_coding?latitude=${latitude}&longitude=${longitude}`)
-    .then(res => res.json())
+async function defaultReverseGeoCoding(latitude: number, longitude: number): Promise<LocatedLocation> {
+  return await getReverseGeoCoding(latitude, longitude) as LocatedLocation
 }
 
 export function normalizeLocatedLocation(location: LocatedLocation = {}): NormalizedLocation {

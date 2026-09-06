@@ -13,6 +13,7 @@ import { ElmFoodService } from './services/elm-food.service'
 import { ElmOrderService } from './services/elm-order.service'
 import { ElmRestaurantService } from './services/elm-restaurant.service'
 import { ElmStoreService } from './services/elm-store.service'
+import { ElmUpstreamService } from './services/elm-upstream.service'
 import { ElmUserCompatService } from './services/elm-user-compat.service'
 
 @Module({
@@ -32,6 +33,7 @@ import { ElmUserCompatService } from './services/elm-user-compat.service'
     ElmFoodService,
     ElmUserCompatService,
     ElmOrderService,
+    ElmUpstreamService,
   ],
   exports: [
     ElmCityService,
@@ -39,6 +41,7 @@ import { ElmUserCompatService } from './services/elm-user-compat.service'
     ElmFoodService,
     ElmUserCompatService,
     ElmOrderService,
+    ElmUpstreamService,
   ],
 })
 export class ElmModule {}
