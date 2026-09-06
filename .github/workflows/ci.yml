@@ -12,10 +12,10 @@ jobs:
     if: github.event_name == 'pull_request'
     steps:
       - uses: actions/checkout@v4
-        with: { fetch-depth: 0 }
+        with: {fetch-depth: 0}
       - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
-        with: { node-version: 22, cache: pnpm }
+        with: {node-version: 22, cache: pnpm}
       - run: pnpm install --frozen-lockfile
       - run: pnpm exec commitlint --from ${{ github.event.pull_request.base.sha }} --to ${{ github.event.pull_request.head.sha }}
 
@@ -25,7 +25,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
-        with: { node-version: 22, cache: pnpm }
+        with: {node-version: 22, cache: pnpm}
       - run: pnpm install --frozen-lockfile
       - run: pnpm lint
 
@@ -35,7 +35,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
-        with: { node-version: 22, cache: pnpm }
+        with: {node-version: 22, cache: pnpm}
       - run: pnpm install --frozen-lockfile
       - run: pnpm build:packages
       - run: pnpm --filter @elm-platform/server run prisma:generate
@@ -68,11 +68,14 @@ jobs:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
-        with: { node-version: 22, cache: pnpm }
+        with: {node-version: 22, cache: pnpm}
       - run: pnpm install --frozen-lockfile
       - run: pnpm build:packages
       - run: pnpm --filter @elm-platform/server run prisma:generate
       - run: pnpm --filter @elm-platform/server run prisma:migrate:prod
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/elm_test?schema=public
+      - run: pnpm --filter @elm-platform/server run prisma:seed
         env:
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/elm_test?schema=public
       - name: Start server
