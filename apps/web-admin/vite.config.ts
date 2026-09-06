@@ -14,7 +14,7 @@ export default defineConfig(({ command, mode }) => {
   const enableMock = command === 'serve' && mode === 'mock'
 
   return {
-    base: process.env.BASE_URL || '/',
+    base: process.env.BASE_URL || '/elm-platform/admin/',
     build: {
       rolldownOptions: {
         output: {

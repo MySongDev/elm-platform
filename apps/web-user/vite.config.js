@@ -14,7 +14,7 @@ export default defineConfig(({ command, mode }) => {
   const localApiTarget = 'http://127.0.0.1:3000'
 
   return {
-    base: process.env.BASE_URL || '/',
+    base: process.env.BASE_URL || '/elm-platform/user/',
     server: {
       proxy: createApiProxy({
         prefixes: {
