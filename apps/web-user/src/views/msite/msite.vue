@@ -135,6 +135,8 @@ onMounted(() => {
   updateThreshold()
   bindScrollListener()
   handleWindowScroll()
+  if (!LocationStore.latitude || !LocationStore.longitude)
+    LocationStore.loadCurrentLocation()
 })
 
 onBeforeUnmount(() => {

@@ -2,9 +2,8 @@
 import { onMounted, shallowRef } from 'vue'
 import { useRouter } from 'vue-router'
 
-import { useHomeLocation } from '@/composables/features/home'
-// import { useCities } from '@/composables/swr'
 import { getGroupCity, getHotCity } from '@/services/api'
+import { useLocationStore } from '@/stores/modules/store-locations'
 
 defineOptions({
   name: 'Home',
@@ -12,14 +11,12 @@ defineOptions({
 
 const router = useRouter()
 const GroupCityList = ref({})
-// const { data: cities } = useCities()
 const {
-  locationStore,
   locationText,
   canEnterMsite,
-  setCityLocation,
+  setLocation,
   loadCurrentLocation,
-} = useHomeLocation()
+} = useLocationStore()
 
 const hotCityList = shallowRef([])
 
@@ -28,12 +25,10 @@ getHotCity().then(res =>
 )
 console.log(hotCityList.value)
 
-getGroupCity().then(res => GroupCityList.value = res,
-)
-// getReverseGeoCoding(11.222, 33.555).then(res => console.log(res),
-// )
+getGroupCity().then(res => GroupCityList.value = res)
+
 function nextPage(item, navigate) {
-  setCityLocation(item.latitude, item.longitude, {
+  setLocation(item.latitude, item.longitude, {
     city: item.name,
     cityId: item.id,
     geohash: item.geohash,
@@ -45,6 +40,7 @@ function enterMsite() {
   if (!canEnterMsite.value)
     return
 
+  const locationStore = useLocationStore()
   router.push({
     path: '/msite',
     query: locationStore.geohash ? { geohash: locationStore.geohash } : {},
