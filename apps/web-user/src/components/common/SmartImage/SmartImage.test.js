@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest'
-import { createApp, nextTick } from 'vue'
+import { createApp, nextTick, ref } from 'vue'
 import SmartImage from './SmartImage.vue'
 
 const facade = vi.hoisted(() => ({
@@ -12,8 +12,8 @@ vi.mock('./useSmartImage', () => ({
   useSmartImage: vi.fn((options) => {
     facade.options = options
     return {
-      loaded: facade.loaded,
-      failed: facade.failed,
+      loaded: ref(facade.loaded),
+      failed: ref(facade.failed),
     }
   }),
 }))
