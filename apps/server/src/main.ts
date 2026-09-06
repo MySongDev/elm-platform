@@ -41,7 +41,13 @@ async function bootstrap() {
   )
 
   // CORS
-  app.enableCors()
+  const allowedOrigins = configService.get<string>('CORS_ORIGIN', '').split(',').map(s => s.trim()).filter(Boolean)
+  app.enableCors({
+    origin: allowedOrigins.length > 0 ? allowedOrigins : true,
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+  })
 
   // Swagger 配置
   const swaggerConfig = new DocumentBuilder()
