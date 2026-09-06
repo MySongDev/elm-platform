@@ -8,11 +8,12 @@ import type { FormRules } from 'element-plus'
 import type { ButtonPermission } from '@/entities/permission'
 import type { RoleItem } from '@/entities/role'
 import type { MenuItem } from '@/entities/system-menu'
+import { ElMessage } from 'element-plus'
 import { onScopeDispose } from 'vue'
 import { getButtonPermissions } from '@/entities/permission'
 import { createRole, deleteRole, getRoles, updateRole } from '@/entities/role'
 import { getMenus } from '@/entities/system-menu'
-import { createElementPlusCrudFeedback, useConfigCrud } from '@/shared/config-crud'
+import { useConfigCrud } from '@/shared/config-crud'
 import {
   collectMenuPermissionCodes,
   createRoleMenuPermissionTree,
@@ -61,11 +62,10 @@ export function useRoleManagement() {
   const selectedRole = shallowRef<RoleItem | null>(null)
   const checkedMenuIds = ref<number[]>([])
   const savingPermissions = shallowRef(false)
-  const feedback = createElementPlusCrudFeedback()
   let openPanelTimer: ReturnType<typeof setTimeout> | null = null
   let closePanelTimer: ReturnType<typeof setTimeout> | null = null
 
-  const crud = useConfigCrud<RoleItem, RoleQuery, RoleFormState, Partial<RoleItem>>({
+  const crud = useConfigCrud<RoleItem, RoleQuery, RoleFormState>({
     getDefaultQuery: () => ({
       name: '',
       code: '',
@@ -98,7 +98,6 @@ export function useRoleManagement() {
     deleteConfirm: row => t('role.deleteConfirm', { name: row.name }),
     saveSuccessMessage: t('crud.saveSuccess'),
     deleteSuccessMessage: t('crud.deleteSuccess'),
-    feedback,
   })
 
   const menuPermissionTree = computed(() => createRoleMenuPermissionTree(menuSource.value))
@@ -198,7 +197,7 @@ export function useRoleManagement() {
       await updateRole(role.id, { permissions })
       role.permissions = permissions
       checkedMenuIds.value = resolveCheckedMenuIdsByPermissions(menuPermissionTree.value, permissions)
-      feedback.notifySaveSuccess?.(t('role.permissionSaveSuccess'))
+      ElMessage.success(t('role.permissionSaveSuccess'))
       await crud.fetchRows()
     }
     finally {

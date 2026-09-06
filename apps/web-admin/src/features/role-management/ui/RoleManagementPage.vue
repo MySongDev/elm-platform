@@ -81,7 +81,7 @@ onMounted(() => {
             v-auth="Permissions.ROLE_ADD"
             type="primary"
             :icon="IconEpPlus"
-            @click="openCreateDialog"
+            @click="openCreateDialog()"
           >
             {{ t('system.addRole') }}
           </el-button>

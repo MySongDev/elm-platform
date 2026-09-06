@@ -46,6 +46,7 @@ export default antfu(
       '.claude/**',
       'apps/server/build/**',
       'apps/server/documentation/**',
+      'apps/server/src/generated/**',
       'apps/web-admin/docs/**',
       'apps/web-user/.eslintcache',
       'apps/web-user/__screenshots__/**',

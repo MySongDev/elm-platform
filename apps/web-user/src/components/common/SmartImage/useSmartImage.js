@@ -148,8 +148,7 @@ export function useSmartImage(options) {
   }
 
   watch(
-    () => toValue(src)
-    ,
+    () => toValue(src),
     reset,
   )
   watch(

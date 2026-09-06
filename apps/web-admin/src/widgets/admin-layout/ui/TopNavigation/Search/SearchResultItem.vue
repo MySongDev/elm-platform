@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { SearchDisplayItem } from './types'
-import type { FlatRoute } from '@/shared/lib/menu'
 import { IconClock as IconEpClock } from '@iconify-prerendered/vue-ep'
+import { isSearchHistoryItem } from './types'
 
 defineOptions({ name: 'GlobalSearchResultItem' })
 
@@ -15,8 +15,12 @@ const emit = defineEmits<{
   select: [item: SearchDisplayItem]
 }>()
 
-const isHistoryItem = computed(() => 'isHistory' in props.item && props.item.isHistory)
-const routeItem = computed(() => isHistoryItem.value ? undefined : props.item as FlatRoute)
+const isHistoryItem = computed(() => isSearchHistoryItem(props.item))
+const routeItem = computed(() => {
+  if (isSearchHistoryItem(props.item))
+    return undefined
+  return props.item
+})
 </script>
 
 <template>

@@ -1,5 +1,5 @@
-import { effectScope, nextTick, shallowRef } from 'vue'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { effectScope, nextTick, shallowRef } from 'vue'
 import { useSmartImage } from './useSmartImage'
 
 const mocks = vi.hoisted(() => ({
@@ -49,7 +49,14 @@ function createSubject() {
     onLoad,
     onError,
   }))
-  return { img, onError, onLoad, scope, src, subject }
+  return {
+    img,
+    onError,
+    onLoad,
+    scope,
+    src,
+    subject,
+  }
 }
 
 describe('useSmartImage', () => {

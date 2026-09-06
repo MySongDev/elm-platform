@@ -13,7 +13,7 @@ import {
   getCommerceRestaurants,
   updateCommerceRestaurant,
 } from '@/entities/restaurant'
-import { createElementPlusCrudFeedback, useConfigCrud } from '@/shared/config-crud'
+import { useConfigCrud } from '@/shared/config-crud'
 
 export interface RestaurantQuery {
   name: string
@@ -59,7 +59,7 @@ const defaultForm: RestaurantFormState = {
 export function useRestaurantManagement() {
   const { t } = useI18n()
 
-  const crud = useConfigCrud<RestaurantItem, RestaurantQuery, RestaurantFormState, Partial<RestaurantItem>>({
+  const crud = useConfigCrud<RestaurantItem, RestaurantQuery, RestaurantFormState>({
     getDefaultQuery: () => ({
       name: '',
       category: '',
@@ -79,7 +79,6 @@ export function useRestaurantManagement() {
     deleteConfirm: row => t('commerce.restaurant.deleteConfirm', { name: row.name }),
     saveSuccessMessage: t('commerce.saveSuccess'),
     deleteSuccessMessage: t('commerce.deleteSuccess'),
-    feedback: createElementPlusCrudFeedback(),
   })
 
   const rules: FormRules = {

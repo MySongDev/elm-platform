@@ -16,17 +16,17 @@
     "build:server": "turbo run build --filter=@elm-platform/server",
     "build:admin": "turbo run build --filter=@elm-platform/web-admin",
     "build:user": "turbo run build --filter=@elm-platform/web-user",
+    "api:generate": "pnpm --filter @elm-platform/api-types run generate",
     "type-check": "turbo run type-check",
     "lint": "eslint . --fix --cache",
     "lint:style": "stylelint \"apps/{web-admin,web-user}/src/**/*.{vue,scss,css}\" --fix --config stylelint.config.mjs",
     "lint:all": "pnpm lint && pnpm lint:style",
-    "test": "turbo run test test:unit",
-    "test:cov": "turbo run test:cov test:coverage",
+    "test": "turbo run test",
+    "test:cov": "turbo run test:cov",
     "test:e2e": "pnpm --filter @elm-platform/server run prisma:generate && node scripts/run-playwright-e2e.mjs",
     "bundle:report": "pnpm build:admin && pnpm build:user && node scripts/report-bundle-size.mjs",
     "clean": "pnpm -r exec rm -rf node_modules dist .turbo",
-    "prepare": "husky",
-    "preinstall": "node -e \"if (!process.env.CI && !/pnpm/.test(process.env.npm_config_user_agent)) { console.error('\\n\\x1b[31m此项目仅支持 pnpm，请使用 pnpm install 安装依赖\\x1b[0m\\n'); process.exit(1); }\""
+    "prepare": "husky"
   },
   "devDependencies": {
     "@antfu/eslint-config": "catalog:",

@@ -76,6 +76,11 @@ export class UpsertMenuDto {
   @IsOptional()
   permission?: string
 
+  @ApiPropertyOptional({ description: '组件路径' })
+  @IsString()
+  @IsOptional()
+  component?: string
+
   @ApiPropertyOptional({ description: '菜单类型' })
   @IsIn(['catalog', 'menu', 'button'])
   @IsOptional()

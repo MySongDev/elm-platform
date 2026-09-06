@@ -63,7 +63,7 @@ onMounted(() => {
           v-auth="Permissions.USER_ADD"
           type="primary"
           :icon="IconEpPlus"
-          @click="openCreateDialog"
+          @click="openCreateDialog()"
         >
           {{ t('user.addUser') }}
         </el-button>

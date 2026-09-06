@@ -8,8 +8,30 @@ import { TenantAccessService } from '../tenant/tenant-access.service'
 import { fallbackDepts, fallbackMenus, fallbackRoles } from './constants/admin-fallback-data'
 import { buttonPermissions, pagePermissions } from './constants/admin-permissions'
 
+/**
+ * 后台管理聚合服务
+ *
+ * 职责边界：
+ * - 角色/菜单/部门 三大核心聚合的 CRUD 与树形结构构建
+ * - 登录日志/操作日志/系统日志 的多租户查询
+ * - 在线用户会话管理（Redis）
+ * - 权限码常量的对外暴露
+ *
+ * 设计说明：
+ * - 采用「Prisma 优先 + 内存回退」双模式：
+ *   所有写/读操作先尝试 Prisma，捕获异常后降级到内存数组，保证开发/测试环境无数据库时也能跑通
+ *   生产环境应确保数据库可用，内存模式仅作兜底
+ * - 多租户隔离通过 `TenantContext` + `TenantAccessService` 实现：
+ *   平台管理员(dataScope=ALL)可跨租户查询；租户管理员仅能查自己租户数据
+ * - 树形构建(`buildTree`)为通用工具，供菜单/部门复用，按 `sort` 升序排列
+ *
+ * @see TenantAccessService 租户权限校验
+ * @see admin-fallback-data.ts 内存回退种子数据
+ * @see admin-permissions.ts 页面/按钮权限码常量
+ */
 @Injectable()
 export class AdminService {
+  /** 内存回退存储：Prisma 不可用时的兜底数据源 */
   private memoryRoles = [...fallbackRoles]
   private memoryMenus = [...fallbackMenus]
   private memoryDepts = [...fallbackDepts]
@@ -20,33 +42,63 @@ export class AdminService {
     private readonly tenantAccess: TenantAccessService,
   ) {}
 
+  /* ==================== 权限码常量 ==================== */
+
+  /**
+   * 获取页面级权限码常量
+   * @returns 页面权限码映射表（供前端路由守卫、按钮显隐使用）
+   */
   getPagePermissions() {
     return pagePermissions
   }
 
+  /**
+   * 获取按钮级权限码常量
+   * @returns 按钮权限码映射表
+   */
   getButtonPermissions() {
     return buttonPermissions
   }
 
+  /* ==================== 在线用户会话 (Redis) ==================== */
+
+  /**
+   * 获取当前在线的后台管理用户列表
+   * @returns 在线用户信息数组（含 userId、username、loginTime、ip 等）
+   * @remarks 扫描 `admin:online:*` 模式键，批量获取再过滤空值
+   */
   async getOnlineUsers() {
     try {
-      const client = this.redis.getClient()
-      const keys = await client.keys('admin:online:*')
+      const keys = await this.redis.keys('admin:online:*')
       if (!keys.length)
         return []
       const values = await Promise.all(keys.map(key => this.redis.getObject(key)))
       return values.filter(Boolean)
     }
     catch {
+      // Redis 异常时静默返回空数组，避免影响主流程
       return []
     }
   }
 
+  /**
+   * 强制下线指定用户
+   * @param id 用户 ID
+   * @returns 固定成功响应（幂等操作）
+   * @remarks 直接 DEL 对应 Redis 键，忽略不存在的情况
+   */
   async forceLogout(id: number) {
     await this.redis.del(`admin:online:${id}`).catch(() => undefined)
     return { success: true }
   }
 
+  /* ==================== 日志查询 (多租户隔离) ==================== */
+
+  /**
+   * 查询登录日志（最近 200 条，按时间倒序）
+   * @param context 租户上下文，用于数据权限过滤
+   * @returns 登录日志视图数组，含关联用户名
+   */
   async getLoginLogs(context?: TenantContext): Promise<LoginLogView[]> {
     const where = this.buildLoginLogWhere(context)
     const logs = (await this.prisma.loginLog.findMany({
@@ -88,6 +140,12 @@ export class AdminService {
     }))
   }
 
+  /**
+   * 查询操作日志（最近 200 条，按时间倒序）
+   * @param context 租户上下文
+   * @returns 操作日志数组
+   * @remarks 使用 `as any` 绕过 Prisma Client 类型（operationLog 可能未生成到 client 中）
+   */
   async getOperationLogs(context?: TenantContext) {
     try {
       const where = this.buildOperationLogWhere(context)
@@ -102,7 +160,16 @@ export class AdminService {
     }
   }
 
+  /**
+   * 查询系统日志（最近 200 条，按时间倒序）
+   * @param context 租户上下文
+   * @returns 系统日志数组；若数据库不可用或无数据，返回运行态健康检查日志
+   * @remarks
+   * - 非平台管理员仅能查看运行态健康日志（不走数据库）
+   * - 数据库读取失败/无数据时，自动降级到 `getRuntimeSystemLogs()` 生成的实时健康快照
+   */
   async getSystemLogs(context?: TenantContext) {
+    // 非平台管理员：直接返回运行态健康日志，不查数据库
     if (context && !context.isPlatformAdmin) {
       this.tenantAccess.assertCanRead(context)
       return this.getRuntimeSystemLogs()
@@ -124,6 +191,11 @@ export class AdminService {
     return this.getRuntimeSystemLogs()
   }
 
+  /**
+   * 构建登录日志的多租户 where 条件
+   * @param context 租户上下文
+   * @returns Prisma where 条件；undefined 表示无过滤（平台管理员）
+   */
   private buildLoginLogWhere(context?: TenantContext) {
     if (!context || context.dataScope === 'ALL')
       return undefined
@@ -131,11 +203,16 @@ export class AdminService {
     this.tenantAccess.assertCanRead(context)
 
     if (!context.tenantId)
-      return { userId: -1 }
+      return { userId: -1 } // 无租户 ID 时匹配不到任何记录
 
     return { user: { tenantId: context.tenantId } }
   }
 
+  /**
+   * 构建操作日志的多租户 where 条件
+   * @param context 租户上下文
+   * @returns Prisma where 条件
+   */
   private buildOperationLogWhere(context?: TenantContext) {
     if (!context || context.dataScope === 'ALL')
       return undefined
@@ -148,6 +225,11 @@ export class AdminService {
     return { tenantId: context.tenantId }
   }
 
+  /**
+   * 生成运行态系统健康日志（无需数据库）
+   * @returns 包含 NestJS/Prisma/Redis 连接状态的日志数组
+   * @remarks 用于系统日志表不可用时的兜底展示，也供非平台管理员查看
+   */
   private async getRuntimeSystemLogs() {
     const createdAt = new Date().toISOString()
     const memory = process.memoryUsage()
@@ -162,6 +244,7 @@ export class AdminService {
       },
     ]
 
+    // Prisma 连通性探测
     try {
       await (this.prisma as any).$queryRawUnsafe('SELECT 1')
       logs.push({
@@ -184,8 +267,9 @@ export class AdminService {
       })
     }
 
+    // Redis 连通性探测
     try {
-      const pong = await this.redis.getClient().ping()
+      const pong = await this.redis.ping()
       logs.push({
         id: 3,
         level: 'info',
@@ -209,6 +293,12 @@ export class AdminService {
     return logs
   }
 
+  /* ==================== 角色管理 (CRUD + 内存回退) ==================== */
+
+  /**
+   * 获取所有角色列表（按 ID 升序）
+   * @returns 角色数组
+   */
   async getRoles() {
     try {
       return await (this.prisma as any).role.findMany({ orderBy: { id: 'asc' } })
@@ -218,6 +308,12 @@ export class AdminService {
     }
   }
 
+  /**
+   * 创建角色
+   * @param dto 角色创建 DTO
+   * @returns 新建角色对象
+   * @remarks 缺省值：code=role_${timestamp}、status=1、permissions=[]
+   */
   async createRole(dto: UpsertRoleDto) {
     try {
       return await (this.prisma as any).role.create({
@@ -245,6 +341,13 @@ export class AdminService {
     }
   }
 
+  /**
+   * 更新角色
+   * @param id 角色 ID
+   * @param dto 更新 DTO（部分字段）
+   * @returns 更新后的角色对象
+   * @throws NotFoundException 内存模式下角色不存在时
+   */
   async updateRole(id: number, dto: UpsertRoleDto) {
     try {
       return await (this.prisma as any).role.update({
@@ -264,6 +367,12 @@ export class AdminService {
     }
   }
 
+  /**
+   * 删除角色
+   * @param id 角色 ID
+   * @returns 固定成功响应（幂等）
+   * @remarks 内存模式下直接过滤数组；Prisma 模式下若外键约束报错会抛异常上传
+   */
   async deleteRole(id: number) {
     try {
       await (this.prisma as any).role.delete({ where: { id } })
@@ -274,6 +383,12 @@ export class AdminService {
     return { success: true }
   }
 
+  /* ==================== 菜单管理 (CRUD + 树构建 + 内存回退) ==================== */
+
+  /**
+   * 获取菜单树（按 sort、id 升序）
+   * @returns 树形菜单数组，每节点含 children 递归结构
+   */
   async getMenus() {
     try {
       const list = await (this.prisma as any).menu.findMany({ orderBy: [{ sort: 'asc' }, { id: 'asc' }] })
@@ -284,6 +399,11 @@ export class AdminService {
     }
   }
 
+  /**
+   * 创建菜单
+   * @param dto 菜单创建 DTO
+   * @returns 新建菜单对象
+   */
   async createMenu(dto: UpsertMenuDto) {
     try {
       return await (this.prisma as any).menu.create({ data: this.normalizeMenu(dto) })
@@ -298,6 +418,13 @@ export class AdminService {
     }
   }
 
+  /**
+   * 更新菜单
+   * @param id 菜单 ID
+   * @param dto 更新 DTO
+   * @returns 更新后的菜单对象
+   * @throws NotFoundException 内存模式下菜单不存在时
+   */
   async updateMenu(id: number, dto: UpsertMenuDto) {
     try {
       return await (this.prisma as any).menu.update({
@@ -317,6 +444,12 @@ export class AdminService {
     }
   }
 
+  /**
+   * 删除菜单（级联删除子菜单）
+   * @param id 菜单 ID
+   * @returns 固定成功响应
+   * @remarks 内存模式下同步过滤掉该节点及其所有子节点
+   */
   async deleteMenu(id: number) {
     try {
       await (this.prisma as any).menu.delete({ where: { id } })
@@ -327,6 +460,12 @@ export class AdminService {
     return { success: true }
   }
 
+  /* ==================== 部门管理 (CRUD + 树构建 + 内存回退) ==================== */
+
+  /**
+   * 获取部门树（按 sort、id 升序）
+   * @returns 树形部门数组
+   */
   async getDepts() {
     try {
       const list = await (this.prisma as any).dept.findMany({ orderBy: [{ sort: 'asc' }, { id: 'asc' }] })
@@ -337,6 +476,11 @@ export class AdminService {
     }
   }
 
+  /**
+   * 创建部门
+   * @param dto 部门创建 DTO
+   * @returns 新建部门对象
+   */
   async createDept(dto: UpsertDeptDto) {
     try {
       return await (this.prisma as any).dept.create({ data: this.normalizeDept(dto) })
@@ -351,6 +495,13 @@ export class AdminService {
     }
   }
 
+  /**
+   * 更新部门
+   * @param id 部门 ID
+   * @param dto 更新 DTO
+   * @returns 更新后的部门对象
+   * @throws NotFoundException 内存模式下部门不存在时
+   */
   async updateDept(id: number, dto: UpsertDeptDto) {
     try {
       return await (this.prisma as any).dept.update({
@@ -370,6 +521,11 @@ export class AdminService {
     }
   }
 
+  /**
+   * 删除部门（级联删除子部门）
+   * @param id 部门 ID
+   * @returns 固定成功响应
+   */
   async deleteDept(id: number) {
     try {
       await (this.prisma as any).dept.delete({ where: { id } })
@@ -380,6 +536,17 @@ export class AdminService {
     return { success: true }
   }
 
+  /* ==================== 通用工具方法 ==================== */
+
+  /**
+   * 通用树形结构构建器
+   * @param list 扁平节点数组，需含 id、parentId、可选 sort
+   * @returns 树形数组（根节点在第一层），按 sort 升序，叶子节点不含 children 字段
+   * @remarks
+   * - 两次遍历：先建 Map，再按 parentId 挂载 children
+   * - 最后递归清理：排序 + 叶子节点删除空 children 数组
+   * - 复用于菜单/部门两个聚合
+   */
   private buildTree<T extends {
     id: number
     parentId: number | null
@@ -418,6 +585,12 @@ export class AdminService {
     return clean(roots)
   }
 
+  /**
+   * 归一化菜单 DTO → Prisma create/update data
+   * @param dto 原始 DTO
+   * @returns 补全默认值后的数据对象
+   * @remarks 缺省值：parentId=null、title=未命名菜单、type=menu、sort=0、status=1
+   */
   private normalizeMenu(dto: UpsertMenuDto) {
     return {
       parentId: dto.parentId ?? null,
@@ -426,12 +599,19 @@ export class AdminService {
       name: dto.name || null,
       icon: dto.icon || null,
       permission: dto.permission || null,
+      component: dto.component || null,
       type: dto.type || 'menu',
       sort: dto.sort ?? 0,
       status: dto.status ?? 1,
     }
   }
 
+  /**
+   * 归一化部门 DTO → Prisma create/update data
+   * @param dto 原始 DTO
+   * @returns 补全默认值后的数据对象
+   * @remarks 缺省值：parentId=null、name=未命名部门、sort=0、status=1
+   */
   private normalizeDept(dto: UpsertDeptDto) {
     return {
       parentId: dto.parentId ?? null,

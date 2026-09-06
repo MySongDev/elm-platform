@@ -56,3 +56,5 @@ pids
 /documentation
 
 # Prisma
+# Generated Prisma Client (v7 prisma-client generator output)
+/src/generated

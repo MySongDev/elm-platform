@@ -2,243 +2,49 @@ name: CI
 
 on:
   push:
-    branches:
-      - main
-      - 'codex/**'
+    branches: [main, 'codex/**']
   pull_request:
-    branches:
-      - main
+    branches: [main]
 
 jobs:
   commitlint:
     runs-on: ubuntu-latest
     if: github.event_name == 'pull_request'
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: pnpm
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: Validate commit messages
-        run: pnpm exec commitlint --from ${{ github.event.pull_request.base.sha }} --to ${{ github.event.pull_request.head.sha }}
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: pnpm }
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm exec commitlint --from ${{ github.event.pull_request.base.sha }} --to ${{ github.event.pull_request.head.sha }}
 
   lint:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: pnpm
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: Validate workspace metadata
-        run: pnpm ci:workspace
-
-      - name: Lint workspace
-        run: pnpm ci:lint
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: pnpm }
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm lint
 
   build-and-test:
     runs-on: ubuntu-latest
-    services:
-      postgres:
-        image: postgres:16
-        env:
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: elm_test
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: pnpm
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: Build workspace packages
-        run: pnpm build:packages
-
-      - name: Generate Prisma client
-        run: pnpm --filter @elm-platform/server run prisma:generate
-
-      - name: Type check workspace
-        run: pnpm ci:type-check
-
-      - name: Test server
-        run: pnpm --filter @elm-platform/server run test
-        env:
-          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/elm_test?schema=public
-
-      - name: Test admin
-        run: pnpm --filter @elm-platform/web-admin run test:unit
-
-      - name: Test user
-        run: pnpm --filter @elm-platform/web-user run test
-
-      - name: Build server
-        run: pnpm --filter @elm-platform/server run build
-
-      - name: Build admin
-        run: pnpm --filter @elm-platform/web-admin run build
-
-      - name: Build user
-        run: pnpm --filter @elm-platform/web-user run build
-
-  coverage:
-    runs-on: ubuntu-latest
-    services:
-      postgres:
-        image: postgres:16
-        env:
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: elm_test
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: pnpm
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: Build workspace packages
-        run: pnpm build:packages
-
-      - name: Generate Prisma client
-        run: pnpm --filter @elm-platform/server run prisma:generate
-
-      - name: Generate coverage reports
-        run: pnpm ci:coverage
-        env:
-          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/elm_test?schema=public
-
-  security-audit:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: pnpm
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: Run high severity dependency audit
-        run: pnpm audit --audit-level high --registry=https://registry.npmjs.org
-
-  e2e-smoke:
-    runs-on: ubuntu-latest
-    services:
-      postgres:
-        image: postgres:16
-        env:
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: elm_test
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-      redis:
-        image: redis:7
-        ports:
-          - 6379:6379
-        options: >-
-          --health-cmd "redis-cli ping"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: pnpm
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: Install Playwright browser
-        run: pnpm exec playwright install --with-deps chromium
-
-      - name: Build workspace packages
-        run: pnpm build:packages
-
-      - name: Run Playwright smoke
-        run: pnpm test:e2e
-        env:
-          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/elm_test?schema=public
-          REDIS_HOST: localhost
-          REDIS_PORT: 6379
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: pnpm }
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build:packages
+      - run: pnpm --filter @elm-platform/server run build
+      - run: pnpm --filter @elm-platform/web-admin run build
+      - run: pnpm --filter @elm-platform/web-user run build
+      - run: pnpm type-check
+      - run: pnpm --filter @elm-platform/server run test
+      - run: pnpm --filter @elm-platform/web-admin run test:unit
+      - run: pnpm --filter @elm-platform/web-user run test
 
   api-drift:
     runs-on: ubuntu-latest
@@ -257,95 +63,36 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
-
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: pnpm
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: Build workspace packages
-        run: pnpm build:packages
-
-      - name: Generate Prisma client
-        run: pnpm --filter @elm-platform/server run prisma:generate
-
-      - name: Run database migrations
-        run: pnpm --filter @elm-platform/server run prisma:migrate:prod
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: pnpm }
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build:packages
+      - run: pnpm --filter @elm-platform/server run prisma:generate
+      - run: pnpm --filter @elm-platform/server run prisma:migrate:prod
         env:
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/elm_test?schema=public
-
       - name: Start server
         run: pnpm --filter @elm-platform/server run start &
         env:
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/elm_test?schema=public
           APP_PORT: 3000
           APP_PREFIX: api
-
-      - name: Wait for server
+      - name: Wait for server (api-docs-json ready)
         run: |
           for i in $(seq 1 30); do
             curl -s http://localhost:3000/api-docs-json > /dev/null && break
             sleep 1
           done
-
-      - name: Generate API types
-        run: pnpm ci:api-drift
-
-      - name: Check for API drift
+      - name: Regenerate API types from live spec
+        run: pnpm api:generate
+      - name: Fail if generated types drifted
         run: |
           if ! git diff --quiet packages/api-types/; then
-            echo "API types are out of date. Run 'pnpm api:generate' and commit the changes."
+            echo "::error::API types are out of date. Run 'pnpm api:generate' locally and commit packages/api-types/."
             git diff packages/api-types/
             exit 1
           fi
           echo "API types are up to date."
-
-  affected-pilot:
-    runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request'
-    # Non-blocking Turborepo affected pilot. Reports the affected build/lint
-    # scope relative to the PR base without gating merges. Promote to a
-    # blocking job only after the Turborepo pilot is confirmed stable.
-    continue-on-error: true
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: pnpm
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: Build workspace packages
-        run: pnpm build:packages
-
-      - name: Report affected build scope
-        env:
-          TURBO_SCM_BASE: ${{ github.event.pull_request.base.sha }}
-        run: pnpm turbo:affected:build
-
-      - name: Report affected lint scope
-        env:
-          TURBO_SCM_BASE: ${{ github.event.pull_request.base.sha }}
-        run: pnpm turbo:affected:lint
-

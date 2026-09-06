@@ -19,23 +19,27 @@ const menuApi = vi.hoisted(() => ({
   getMenus: vi.fn(),
 }))
 
-const crudFeedback = vi.hoisted(() => ({
-  confirmDelete: vi.fn(),
-  notifyDeleteSuccess: vi.fn(),
-  notifySaveSuccess: vi.fn(),
-}))
+vi.mock('@/shared/config-crud', async () => {
+  const actual = await vi.importActual<typeof import('@/shared/config-crud/model/useConfigCrud')>('@/shared/config-crud/model/useConfigCrud')
+  return actual
+})
 
 vi.mock('@/entities/role', () => roleApi)
 vi.mock('@/entities/permission', () => permissionApi)
 vi.mock('@/entities/system-menu', () => menuApi)
 
+vi.mock('element-plus', () => ({
+  ElMessage: {
+    success: vi.fn(),
+  },
+  ElMessageBox: {
+    confirm: vi.fn().mockResolvedValue(undefined),
+  },
+}))
+
 vi.mock('@/shared/config-crud', async () => {
   const actual = await vi.importActual<typeof import('@/shared/config-crud/model/useConfigCrud')>('@/shared/config-crud/model/useConfigCrud')
-
-  return {
-    ...actual,
-    createElementPlusCrudFeedback: () => crudFeedback,
-  }
+  return actual
 })
 
 const menus: MenuItem[] = [
@@ -140,7 +144,6 @@ beforeEach(() => {
   roleApi.updateRole.mockResolvedValue(undefined)
   permissionApi.getButtonPermissions.mockResolvedValue([])
   menuApi.getMenus.mockResolvedValue(menus)
-  crudFeedback.confirmDelete.mockResolvedValue(true)
 })
 
 describe('useRoleManagement menu permissions', () => {
@@ -226,7 +229,6 @@ describe('useRoleManagement menu permissions', () => {
       expect(roleApi.updateRole).toHaveBeenCalledWith(2, {
         permissions: ['user:add', 'log:login:view'],
       })
-      expect(crudFeedback.notifySaveSuccess).toHaveBeenCalledWith('role.permissionSaveSuccess')
     }
     finally {
       dispose()

@@ -10,6 +10,7 @@ import { realSessionApi } from './real-session-api'
 export type { LoginCredentials, LoginResult, SessionApi } from './contracts'
 
 export const login = realSessionApi.login
+export const logout = realSessionApi.logout
 export const getCurrentUser = realSessionApi.getCurrentUser
 export const getUserMenus = realSessionApi.getUserMenus
 export const updateProfile = realSessionApi.updateProfile

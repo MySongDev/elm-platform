@@ -94,7 +94,7 @@ onMounted(() => {
         <el-button
           type="primary"
           :icon="IconEpPlus"
-          @click="openCreateDialog"
+          @click="openCreateDialog()"
         >
           新增租户
         </el-button>

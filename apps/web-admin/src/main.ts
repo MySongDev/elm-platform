@@ -1,7 +1,7 @@
 import { createPinia } from 'pinia'
 import piniaPluginPersistedstate from 'pinia-plugin-persistedstate'
 import { createApp } from 'vue'
-import { setupDirectives } from '@/app/providers/directives'
+import directive from '@/app/directives'
 import { setupHttpClient } from '@/app/providers/http'
 import router from '@/app/router'
 import { setupI18n } from '@/shared/i18n'
@@ -22,6 +22,6 @@ app.use(pinia)
 setupHttpClient()
 app.use(router)
 setupI18n(app)
-setupDirectives(app)
+app.use(directive)
 app.component('SvgIcon', SvgIcon)
 app.mount('#app')

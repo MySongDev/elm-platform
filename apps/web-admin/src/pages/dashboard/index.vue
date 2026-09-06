@@ -1,6 +1,6 @@
 <script setup lang="ts">
+import { defineAsyncComponent } from 'vue'
 import {
-  DashboardOrderTrendChart,
   DashboardPendingWorkList,
   DashboardShopRankingTable,
   DashboardStatCardGrid,
@@ -9,6 +9,17 @@ import {
 import { AdminStateView } from '@/shared/ui/state'
 
 defineOptions({ name: 'DashboardView' })
+
+/**
+ * 订单趋势图依赖 echarts / vue-echarts，体积远大于其它 dashboard 区块。
+ * 使用异步组件拆成独立 chunk：先渲染统计卡/待办/排行，再加载图表，
+ * 降低进入 dashboard 时的主包阻塞。
+ * 注意：必须直接 import 组件文件，避免经 features/dashboard barrel 同步卷入 echarts。
+ */
+const DashboardOrderTrendChart = defineAsyncComponent({
+  loader: () => import('@/features/dashboard/components/OrderTrendChart.vue'),
+  delay: 80,
+})
 
 const {
   loading,
@@ -39,7 +50,7 @@ onMounted(() => {
       <DashboardStatCardGrid :stats="stats" />
 
       <el-row :gutter="16" class="dashboard__main-row">
-        <el-col :xs="24" :lg="16">
+        <el-col :xs="24" :lg="16" class="dashboard__chart-col">
           <DashboardOrderTrendChart :data="orderTrend" />
         </el-col>
         <el-col :xs="24" :lg="8">
@@ -62,6 +73,11 @@ onMounted(() => {
 .dashboard__main-row {
   row-gap: var(--app-space-md);
   margin-top: var(--app-space-lg);
+}
+
+/* 为异步图表预留高度，减少 chunk 到达前后的布局跳动 */
+.dashboard__chart-col {
+  min-height: 400px;
 }
 
 .dashboard__ranking {

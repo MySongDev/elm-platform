@@ -45,7 +45,7 @@ export const errorRoutes: RouteRecordRaw[] = [
 
 export const notFoundRoute: RouteRecordRaw = {
   path: '/:pathMatch(.*)*',
-  redirect: '/404',
+  component: () => import('@/pages/error/404.vue'),
   meta: {
     requiresAuth: false,
     hidden: true,

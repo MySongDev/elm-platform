@@ -2,12 +2,14 @@
 // 文档: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider = "prisma-client-js"
+  provider     = "prisma-client"
+  output       = "../src/generated/prisma"
+  moduleFormat = "cjs"
+  runtime      = "nodejs"
 }
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
 }
 
 // 示例模型 - 用户表
@@ -235,6 +237,7 @@ model Menu {
   name       String?
   icon       String?
   permission String?
+  component  String?
   type       String   @default("menu") // catalog | menu | button
   sort       Int      @default(0)
   status     Int      @default(1)

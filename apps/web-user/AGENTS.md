@@ -97,10 +97,10 @@ pnpm lint
   - `SearchHistory.ts` - Search history management
 
 ### Mock Data
-- Mock endpoints defined in `mock/` directory
-- Mock server enabled in development via `vite-plugin-mock`
-- Configuration in `vite.config.js` (localEnabled: true, prodEnabled: false)
-- Mock files use JS/TS files
+- Mock routes live in `mock/routes/` and are scanned by `vite-plugin-mock`
+- Enable with `pnpm dev:mock` (`--mode mock`) or `VITE_USE_MOCK=true`
+- Configuration in `vite.config.js`: `viteMockServe({ mockPath: 'mock/routes', enable: useMock })`
+- Shared generators stay outside `routes/` (e.g. `mock/restaurants.js`, `mock/mock-utils.js`)
 
 ### Styling
 - SCSS with global imports in `vite.config.js`:

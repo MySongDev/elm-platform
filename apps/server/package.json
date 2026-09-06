@@ -31,14 +31,17 @@
     "@nestjs/passport": "catalog:",
     "@nestjs/platform-express": "catalog:",
     "@nestjs/swagger": "catalog:",
+    "@prisma/adapter-pg": "catalog:",
     "@prisma/client": "catalog:",
     "alipay-sdk": "catalog:",
     "bcryptjs": "catalog:",
     "class-transformer": "catalog:",
     "class-validator": "catalog:",
+    "dotenv": "catalog:",
     "ioredis": "catalog:",
     "passport": "catalog:",
     "passport-jwt": "catalog:",
+    "pg": "catalog:",
     "reflect-metadata": "catalog:",
     "rxjs": "catalog:",
     "zod": "catalog:"
@@ -54,6 +57,7 @@
     "@types/jest": "catalog:",
     "@types/node": "catalog:",
     "@types/passport-jwt": "catalog:",
+    "@types/pg": "catalog:",
     "@types/supertest": "catalog:",
     "jest": "catalog:",
     "prisma": "catalog:",
@@ -65,9 +69,6 @@
     "tsconfig-paths": "catalog:",
     "typescript": "catalog:"
   },
-  "prisma": {
-    "seed": "ts-node prisma/seed.ts"
-  },
   "jest": {
     "moduleFileExtensions": [
       "js",
@@ -78,6 +79,12 @@
     "testRegex": ".*\\.spec\\.ts$",
     "transform": {
       "^.+\\.(t|j)s$": "ts-jest"
+    },
+    "moduleNameMapper": {
+      "^@/(.*)$": "<rootDir>/$1",
+      "^@common/(.*)$": "<rootDir>/common/$1",
+      "^@config/(.*)$": "<rootDir>/config/$1",
+      "^@redis/(.*)$": "<rootDir>/redis/$1"
     },
     "collectCoverageFrom": [
       "**/*.(t|j)s"

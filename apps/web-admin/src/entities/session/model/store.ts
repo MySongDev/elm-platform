@@ -15,6 +15,7 @@ import {
   getCurrentUser,
   getUserMenus,
   login as loginRequest,
+  logout as logoutRequest,
   updateProfile,
 } from '../api'
 
@@ -33,9 +34,13 @@ export const useAuthStore = defineStore('auth', () => {
   const token = shallowRef('')
   const tokenExpiresAt = shallowRef(0)
   const userInfo = ref<UserInfo | null>(null)
+  // 后端返回的原始菜单树（尚未转换为路由）
   const menus = ref<UserMenuNode[]>([])
+  // 由菜单构建出的动态路由（buildRoutes 的结果）
   const menuRoutes = shallowRef<RouteRecordRaw[]>([])
+  // 动态路由是否已构建并注册（缓存标记，避免重复请求）
   const routesLoaded = shallowRef(false)
+  // 缓存进行中的菜单请求，防止并发重复请求
   let loadingMenusPromise: Promise<UserMenuNode[]> | null = null
 
   // getters
@@ -127,13 +132,19 @@ export const useAuthStore = defineStore('auth', () => {
     loadingMenusPromise = null
   }
 
-  function logout() {
-    token.value = ''
-    tokenExpiresAt.value = 0
-    userInfo.value = null
-    resetRouteState()
+  // 主动登出：先通知后端清除在线态（需带上仍有效的 token），再清理本地会话。
+  // 与 resetToken 的区别在于本函数会调用后端；本地清理逻辑复用 resetToken。
+  async function logout() {
+    try {
+      await logoutRequest()
+    }
+    catch {
+      // 后端登出失败（网络异常/token 已过期）不应阻断前端登出，本地状态仍需清理。
+    }
+    resetToken()
   }
 
+  // 被动清理：token 失效（401/过期）时调用，仅清本地状态，不回调后端。
   function resetToken() {
     token.value = ''
     tokenExpiresAt.value = 0

@@ -4,9 +4,9 @@
  * @description 封装列表查询、表单弹窗、分页、保存、删除和反馈流程，降低后台 CRUD 页面重复逻辑。
  */
 
-import type { CrudId, PaginatedResult, PaginationState, UseConfigCrudOptions } from './useConfigCrud.types'
+import type { CrudId, UseConfigCrudOptions } from './useConfigCrud.types'
+import { ElMessage, ElMessageBox } from 'element-plus'
 import { computed, onScopeDispose, reactive, shallowRef } from 'vue'
-import { createSilentCrudFeedback } from './feedback'
 
 /**
  * @description 有副作用：调用传入的 CRUD 请求、更新响应式状态，并通过 feedback 触发确认框或消息提示。
@@ -15,11 +15,10 @@ import { createSilentCrudFeedback } from './feedback'
  */
 export function useConfigCrud<
   Row,
-  Query extends object,
-  Form extends object,
-  Payload = Partial<Form>,
+  Query extends object = Record<string, unknown>,
+  Form extends object = Partial<Row>,
   Id extends CrudId = number,
->(options: UseConfigCrudOptions<Row, Query, Form, Payload, Id>) {
+>(options: UseConfigCrudOptions<Row, Query, Form, Id>) {
   const loading = shallowRef(false)
   const saving = shallowRef(false)
   const error = shallowRef<unknown>(null)
@@ -28,23 +27,10 @@ export function useConfigCrud<
   const query = reactive(options.getDefaultQuery()) as Query
   const form = reactive(options.getDefaultForm()) as Form
 
-  const paginated = !!options.pagination
-  const pagination = reactive<PaginationState>({
-    page: 1,
-    pageSize: options.pagination?.defaultPageSize ?? 20,
-    total: 0,
-  })
-
   let fetchAbortController: AbortController | null = null
-  const feedback = {
-    ...createSilentCrudFeedback(),
-    ...options.feedback,
-  }
 
   const isEdit = computed(() => Boolean(options.getFormId(form)))
   const filteredData = computed(() => {
-    if (paginated)
-      return tableData.value
     if (options.filterList)
       return options.filterList(tableData.value, query)
     if (options.filterItem)
@@ -54,16 +40,16 @@ export function useConfigCrud<
 
   function resetQuery() {
     Object.assign(query, structuredClone(options.getDefaultQuery()))
-    if (paginated)
-      pagination.page = 1
   }
 
   function resetForm() {
     Object.assign(form, structuredClone(options.getDefaultForm()))
   }
 
-  function openCreateDialog() {
+  function openCreateDialog(seed?: Partial<Form>) {
     resetForm()
+    if (seed)
+      Object.assign(form, seed)
     dialogVisible.value = true
   }
 
@@ -82,25 +68,12 @@ export function useConfigCrud<
     error.value = null
 
     try {
-      const result = paginated
-        ? await options.fetchList({
-            page: pagination.page,
-            pageSize: pagination.pageSize,
-            query,
-          })
-        : await options.fetchList()
+      const result = await options.fetchList()
 
       if (controller.signal.aborted)
         return
 
-      if (paginated && result && 'list' in result) {
-        const pagResult = result as PaginatedResult<Row>
-        tableData.value = pagResult.list
-        pagination.total = pagResult.total
-      }
-      else {
-        tableData.value = result as Row[]
-      }
+      tableData.value = result as Row[]
     }
     catch (caughtError) {
       if (!controller.signal.aborted)
@@ -111,17 +84,6 @@ export function useConfigCrud<
       if (!controller.signal.aborted)
         loading.value = false
     }
-  }
-
-  function handlePageChange(page: number) {
-    pagination.page = page
-    fetchRows()
-  }
-
-  function handleSizeChange(size: number) {
-    pagination.pageSize = size
-    pagination.page = 1
-    fetchRows()
   }
 
   function resolveSaveSuccessMessage(id: ReturnType<typeof options.getFormId>) {
@@ -140,7 +102,7 @@ export function useConfigCrud<
     saving.value = true
 
     try {
-      const payload = options.toPayload ? options.toPayload(form) : form as unknown as Payload
+      const payload = options.toPayload ? options.toPayload(form) : form
       const id = options.getFormId(form)
 
       if (id)
@@ -148,7 +110,7 @@ export function useConfigCrud<
       else
         await options.createItem(payload)
 
-      feedback.notifySaveSuccess(resolveSaveSuccessMessage(id))
+      ElMessage.success(resolveSaveSuccessMessage(id))
       dialogVisible.value = false
       await fetchRows()
     }
@@ -158,12 +120,15 @@ export function useConfigCrud<
   }
 
   async function handleDelete(row: Row) {
-    const confirmed = await feedback.confirmDelete(options.deleteConfirm(row))
-    if (!confirmed)
+    try {
+      await ElMessageBox.confirm(options.deleteConfirm(row), '提示', { type: 'warning' })
+    }
+    catch {
       return
+    }
 
     await options.deleteItem(options.getRowId(row))
-    feedback.notifyDeleteSuccess(options.deleteSuccessMessage ?? '删除成功')
+    ElMessage.success(options.deleteSuccessMessage ?? '删除成功')
     await fetchRows()
   }
 
@@ -181,7 +146,6 @@ export function useConfigCrud<
     form,
     isEdit,
     filteredData,
-    pagination,
     resetQuery,
     resetForm,
     openCreateDialog,
@@ -189,7 +153,5 @@ export function useConfigCrud<
     fetchRows,
     submitForm,
     handleDelete,
-    handlePageChange,
-    handleSizeChange,
   }
 }

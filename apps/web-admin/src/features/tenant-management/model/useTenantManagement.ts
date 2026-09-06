@@ -2,7 +2,7 @@ import type { FormRules } from 'element-plus'
 import type { TenantFormState } from './payload'
 import type { CreateTenantParams, TenantInfo, TenantListQuery, UpdateTenantParams } from '@/entities/tenant'
 import { createTenant, getTenantList, updateTenant } from '@/entities/tenant'
-import { createElementPlusCrudFeedback, useConfigCrud } from '@/shared/config-crud'
+import { useConfigCrud } from '@/shared/config-crud'
 import { toTenantPayload } from './payload'
 
 export type { TenantFormState } from './payload'
@@ -19,7 +19,7 @@ const defaultForm: TenantFormState = {
 }
 
 export function useTenantManagement() {
-  const crud = useConfigCrud<TenantInfo, TenantListQuery, TenantFormState, CreateTenantParams | UpdateTenantParams, number>({
+  const crud = useConfigCrud<TenantInfo, TenantListQuery, TenantFormState, number>({
     getDefaultQuery: () => ({
       name: '',
       status: '' as TenantListQuery['status'],
@@ -55,7 +55,6 @@ export function useTenantManagement() {
     toPayload: toTenantPayload,
     deleteConfirm: () => '',
     saveSuccessMessage: ({ isEdit }) => isEdit ? '更新租户成功' : '创建租户成功',
-    feedback: createElementPlusCrudFeedback(),
   })
 
   const rules = computed<FormRules>(() => ({

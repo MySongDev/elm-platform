@@ -1,8 +1,8 @@
 import type { TenantContext } from '../tenant/tenant.types'
 import type { CreateUserDto, UpdateUserDto } from './dto/create-user.dto'
 import { BadRequestException, ConflictException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common'
-import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library'
 import * as bcrypt from 'bcryptjs'
+import { Prisma } from '../../generated/prisma/client'
 import { PrismaService } from '../../prisma/prisma.service'
 import { RedisService } from '../../redis/redis.service'
 
@@ -131,7 +131,7 @@ export class UserService {
       return user
     }
     catch (error) {
-      if (error instanceof PrismaClientKnownRequestError && error.code === 'P2002') {
+      if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') {
         throw new ConflictException('用户名、邮箱或手机号已存在')
       }
       throw error

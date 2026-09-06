@@ -1,6 +1,5 @@
 <script setup lang="ts" generic="Row extends object = object">
 import type { ConfigTableColumn } from '../../model/table'
-import ConfigTableCellTag from './ConfigTableCellTag.vue'
 
 defineOptions({ name: 'ConfigTableColumns' })
 
@@ -18,6 +17,10 @@ function getCellText(row: Row, column: ConfigTableColumn<Row>) {
   const value = column.formatter ? column.formatter(row) : column.prop ? row[column.prop] : ''
   return normalizeCellText(value, column.emptyText)
 }
+
+function getCellTag(row: Row, column: ConfigTableColumn<Row>) {
+  return column.tag?.(row)
+}
 </script>
 
 <template>
@@ -31,11 +34,13 @@ function getCellText(row: Row, column: ConfigTableColumn<Row>) {
     :fixed="column.fixed"
     :show-overflow-tooltip="column.showOverflowTooltip"
   >
-    <template v-if="column.formatter || column.tag" #default="{ row }">
-      <ConfigTableCellTag v-if="column.tag" :row="row" :column="column" />
-      <template v-else>
-        {{ getCellText(row, column) }}
-      </template>
+    <template v-if="column.tag" #default="{ row }">
+      <el-tag v-if="getCellTag(row, column)" :type="getCellTag(row, column)?.type">
+        {{ getCellTag(row, column)?.label }}
+      </el-tag>
+    </template>
+    <template v-else-if="column.formatter" #default="{ row }">
+      {{ getCellText(row, column) }}
     </template>
   </el-table-column>
 </template>

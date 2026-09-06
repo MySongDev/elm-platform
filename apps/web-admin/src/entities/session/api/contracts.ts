@@ -16,6 +16,7 @@ export type LoginResult = ApiEnvelopeData<LoginResponseBody>
 
 export interface SessionApi {
   login: (credentials: LoginCredentials) => Promise<LoginResult>
+  logout: () => Promise<void>
   getCurrentUser: () => Promise<UserInfo>
   getUserMenus: () => Promise<UserMenuNode[]>
   updateProfile: (data: UpdateProfileParams) => Promise<UserInfo>

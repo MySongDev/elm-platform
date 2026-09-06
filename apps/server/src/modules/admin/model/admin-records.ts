@@ -22,6 +22,7 @@ export interface MenuRecord {
   name: string | null
   icon: string | null
   permission: string | null
+  component: string | null
   type: 'catalog' | 'menu' | 'button'
   sort: number
   status: number

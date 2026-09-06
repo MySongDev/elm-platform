@@ -1,13 +1,24 @@
 {
   "extends": "@elm-platform/tsconfig/node-nestjs.json",
   "compilerOptions": {
+    "target": "ES2022",
     "baseUrl": "./",
     "paths": {
-      "@/*": ["src/*"],
-      "@common/*": ["src/common/*"],
-      "@config/*": ["src/config/*"],
-      "@prisma/*": ["src/prisma/*"],
-      "@redis/*": ["src/redis/*"]
+      "@/*": [
+        "src/*"
+      ],
+      "@common/*": [
+        "src/common/*"
+      ],
+      "@config/*": [
+        "src/config/*"
+      ],
+      "@prisma/*": [
+        "src/prisma/*"
+      ],
+      "@redis/*": [
+        "src/redis/*"
+      ]
     },
     "outDir": "./dist"
   }

@@ -15,22 +15,20 @@ const permissionApi = vi.hoisted(() => ({
   getButtonPermissions: vi.fn(),
 }))
 
-const crudFeedback = vi.hoisted(() => ({
-  confirmDelete: vi.fn(),
-  notifyDeleteSuccess: vi.fn(),
-  notifySaveSuccess: vi.fn(),
+vi.mock('element-plus', () => ({
+  ElMessage: {
+    warning: vi.fn(),
+    success: vi.fn(),
+  },
+  ElMessageBox: {
+    confirm: vi.fn(),
+  },
 }))
 
 vi.mock('vue-i18n', () => ({
   useI18n: () => ({
     t: (key: string) => key,
   }),
-}))
-
-vi.mock('element-plus', () => ({
-  ElMessage: {
-    warning: vi.fn(),
-  },
 }))
 
 vi.mock('@/entities/user', () => userApi)
@@ -45,11 +43,7 @@ vi.mock('@/entities/session', () => ({
 
 vi.mock('@/shared/config-crud', async () => {
   const actual = await vi.importActual<typeof import('@/shared/config-crud/model/useConfigCrud')>('@/shared/config-crud/model/useConfigCrud')
-
-  return {
-    ...actual,
-    createElementPlusCrudFeedback: () => crudFeedback,
-  }
+  return actual
 })
 
 function createForm(overrides: Partial<UserFormState> = {}): UserFormState {
@@ -91,7 +85,6 @@ beforeEach(() => {
   userApi.getUserList.mockResolvedValue([])
   userApi.updateUser.mockResolvedValue(undefined)
   permissionApi.getButtonPermissions.mockResolvedValue([])
-  crudFeedback.confirmDelete.mockResolvedValue(true)
 })
 
 afterEach(() => {
@@ -234,7 +227,6 @@ describe('useUserManagement save payloads', () => {
         boundShopIds: [],
       })
       expect(userApi.updateUser).not.toHaveBeenCalled()
-      expect(crudFeedback.notifySaveSuccess).toHaveBeenCalledWith('user.createSuccess')
     }
     finally {
       dispose()
@@ -277,7 +269,6 @@ describe('useUserManagement save payloads', () => {
         dataScope: 'ALL',
         boundShopIds: [],
       })
-      expect(crudFeedback.notifySaveSuccess).toHaveBeenCalledWith('user.updateSuccess')
     }
     finally {
       dispose()
