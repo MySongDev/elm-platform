@@ -5,14 +5,14 @@ module.exports = {
     {
       name: 'elm-server',
       script: 'apps/server/dist/main.js',
-      cwd: require('path').resolve(__dirname, '../..'),
+      cwd: require('node:path').resolve(__dirname, '../..'),
       // 让 PM2 转发 .env、注入工作目录
       autorestart: true,
       restart_delay: 3000,
       max_memory_restart: '512M',
       // 日志落到 logs/，避免污染仓库根
-      out_file: require('path').resolve(__dirname, '../../logs/elm-server.out.log'),
-      error_file: require('path').resolve(__dirname, '../../logs/elm-server.err.log'),
+      out_file: require('node:path').resolve(__dirname, '../../logs/elm-server.out.log'),
+      error_file: require('node:path').resolve(__dirname, '../../logs/elm-server.err.log'),
       merge_logs: true,
       // 时间戳便于排查
       time: true,
@@ -23,4 +23,4 @@ module.exports = {
       },
     },
   ],
-};
+}

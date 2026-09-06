@@ -6,11 +6,11 @@
 
 /** 原始数据字段 */
 interface ElemeCity {
-  i: number   // 城市ID
-  n: string   // 城市名
-  p: string   // 拼音
-  x: number   // 纬度
-  y: number   // 经度
+  i: number // 城市ID
+  n: string // 城市名
+  p: string // 拼音
+  x: number // 纬度
+  y: number // 经度
 }
 
 /** 生成的数据字段 */
@@ -28,13 +28,34 @@ interface CityRecord {
 }
 
 // 现有6个城市的特殊信息
-const SPECIAL_CITY_INFO: Record<string, { abbr: string; area_code: string }> = {
-  '上海': { abbr: 'SH', area_code: '021' },
-  '北京': { abbr: 'BJ', area_code: '010' },
-  '杭州': { abbr: 'HZ', area_code: '0571' },
-  '深圳': { abbr: 'SZ', area_code: '0755' },
-  '广州': { abbr: 'GZ', area_code: '020' },
-  '南京': { abbr: 'NJ', area_code: '025' },
+const SPECIAL_CITY_INFO: Record<string, {
+  abbr: string
+  area_code: string
+}> = {
+  上海: {
+    abbr: 'SH',
+    area_code: '021',
+  },
+  北京: {
+    abbr: 'BJ',
+    area_code: '010',
+  },
+  杭州: {
+    abbr: 'HZ',
+    area_code: '0571',
+  },
+  深圳: {
+    abbr: 'SZ',
+    area_code: '0755',
+  },
+  广州: {
+    abbr: 'GZ',
+    area_code: '020',
+  },
+  南京: {
+    abbr: 'NJ',
+    area_code: '025',
+  },
 }
 
 // 拼音首字母到排序号的映射
@@ -50,7 +71,8 @@ function encodeGeoHash(lat: number, lng: number): string {
 
 // abbr 生成：取前两字，直辖市或新疆等特殊处理
 function generateAbbr(name: string): string {
-  if (name.length <= 2) return name
+  if (name.length <= 2)
+    return name
   // 对于"自治州"等较长的，取前两个字
   return name.slice(0, 2)
 }
@@ -145,9 +167,9 @@ async function main() {
 
   const outputPath = 'apps/web-user/src/data/china-cities.ts'
   // eslint-disable-next-line ts/no-require-imports
-  const fs = require('fs')
+  const fs = require('node:fs')
   // eslint-disable-next-line ts/no-require-imports
-  const path = require('path')
+  const path = require('node:path')
 
   const dir = path.dirname(outputPath)
   if (!fs.existsSync(dir)) {

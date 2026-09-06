@@ -18,7 +18,10 @@ class FakeIntersectionObserver {
   }
 
   trigger(el, isIntersecting = true) {
-    this.callback([{ target: el, isIntersecting }])
+    this.callback([{
+      target: el,
+      isIntersecting,
+    }])
   }
 }
 
@@ -76,8 +79,7 @@ describe('lazy image directive lifecycle', () => {
     })
 
     const activeElements = Array.from({ length: 8 }, (_, index) =>
-      mountAndEnter(directive, `/active-${index}.png`),
-    )
+      mountAndEnter(directive, `/active-${index}.png`))
     const queuedEl = mountAndEnter(directive, '/stale-local.png')
 
     directive.unmounted(queuedEl)
@@ -102,8 +104,7 @@ describe('lazy image directive lifecycle', () => {
     })
 
     const cancelledElements = Array.from({ length: 8 }, (_, index) =>
-      mountAndEnter(directive, `/cancelled-${index}.png`),
-    )
+      mountAndEnter(directive, `/cancelled-${index}.png`))
 
     cancelledElements.forEach(el => directive.unmounted(el))
 
