@@ -68,6 +68,9 @@ apps/server/prisma/*.db-journal
 *.tsbuildinfo
 .worktrees/
 
+# 本地留存的重构前旧代码(仅供学习/复习,不进版本库)
+backup/
+
 # Docs
 docs/*
 !docs/engineering
