@@ -38,6 +38,7 @@ jobs:
         with: { node-version: 22, cache: pnpm }
       - run: pnpm install --frozen-lockfile
       - run: pnpm build:packages
+      - run: pnpm --filter @elm-platform/server run prisma:generate
       - run: pnpm --filter @elm-platform/server run build
       - run: pnpm --filter @elm-platform/web-admin run build
       - run: pnpm --filter @elm-platform/web-user run build
