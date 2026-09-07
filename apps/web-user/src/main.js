@@ -12,7 +12,6 @@ import { setUnauthorizedHandler } from '@/services/http/http'
 import { pinia, registStore } from '@/stores'
 import { useUserStore } from '@/stores/modules/store-user'
 
-import { setStore } from '@/utils/storage/storage'
 import App from './App.vue'
 import lazy from './directives/lazy'
 
@@ -38,11 +37,6 @@ setUnauthorizedHandler(() => {
 })
 
 pinia.use(piniaPersist)
-pinia.use(({ store }) => {
-  store.$subscribe((mutation, state) => {
-    setStore(store.$id, state)
-  })
-})
 
 // 指令
 app.directive('lazy', lazy)

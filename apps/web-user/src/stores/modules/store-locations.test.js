@@ -42,14 +42,12 @@ describe('useLocationStore', () => {
     expect(store.name).toBe('')
   })
 
-  it('canEnterMsite is true only after a successful location', () => {
+  it('canEnterMsite tracks coordinate availability regardless of source', () => {
     const store = useLocationStore()
     expect(store.canEnterMsite).toBe(false)
 
+    // 手动选城（不依赖浏览器定位成功）也应算可进入
     store.setLocation(32.35, 113.54, { name: '月河镇' })
-    expect(store.canEnterMsite).toBe(false)
-
-    store.status = 'success'
     expect(store.canEnterMsite).toBe(true)
   })
 

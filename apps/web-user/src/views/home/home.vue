@@ -1,5 +1,6 @@
 <script setup>
-import { onMounted, shallowRef } from 'vue'
+import { storeToRefs } from 'pinia'
+import { computed, onMounted, shallowRef } from 'vue'
 import { useRouter } from 'vue-router'
 
 import { getGroupCity, getHotCity } from '@/services/api'
@@ -11,19 +12,28 @@ defineOptions({
 
 const router = useRouter()
 const GroupCityList = ref({})
-const {
-  locationText,
-  canEnterMsite,
-  setLocation,
-  loadCurrentLocation,
-} = useLocationStore()
+
+// state/getters 须用 storeToRefs 解构才能保持响应式；action 直接取用
+const locationStore = useLocationStore()
+const { name, status, canEnterMsite } = storeToRefs(locationStore)
+const { setLocation, loadCurrentLocation } = locationStore
+
+// 顶部卡片文案：有已定位地名就展示，否则按定位流程给占位提示（视图层文案，不落 store）
+const locationText = computed(() => {
+  if (name.value)
+    return name.value
+  if (status.value === 'locating')
+    return '正在定位...'
+  if (status.value === 'error')
+    return '获取定位失败，请重新定位'
+  return '当前未定位'
+})
 
 const hotCityList = shallowRef([])
 
 getHotCity().then(res =>
   hotCityList.value = res,
 )
-console.log(hotCityList.value)
 
 getGroupCity().then(res => GroupCityList.value = res)
 
@@ -40,7 +50,6 @@ function enterMsite() {
   if (!canEnterMsite.value)
     return
 
-  const locationStore = useLocationStore()
   router.push({
     path: '/msite',
     query: locationStore.geohash ? { geohash: locationStore.geohash } : {},

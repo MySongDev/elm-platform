@@ -2,7 +2,6 @@ import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
 
 import { getReverseGeoCoding } from '@/services/api/api-city'
-import { getStore } from '@/utils/storage/storage'
 
 function normalizeLocatedLocation(location = {}) {
   return {
@@ -18,29 +17,21 @@ function normalizeLocatedLocation(location = {}) {
 }
 
 export const useLocationStore = defineStore('location', () => {
-  const cache = getStore('location') || {}
+  const geohash = ref(null)
+  const latitude = ref(null)
+  const longitude = ref(null)
+  const city = ref('')
+  const cityId = ref(null)
+  const address = ref('')
+  const name = ref('')
+  const districtId = ref(null)
 
-  const geohash = ref(cache.geohash || null)
-  const latitude = ref(cache.latitude || null)
-  const longitude = ref(cache.longitude || null)
-  const city = ref(cache.city || '')
-  const cityId = ref(cache.cityId || null)
-  const address = ref(cache.address || '')
-  const name = ref(cache.name || '')
-  const districtId = ref(cache.districtId || null)
-
+  // 浏览器定位流程状态：locating | success | error，仅描述"这次定位成功没有"
   const status = ref('locating')
-  const locatedName = ref('正在定位...')
 
-  const locationText = computed(() => {
-    if (status.value === 'error')
-      return '获取定位失败，请重新定位'
-    return locatedName.value
-  })
-
-  const canEnterMsite = computed(() =>
-    status.value === 'success' && Boolean(latitude.value && longitude.value),
-  )
+  // 是否已具备可用坐标。不区分来源（浏览器定位 / 手动选城 / 缓存），
+  // 与 msite 内 `!latitude || !longitude` 的判据保持一致。
+  const canEnterMsite = computed(() => Boolean(latitude.value && longitude.value))
 
   function setLocation(lat, lng, location = {}) {
     latitude.value = lat
@@ -62,24 +53,22 @@ export const useLocationStore = defineStore('location', () => {
 
   function applyLocatedCity(location = {}) {
     const normalized = normalizeLocatedLocation(location)
-    locatedName.value = normalized.name || '定位成功'
     status.value = 'success'
     setLocation(normalized.latitude, normalized.longitude, normalized)
   }
 
   function setLocationFailed() {
-    locatedName.value = ''
     status.value = 'error'
   }
 
   async function loadCurrentLocation() {
     status.value = 'locating'
-    locatedName.value = '正在定位...'
 
     const geolocation = globalThis.navigator?.geolocation
+
     if (!geolocation) {
       setLocationFailed()
-      return
+      return null
     }
 
     geolocation.getCurrentPosition(
@@ -110,8 +99,6 @@ export const useLocationStore = defineStore('location', () => {
     name,
     districtId,
     status,
-    locatedName,
-    locationText,
     canEnterMsite,
     setLocation,
     applyLocatedCity,
