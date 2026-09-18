@@ -104,6 +104,10 @@ Pinia stores live in `src/stores/modules` for user/session, addresses, locations
 
 `apps/web-user` has its own existing `CLAUDE.md` and `AGENTS.md`; consult them when working only inside that app because they contain more detailed mobile-app guidance.
 
+## Test Policy
+
+Before creating, changing, or deleting automated tests, read and follow the repository-wide [AI_TEST_POLICY.md](AI_TEST_POLICY.md). By default, do not add or change tests. Only do so when a policy-defined necessary scenario applies or the user explicitly requests it. If the need is unclear, do not write tests; instead run the smallest relevant validation and state why no test was added.
+
 ## Git Conventions
 
 - **禁止**在 commit message 中添加 `Co-Authored-By` 或任何 AI 署名行。不论使用哪个模型，commit 信息中都不得包含 AI 工具的归属信息。

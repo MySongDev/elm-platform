@@ -1,7 +1,7 @@
 import { BadRequestException, ConflictException, UnauthorizedException } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import * as bcrypt from 'bcryptjs'
-import { CustomerAuthService } from './customer-auth.service'
+import { CustomerAuthService } from '../../customer-auth.service'
 
 describe('customerAuthService', () => {
   function createService(options: {
