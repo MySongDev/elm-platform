@@ -39,14 +39,17 @@ const {
 const manageMode = ref(false)
 const title = computed(() => `购物车 (${totalCount.value})`)
 const displayTotal = computed(() => Math.round(selectedTotal.value))
+// navbarHeaderContext 由父级 NavbarLayout 提供；购物车通过它注册动态标题和“管理/完成”操作。
+// headerOwner 必须保持稳定，用于 KeepAlive 场景下防止停用的购物车清理/监听影响其他页面。
 const navbarHeader = inject(navbarHeaderContextKey, null)
+const headerOwner = 'CartDetail'
 
 function syncNavbarHeader() {
   navbarHeader?.setHeader({
     title: title.value,
     editLabel: manageMode.value ? '完成' : '管理',
     onEdit: toggleManageMode,
-  })
+  }, headerOwner)
 }
 
 function toggleManageMode() {
@@ -109,8 +112,8 @@ async function removeSelectedProducts() {
 watch([title, manageMode], syncNavbarHeader, { immediate: true })
 
 onActivated(syncNavbarHeader)
-onDeactivated(() => navbarHeader?.clearHeader())
-onBeforeUnmount(() => navbarHeader?.clearHeader())
+onDeactivated(() => navbarHeader?.clearHeader(headerOwner))
+onBeforeUnmount(() => navbarHeader?.clearHeader(headerOwner))
 </script>
 
 <template>

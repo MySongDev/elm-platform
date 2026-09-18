@@ -41,6 +41,7 @@ export default {
       meta: {
         title: '我的',
         keepAlive: true,
+        hideLayoutHeader: true,
       },
     },
   ],

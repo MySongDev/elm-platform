@@ -11,6 +11,9 @@ const route = useRoute()
 const router = useRouter()
 const navMainRef = useTemplateRef('navMainRef')
 const navbarHeader = shallowRef(null)
+const visibleNavbarHeader = computed(() => {
+  return navbarHeader.value?.ownerRoute === route.name ? navbarHeader.value : null
+})
 
 const cachedSubPages = computed(() => {
   const layoutRoute = router.getRoutes().find(item => item.name === 'NavbarLayout')
@@ -22,12 +25,23 @@ const cachedSubPages = computed(() => {
 const scrollStorageKey = computed(() => `navbar-layout-scroll:${route.name || route.path}`)
 const showLayoutHeader = computed(() => !route.meta?.hideLayoutHeader)
 
+// 通过 provide/inject 让路由子页面注册布局 Header 配置：
+// - NavbarLayout 负责实际渲染 HeadTop；子页面只提供标题和操作回调；
+// - ownerRoute 必须与当前路由一致，避免 KeepAlive 中停用页面重新写入旧标题；
+// - clearHeader 同样校验 owner，防止旧页面清掉新页面的 Header。
 provide(navbarHeaderContextKey, {
-  setHeader(config) {
-    navbarHeader.value = config
+  setHeader(config, ownerRoute) {
+    if (ownerRoute !== route.name)
+      return
+
+    navbarHeader.value = {
+      ...config,
+      ownerRoute,
+    }
   },
-  clearHeader() {
-    navbarHeader.value = null
+  clearHeader(ownerRoute) {
+    if (!ownerRoute || navbarHeader.value?.ownerRoute === ownerRoute)
+      navbarHeader.value = null
   },
 })
 
@@ -53,6 +67,9 @@ async function restoreScrollPosition() {
 }
 
 watch(() => route.fullPath, async () => {
+  if (navbarHeader.value?.ownerRoute !== route.name)
+    navbarHeader.value = null
+
   await restoreScrollPosition()
 })
 
@@ -68,13 +85,14 @@ onBeforeUnmount(saveScrollPosition)
 
 <template>
   <div class="nav-layout">
-    <head-top v-if="showLayoutHeader" :head-title="navbarHeader?.title || ''">
-      <template v-if="navbarHeader?.editLabel" #edit>
-        <button class="nav-header-edit" type="button" @click="navbarHeader.onEdit">
-          {{ navbarHeader.editLabel }}
+    <head-top v-if="showLayoutHeader" :head-title="visibleNavbarHeader?.title || ''">
+      <template v-if="visibleNavbarHeader?.editLabel" #edit>
+        <button class="nav-header-edit" type="button" @click="visibleNavbarHeader.onEdit">
+          {{ visibleNavbarHeader.editLabel }}
         </button>
       </template>
     </head-top>
+    <div v-else class="nav-header-spacer" aria-hidden="true" />
     <main ref="navMainRef" class="nav-main">
       <router-view v-slot="{ Component, route }">
         <transition name="nav-bar" mode="out-in">
@@ -106,6 +124,12 @@ onBeforeUnmount(saveScrollPosition)
 .nav-page {
   width: 100%;
   min-height: 100%;
+}
+
+.nav-header-spacer {
+  flex-shrink: 0;
+  height: 12vw;
+  background-color: $blue;
 }
 
 .nav-header-edit {
