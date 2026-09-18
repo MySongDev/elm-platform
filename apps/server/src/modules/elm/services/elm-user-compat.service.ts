@@ -1,5 +1,5 @@
 import type { AddressRecord, ElmUserRecord } from '../types/elm.types'
-import { Injectable } from '@nestjs/common'
+import { Injectable, NotFoundException } from '@nestjs/common'
 import { nextNumberId, toNumberValue, toStringValue } from '../utils/elm-query'
 import { ElmStoreService } from './elm-store.service'
 
@@ -31,8 +31,12 @@ export class ElmUserCompatService {
     }
   }
 
-  getUserInfo(userId?: number) {
-    return this.store.users.find(item => item.user_id === userId) || this.store.users[0]
+  getUserInfo(userId: number) {
+    const user = this.store.users.find(item => item.user_id === userId)
+    if (!user) {
+      throw new NotFoundException('用户不存在')
+    }
+    return user
   }
 
   changePassword() {
