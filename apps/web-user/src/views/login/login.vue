@@ -1,309 +1,451 @@
 <script setup>
-import { computed, onBeforeUnmount, reactive, shallowRef } from 'vue'
+import { computed, shallowRef } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-
-import { showAlert } from '@/components/common/AlterTip/index'
-import { customerPasswordLogin, customerRegister, customerSmsLogin, sendCustomerSms } from '@/services/api/'
-import { useUserStore } from '@/stores/modules/store-user'
+import { customerPasswordLogin, sendCustomerSms } from '@/services/api/api-login'
 
 defineOptions({ name: 'Login' })
 
-const tabs = [
-  {
-    key: 'sms',
-    label: '验证码登录',
-  },
-  {
-    key: 'password',
-    label: '密码登录',
-  },
-  {
-    key: 'register',
-    label: '注册',
-  },
-]
-
-const phonePattern = /^1\d{10}$/
-const activeTab = shallowRef('sms')
-const loading = shallowRef(false)
-const countdown = shallowRef(0)
-let timer = null
-
-const route = useRoute()
+const loginMode = shallowRef('sms')
+const phone = shallowRef('')
+const password = shallowRef('')
+const passwordVisible = shallowRef(false)
+const agreementAccepted = shallowRef(false)
 const router = useRouter()
-const { recordUserInfo } = useUserStore()
+const route = useRoute()
 
-const form = reactive({
-  phone: '',
-  smsCode: '',
-  password: '',
-  registerPassword: '',
-})
+const formattedPhone = computed(() => formatPhone(phone.value))
+const isPhoneValid = computed(() => phone.value.length === 11 && /^1\d{10}$/.test(phone.value))
+const canSubmit = computed(() => isPhoneValid.value && agreementAccepted.value && (loginMode.value === 'sms' || password.value.length > 0))
+const submitText = computed(() => (loginMode.value === 'sms' ? '获取短信验证码' : '登录'))
 
-const canSendSms = computed(() => countdown.value === 0 && phonePattern.test(form.phone))
-const smsScene = computed(() => (activeTab.value === 'register' ? 'register' : 'login'))
-const activeTabLabel = computed(() => tabs.find(tab => tab.key === activeTab.value)?.label || '登录')
-const smsButtonText = computed(() => (countdown.value > 0 ? `${countdown.value}s` : '获取验证码'))
-const submitText = computed(() => (loading.value ? '处理中...' : activeTabLabel.value))
-
-function setActiveTab(tab) {
-  activeTab.value = tab
+function formatPhone(value) {
+  const digits = value.replace(/\D/g, '').slice(0, 11)
+  return [digits.slice(0, 3), digits.slice(3, 7), digits.slice(7, 11)].filter(Boolean).join(' ')
 }
 
-function validatePhone() {
-  if (!phonePattern.test(form.phone)) {
-    showAlert('请输入正确的手机号')
-    return false
+function handlePhoneInput(event) {
+  phone.value = event.target.value.replace(/\D/g, '').slice(0, 11)
+}
+
+function clearPhone() {
+  phone.value = ''
+}
+
+function switchToPassword() {
+  loginMode.value = 'password'
+}
+
+function switchToSms() {
+  loginMode.value = 'sms'
+  password.value = ''
+  passwordVisible.value = false
+}
+
+function togglePasswordVisibility() {
+  passwordVisible.value = !passwordVisible.value
+}
+
+async function handleSubmit() {
+  if (loginMode.value === 'sms') {
+    await sendCustomerSms(phone.value, 'login')
+    router.push({
+      name: 'SmsVerification',
+      query: {
+        phone: phone.value,
+        redirect: route.query.redirect,
+      },
+    })
   }
-  return true
-}
-
-function getRedirectTarget() {
-  const redirect = route.query.redirect
-  return Array.isArray(redirect) ? redirect[0] || '/home' : redirect || '/home'
-}
-
-function clearTimer() {
-  if (!timer)
-    return
-
-  clearInterval(timer)
-  timer = null
-}
-
-function startCountdown() {
-  countdown.value = 60
-  clearTimer()
-  timer = setInterval(() => {
-    countdown.value -= 1
-    if (countdown.value <= 0) {
-      clearTimer()
-      countdown.value = 0
-    }
-  }, 1000)
-}
-
-async function sendSms() {
-  if (!validatePhone() || !canSendSms.value)
-    return
-
-  try {
-    const result = await sendCustomerSms(form.phone, smsScene.value)
-    startCountdown()
-    if (result?.debugCode)
-      showAlert(`开发验证码：${result.debugCode}`)
-  }
-  catch {
-    countdown.value = 0
+  else {
+    customerPasswordLogin(phone.value, password.value)
   }
 }
 
-async function finishLogin(result) {
-  recordUserInfo(result)
-  await router.push(getRedirectTarget())
+function closeLogin() {
+  router.back()
 }
-
-async function submitSmsLogin() {
-  if (!validatePhone())
-    return
-  if (!form.smsCode) {
-    showAlert('请输入验证码')
-    return
-  }
-
-  loading.value = true
-  try {
-    const result = await customerSmsLogin(form.phone, form.smsCode)
-    await finishLogin(result)
-  }
-  finally {
-    loading.value = false
-  }
-}
-
-async function submitPasswordLogin() {
-  if (!validatePhone())
-    return
-  if (!form.password) {
-    showAlert('请输入密码')
-    return
-  }
-
-  loading.value = true
-  try {
-    const result = await customerPasswordLogin(form.phone, form.password)
-    await finishLogin(result)
-  }
-  finally {
-    loading.value = false
-  }
-}
-
-async function submitRegister() {
-  if (!validatePhone())
-    return
-  if (!form.smsCode) {
-    showAlert('请输入验证码')
-    return
-  }
-
-  loading.value = true
-  try {
-    const result = await customerRegister(form.phone, form.smsCode, form.registerPassword)
-    await finishLogin(result)
-  }
-  finally {
-    loading.value = false
-  }
-}
-
-function submit() {
-  if (loading.value)
-    return Promise.resolve()
-  if (activeTab.value === 'sms')
-    return submitSmsLogin()
-  if (activeTab.value === 'password')
-    return submitPasswordLogin()
-  return submitRegister()
-}
-
-onBeforeUnmount(() => {
-  clearTimer()
-})
 </script>
 
 <template>
-  <div class="login_nav">
-    <head-top />
-
-    <div class="login_tabs">
-      <button
-        v-for="tab in tabs"
-        :key="tab.key"
-        type="button"
-        :class="{ active: activeTab === tab.key }"
-        @click="setActiveTab(tab.key)"
-      >
-        {{ tab.label }}
+  <main class="login_page">
+    <div class="login_topbar">
+      <button class="close_button" type="button" aria-label="关闭登录页" @click="closeLogin">
+        <span aria-hidden="true">×</span>
       </button>
     </div>
 
-    <form class="login_form" @submit.prevent="submit">
-      <section class="input_container">
-        <input v-model.trim="form.phone" type="tel" placeholder="手机号" maxlength="11" autocomplete="tel">
-      </section>
+    <section class="login_content">
+      <h1 class="login_title">
+欢迎登录
+</h1>
 
-      <section v-if="activeTab !== 'password'" class="input_container sms_container">
-        <input v-model.trim="form.smsCode" type="text" placeholder="短信验证码" maxlength="6" inputmode="numeric">
-        <button type="button" :disabled="!canSendSms" @click="sendSms">
-          {{ smsButtonText }}
+      <div class="phone_field">
+        <button class="country_code" type="button" aria-label="国家或地区代码">
+          <span>+86</span>
+          <span class="country_arrow" aria-hidden="true" />
         </button>
-      </section>
 
-      <section v-if="activeTab === 'password'" class="input_container">
-        <input v-model="form.password" type="password" placeholder="请输入密码" autocomplete="current-password">
-      </section>
+        <input
+          class="phone_input"
+          :value="formattedPhone"
+          type="tel"
+          inputmode="numeric"
+          autocomplete="tel"
+          maxlength="13"
+          placeholder="请输入手机号"
+          aria-label="手机号"
+          @input="handlePhoneInput"
+        >
 
-      <section v-if="activeTab === 'register'" class="input_container">
-        <input v-model="form.registerPassword" type="password" placeholder="设置密码（可选）" autocomplete="new-password">
-      </section>
-    </form>
+        <button
+          v-if="phone"
+          class="clear_phone"
+          type="button"
+          aria-label="清除手机号"
+          @click="clearPhone"
+        >
+          <span aria-hidden="true">×</span>
+        </button>
+      </div>
 
-    <button class="login_container" type="button" :disabled="loading" @click="submit">
-      {{ submitText }}
-    </button>
-    <router-link to="/forget" class="to_forget">
-      重置密码？
-    </router-link>
-  </div>
+      <p v-if="loginMode === 'sms'" class="login_hint">
+未注册的手机号验证后自动创建账号
+</p>
+
+      <div v-else class="password_field">
+        <input
+          v-model="password"
+          class="password_input"
+          :type="passwordVisible ? 'text' : 'password'"
+          autocomplete="current-password"
+          placeholder="请输入密码"
+          aria-label="密码"
+        >
+        <button
+          class="password_visibility"
+          type="button"
+          :aria-label="passwordVisible ? '隐藏密码' : '显示密码'"
+          :aria-pressed="passwordVisible"
+          @click="togglePasswordVisibility"
+        >
+          <span aria-hidden="true" />
+        </button>
+      </div>
+
+      <label class="agreement_row">
+        <input v-model="agreementAccepted" type="checkbox">
+        <span class="agreement_mark" aria-hidden="true">✓</span>
+        <span class="agreement_text">我已阅读并同意<span class="agreement_link">《用户协议》</span>和<span class="agreement_link">《隐私政策》</span></span>
+      </label>
+
+      <button class="login_submit" type="button" :disabled="!canSubmit" @click="handleSubmit">
+        {{ submitText }}
+      </button>
+
+      <button v-if="loginMode === 'sms'" class="password_login" type="button" @click="switchToPassword">
+        密码登录
+      </button>
+      <button v-else class="password_login" type="button" @click="switchToSms">
+        验证码登录
+      </button>
+    </section>
+  </main>
 </template>
 
 <style lang="scss" scoped>
-.login_nav {
-  min-height: 100vh;
-  background: #f5f5f5;
+.login_page {
+  min-height: 100svh;
+  padding: calc(18px + env(safe-area-inset-top)) 24px calc(32px + env(safe-area-inset-bottom));
+  color: #171717;
+  background: #fff;
 }
 
-.login_tabs {
+.login_topbar {
   display: flex;
-  gap: 2.6667vw;
-  padding: 4vw 4vw 2.6667vw;
-  background: $ff;
+  align-items: center;
+  min-height: 46px;
+}
 
-  button {
-    flex: 1;
-    min-width: 0;
-    height: 9.6vw;
-    font-size: 3.7333vw;
-    color: #666;
-    background: #f5f5f5;
-    border-radius: 4.8vw;
+.close_button {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  color: #1d1d1d;
+  background: #f6f7f8;
+  border-radius: 50%;
 
-    &.active {
-      color: $ff;
-      background: #4cd964;
-    }
+  span {
+    margin-top: -4px;
+    font-size: 34px;
+    font-weight: 300;
+    line-height: 1;
   }
 }
 
-.login_form {
-  width: 100%;
-  background-color: $ff;
+.login_content {
+  width: min(100%, 720px);
+  margin: 76px auto 0;
+}
 
-  .input_container {
-    @include wh(100%, 13.3333vw);
-    @include flex-center(space-between);
+.login_title {
+  margin: 0 8px 50px;
+  font-size: clamp(28px, 8vw, 42px);
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: 0;
+}
 
-    padding: 0 4vw;
-    border-bottom: 0.0267vw solid $e4;
+.phone_field {
+  display: flex;
+  align-items: center;
+  min-height: 62px;
+  padding: 0 22px;
+  background: #f7f7f7;
+  border-radius: 32px;
+}
 
-    input {
-      @include size-color(4.3733vw, #666);
+.country_code {
+  display: inline-flex;
+  flex: 0 0 auto;
+  gap: 12px;
+  align-items: center;
+  min-width: 88px;
+  padding: 0;
+  font-size: 22px;
+  font-weight: 600;
+  color: #242424;
+  background: transparent;
+}
 
-      flex: 1;
-      min-width: 0;
-    }
-  }
+.country_arrow {
+  width: 0;
+  height: 0;
+  border-top: 7px solid currentcolor;
+  border-right: 5px solid transparent;
+  border-left: 5px solid transparent;
+}
 
-  .sms_container {
-    gap: 3.2vw;
+.phone_input {
+  flex: 1;
+  min-width: 0;
+  height: 56px;
+  font-size: 21px;
+  font-weight: 600;
+  color: #222;
+  letter-spacing: 1px;
+  background: transparent;
 
-    button {
-      flex: 0 0 24vw;
-      font-size: 3.7333vw;
-      color: #3190e8;
-      text-align: right;
-
-      &:disabled {
-        color: #aaa;
-      }
-    }
+  &::placeholder {
+    font-weight: 500;
+    color: #c9c9c9;
   }
 }
 
-.login_container {
-  @include wh(94.6667vw, 13.3333vw);
+.clear_phone {
+  display: grid;
+  flex: 0 0 auto;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  margin-left: 8px;
+  color: #fff;
+  background: #d0d0d0;
+  border-radius: 50%;
 
+  span {
+    margin-top: -2px;
+    font-size: 17px;
+    font-weight: 300;
+    line-height: 1;
+  }
+}
+
+.login_hint {
+  margin: 18px 22px 0;
+  font-size: 16px;
+  line-height: 1.4;
+  color: #999;
+}
+
+.password_field {
+  display: flex;
+  align-items: center;
+  min-height: 62px;
+  padding: 0 22px;
+  margin-top: 16px;
+  background: #f7f7f7;
+  border-radius: 32px;
+}
+
+.password_input {
+  flex: 1;
+  min-width: 0;
+  height: 56px;
+  font-size: 21px;
+  font-weight: 500;
+  color: #222;
+  background: transparent;
+
+  &::placeholder {
+    font-weight: 500;
+    color: #c9c9c9;
+  }
+}
+
+.password_visibility {
+  position: relative;
+  display: grid;
+  flex: 0 0 auto;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  margin-left: 8px;
+  background: transparent;
+
+  span {
+    position: relative;
+    display: block;
+    width: 23px;
+    height: 13px;
+    border: 2px solid #222;
+    border-radius: 50% / 65%;
+    transform: rotate(-8deg);
+
+    &::after {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 6px;
+      height: 6px;
+      content: '';
+      background: #222;
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+    }
+  }
+
+  &[aria-pressed='true'] span::before {
+    position: absolute;
+    top: 50%;
+    left: -3px;
+    width: 29px;
+    height: 2px;
+    content: '';
+    background: #222;
+    transform: rotate(35deg);
+  }
+}
+
+.agreement_row {
+  display: flex;
+  gap: 9px;
+  align-items: flex-start;
+  margin: 94px 8px 16px;
+  font-size: 16px;
+  line-height: 1.45;
+  color: #444;
+  cursor: pointer;
+
+  input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+  }
+
+  input:focus-visible + .agreement_mark {
+    outline: 2px solid #1686dc;
+    outline-offset: 2px;
+  }
+
+  input:checked + .agreement_mark {
+    color: #171717;
+    background: #ffdb00;
+    border-color: #ffdb00;
+  }
+}
+
+.password_field + .agreement_row {
+  margin-top: 74px;
+}
+
+.agreement_mark {
+  display: grid;
+  flex: 0 0 auto;
+  place-items: center;
+  width: 18px;
+  height: 18px;
+  margin-top: 2px;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1;
+  color: transparent;
+  background: #fff;
+  border: 1px solid #c9c9c9;
+  border-radius: 50%;
+}
+
+.agreement_text {
+  min-width: 0;
+}
+
+.agreement_link {
+  color: #1686dc;
+}
+
+.login_submit {
   display: block;
-  margin: 2.6667vw auto;
-  font-size: 4.2667vw;
-  line-height: 13.3333vw;
-  color: $ff;
-  text-align: center;
-  background-color: #4cd964;
-  border-radius: 2.6667vw;
+  width: 100%;
+  min-height: 62px;
+  font-size: 21px;
+  font-weight: 700;
+  color: #171717;
+  background: #ffdc00;
+  border-radius: 32px;
 
   &:disabled {
-    opacity: 0.7;
+    color: #c5b975;
+    background: #fff3b2;
   }
 }
 
-.to_forget {
+.password_login {
   display: block;
-  width: fit-content;
-  padding: 1.3333vw 4vw;
-  margin-left: auto;
-  font-size: 3.4667vw;
-  color: $blue;
+  padding: 0;
+  margin: 23px auto 0;
+  font-size: 17px;
+  color: #555;
+  background: transparent;
+}
+
+@media (width <= 360px) {
+  .login_page {
+    padding-right: 18px;
+    padding-left: 18px;
+  }
+
+  .phone_field {
+    padding-right: 18px;
+    padding-left: 18px;
+  }
+
+  .country_code {
+    min-width: 78px;
+    font-size: 20px;
+  }
+
+  .phone_input {
+    font-size: 19px;
+  }
+
+  .agreement_row {
+    margin-top: 72px;
+    font-size: 14px;
+  }
+
+  .password_field + .agreement_row {
+    margin-top: 58px;
+  }
 }
 </style>
