@@ -11,19 +11,12 @@ import vueDevTools from 'vite-plugin-vue-devtools'
 export default defineConfig(({ command, mode }) => {
   const env = loadEnv(mode, cwd(), '')
   const useMock = command === 'serve' && (mode === 'mock' || env.VITE_USE_MOCK === 'true')
-  const localApiTarget = 'http://127.0.0.1:3000'
 
   return {
     base: process.env.BASE_URL || '/elm-platform/user/',
     server: {
-      proxy: createApiProxy({
-        prefixes: {
-          '/pay-api': {
-            target: `${localApiTarget}/api`,
-            rewrite: path => path.replace(/^\/pay-api/, ''),
-          },
-        },
-      }),
+      // 支付请求已并入全局 /api 实例，不再需要 /pay-api 独立代理前缀
+      proxy: createApiProxy(),
       middlewareMode: false,
     },
     plugins: [

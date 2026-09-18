@@ -324,10 +324,12 @@ request.interceptors.response.use(
     finishGlobalLoading(config)
 
     // 错误提示
+    // meta.silent：跳过全局错误弹窗，交由调用方自行 catch 提示（如支付流程，避免双重弹窗）。
+    // 注意 silent 只静默弹窗，不影响 401 刷新/跳登录与重试等策略。
     if (status === 401) {
       handleUnauthorized(error)
     }
-    else if (code !== 'ERR_CANCELED') {
+    else if (code !== 'ERR_CANCELED' && !meta.silent) {
       showHttpErrorAlert(userMessage, status)
     }
 

@@ -1,35 +1,20 @@
 import axios from 'axios'
 
-import { getAccessToken } from '../http/auth-storage'
+import { get, post } from '@/services/http/http'
 
 import { paymentEndpoints } from './endpoints/payment.endpoints'
 
 export const PAY_API_UNAVAILABLE_MESSAGE
   = 'Payment backend service is unavailable. Please run pnpm --filter @elm-platform/server run dev and retry.'
 
-const paymentRequest = axios.create({
-  baseURL: '/pay-api',
-  timeout: 10000,
-  headers: {
-    'Accept': 'application/json',
-    'Content-Type': 'application/json',
-  },
-  withCredentials: true,
-})
-
-paymentRequest.interceptors.request.use((config) => {
-  const token = getAccessToken()
-  if (token) {
-    config.headers = config.headers || {}
-    config.headers.Authorization = `Bearer ${token}`
-  }
-  return config
-})
-
-paymentRequest.interceptors.response.use(
-  response => response,
-  error => Promise.reject(normalizePaymentError(error)),
-)
+// 支付请求统一走全局 request 实例，仅关掉两项全局副作用：
+// - loading:false —— 支付有自己的按钮态/页面态（continuingOrderNo 等），不叠全局遮罩
+// - meta.silent:true —— 跳过全局错误弹窗，错误由各调用方 catch 后自行提示，避免双重弹窗
+// Token 注入、401 刷新、withCredentials 等由全局 request 统一处理，无需在此重复。
+const PAYMENT_REQUEST_OPTIONS = {
+  loading: false,
+  meta: { silent: true },
+}
 
 function getResponseMessage(error) {
   const data = error?.response?.data
@@ -63,6 +48,10 @@ function isPayApiUnavailable(error) {
   )
 }
 
+// 把全局 request 抛出的原始 axios error 规整为支付语义的错误：
+// - 后端不可用 → 友好的开发提示；
+// - 其余情况 → 用后端返回的 message 覆盖 axios 默认的 "Request failed with status code xxx"，
+//   让调用方 catch 里的 err.message 直接可读。
 function normalizePaymentError(error) {
   if (isPayApiUnavailable(error))
     return createPayApiUnavailableError(error)
@@ -77,48 +66,53 @@ function normalizePaymentError(error) {
   return normalizedError
 }
 
-function unwrapResponse(response) {
-  const data = response?.data ?? response
-
+// 全局 request 拦截器已返回 response.data，这里拿到的就是后端裸载荷。
+// 若后端返回的是纯错误信封（有 message 但没有业务字段），转成异常抛出。
+function unwrapResponse(data) {
   if (data?.message && !data?.orderNo && !data?.status)
     throw new Error(data.message)
 
   return data
 }
 
-export async function createAlipayWapPayment(payload) {
-  const response = await paymentRequest.post(paymentEndpoints.createAlipayWap, payload)
-  return unwrapResponse(response)
+async function paymentPost(url, payload) {
+  try {
+    const data = await post(url, payload, PAYMENT_REQUEST_OPTIONS)
+    return unwrapResponse(data)
+  }
+  catch (error) {
+    throw normalizePaymentError(error)
+  }
 }
 
-export async function resumeAlipayWapPayment(payload) {
-  const response = await paymentRequest.post(paymentEndpoints.resumeAlipayWap, payload)
-  return unwrapResponse(response)
+async function paymentGet(url, params) {
+  try {
+    const data = await get(url, params, PAYMENT_REQUEST_OPTIONS)
+    return unwrapResponse(data)
+  }
+  catch (error) {
+    throw normalizePaymentError(error)
+  }
 }
 
-export async function requestOrderRefund({ orderNo, reason }) {
-  const response = await paymentRequest.post(paymentEndpoints.requestRefund(orderNo), {
-    reason,
+export function createAlipayWapPayment(payload) {
+  return paymentPost(paymentEndpoints.createAlipayWap, payload)
+}
+
+export function resumeAlipayWapPayment(payload) {
+  return paymentPost(paymentEndpoints.resumeAlipayWap, payload)
+}
+
+export function requestOrderRefund({ orderNo, reason }) {
+  return paymentPost(paymentEndpoints.requestRefund(orderNo), { reason })
+}
+
+export function getAlipayPaymentStatus(orderNo, refresh = true) {
+  return paymentGet(paymentEndpoints.alipayStatus(orderNo), {
+    refresh: refresh ? 1 : 0,
   })
-  return unwrapResponse(response)
 }
 
-export async function getAlipayPaymentStatus(orderNo, refresh = true) {
-  const response = await paymentRequest.get(paymentEndpoints.alipayStatus(orderNo), {
-    params: {
-      refresh: refresh ? 1 : 0,
-    },
-  })
-
-  return unwrapResponse(response)
-}
-
-export async function getUserPaymentOrders(limit = 20) {
-  const response = await paymentRequest.get(paymentEndpoints.orders, {
-    params: {
-      limit,
-    },
-  })
-
-  return unwrapResponse(response)
+export function getUserPaymentOrders(limit = 20) {
+  return paymentGet(paymentEndpoints.orders, { limit })
 }

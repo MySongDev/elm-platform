@@ -6,34 +6,24 @@ type ResumePaymentRequest
 type ResumePaymentResponse
   = paths['/api/payments/alipay/wap/resume']['post']['responses'][200]['content']['application/json']
 
-const mocks = vi.hoisted(() => {
-  const paymentClient = {
-    get: vi.fn(),
-    post: vi.fn(),
-    interceptors: {
-      request: { use: vi.fn() },
-      response: { use: vi.fn() },
-    },
-  }
-
-  return {
-    getStore: vi.fn(),
-    paymentClient,
-  }
-})
-
-vi.mock('axios', () => ({
-  default: {
-    create: vi.fn(() => mocks.paymentClient),
-    isAxiosError: vi.fn(() => false),
-  },
+// 支付 API 走全局 http（get/post），全局响应拦截器已 unwrap 为 response.data，
+// 故 mock post 直接 resolve 裸载荷。
+const mocks = vi.hoisted(() => ({
+  get: vi.fn(),
+  post: vi.fn(),
 }))
 
-vi.mock('@/utils/storage/storage', () => ({
-  getStore: mocks.getStore,
+vi.mock('@/services/http/http', () => ({
+  get: mocks.get,
+  post: mocks.post,
 }))
 
 const { resumeAlipayWapPayment } = await import('./api-payment')
+
+const PAYMENT_OPTIONS = {
+  loading: false,
+  meta: { silent: true },
+}
 
 describe('payment resume API contract', () => {
   beforeEach(() => {
@@ -50,11 +40,11 @@ describe('payment resume API contract', () => {
       payableAmount: 29,
     } satisfies ResumePaymentResponse
 
-    mocks.paymentClient.post.mockResolvedValueOnce({ data: response })
+    mocks.post.mockResolvedValueOnce(response)
 
     const result = await resumeAlipayWapPayment(request)
 
-    expect(mocks.paymentClient.post).toHaveBeenCalledWith('/payments/alipay/wap/resume', request)
+    expect(mocks.post).toHaveBeenCalledWith('/payments/alipay/wap/resume', request, PAYMENT_OPTIONS)
     expect(result).toBe(response)
     expect(result.payUrl).toBe('https://example.com/pay')
   })
