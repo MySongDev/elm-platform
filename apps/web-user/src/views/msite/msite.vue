@@ -20,8 +20,11 @@ const LocationStore = useLocationStore()
 const { isAuthenticated, redirectToLogin } = useAuthRedirect()
 
 const FoodCategoryList = ref([])
+const foodCategoryLoading = ref(true)
 
-getFoodCategoryList().then(res => FoodCategoryList.value = res)
+getFoodCategoryList()
+  .then(res => FoodCategoryList.value = res)
+  .finally(() => foodCategoryLoading.value = false)
 
 const imgBaseUrl = 'https://fuss10.elemecdn.com'
 
@@ -31,6 +34,7 @@ const {
   loading,
   finished,
   loadMore,
+  refresh,
 } = useLoadMore(
   ({ page, pageSize }) => {
     const offset = (page - 1) * pageSize
@@ -131,12 +135,37 @@ function extractIdFromUrl(url) {
   }
 }
 
+// 坐标偏移阈值（约 0.01°≈1km）：小于此值视作 GPS 抖动，不重拉商家；
+// 超过则认为换了位置（如跨城），需要用新坐标刷新列表。
+const LOCATION_DRIFT_THRESHOLD = 0.01
+
+function refreshShopsIfLocationChanged() {
+  // mount 时 useLoadMore 已用缓存坐标（或空坐标）拉过一次，
+  // 这里在后台拿到真实坐标后按需重拉：首次无缓存 → 必刷；跨城偏移 → 重刷。
+  const prevLat = LocationStore.latitude
+  const prevLng = LocationStore.longitude
+  const hadCoords = Boolean(prevLat && prevLng)
+
+  return LocationStore
+    .loadCurrentLocation({ silent: hadCoords })
+    .then((located) => {
+      if (!located)
+        return
+
+      const latDrift = Math.abs(located.latitude - prevLat)
+      const lngDrift = Math.abs(located.longitude - prevLng)
+      const drifted = latDrift > LOCATION_DRIFT_THRESHOLD || lngDrift > LOCATION_DRIFT_THRESHOLD
+
+      if (!hadCoords || drifted)
+        refresh()
+    })
+}
+
 onMounted(() => {
   updateThreshold()
   bindScrollListener()
   handleWindowScroll()
-  if (!LocationStore.latitude || !LocationStore.longitude)
-    LocationStore.loadCurrentLocation()
+  refreshShopsIfLocationChanged()
 })
 
 onBeforeUnmount(() => {
@@ -159,9 +188,10 @@ onDeactivated(() => {
     <!-- 轮播图 -->
     <div ref="headerRef" class="header-content">
       <div class="swiper">
-        <Swiper :modules="[Pagination]" :loop="paginatedFoodList.length >= 2" :pagination="{ clickable: true }">
+        <img v-if="foodCategoryLoading" src="./images/fl.svg" alt="轮播图加载中" class="swiper-placeholder">
+        <Swiper v-else-if="paginatedFoodList.length > 0" :modules="[Pagination]" :loop="paginatedFoodList.length >= 2" :pagination="{ clickable: true }">
           <SwiperSlide v-for="(page, index) in paginatedFoodList" :key="index" class="slide-style">
-            <figure v-for="(item, index) in page" :key="index" class="slide-item">
+            <figure v-for="(item, itemIndex) in page" :key="itemIndex" class="slide-item">
               <router-link v-slot="{ navigate }"
                 :to="{ path: '/food', query: { foodtitle: item.title, restaurant_category_id: extractIdFromUrl(item.link) } }"
                 custom>
@@ -200,13 +230,18 @@ onDeactivated(() => {
 
 .header-content {
   margin-bottom: 15px;
-
 }
 
 .swiper {
   width: 100%;
   height: 48vw;
   border-bottom: 0.6px solid #e4e4e4;
+}
+
+.swiper-placeholder {
+  display: block;
+  width: 100%;
+  height: 100%;
 }
 
 .slide-style {
