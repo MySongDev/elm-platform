@@ -5,7 +5,6 @@ import { useRoute, useRouter } from 'vue-router'
 
 import BaseState from '@/components/common/BaseState/BaseState.vue'
 import { useUserStore } from '@/stores/modules/store-user'
-import { getStore } from '@/utils/storage/storage'
 import OrderCard from './components/OrderCard.vue'
 import { useContinuePayment } from './composables/useContinuePayment'
 import { useRequestRefund } from './composables/useRequestRefund'
@@ -18,10 +17,9 @@ defineOptions({
 const router = useRouter()
 const route = useRoute()
 const userStore = useUserStore()
-const { isLogin, userId } = storeToRefs(userStore)
+// 登录态一律取自 store 的 refresh 会话，页面不再自行用 userId 猜测
+const { isLogin: isAuthenticated } = storeToRefs(userStore)
 
-const currentUserId = computed(() => String(userId.value || getStore('user_id') || ''))
-const isAuthenticated = computed(() => Boolean(isLogin.value || currentUserId.value))
 const highlightedOrderNo = computed(() => String(route.query.orderNo || ''))
 
 const {
@@ -30,7 +28,7 @@ const {
   error,
   hasLoaded,
   fetchOrders,
-} = useUserOrders(currentUserId, { limit: 20 })
+} = useUserOrders(isAuthenticated, { limit: 20 })
 
 const hasOrders = computed(() => orders.value.length > 0)
 const isInitialLoading = computed(() => loading.value && !hasLoaded.value)
@@ -63,7 +61,7 @@ function retryFetch() {
 }
 
 const { continuePayment } = useContinuePayment({
-  currentUserId,
+  isLoggedIn: isAuthenticated,
   fetchOrders,
   goLogin,
 })

@@ -3,8 +3,8 @@ import { storeToRefs } from 'pinia'
 import { computed, onMounted } from 'vue'
 
 import { PROFILE_ASSETS, profileCardConfig, THEME_MAP } from '@/config/profileConfig'
-import { useUserStore } from '@/stores/modules/store-user'
 
+import { useUserStore } from '@/stores/modules/store-user'
 import ProfileCard from './components/ProfileCard.vue'
 import ProfileNav from './components/ProfileNav.vue'
 import ProfileStats from './components/ProfileStats.vue'
@@ -14,10 +14,10 @@ defineOptions({
 })
 
 const userStore = useUserStore()
-const { getUserInfo } = useUserStore()
-const { userInfo } = storeToRefs(userStore)
+const { userInfo, isLogin } = storeToRefs(userStore)
+const { getUserInfo } = userStore
 
-const isLoggedIn = computed(() => !!userInfo.value.user_id)
+const isLoggedIn = computed(() => isLogin.value)
 const userName = computed(() => userInfo.value.username || '')
 const userAvatar = computed(() => userInfo.value.avatar || '')
 const profileLink = computed(() => isLoggedIn.value ? '/profile/info' : '/login')
@@ -48,14 +48,15 @@ const navGroups = PROFILE_ASSETS.nav.map(group =>
 )
 
 onMounted(async () => {
-  if (!isLoggedIn.value) {
+  // 已登录但资料尚未载入时才请求；未登录无需发起请求
+  if (isLoggedIn.value && !Object.keys(userInfo.value).length) {
     await getUserInfo()
   }
 })
 </script>
 
 <template>
-  <div>
+<div>
     <ProfileCard :is-logged-in="isLoggedIn" :user-name="userName" :user-avatar="userAvatar" :profile-link="profileLink"
       :display-name="displayName" :display-desc="displayDesc" />
     <ProfileStats :items="infoItems" />

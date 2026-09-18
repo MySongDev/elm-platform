@@ -8,7 +8,7 @@ function defaultRedirectToPayUrl(payUrl) {
 }
 
 export function useContinuePayment({
-  currentUserId,
+  isLoggedIn,
   fetchOrders,
   goLogin,
   redirectToPayUrl = defaultRedirectToPayUrl,
@@ -20,7 +20,7 @@ export function useContinuePayment({
   }
 
   async function continuePayment(order) {
-    if (!toValue(currentUserId)) {
+    if (!toValue(isLoggedIn)) {
       goLogin()
       return
     }

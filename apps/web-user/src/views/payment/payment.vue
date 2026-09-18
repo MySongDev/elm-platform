@@ -7,7 +7,6 @@ import { showAlert } from '@/components/common/AlterTip'
 import { createAlipayWapPayment } from '@/services/api/api-payment'
 import { useUserStore } from '@/stores/modules/store-user'
 import { clearPaymentCheckoutDraft, getPaymentCheckoutDraft } from '@/utils/payment'
-import { getStore } from '@/utils/storage/storage'
 
 defineOptions({
   name: 'ShopPayment',
@@ -15,7 +14,7 @@ defineOptions({
 
 const route = useRoute()
 const userStore = useUserStore()
-const { userId } = storeToRefs(userStore)
+const { isLogin } = storeToRefs(userStore)
 
 const isPaying = ref(false)
 const selectedMethod = ref('alipay')
@@ -38,10 +37,9 @@ const payableAmount = computed(() => goodsAmount.value + deliveryFee.value)
 const cartItems = computed(() => draft.value?.cartItems || [])
 const canSubmit = computed(() => cartItems.value.length > 0 && payableAmount.value > 0)
 const hasDraft = computed(() => Boolean(draft.value?.shopId && cartItems.value.length))
-const currentUserId = computed(() => String(userId.value || getStore('user_id') || ''))
 
 async function pay() {
-  if (!currentUserId.value) {
+  if (!isLogin.value) {
     showAlert('请登录后再支付')
     return
   }

@@ -10,6 +10,7 @@ export default {
       component: () => import('@/views/order/order.vue'),
       meta: {
         title: '我的订单',
+        requiresAuth: true,
       },
     },
   ],

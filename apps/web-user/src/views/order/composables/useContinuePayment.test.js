@@ -32,7 +32,7 @@ describe('useContinuePayment', () => {
     })
 
     const { continuePayment } = useContinuePayment({
-      currentUserId: shallowRef('42'),
+      isLoggedIn: shallowRef(true),
       fetchOrders,
       goLogin: vi.fn(),
       redirectToPayUrl,
@@ -59,7 +59,7 @@ describe('useContinuePayment', () => {
     })
 
     const { continuePayment } = useContinuePayment({
-      currentUserId: shallowRef('42'),
+      isLoggedIn: shallowRef(true),
       fetchOrders,
       goLogin: vi.fn(),
       redirectToPayUrl: vi.fn(),
@@ -77,7 +77,7 @@ describe('useContinuePayment', () => {
   it('sends unauthenticated users to login before touching payment APIs', async () => {
     const goLogin = vi.fn()
     const { continuePayment } = useContinuePayment({
-      currentUserId: shallowRef(''),
+      isLoggedIn: shallowRef(false),
       fetchOrders: vi.fn(),
       goLogin,
       redirectToPayUrl: vi.fn(),

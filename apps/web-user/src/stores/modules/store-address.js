@@ -10,8 +10,14 @@ export const useAddressStore = defineStore('address', () => {
   const userStore = useUserStore()
 
   const loadAddresses = async () => {
+    // 未登录时不请求，也不再用兜底 id 冒充身份
+    if (!userStore.userId) {
+      AddressList.value = []
+      return
+    }
+
     try {
-      const res = await getAddress(userStore.userId || 1)
+      const res = await getAddress(userStore.userId)
       AddressList.value = res
     }
     catch (error) {

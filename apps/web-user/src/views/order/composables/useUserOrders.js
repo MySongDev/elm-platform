@@ -2,7 +2,7 @@ import { readonly, ref, shallowRef, toValue, watch } from 'vue'
 
 import { getUserPaymentOrders } from '@/services/api/api-payment'
 
-export function useUserOrders(userIdSource, options = {}) {
+export function useUserOrders(isLoggedIn, options = {}) {
   const orders = ref([])
   const loading = shallowRef(false)
   const error = shallowRef('')
@@ -10,10 +10,10 @@ export function useUserOrders(userIdSource, options = {}) {
   let requestSeq = 0
 
   async function fetchOrders() {
-    const userId = String(toValue(userIdSource) || '')
     const currentRequest = ++requestSeq
 
-    if (!userId) {
+    // 未登录不发请求：订单归属完全由请求头中的令牌决定，页面无需也不应传入身份
+    if (!toValue(isLoggedIn)) {
       orders.value = []
       loading.value = false
       hasLoaded.value = true
@@ -46,7 +46,7 @@ export function useUserOrders(userIdSource, options = {}) {
   }
 
   watch(
-    () => toValue(userIdSource),
+    () => toValue(isLoggedIn),
     () => {
       fetchOrders()
     },
