@@ -1,6 +1,7 @@
 import axios from 'axios'
 
-import { getStore } from '@/utils/storage/storage'
+import { getAccessToken } from '../http/auth-storage'
+
 import { paymentEndpoints } from './endpoints/payment.endpoints'
 
 export const PAY_API_UNAVAILABLE_MESSAGE
@@ -17,7 +18,7 @@ const paymentRequest = axios.create({
 })
 
 paymentRequest.interceptors.request.use((config) => {
-  const token = getStore('customer_token')
+  const token = getAccessToken()
   if (token) {
     config.headers = config.headers || {}
     config.headers.Authorization = `Bearer ${token}`

@@ -1,10 +1,6 @@
 import { authEndpoints } from '@/services/api/endpoints/auth.endpoints'
-import { getStore, setStore } from '@/utils/storage/storage'
 
-const ACCESS_TOKEN_KEY = 'customer_token'
-const REFRESH_TOKEN_KEY = 'customer_refresh_token'
-const ACCESS_TOKEN_EXPIRES_AT_KEY = 'customer_token_expires_at'
-const REFRESH_TOKEN_EXPIRES_AT_KEY = 'customer_refresh_token_expires_at'
+import { getRefreshToken, persistAuthTokens } from './auth-storage'
 
 let refreshPromise = null
 
@@ -12,22 +8,16 @@ function unwrapResponse(payload) {
   return payload?.data && payload.code === 200 ? payload.data : payload
 }
 
-function persistAuthTokens(payload) {
+function persistTokens(payload) {
   const data = unwrapResponse(payload)
   const accessToken = data?.accessToken || data?.token
 
-  if (accessToken) {
-    setStore(ACCESS_TOKEN_KEY, accessToken)
-  }
-  if (data?.refreshToken) {
-    setStore(REFRESH_TOKEN_KEY, data.refreshToken)
-  }
-  if (data?.expiresIn) {
-    setStore(ACCESS_TOKEN_EXPIRES_AT_KEY, String(Date.now() + data.expiresIn * 1000))
-  }
-  if (data?.refreshExpiresIn) {
-    setStore(REFRESH_TOKEN_EXPIRES_AT_KEY, String(Date.now() + data.refreshExpiresIn * 1000))
-  }
+  persistAuthTokens({
+    accessToken,
+    refreshToken: data?.refreshToken,
+    expiresIn: data?.expiresIn,
+    refreshExpiresIn: data?.refreshExpiresIn,
+  })
 
   return accessToken
 }
@@ -37,7 +27,7 @@ export async function refreshCustomerToken(request) {
     return refreshPromise
   }
 
-  const refreshToken = getStore(REFRESH_TOKEN_KEY)
+  const refreshToken = getRefreshToken()
   if (!refreshToken) {
     return null
   }
@@ -53,7 +43,7 @@ export async function refreshCustomerToken(request) {
       dedupe: false,
     },
   })
-    .then(persistAuthTokens)
+    .then(persistTokens)
     .finally(() => {
       refreshPromise = null
     })

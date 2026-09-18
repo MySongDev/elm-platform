@@ -46,7 +46,7 @@ describe('useUserStore', () => {
 
     expect(store.customerToken).toBe('customer-token')
     expect(store.customerRefreshToken).toBe('refresh-token')
-    expect(store.isTokenFresh).toBe(true)
+    expect(store.isLogin).toBe(true)
     expect(store.userId).toBe('9')
     expect(store.userName).toBe('13800138000')
     expect(localStorage.getItem('customer_token')).toBe('customer-token')
@@ -64,7 +64,7 @@ describe('useUserStore', () => {
 
     const store = useUserStore()
 
-    expect(store.hasRefreshSession).toBe(false)
+    expect(store.isLogin).toBe(false)
     expect(store.userId).toBe('')
     expect(localStorage.getItem('customer_token')).toBeNull()
     expect(localStorage.getItem('customer_refresh_token')).toBeNull()

@@ -2,125 +2,114 @@ import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
 
 import { getUserInfo as getUserInfoApi } from '@/services/api'
-import { getStore, removeStore, setStore } from '@/utils/storage/storage'
+import {
+  clearAuthSession,
+  persistAuthTokens,
+  persistUserId,
+  readAuthSession,
+} from '@/services/http/auth-storage'
 
-const ACCESS_TOKEN_KEY = 'customer_token'
-const REFRESH_TOKEN_KEY = 'customer_refresh_token'
-const ACCESS_TOKEN_EXPIRES_AT_KEY = 'customer_token_expires_at'
-const REFRESH_TOKEN_EXPIRES_AT_KEY = 'customer_refresh_token_expires_at'
-const USER_ID_KEY = 'user_id'
-
-function getNumberStore(key) {
-  const value = Number(getStore(key) || 0)
-  return Number.isFinite(value) ? value : 0
-}
+// 用户信息在同一会话内的缓存有效期，避免每次进入页面都重复拉取
+const USER_INFO_TTL_MS = 5 * 60 * 1000
 
 export const useUserStore = defineStore('user', () => {
   // State
   const userInfo = ref({})
-  const isLogin = ref(false)
-  const userId = ref(String(getStore(USER_ID_KEY) || ''))
+  const userId = ref('')
   const userName = ref('')
   const lastFetchTime = ref(0)
-  const customerToken = ref(getStore(ACCESS_TOKEN_KEY) || '')
-  const customerRefreshToken = ref(getStore(REFRESH_TOKEN_KEY) || '')
-  const customerTokenExpiresAt = ref(getNumberStore(ACCESS_TOKEN_EXPIRES_AT_KEY))
-  const customerRefreshTokenExpiresAt = ref(getNumberStore(REFRESH_TOKEN_EXPIRES_AT_KEY))
+  const customerToken = ref('')
+  const customerRefreshToken = ref('')
+  const customerTokenExpiresAt = ref(0)
+  const customerRefreshTokenExpiresAt = ref(0)
+  // 时间基准：computed 不会因真实时间流逝而失效，必须靠显式更新它来触发重算
+  const now = ref(Date.now())
 
   // 计算属性
   const userAvatar = computed(() => userInfo.value.avatar || '')
-  const isTokenFresh = computed(() =>
-    Boolean(customerToken.value && customerTokenExpiresAt.value > Date.now()),
+  // 登录态的唯一判据：本地存在未过期的 refresh 会话
+  const isLogin = computed(() =>
+    Boolean(customerRefreshToken.value && customerRefreshTokenExpiresAt.value > now.value),
   )
-  const hasRefreshSession = computed(() =>
-    Boolean(customerRefreshToken.value && customerRefreshTokenExpiresAt.value > Date.now()),
-  )
+
+  /** 将持久化快照应用为响应式状态，保证内存与本地存储同源 */
+  const applySession = (session) => {
+    userId.value = session.userId
+    customerToken.value = session.accessToken
+    customerRefreshToken.value = session.refreshToken
+    customerTokenExpiresAt.value = session.accessTokenExpiresAt
+    customerRefreshTokenExpiresAt.value = session.refreshTokenExpiresAt
+  }
 
   // Actions
   const logout = () => {
     userInfo.value = {}
-    userId.value = ''
     userName.value = ''
-    isLogin.value = false
     lastFetchTime.value = 0
-    customerToken.value = ''
-    customerRefreshToken.value = ''
-    customerTokenExpiresAt.value = 0
-    customerRefreshTokenExpiresAt.value = 0
-    removeStore(USER_ID_KEY)
-    removeStore(ACCESS_TOKEN_KEY)
-    removeStore(REFRESH_TOKEN_KEY)
-    removeStore(ACCESS_TOKEN_EXPIRES_AT_KEY)
-    removeStore(REFRESH_TOKEN_EXPIRES_AT_KEY)
+    clearAuthSession()
+    applySession(readAuthSession())
   }
 
+  /**
+   * 以本地存储为准同步登录态。
+   * @returns {boolean} 是否存在可用的登录会话
+   */
   const syncAuthSessionFromStorage = () => {
-    userId.value = String(getStore(USER_ID_KEY) || userId.value || '')
-    customerToken.value = getStore(ACCESS_TOKEN_KEY) || ''
-    customerRefreshToken.value = getStore(REFRESH_TOKEN_KEY) || ''
-    customerTokenExpiresAt.value = getNumberStore(ACCESS_TOKEN_EXPIRES_AT_KEY)
-    customerRefreshTokenExpiresAt.value = getNumberStore(REFRESH_TOKEN_EXPIRES_AT_KEY)
+    now.value = Date.now()
+    applySession(readAuthSession())
 
-    if (!hasRefreshSession.value) {
+    if (!isLogin.value) {
       logout()
       return false
     }
 
-    isLogin.value = true
     return true
   }
 
   /**
-   * 记录用户信息并保存到本地存储
+   * 记录登录响应中的令牌与用户资料
    */
   const recordUserInfo = (info) => {
     const payload = info.data || info
     const profile = payload.user || payload
-    const accessToken = payload.accessToken || payload.token
-    if (accessToken) {
-      customerToken.value = accessToken
-      setStore(ACCESS_TOKEN_KEY, accessToken)
-    }
-    if (payload.refreshToken) {
-      customerRefreshToken.value = payload.refreshToken
-      setStore(REFRESH_TOKEN_KEY, payload.refreshToken)
-    }
-    if (payload.expiresIn) {
-      customerTokenExpiresAt.value = Date.now() + payload.expiresIn * 1000
-      setStore(ACCESS_TOKEN_EXPIRES_AT_KEY, String(customerTokenExpiresAt.value))
-    }
-    if (payload.refreshExpiresIn) {
-      customerRefreshTokenExpiresAt.value = Date.now() + payload.refreshExpiresIn * 1000
-      setStore(REFRESH_TOKEN_EXPIRES_AT_KEY, String(customerRefreshTokenExpiresAt.value))
-    }
     const normalizedUserId = profile.user_id == null ? String(profile.id || '') : String(profile.user_id)
+
+    persistAuthTokens({
+      accessToken: payload.accessToken || payload.token,
+      refreshToken: payload.refreshToken,
+      expiresIn: payload.expiresIn,
+      refreshExpiresIn: payload.refreshExpiresIn,
+    })
+    persistUserId(normalizedUserId)
+
+    // 回读持久化结果，避免内存状态与本地存储各自漂移
+    now.value = Date.now()
+    applySession(readAuthSession())
 
     userInfo.value = {
       ...profile,
       user_id: normalizedUserId,
     }
-    isLogin.value = true
-    userId.value = normalizedUserId
     userName.value = profile.username || profile.nickname || profile.mobile || profile.phone || ''
-    setStore(USER_ID_KEY, normalizedUserId)
     lastFetchTime.value = Date.now()
   }
 
   /**
-   * 获取用户信息（带缓存机制）
+   * 获取用户信息（带会话内缓存）
    * @returns {Promise<object | null>} 用户信息对象或 null
    */
   const fetchUserInfo = async () => {
-    const hasSession = syncAuthSessionFromStorage()
-
-    // 如果已经在登录状态且有用户信息，直接返回
-    if (isLogin.value && Object.keys(userInfo.value).length > 0) {
-      return userInfo.value
-    }
-
-    if (!hasSession) {
+    if (!syncAuthSessionFromStorage()) {
       console.warn('用户未登录')
       return null
+    }
+
+    const isCacheFresh
+      = Object.keys(userInfo.value).length > 0
+        && Date.now() - lastFetchTime.value < USER_INFO_TTL_MS
+
+    if (isCacheFresh) {
+      return userInfo.value
     }
 
     // 从 API 获取最新信息
@@ -151,6 +140,7 @@ export const useUserStore = defineStore('user', () => {
     userInfo.value.avatar = path
   }
 
+  // 创建时对齐一次本地会话，过期会话在此立即清理
   syncAuthSessionFromStorage()
 
   return {
@@ -163,8 +153,6 @@ export const useUserStore = defineStore('user', () => {
     customerRefreshToken,
     customerTokenExpiresAt,
     customerRefreshTokenExpiresAt,
-    isTokenFresh,
-    hasRefreshSession,
     syncAuthSessionFromStorage,
     recordUserInfo,
     getUserInfo: fetchUserInfo,

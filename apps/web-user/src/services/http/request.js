@@ -2,9 +2,9 @@ import axios from 'axios'
 
 import { showAlert } from '@/components/common/AlterTip/index'
 import { API_BASE_URL } from '@/config'
-import { getStore } from '@/utils/storage/storage'
 
 import { refreshCustomerToken } from './auth-refresh'
+import { getAccessToken } from './auth-storage'
 import { finishGlobalLoading, startGlobalLoading } from './loading'
 import { handleUnauthorized } from './policies/auth'
 import { getBusinessMessage, isBusinessError } from './policies/business'
@@ -235,7 +235,7 @@ request.interceptors.request.use(
       _attachLocation(config)
 
     // Token 注入
-    const token = getStore('customer_token')
+    const token = getAccessToken()
     if (token) {
       config.headers = config.headers || {}
       config.headers.Authorization = `Bearer ${token}`

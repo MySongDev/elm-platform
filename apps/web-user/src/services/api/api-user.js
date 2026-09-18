@@ -1,12 +1,11 @@
-import { getStore } from '@/utils/storage/storage'
-
+import { getRefreshToken } from '../http/auth-storage'
 import { get, post } from '../http/http'
 
 import { authEndpoints } from './endpoints/auth.endpoints'
 import { userEndpoints } from './endpoints/user.endpoints'
 
-/** 获取旧版兼容用户信息 */
-export const getLegacyUserInfo = () => get(userEndpoints.info, { user_id: getStore('user_id') })
+/** 获取旧版兼容用户信息（身份由请求头中的令牌决定） */
+export const getLegacyUserInfo = () => get(userEndpoints.info)
 
 /** 获取当前手机号用户信息 */
 export function getCustomerProfile() {
@@ -31,7 +30,7 @@ export function changePassword(username, oldpassWord, newpassword, confirmpasswo
 export function signout() {
   return post(
     authEndpoints.customerLogout,
-    { refreshToken: getStore('customer_refresh_token') },
+    { refreshToken: getRefreshToken() },
     { meta: { skipAuthRefresh: true } },
   )
 }

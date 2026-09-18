@@ -8,9 +8,7 @@ export function useAuthRedirect() {
   const route = useRoute()
   const userStore = useUserStore()
 
-  const isAuthenticated = computed(() =>
-    Boolean(userStore.hasRefreshSession && userStore.isLogin),
-  )
+  const isAuthenticated = computed(() => userStore.isLogin)
 
   function redirectToLogin(redirect?: string) {
     router.push({
