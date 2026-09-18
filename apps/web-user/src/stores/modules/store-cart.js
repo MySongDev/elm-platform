@@ -5,19 +5,8 @@ import { createProductId, normalizeStore, productFromFood, toNumber, toText } fr
 
 import { getStore } from '@/utils/storage/storage'
 
-// v1 遗留数据源：仅用于首次迁移到 v2（见下方 persist 配置），不再写入
-// const LEGACY_CART_STORAGE_KEY = 'elm_cart_store_v1'
 const LEGACY_PENDING_CHECKOUT_KEY = 'elm_cart_pending_checkout_v1'
 const CART_CHECKOUT_SHOP_ID = 'cart-checkout'
-
-// v2 无数据时以 v1 为初始值，首次持久化自动迁移
-// function loadStores() {
-//   const savedStores = getStore(LEGACY_CART_STORAGE_KEY)
-//   if (Array.isArray(savedStores))
-//     return savedStores.map(normalizeStore).filter(store => store.id && store.products.length)
-
-//   return []
-// }
 
 export const useCartStore = defineStore('cart', () => {
   const stores = ref([])
