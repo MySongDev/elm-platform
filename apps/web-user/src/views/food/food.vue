@@ -1,5 +1,5 @@
 <script setup>
-import { computed, onActivated, onDeactivated, onMounted, ref, shallowRef, useTemplateRef, watch } from 'vue'
+import { computed, onMounted, ref, shallowRef, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
 import ShopList from '@/components/common/ShopList/ShopList.vue'
@@ -27,7 +27,6 @@ const CATEGORY_LOCATION = {
   latitude: 33.33,
   longitude: 22.44,
 }
-const SCROLL_STORAGE_KEY = 'scroll:/food'
 
 const categories = shallowRef([])
 const selectedCategoryName = shallowRef(route.query.FoodTitle || '分类')
@@ -47,26 +46,6 @@ const deliveryValues = ref([])
 const sortValue = shallowRef(0)
 const switchTrigger = shallowRef(0)
 const { filterValues, clearFilter } = useFilter()
-
-const foodPageRef = useTemplateRef('foodPageRef')
-
-function saveScrollPosition() {
-  if (!foodPageRef.value)
-    return
-
-  sessionStorage.setItem(SCROLL_STORAGE_KEY, String(foodPageRef.value.scrollTop))
-}
-
-function restoreScrollPosition() {
-  const savedPosition = Number(sessionStorage.getItem(SCROLL_STORAGE_KEY))
-  if (!Number.isFinite(savedPosition) || !foodPageRef.value)
-    return
-
-  requestAnimationFrame(() => {
-    if (foodPageRef.value)
-      foodPageRef.value.scrollTop = savedPosition
-  })
-}
 
 const categoryTitle = computed(() => {
   if (!restaurantCategoryId.value)
@@ -171,18 +150,10 @@ onMounted(() => {
   fetchDelivery()
   fetchFilterAttributes()
 })
-
-onActivated(() => {
-  restoreScrollPosition()
-})
-
-onDeactivated(() => {
-  saveScrollPosition()
-})
 </script>
 
 <template>
-  <div ref="foodPageRef" class="food-page">
+  <div class="food-page">
     <div class="food-filter">
       <head-top :head-title="selectedCategoryName" />
       <FilterHeader

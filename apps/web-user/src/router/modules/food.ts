@@ -6,7 +6,6 @@ export default {
   component: () => import('@/views/food/food.vue'),
   meta: {
     title: '食物',
-    keepAlive: true,
     requiresAuth: true,
   },
 } satisfies RouteRecordRaw
