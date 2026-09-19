@@ -17,7 +17,7 @@
     "build:admin": "turbo run build --filter=@elm-platform/web-admin",
     "build:user": "turbo run build --filter=@elm-platform/web-user",
     "type-check": "turbo run type-check",
-    "lint": "eslint . --fix --cache",
+    "lint": "turbo run lint",
     "lint:style": "stylelint \"apps/{web-admin,web-user}/src/**/*.{vue,scss,css}\" --fix --config stylelint.config.mjs",
     "lint:all": "pnpm lint && pnpm lint:style",
     "test": "turbo run test test:unit",

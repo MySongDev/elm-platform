@@ -27,7 +27,8 @@
   "files": ["dist"],
   "scripts": {
     "build": "tsup",
-    "dev": "tsup --watch"
+    "dev": "tsup --watch",
+    "lint": "eslint . --fix --cache"
   },
   "devDependencies": {
     "@elm-platform/tsconfig": "workspace:*",

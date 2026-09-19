@@ -8,5 +8,8 @@
     "node-nestjs.json",
     "vue-app-strict.json",
     "vue-app.json"
-  ]
+  ],
+  "scripts": {
+    "lint": "echo \"No lint needed for tsconfig package\""
+  }
 }
