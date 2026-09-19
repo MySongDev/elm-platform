@@ -42,24 +42,14 @@ jobs:
         with: {node-version: 22, cache: pnpm}
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
-      - name: Build shared packages
-        run: pnpm build:packages
       - name: Generate Prisma client
         run: pnpm --filter @elm-platform/server run prisma:generate
-      - name: Build server
-        run: pnpm --filter @elm-platform/server run build
-      - name: Build web-admin
-        run: pnpm --filter @elm-platform/web-admin run build
-      - name: Build web-user
-        run: pnpm --filter @elm-platform/web-user run build
+      - name: Build
+        run: pnpm build
       - name: Type check
         run: pnpm type-check
-      - name: Test server
-        run: pnpm --filter @elm-platform/server run test
-      - name: Test web-admin
-        run: pnpm --filter @elm-platform/web-admin run test:unit
-      - name: Test web-user
-        run: pnpm --filter @elm-platform/web-user run test
+      - name: Test
+        run: pnpm test
 
   api-drift:
     runs-on: ubuntu-latest
