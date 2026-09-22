@@ -7,14 +7,12 @@ import { ElmFoodPublicController } from './controllers/elm-food-public.controlle
 import { ElmLocationController } from './controllers/elm-location.controller'
 import { ElmOrderPublicController } from './controllers/elm-order-public.controller'
 import { ElmRestaurantPublicController } from './controllers/elm-restaurant-public.controller'
-import { ElmUserPublicController } from './controllers/elm-user-public.controller'
 import { ElmCityService } from './services/elm-city.service'
 import { ElmFoodService } from './services/elm-food.service'
 import { ElmOrderService } from './services/elm-order.service'
 import { ElmRestaurantService } from './services/elm-restaurant.service'
 import { ElmStoreService } from './services/elm-store.service'
 import { ElmUpstreamService } from './services/elm-upstream.service'
-import { ElmUserCompatService } from './services/elm-user-compat.service'
 
 @Module({
   imports: [PaymentModule, OrderModule, TenantModule],
@@ -22,7 +20,6 @@ import { ElmUserCompatService } from './services/elm-user-compat.service'
     ElmLocationController,
     ElmRestaurantPublicController,
     ElmFoodPublicController,
-    ElmUserPublicController,
     ElmOrderPublicController,
     ElmAdminController,
   ],
@@ -31,7 +28,6 @@ import { ElmUserCompatService } from './services/elm-user-compat.service'
     ElmCityService,
     ElmRestaurantService,
     ElmFoodService,
-    ElmUserCompatService,
     ElmOrderService,
     ElmUpstreamService,
   ],
@@ -39,7 +35,6 @@ import { ElmUserCompatService } from './services/elm-user-compat.service'
     ElmCityService,
     ElmRestaurantService,
     ElmFoodService,
-    ElmUserCompatService,
     ElmOrderService,
     ElmUpstreamService,
   ],

@@ -5,6 +5,7 @@ import { validateEnv } from './config/env.schema'
 import { HealthModule } from './health/health.module'
 import { AdminModule } from './modules/admin/admin.module'
 import { AuthModule } from './modules/auth/auth.module'
+import { CustomerAddressModule } from './modules/customer-address/customer-address.module'
 import { CustomerAuthModule } from './modules/customer-auth/customer-auth.module'
 import { ElmModule } from './modules/elm/elm.module'
 import { MerchantOnboardingModule } from './modules/merchant-onboarding/merchant-onboarding.module'
@@ -36,6 +37,7 @@ import { RedisModule } from './redis/redis.module'
     UserModule,
     AuthModule,
     CustomerAuthModule,
+    CustomerAddressModule,
     AdminModule,
     ElmModule,
     MerchantOnboardingModule,

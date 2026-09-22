@@ -6,7 +6,6 @@ import { useRouter } from 'vue-router'
 import { useFormValidator } from '@/composables/ui'
 import { addAddress } from '@/services/api/api-address'
 import { useLocationStore } from '@/stores/modules/store-locations'
-import { useUserStore } from '@/stores/modules/store-user'
 import { useFormDraft } from '@/utils/FormDraft'
 
 import { addressSchema } from './addressFormSchema'
@@ -18,7 +17,6 @@ defineOptions({
 })
 
 const router = useRouter()
-const userStore = useUserStore()
 const locationStore = useLocationStore()
 
 const showArea = ref(false)
@@ -56,14 +54,13 @@ function onAreaConfirm({ selectedOptions }) {
 
 function toApiPayload() {
   return {
-    user_id: userStore.userId,
     sex: form.sex,
     name: form.name,
     address: form.community,
-    address_detail: form.detail,
+    addressDetail: form.detail,
     phone: form.phone,
-    phone_bk: form.phoneBk || undefined,
-    geohash: locationStore.geohash || '',
+    phoneBk: form.phoneBk || undefined,
+    geohash: locationStore.geohash || undefined,
   }
 }
 

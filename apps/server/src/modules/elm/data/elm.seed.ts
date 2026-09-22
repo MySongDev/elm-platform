@@ -1,7 +1,5 @@
 import type {
-  AddressRecord,
   CityRecord,
-  ElmUserRecord,
   FoodRecord,
   MenuCategorySeed,
   OrderRecord,
@@ -16,23 +14,6 @@ export const seedCities: CityRecord[] = [
   createCity(4, '深圳', 'SZ', '0755', 22.543099, 114.057868, 'shenzhen', 4),
   createCity(5, '广州', 'GZ', '020', 23.12911, 113.264385, 'guangzhou', 5),
   createCity(6, '南京', 'NJ', '025', 32.060255, 118.796877, 'nanjing', 6),
-]
-
-export const seedUsers: ElmUserRecord[] = [
-  {
-    user_id: 1,
-    id: 1,
-    username: 'elm_user',
-    mobile: '13800138000',
-    email: 'user@example.com',
-    avatar: 'default.jpg',
-    balance: 128,
-    gift_amount: 3,
-    point: 520,
-    city: '上海',
-    registe_time: '2026-05-17 12:00',
-    is_active: 1,
-  },
 ]
 
 export const seedRestaurants: RestaurantRecord[] = [
@@ -140,23 +121,6 @@ export const seedFoods: FoodRecord[] = [
   createFood(2, 3, 3, '经典香辣鸡腿堡套餐', 39, 'food/15c545e4a705.png', '汉堡、薯条、可乐', { tenantCode: 'fast-food' }),
   createFood(2, 4, 4, '黄金鸡块', 18, 'food/15c545e4a705.png', '外脆里嫩小食', { tenantCode: 'fast-food' }),
   createFood(3, 5, 5, '牛油果鸡胸沙拉', 42, 'food/15c545e4a705.png', '高蛋白轻食', { tenantCode: 'flower-cake' }),
-]
-
-export const seedAddresses: AddressRecord[] = [
-  {
-    id: 1001,
-    user_id: 1,
-    name: '宋明旺',
-    phone: '13800138000',
-    phone_bk: '',
-    address: '上海人民广场',
-    address_detail: '1 号楼 101',
-    geohash: '31.22967,121.4762',
-    sex: 1,
-    tag: '家',
-    tag_type: 2,
-    poi_type: 0,
-  },
 ]
 
 export const seedOrders: OrderRecord[] = [

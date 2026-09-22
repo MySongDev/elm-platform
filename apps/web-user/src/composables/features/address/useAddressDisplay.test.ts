@@ -6,7 +6,7 @@ describe('address display helpers', () => {
   it('combines community and detail as address title', () => {
     expect(getAddressTitle({
       address: 'xxx宾馆',
-      address_detail: '304',
+      addressDetail: '304',
     })).toBe('xxx宾馆 304')
   })
 

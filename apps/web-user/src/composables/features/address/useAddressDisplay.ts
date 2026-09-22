@@ -4,9 +4,9 @@ import { computed } from 'vue'
 import { maskPhone } from '@/utils/format/format'
 
 interface AddressItem {
-  id?: string
+  id?: string | number
   address?: string
-  address_detail?: string
+  addressDetail?: string
   name?: string
   username?: string
   sex?: number | string
@@ -17,7 +17,7 @@ export const demoAddresses: AddressItem[] = [
   {
     id: 'demo-1',
     address: 'xxx宾馆',
-    address_detail: '304',
+    addressDetail: '304',
     name: 'xxx',
     sex: 1,
     phone: '17552025202',
@@ -25,7 +25,7 @@ export const demoAddresses: AddressItem[] = [
   {
     id: 'demo-2',
     address: 'xxxx医院-病房楼',
-    address_detail: '3002',
+    addressDetail: '3002',
     name: 'xxx',
     sex: 1,
     phone: '17552025202',
@@ -33,7 +33,7 @@ export const demoAddresses: AddressItem[] = [
   {
     id: 'demo-3',
     address: 'xxxx学院-5号楼',
-    address_detail: '209',
+    addressDetail: '209',
     name: 'xxx',
     sex: 1,
     phone: '17552025202',
@@ -41,7 +41,7 @@ export const demoAddresses: AddressItem[] = [
 ]
 
 export function getAddressTitle(item: AddressItem = {}): string {
-  return [item.address, item.address_detail].filter(Boolean).join(' ')
+  return [item.address, item.addressDetail].filter(Boolean).join(' ')
 }
 
 export function getContactName(item: AddressItem = {}): string {
