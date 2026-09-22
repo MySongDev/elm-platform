@@ -1,17 +1,22 @@
 import { ValidationPipe } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import { NestFactory } from '@nestjs/core'
+import { NestExpressApplication } from '@nestjs/platform-express'
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger'
 import { AppModule } from './app.module'
 import { AllExceptionsFilter } from './common/filters/http-exception.filter'
 import { LoggingInterceptor } from './common/interceptors/logging.interceptor'
 import { TransformInterceptor } from './common/interceptors/transform.interceptor'
 import { requestIdMiddleware } from './common/middleware/request-id.middleware'
+import { UPLOAD_DIR, UPLOAD_PUBLIC_PREFIX } from './modules/storage/local-disk.storage'
 import { PrismaService } from './prisma/prisma.service'
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule)
+  const app = await NestFactory.create<NestExpressApplication>(AppModule)
   const configService = app.get(ConfigService)
+
+  // 对外暴露本地上传目录。数据库里只存相对路径，这里把它映射成可访问的 URL。
+  app.useStaticAssets(UPLOAD_DIR, { prefix: UPLOAD_PUBLIC_PREFIX })
 
   app.use(requestIdMiddleware)
 

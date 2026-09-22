@@ -61,7 +61,8 @@ cypress/screenshots/
 apps/server/prisma/*.db
 apps/server/prisma/*.db-journal
 
-# Turbo
+# 用户上传的文件只留在运行的机器上，不进版本库
+apps/server/uploads/
 .turbo/
 
 # Misc

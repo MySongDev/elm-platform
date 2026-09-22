@@ -1,5 +1,5 @@
 <script setup>
-import { IMAGE_BASE_URL } from '@/config'
+import { getUploadUrl } from '@/config'
 import { profileCardConfig } from '@/config/profileConfig'
 
 defineProps({
@@ -15,7 +15,7 @@ defineProps({
 <template>
   <div class="profile-card">
     <router-link :to="profileLink" class="profile-card_link">
-      <img v-show="isLoggedIn" class="profile-card_avatar" :src="IMAGE_BASE_URL + userAvatar">
+      <img v-show="isLoggedIn" class="profile-card_avatar" :src="getUploadUrl(userAvatar)">
 
       <div class="profile-card_info">
         <span class="profile-card_name">{{ displayName }}</span>

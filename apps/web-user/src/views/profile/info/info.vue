@@ -16,7 +16,7 @@ defineOptions({
 
 const router = useRouter()
 const userStore = useUserStore()
-const { userId, userAvatar, userName } = storeToRefs(userStore)
+const { userAvatar, userName } = storeToRefs(userStore)
 
 const settingGroups = computed(() => [
   {
@@ -77,7 +77,7 @@ async function handleLogout() {
   <div class="info-page">
     <!-- 头像上传 -->
     <div class="settings-section">
-      <AvatarUploader :avatar="userAvatar" :user-id="userId" />
+      <AvatarUploader :avatar="userAvatar" />
 
       <!-- 基本信息 -->
       <SettingItem v-for="item in settingGroups[0].items" :key="item.label" v-bind="item" />

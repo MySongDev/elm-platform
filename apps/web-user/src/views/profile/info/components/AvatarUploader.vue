@@ -2,13 +2,12 @@
 import { ref } from 'vue'
 
 import { showAlert } from '@/components/common/AlterTip'
-import { IMAGE_BASE_URL } from '@/config'
+import { getUploadUrl } from '@/config'
 import { uploadUserAvatar } from '@/services/api'
 import { useUserStore } from '@/stores/modules/store-user'
 
-const props = defineProps({
+defineProps({
   avatar: String,
-  userId: String,
 })
 
 const userStore = useUserStore()
@@ -34,15 +33,12 @@ async function handleFileChange(event) {
     showAlert('图片大小不能超过 2MB')
     return
   }
-  if (!props.userId)
-    return
 
   isUploading.value = true
   try {
-    const res = await uploadUserAvatar(props.userId, file)
-    if (res.status === 1) {
-      userStore.updateAvatar(res.image_path)
-    }
+    const res = await uploadUserAvatar(file)
+    if (res?.data?.avatar)
+      userStore.updateAvatar(res.data.avatar)
   }
   catch {
     showAlert('上传失败，请重试')
@@ -59,7 +55,7 @@ async function handleFileChange(event) {
     <input ref="fileInputRef" type="file" accept="image/*" class="avatar-uploader_input" @change="handleFileChange">
     <span class="avatar-uploader_label">头像</span>
     <div class="avatar-uploader_right">
-      <img v-if="avatar" :src="IMAGE_BASE_URL + avatar" class="avatar-uploader_img">
+      <img v-if="avatar" :src="getUploadUrl(avatar)" class="avatar-uploader_img">
       <span v-else class="avatar-uploader_img avatar-uploader_img--default">
         <SvgIcon icon-name="avatar-default" />
       </span>

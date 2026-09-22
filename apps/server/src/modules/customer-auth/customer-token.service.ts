@@ -116,7 +116,7 @@ export class CustomerTokenService {
       mobile: user.phone,
       username: user.nickname || user.phone,
       nickname: user.nickname,
-      avatar: user.avatar || 'default.jpg',
+      avatar: user.avatar,
       status: user.status,
     }
   }

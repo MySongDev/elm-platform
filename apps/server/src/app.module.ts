@@ -7,6 +7,7 @@ import { AdminModule } from './modules/admin/admin.module'
 import { AuthModule } from './modules/auth/auth.module'
 import { CustomerAddressModule } from './modules/customer-address/customer-address.module'
 import { CustomerAuthModule } from './modules/customer-auth/customer-auth.module'
+import { CustomerAvatarModule } from './modules/customer-avatar/customer-avatar.module'
 import { ElmModule } from './modules/elm/elm.module'
 import { MerchantOnboardingModule } from './modules/merchant-onboarding/merchant-onboarding.module'
 import { NotificationModule } from './modules/notification/notification.module'
@@ -38,6 +39,7 @@ import { RedisModule } from './redis/redis.module'
     AuthModule,
     CustomerAuthModule,
     CustomerAddressModule,
+    CustomerAvatarModule,
     AdminModule,
     ElmModule,
     MerchantOnboardingModule,
