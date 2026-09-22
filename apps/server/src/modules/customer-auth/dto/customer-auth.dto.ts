@@ -88,3 +88,27 @@ export class CustomerLogoutDto {
   @IsString()
   refreshToken?: string
 }
+
+export class ResetPasswordDto {
+  @ApiProperty({
+    description: '手机号',
+    example: '13800138001',
+  })
+  @Matches(/^1\d{10}$/, { message: '请输入正确的手机号' })
+  phone: string
+
+  @ApiProperty({
+    description: '短信验证码',
+    example: '123456',
+  })
+  @IsString()
+  smsCode: string
+
+  @ApiProperty({
+    description: '新密码',
+    example: 'new-password',
+  })
+  @IsString()
+  @MinLength(6, { message: '密码至少 6 位' })
+  password: string
+}
