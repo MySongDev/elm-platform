@@ -19,6 +19,8 @@ apps/*/.git
 dist/
 dist-ssr/
 *.local
+# rollup-plugin-visualizer 的产物，仅在 ANALYZE 构建时本地生成
+apps/web-admin/stats.html
 
 # IDE
 .vscode/*
