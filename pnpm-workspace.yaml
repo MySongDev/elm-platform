@@ -50,7 +50,7 @@ catalog:
   '@types/supertest': ^6.0.2
   '@vant/area-data': ^2.1.0
   '@vant/auto-import-resolver': ^1.3.0
-  '@vitejs/plugin-vue': ^6.0.7
+  '@vitejs/plugin-vue': ^6.0.8
   '@vitest/coverage-v8': ^4.1.6
   '@vueuse/core': ^14.3.0
   alipay-sdk: ^3.6.2
@@ -102,20 +102,20 @@ catalog:
   tsx: ^4.19.0
   turbo: ^2.9.16
   typescript: ^5.8.3
-  unplugin-auto-import: ^21.0.0
+  unplugin-auto-import: ^21.1.0
   unplugin-icons: ^23.0.1
-  unplugin-vue-components: ^31.0.0
+  unplugin-vue-components: ^32.1.0
   vant: ^4.9.22
-  vite: ^8.0.16
+  vite: ^8.2.2
   vite-plugin-mock: ^3.0.2
   vite-plugin-svg-icons: ^2.0.1
   vite-plugin-vue-devtools: ^8.0.5
-  vitest: ^4.1.6
+  vitest: ^5.0.0
   vue: ^3.5.26
   vue-echarts: ^8.0.1
   vue-i18n: ^11.1.2
   vue-router: ^4.6.4
-  vue-tsc: ^3.2.9
+  vue-tsc: ^3.3.11
   vue-virtual-scroller: 2.0.0-beta.8
   zod: ^4.4.3
 
