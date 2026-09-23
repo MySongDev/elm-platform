@@ -1,5 +1,5 @@
-import type { CustomerPasswordLoginDto, CustomerRegisterDto, CustomerSmsLoginDto, ResetPasswordDto } from './dto/customer-auth.dto'
-import { BadRequestException, ConflictException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common'
+import type { CustomerPasswordLoginDto, CustomerSmsLoginDto, ResetPasswordDto } from './dto/customer-auth.dto'
+import { BadRequestException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import * as bcrypt from 'bcryptjs'
 import { PrismaService } from '../../prisma/prisma.service'
@@ -14,25 +14,6 @@ export class CustomerAuthService {
     private readonly tokens: CustomerTokenService,
     private readonly config: ConfigService,
   ) {}
-
-  async register(dto: CustomerRegisterDto) {
-    const existing = await (this.prisma as any).customerUser.findUnique({ where: { phone: dto.phone } })
-    if (existing) {
-      throw new ConflictException('手机号已注册')
-    }
-
-    await this.sms.verifyCode(dto.phone, 'register', dto.smsCode)
-
-    const user = await (this.prisma as any).customerUser.create({
-      data: {
-        phone: dto.phone,
-        password: dto.password ? await bcrypt.hash(dto.password, 10) : null,
-        status: 1,
-      },
-    })
-
-    return this.tokens.sign(user)
-  }
 
   async resetPassword(dto: ResetPasswordDto) {
     const user = await (this.prisma as any).customerUser.findUnique({ where: { phone: dto.phone } })

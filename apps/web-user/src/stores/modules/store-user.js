@@ -70,7 +70,8 @@ export const useUserStore = defineStore('user', () => {
    * 记录登录响应中的令牌与用户资料
    */
   const recordUserInfo = (info) => {
-    const payload = info.data || info
+    // 登录接口返回 { code, data } 信封，令牌在 data 内；其余调用方直接传业务对象
+    const payload = typeof info?.code === 'number' && info.data ? info.data : info
     const profile = payload.user || payload
     const normalizedUserId = profile.user_id == null ? String(profile.id || '') : String(profile.user_id)
 

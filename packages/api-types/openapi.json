@@ -3246,126 +3246,6 @@
         ]
       }
     },
-    "/api/customer-auth/register": {
-      "post": {
-        "operationId": "CustomerAuthController_register",
-        "summary": "手机号注册",
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CustomerRegisterDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "201": {
-            "description": "请求成功",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "title": "ApiResponseOfCustomerTokenResponseDto",
-                  "allOf": [
-                    {
-                      "$ref": "#/components/schemas/ApiResponseEnvelopeDto"
-                    },
-                    {
-                      "type": "object",
-                      "required": [
-                        "data"
-                      ],
-                      "properties": {
-                        "data": {
-                          "$ref": "#/components/schemas/CustomerTokenResponseDto"
-                        }
-                      }
-                    }
-                  ]
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "请求参数错误",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "allOf": [
-                    {
-                      "$ref": "#/components/schemas/ApiErrorResponseDto"
-                    },
-                    {
-                      "properties": {
-                        "code": {
-                          "example": 400
-                        },
-                        "message": {
-                          "example": "请求参数错误"
-                        }
-                      }
-                    }
-                  ]
-                }
-              }
-            }
-          },
-          "409": {
-            "description": "资源状态冲突",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "allOf": [
-                    {
-                      "$ref": "#/components/schemas/ApiErrorResponseDto"
-                    },
-                    {
-                      "properties": {
-                        "code": {
-                          "example": 409
-                        },
-                        "message": {
-                          "example": "资源状态冲突"
-                        }
-                      }
-                    }
-                  ]
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "服务器内部错误",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "allOf": [
-                    {
-                      "$ref": "#/components/schemas/ApiErrorResponseDto"
-                    },
-                    {
-                      "properties": {
-                        "code": {
-                          "example": 500
-                        },
-                        "message": {
-                          "example": "服务器内部错误"
-                        }
-                      }
-                    }
-                  ]
-                }
-              }
-            }
-          }
-        },
-        "tags": [
-          "用户端认证"
-        ]
-      }
-    },
     "/api/customer-auth/password/reset": {
       "post": {
         "operationId": "CustomerAuthController_resetPassword",
@@ -10829,7 +10709,6 @@
             "description": "验证码场景",
             "enum": [
               "login",
-              "register",
               "reset_password"
             ]
           }
@@ -10837,6 +10716,31 @@
         "required": [
           "phone",
           "scene"
+        ]
+      },
+      "ResetPasswordDto": {
+        "type": "object",
+        "properties": {
+          "phone": {
+            "type": "string",
+            "description": "手机号",
+            "example": "13800138001"
+          },
+          "smsCode": {
+            "type": "string",
+            "description": "短信验证码",
+            "example": "123456"
+          },
+          "password": {
+            "type": "string",
+            "description": "新密码",
+            "example": "new-password"
+          }
+        },
+        "required": [
+          "phone",
+          "smsCode",
+          "password"
         ]
       },
       "CustomerProfileResponseDto": {
@@ -10939,55 +10843,6 @@
           "refreshToken",
           "refreshExpiresIn",
           "user"
-        ]
-      },
-      "CustomerRegisterDto": {
-        "type": "object",
-        "properties": {
-          "phone": {
-            "type": "string",
-            "description": "手机号",
-            "example": "13800138001"
-          },
-          "smsCode": {
-            "type": "string",
-            "description": "短信验证码",
-            "example": "123456"
-          },
-          "password": {
-            "type": "string",
-            "description": "密码",
-            "example": "password123"
-          }
-        },
-        "required": [
-          "phone",
-          "smsCode"
-        ]
-      },
-      "ResetPasswordDto": {
-        "type": "object",
-        "properties": {
-          "phone": {
-            "type": "string",
-            "description": "手机号",
-            "example": "13800138001"
-          },
-          "smsCode": {
-            "type": "string",
-            "description": "短信验证码",
-            "example": "123456"
-          },
-          "password": {
-            "type": "string",
-            "description": "新密码",
-            "example": "new-password"
-          }
-        },
-        "required": [
-          "phone",
-          "smsCode",
-          "password"
         ]
       },
       "CustomerPasswordLoginDto": {

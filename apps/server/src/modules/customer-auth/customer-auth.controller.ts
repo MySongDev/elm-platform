@@ -12,7 +12,6 @@ import {
   CustomerLogoutDto,
   CustomerPasswordLoginDto,
   CustomerRefreshTokenDto,
-  CustomerRegisterDto,
   CustomerSmsLoginDto,
   ResetPasswordDto,
   SendSmsDto,
@@ -33,14 +32,6 @@ export class CustomerAuthController {
   @ApiErrorResponses(400, 429, 500)
   sendSms(@Body() dto: SendSmsDto) {
     return this.sms.sendCode(dto.phone, dto.scene)
-  }
-
-  @Post('register')
-  @ApiOperation({ summary: '手机号注册' })
-  @ApiSuccessResponse(CustomerTokenResponseDto, { status: 201 })
-  @ApiErrorResponses(400, 409, 500)
-  register(@Body() dto: CustomerRegisterDto) {
-    return this.customerAuth.register(dto)
   }
 
   @Post('password/reset')

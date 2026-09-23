@@ -1,4 +1,4 @@
-import { BadRequestException, ConflictException, UnauthorizedException } from '@nestjs/common'
+import { BadRequestException, UnauthorizedException } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import * as bcrypt from 'bcryptjs'
 import { CustomerAuthService } from '@/modules/customer-auth/customer-auth.service'
@@ -56,41 +56,6 @@ describe('customerAuthService', () => {
       tokens,
     }
   }
-
-  it('registers with sms code and optional password', async () => {
-    const { service, prisma, sms } = createService()
-
-    const result = await service.register({
-      phone: '13800138001',
-      smsCode: '123456',
-      password: 'password123',
-    })
-
-    expect(sms.verifyCode).toHaveBeenCalledWith('13800138001', 'register', '123456')
-    expect(prisma.customerUser.create).toHaveBeenCalledWith({
-      data: expect.objectContaining({
-        phone: '13800138001',
-        status: 1,
-        password: expect.any(String),
-      }),
-    })
-    expect(result.token).toBe('customer-token-1')
-  })
-
-  it('rejects duplicate registration without consuming sms code', async () => {
-    const { service, sms } = createService({
-      existingUser: {
-        id: 1,
-        phone: '13800138001',
-      },
-    })
-
-    await expect(service.register({
-      phone: '13800138001',
-      smsCode: '123456',
-    })).rejects.toThrow(ConflictException)
-    expect(sms.verifyCode).not.toHaveBeenCalled()
-  })
 
   it('logs in by password', async () => {
     const existingUser = {

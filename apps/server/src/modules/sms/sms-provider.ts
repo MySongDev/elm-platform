@@ -1,4 +1,4 @@
-export type SmsScene = 'login' | 'register' | 'reset_password'
+export type SmsScene = 'login' | 'reset_password'
 
 export const SMS_PROVIDER = Symbol('SMS_PROVIDER')
 

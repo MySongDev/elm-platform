@@ -55,6 +55,31 @@ describe('useUserStore', () => {
     expect(Number(localStorage.getItem('customer_refresh_token_expires_at'))).toBeGreaterThan(Date.now())
   })
 
+  it('unwraps the { code, data } envelope from login responses', () => {
+    const store = useUserStore()
+
+    store.recordUserInfo({
+      code: 200,
+      message: 'success',
+      data: {
+        token: 'customer-token',
+        refreshToken: 'refresh-token',
+        expiresIn: 1800,
+        refreshExpiresIn: 2592000,
+        user: {
+          id: 9,
+          username: '13800138000',
+          phone: '13800138000',
+        },
+      },
+    })
+
+    expect(store.customerToken).toBe('customer-token')
+    expect(store.customerRefreshToken).toBe('refresh-token')
+    expect(store.isLogin).toBe(true)
+    expect(store.userId).toBe('9')
+  })
+
   it('clears expired refresh sessions before treating users as authenticated', () => {
     localStorage.setItem('customer_token', 'expired-access-token')
     localStorage.setItem('customer_refresh_token', 'expired-refresh-token')

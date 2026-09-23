@@ -303,23 +303,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/customer-auth/register": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** 手机号注册 */
-        post: operations["CustomerAuthController_register"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/api/customer-auth/password/reset": {
         parameters: {
             query?: never;
@@ -2476,7 +2459,24 @@ export interface components {
              * @description 验证码场景
              * @enum {string}
              */
-            scene: "login" | "register" | "reset_password";
+            scene: "login" | "reset_password";
+        };
+        ResetPasswordDto: {
+            /**
+             * @description 手机号
+             * @example 13800138001
+             */
+            phone: string;
+            /**
+             * @description 短信验证码
+             * @example 123456
+             */
+            smsCode: string;
+            /**
+             * @description 新密码
+             * @example new-password
+             */
+            password: string;
         };
         CustomerProfileResponseDto: {
             /**
@@ -2548,40 +2548,6 @@ export interface components {
             refreshExpiresIn: number;
             /** @description 用户信息 */
             user: components["schemas"]["CustomerProfileResponseDto"];
-        };
-        CustomerRegisterDto: {
-            /**
-             * @description 手机号
-             * @example 13800138001
-             */
-            phone: string;
-            /**
-             * @description 短信验证码
-             * @example 123456
-             */
-            smsCode: string;
-            /**
-             * @description 密码
-             * @example password123
-             */
-            password?: string;
-        };
-        ResetPasswordDto: {
-            /**
-             * @description 手机号
-             * @example 13800138001
-             */
-            phone: string;
-            /**
-             * @description 短信验证码
-             * @example 123456
-             */
-            smsCode: string;
-            /**
-             * @description 新密码
-             * @example new-password
-             */
-            password: string;
         };
         CustomerPasswordLoginDto: {
             /**
@@ -5428,74 +5394,6 @@ export interface operations {
                         /** @example 429 */
                         code?: unknown;
                         /** @example 请求过于频繁 */
-                        message?: unknown;
-                    };
-                };
-            };
-            /** @description 服务器内部错误 */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
-                        /** @example 500 */
-                        code?: unknown;
-                        /** @example 服务器内部错误 */
-                        message?: unknown;
-                    };
-                };
-            };
-        };
-    };
-    CustomerAuthController_register: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["CustomerRegisterDto"];
-            };
-        };
-        responses: {
-            /** @description 请求成功 */
-            201: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ApiResponseEnvelopeDto"] & {
-                        data: components["schemas"]["CustomerTokenResponseDto"];
-                    };
-                };
-            };
-            /** @description 请求参数错误 */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
-                        /** @example 400 */
-                        code?: unknown;
-                        /** @example 请求参数错误 */
-                        message?: unknown;
-                    };
-                };
-            };
-            /** @description 资源状态冲突 */
-            409: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
-                        /** @example 409 */
-                        code?: unknown;
-                        /** @example 资源状态冲突 */
                         message?: unknown;
                     };
                 };

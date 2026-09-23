@@ -1,6 +1,5 @@
 export const authEndpoints = {
   customerSmsSend: '/customer-auth/sms/send',
-  customerRegister: '/customer-auth/register',
   customerPasswordLogin: '/customer-auth/login/password',
   customerPasswordReset: '/customer-auth/password/reset',
   customerSmsLogin: '/customer-auth/login/sms',

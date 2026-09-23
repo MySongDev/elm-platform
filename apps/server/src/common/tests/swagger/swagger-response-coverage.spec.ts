@@ -96,12 +96,6 @@ const controllerEntries: ControllerEntry[] = [
   },
   {
     controller: CustomerAuthController,
-    method: 'register',
-    success: 201,
-    errors: [400, 409, 500],
-  },
-  {
-    controller: CustomerAuthController,
     method: 'resetPassword',
     success: 200,
     errors: [400, 404, 500],
