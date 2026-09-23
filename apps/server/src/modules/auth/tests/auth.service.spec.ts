@@ -1,7 +1,7 @@
 import type { JwtService } from '@nestjs/jwt'
-import type { PrismaService } from '@prisma/prisma.service'
 import type { RedisService } from '@redis/redis.service'
 import type { NotificationService } from '@/modules/notification/notification.service'
+import type { PrismaService } from '@/prisma/prisma.service'
 import { UnauthorizedException } from '@nestjs/common'
 import * as bcrypt from 'bcryptjs'
 import { AuthService } from '@/modules/auth/auth.service'

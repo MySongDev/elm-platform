@@ -1,6 +1,7 @@
 import type { JwtService } from '@nestjs/jwt'
-import type { PrismaService } from '@prisma/prisma.service'
 import type { RedisService } from '@redis/redis.service'
+import type { Request } from 'express'
+import type { PrismaService } from '@/prisma/prisma.service'
 import { UnauthorizedException } from '@nestjs/common'
 import * as bcrypt from 'bcryptjs'
 import { validate } from 'class-validator'
@@ -127,7 +128,7 @@ describe('admin login API contract', () => {
         headers: {
           'user-agent': 'Vitest',
         },
-      },
+      } as unknown as Request,
     )
 
     expect(authService.login).toHaveBeenCalledWith('admin', 'admin123', '127.0.0.1', 'Vitest', undefined)

@@ -20,7 +20,7 @@
     "lint": "turbo run lint",
     "lint:style": "stylelint \"apps/{web-admin,web-user}/src/**/*.{vue,scss,css}\" --fix --config stylelint.config.mjs",
     "lint:all": "pnpm lint && pnpm lint:style",
-    "test": "turbo run test \"--filter=./apps/*\"",
+    "test": "turbo run test:unit \"--filter=./apps/*\"",
     "test:cov": "turbo run test:cov",
     "test:e2e": "pnpm --filter @elm-platform/server run prisma:generate && node scripts/run-playwright-e2e.mjs",
     "bundle:report": "pnpm build:admin && pnpm build:user && node scripts/report-bundle-size.mjs",

@@ -6,19 +6,19 @@
     ],
     "paths": {
       "@/*": [
-        "./*"
+        "./src/*"
       ],
       "@common/*": [
-        "./common/*"
+        "./src/common/*"
       ],
       "@config/*": [
-        "./config/*"
+        "./src/config/*"
       ],
       "@prisma/*": [
         "./prisma/*"
       ],
       "@redis/*": [
-        "./redis/*"
+        "./src/redis/*"
       ]
     },
     "outDir": "./dist"
