@@ -320,6 +320,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/customer-auth/password/reset": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** 通过短信验证码重置密码 */
+        post: operations["CustomerAuthController_resetPassword"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/customer-auth/login/password": {
         parameters: {
             query?: never;
@@ -399,6 +416,58 @@ export interface paths {
         get: operations["CustomerAuthController_getProfile"];
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/customer-addresses": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 获取当前用户的收货地址列表 */
+        get: operations["CustomerAddressController_list"];
+        put?: never;
+        /** 新增收货地址 */
+        post: operations["CustomerAddressController_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/customer-addresses/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** 删除收货地址 */
+        delete: operations["CustomerAddressController_remove"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/customer-avatar": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** 上传当前用户头像 */
+        post: operations["CustomerAvatarController_upload"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1085,160 +1154,6 @@ export interface paths {
         get: operations["ElmFoodPublicController_getRatings"];
         put?: never;
         post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/captchas": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** 获取验证码 */
-        post: operations["ElmUserPublicController_getCaptchas"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v2/login": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** 账号密码登录 */
-        post: operations["ElmUserPublicController_login"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/login/app_mobile": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** 手机号登录 */
-        post: operations["ElmUserPublicController_mobileLogin"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/user": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** 获取用户信息 */
-        get: operations["ElmUserPublicController_getUser"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v2/changepassword": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** 修改密码 */
-        post: operations["ElmUserPublicController_changePassword"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v2/signout": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** 退出登录 */
-        get: operations["ElmUserPublicController_signout"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/users/{userId}/addresses": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** 获取收货地址列表 */
-        get: operations["ElmUserPublicController_getAddresses"];
-        put?: never;
-        /** 新增收货地址 */
-        post: operations["ElmUserPublicController_addAddress"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/users/{userId}/addresses/{addressId}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post?: never;
-        /** 删除收货地址 */
-        delete: operations["ElmUserPublicController_deleteAddress"];
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/eus/v1/users/{userId}/avatar": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** 上传用户头像 */
-        post: operations["ElmUserPublicController_uploadAvatar"];
         delete?: never;
         options?: never;
         head?: never;
@@ -2651,6 +2566,23 @@ export interface components {
              */
             password?: string;
         };
+        ResetPasswordDto: {
+            /**
+             * @description 手机号
+             * @example 13800138001
+             */
+            phone: string;
+            /**
+             * @description 短信验证码
+             * @example 123456
+             */
+            smsCode: string;
+            /**
+             * @description 新密码
+             * @example new-password
+             */
+            password: string;
+        };
         CustomerPasswordLoginDto: {
             /**
              * @description 手机号
@@ -2682,6 +2614,131 @@ export interface components {
         CustomerLogoutDto: {
             /** @description 刷新令牌 */
             refreshToken?: string;
+        };
+        CustomerAddressResponseDto: {
+            /**
+             * @description 地址 ID
+             * @example 1
+             */
+            id: number;
+            /**
+             * @description 所属用户 ID
+             * @example 1
+             */
+            customerId: number;
+            /**
+             * @description 收货人姓名
+             * @example 张三
+             */
+            name: string;
+            /**
+             * @description 联系电话
+             * @example 13800138000
+             */
+            phone: string;
+            /**
+             * @description 备用电话
+             * @example 13900139000
+             */
+            phoneBk: string | null;
+            /**
+             * @description 地址
+             * @example 桂平路180号33幢
+             */
+            address: string;
+            /**
+             * @description 详细地址
+             * @example A座101室
+             */
+            addressDetail: string;
+            /**
+             * @description 经纬度，格式为“纬度,经度”
+             * @example 31.22967,121.4762
+             */
+            geohash: string;
+            /**
+             * @description 性别：1 先生，2 女士
+             * @example 1
+             */
+            sex: number;
+            /**
+             * @description 地址标签
+             * @example 家
+             */
+            tag: string;
+            /**
+             * @description 标签类型
+             * @example 2
+             */
+            tagType: number;
+            /**
+             * @description 兴趣点类型
+             * @example 0
+             */
+            poiType: number;
+        };
+        CreateCustomerAddressDto: {
+            /**
+             * @description 收货人姓名
+             * @example 张三
+             */
+            name: string;
+            /**
+             * @description 联系电话
+             * @example 13800138000
+             */
+            phone: string;
+            /**
+             * @description 备用电话
+             * @example 13900139000
+             */
+            phoneBk?: string;
+            /**
+             * @description 地址
+             * @example 桂平路180号33幢
+             */
+            address: string;
+            /**
+             * @description 详细地址
+             * @example A座101室
+             */
+            addressDetail: string;
+            /**
+             * @description 经纬度，格式为“纬度,经度”
+             * @example 31.22967,121.4762
+             */
+            geohash?: string;
+            /**
+             * @description 性别：1 先生，2 女士
+             * @default 1
+             * @example 1
+             */
+            sex: number;
+            /**
+             * @description 地址标签
+             * @default 家
+             * @example 家
+             */
+            tag: string;
+            /**
+             * @description 标签类型
+             * @default 2
+             * @example 2
+             */
+            tagType: number;
+            /**
+             * @description 兴趣点类型
+             * @default 0
+             * @example 0
+             */
+            poiType: number;
+        };
+        CustomerAvatarResponseDto: {
+            /**
+             * @description 头像的相对路径，展示时由前端拼接访问地址
+             * @example avatars/3f1c2d7e-9a4b-4c6d-8e1f-2a3b4c5d6e7f.jpg
+             */
+            avatar: string;
         };
         PagePermissionResponseDto: {
             /**
@@ -5459,6 +5516,72 @@ export interface operations {
             };
         };
     };
+    CustomerAuthController_resetPassword: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ResetPasswordDto"];
+            };
+        };
+        responses: {
+            /** @description 请求成功 */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResponseEnvelopeDto"];
+                };
+            };
+            /** @description 请求参数错误 */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 400 */
+                        code?: unknown;
+                        /** @example 请求参数错误 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 请求的资源不存在 */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 404 */
+                        code?: unknown;
+                        /** @example 请求的资源不存在 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 服务器内部错误 */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 500 */
+                        code?: unknown;
+                        /** @example 服务器内部错误 */
+                        message?: unknown;
+                    };
+                };
+            };
+        };
+    };
     CustomerAuthController_loginByPassword: {
         parameters: {
             query?: never;
@@ -5732,6 +5855,259 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["ApiResponseEnvelopeDto"] & {
                         data: components["schemas"]["CustomerProfileResponseDto"];
+                    };
+                };
+            };
+            /** @description 未认证或认证已失效 */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 401 */
+                        code?: unknown;
+                        /** @example 未认证或认证已失效 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 服务器内部错误 */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 500 */
+                        code?: unknown;
+                        /** @example 服务器内部错误 */
+                        message?: unknown;
+                    };
+                };
+            };
+        };
+    };
+    CustomerAddressController_list: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description 请求成功 */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResponseEnvelopeDto"] & {
+                        data: components["schemas"]["CustomerAddressResponseDto"][];
+                    };
+                };
+            };
+            /** @description 未认证或认证已失效 */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 401 */
+                        code?: unknown;
+                        /** @example 未认证或认证已失效 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 服务器内部错误 */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 500 */
+                        code?: unknown;
+                        /** @example 服务器内部错误 */
+                        message?: unknown;
+                    };
+                };
+            };
+        };
+    };
+    CustomerAddressController_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateCustomerAddressDto"];
+            };
+        };
+        responses: {
+            /** @description 请求成功 */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResponseEnvelopeDto"] & {
+                        data: components["schemas"]["CustomerAddressResponseDto"];
+                    };
+                };
+            };
+            /** @description 请求参数错误 */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 400 */
+                        code?: unknown;
+                        /** @example 请求参数错误 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 未认证或认证已失效 */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 401 */
+                        code?: unknown;
+                        /** @example 未认证或认证已失效 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 服务器内部错误 */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 500 */
+                        code?: unknown;
+                        /** @example 服务器内部错误 */
+                        message?: unknown;
+                    };
+                };
+            };
+        };
+    };
+    CustomerAddressController_remove: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description 请求成功 */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResponseEnvelopeDto"];
+                };
+            };
+            /** @description 未认证或认证已失效 */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 401 */
+                        code?: unknown;
+                        /** @example 未认证或认证已失效 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 请求的资源不存在 */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 404 */
+                        code?: unknown;
+                        /** @example 请求的资源不存在 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 服务器内部错误 */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 500 */
+                        code?: unknown;
+                        /** @example 服务器内部错误 */
+                        message?: unknown;
+                    };
+                };
+            };
+        };
+    };
+    CustomerAvatarController_upload: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": {
+                    /** Format: binary */
+                    file: string;
+                };
+            };
+        };
+        responses: {
+            /** @description 请求成功 */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResponseEnvelopeDto"] & {
+                        data: components["schemas"]["CustomerAvatarResponseDto"];
+                    };
+                };
+            };
+            /** @description 请求参数错误 */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 400 */
+                        code?: unknown;
+                        /** @example 请求参数错误 */
+                        message?: unknown;
                     };
                 };
             };
@@ -7680,187 +8056,6 @@ export interface operations {
         requestBody?: never;
         responses: {
             200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    ElmUserPublicController_getCaptchas: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            201: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    ElmUserPublicController_login: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            201: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    ElmUserPublicController_mobileLogin: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            201: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    ElmUserPublicController_getUser: {
-        parameters: {
-            query: {
-                user_id: string;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    ElmUserPublicController_changePassword: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            201: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    ElmUserPublicController_signout: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    ElmUserPublicController_getAddresses: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                userId: number;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    ElmUserPublicController_addAddress: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                userId: number;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            201: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    ElmUserPublicController_deleteAddress: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                userId: number;
-                addressId: number;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    ElmUserPublicController_uploadAvatar: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                userId: number;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            201: {
                 headers: {
                     [name: string]: unknown;
                 };

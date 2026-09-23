@@ -3366,6 +3366,110 @@
         ]
       }
     },
+    "/api/customer-auth/password/reset": {
+      "post": {
+        "operationId": "CustomerAuthController_resetPassword",
+        "summary": "通过短信验证码重置密码",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResetPasswordDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "请求成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseEnvelopeDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "请求参数错误",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiErrorResponseDto"
+                    },
+                    {
+                      "properties": {
+                        "code": {
+                          "example": 400
+                        },
+                        "message": {
+                          "example": "请求参数错误"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "请求的资源不存在",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiErrorResponseDto"
+                    },
+                    {
+                      "properties": {
+                        "code": {
+                          "example": 404
+                        },
+                        "message": {
+                          "example": "请求的资源不存在"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "服务器内部错误",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiErrorResponseDto"
+                    },
+                    {
+                      "properties": {
+                        "code": {
+                          "example": 500
+                        },
+                        "message": {
+                          "example": "服务器内部错误"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "用户端认证"
+        ]
+      }
+    },
     "/api/customer-auth/login/password": {
       "post": {
         "operationId": "CustomerAuthController_loginByPassword",
@@ -3889,6 +3993,465 @@
         },
         "tags": [
           "用户端认证"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/api/customer-addresses": {
+      "get": {
+        "operationId": "CustomerAddressController_list",
+        "summary": "获取当前用户的收货地址列表",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "请求成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "title": "ApiArrayResponseOfCustomerAddressResponseDto",
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiResponseEnvelopeDto"
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/CustomerAddressResponseDto"
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "未认证或认证已失效",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiErrorResponseDto"
+                    },
+                    {
+                      "properties": {
+                        "code": {
+                          "example": 401
+                        },
+                        "message": {
+                          "example": "未认证或认证已失效"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "服务器内部错误",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiErrorResponseDto"
+                    },
+                    {
+                      "properties": {
+                        "code": {
+                          "example": 500
+                        },
+                        "message": {
+                          "example": "服务器内部错误"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "用户端收货地址"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      },
+      "post": {
+        "operationId": "CustomerAddressController_create",
+        "summary": "新增收货地址",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateCustomerAddressDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "请求成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "title": "ApiResponseOfCustomerAddressResponseDto",
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiResponseEnvelopeDto"
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/CustomerAddressResponseDto"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "请求参数错误",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiErrorResponseDto"
+                    },
+                    {
+                      "properties": {
+                        "code": {
+                          "example": 400
+                        },
+                        "message": {
+                          "example": "请求参数错误"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "未认证或认证已失效",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiErrorResponseDto"
+                    },
+                    {
+                      "properties": {
+                        "code": {
+                          "example": 401
+                        },
+                        "message": {
+                          "example": "未认证或认证已失效"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "服务器内部错误",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiErrorResponseDto"
+                    },
+                    {
+                      "properties": {
+                        "code": {
+                          "example": 500
+                        },
+                        "message": {
+                          "example": "服务器内部错误"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "用户端收货地址"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/api/customer-addresses/{id}": {
+      "delete": {
+        "operationId": "CustomerAddressController_remove",
+        "summary": "删除收货地址",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "请求成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseEnvelopeDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "未认证或认证已失效",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiErrorResponseDto"
+                    },
+                    {
+                      "properties": {
+                        "code": {
+                          "example": 401
+                        },
+                        "message": {
+                          "example": "未认证或认证已失效"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "请求的资源不存在",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiErrorResponseDto"
+                    },
+                    {
+                      "properties": {
+                        "code": {
+                          "example": 404
+                        },
+                        "message": {
+                          "example": "请求的资源不存在"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "服务器内部错误",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiErrorResponseDto"
+                    },
+                    {
+                      "properties": {
+                        "code": {
+                          "example": 500
+                        },
+                        "message": {
+                          "example": "服务器内部错误"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "用户端收货地址"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/api/customer-avatar": {
+      "post": {
+        "operationId": "CustomerAvatarController_upload",
+        "summary": "上传当前用户头像",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "file"
+                ],
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "请求成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "title": "ApiResponseOfCustomerAvatarResponseDto",
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiResponseEnvelopeDto"
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/CustomerAvatarResponseDto"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "请求参数错误",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiErrorResponseDto"
+                    },
+                    {
+                      "properties": {
+                        "code": {
+                          "example": 400
+                        },
+                        "message": {
+                          "example": "请求参数错误"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "未认证或认证已失效",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiErrorResponseDto"
+                    },
+                    {
+                      "properties": {
+                        "code": {
+                          "example": 401
+                        },
+                        "message": {
+                          "example": "未认证或认证已失效"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "服务器内部错误",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiErrorResponseDto"
+                    },
+                    {
+                      "properties": {
+                        "code": {
+                          "example": 500
+                        },
+                        "message": {
+                          "example": "服务器内部错误"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "用户端头像"
         ],
         "security": [
           {
@@ -7059,207 +7622,6 @@
         },
         "tags": [
           "Elm 兼容接口 - 商品"
-        ]
-      }
-    },
-    "/api/v1/captchas": {
-      "post": {
-        "operationId": "ElmUserPublicController_getCaptchas",
-        "summary": "获取验证码",
-        "parameters": [],
-        "responses": {
-          "201": {
-            "description": ""
-          }
-        },
-        "tags": [
-          "Elm 兼容接口 - 用户"
-        ]
-      }
-    },
-    "/api/v2/login": {
-      "post": {
-        "operationId": "ElmUserPublicController_login",
-        "summary": "账号密码登录",
-        "parameters": [],
-        "responses": {
-          "201": {
-            "description": ""
-          }
-        },
-        "tags": [
-          "Elm 兼容接口 - 用户"
-        ]
-      }
-    },
-    "/api/v1/login/app_mobile": {
-      "post": {
-        "operationId": "ElmUserPublicController_mobileLogin",
-        "summary": "手机号登录",
-        "parameters": [],
-        "responses": {
-          "201": {
-            "description": ""
-          }
-        },
-        "tags": [
-          "Elm 兼容接口 - 用户"
-        ]
-      }
-    },
-    "/api/v1/user": {
-      "get": {
-        "operationId": "ElmUserPublicController_getUser",
-        "summary": "获取用户信息",
-        "parameters": [
-          {
-            "name": "user_id",
-            "required": true,
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "tags": [
-          "Elm 兼容接口 - 用户"
-        ]
-      }
-    },
-    "/api/v2/changepassword": {
-      "post": {
-        "operationId": "ElmUserPublicController_changePassword",
-        "summary": "修改密码",
-        "parameters": [],
-        "responses": {
-          "201": {
-            "description": ""
-          }
-        },
-        "tags": [
-          "Elm 兼容接口 - 用户"
-        ]
-      }
-    },
-    "/api/v2/signout": {
-      "get": {
-        "operationId": "ElmUserPublicController_signout",
-        "summary": "退出登录",
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "tags": [
-          "Elm 兼容接口 - 用户"
-        ]
-      }
-    },
-    "/api/v1/users/{userId}/addresses": {
-      "get": {
-        "operationId": "ElmUserPublicController_getAddresses",
-        "summary": "获取收货地址列表",
-        "parameters": [
-          {
-            "name": "userId",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "number"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "tags": [
-          "Elm 兼容接口 - 用户"
-        ]
-      },
-      "post": {
-        "operationId": "ElmUserPublicController_addAddress",
-        "summary": "新增收货地址",
-        "parameters": [
-          {
-            "name": "userId",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "number"
-            }
-          }
-        ],
-        "responses": {
-          "201": {
-            "description": ""
-          }
-        },
-        "tags": [
-          "Elm 兼容接口 - 用户"
-        ]
-      }
-    },
-    "/api/v1/users/{userId}/addresses/{addressId}": {
-      "delete": {
-        "operationId": "ElmUserPublicController_deleteAddress",
-        "summary": "删除收货地址",
-        "parameters": [
-          {
-            "name": "userId",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "number"
-            }
-          },
-          {
-            "name": "addressId",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "number"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "tags": [
-          "Elm 兼容接口 - 用户"
-        ]
-      }
-    },
-    "/api/eus/v1/users/{userId}/avatar": {
-      "post": {
-        "operationId": "ElmUserPublicController_uploadAvatar",
-        "summary": "上传用户头像",
-        "parameters": [
-          {
-            "name": "userId",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "number"
-            }
-          }
-        ],
-        "responses": {
-          "201": {
-            "description": ""
-          }
-        },
-        "tags": [
-          "Elm 兼容接口 - 用户"
         ]
       }
     },
@@ -10603,6 +10965,31 @@
           "smsCode"
         ]
       },
+      "ResetPasswordDto": {
+        "type": "object",
+        "properties": {
+          "phone": {
+            "type": "string",
+            "description": "手机号",
+            "example": "13800138001"
+          },
+          "smsCode": {
+            "type": "string",
+            "description": "短信验证码",
+            "example": "123456"
+          },
+          "password": {
+            "type": "string",
+            "description": "新密码",
+            "example": "new-password"
+          }
+        },
+        "required": [
+          "phone",
+          "smsCode",
+          "password"
+        ]
+      },
       "CustomerPasswordLoginDto": {
         "type": "object",
         "properties": {
@@ -10661,6 +11048,164 @@
             "description": "刷新令牌"
           }
         }
+      },
+      "CustomerAddressResponseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "description": "地址 ID",
+            "example": 1
+          },
+          "customerId": {
+            "type": "number",
+            "description": "所属用户 ID",
+            "example": 1
+          },
+          "name": {
+            "type": "string",
+            "description": "收货人姓名",
+            "example": "张三"
+          },
+          "phone": {
+            "type": "string",
+            "description": "联系电话",
+            "example": "13800138000"
+          },
+          "phoneBk": {
+            "type": "string",
+            "description": "备用电话",
+            "example": "13900139000",
+            "nullable": true
+          },
+          "address": {
+            "type": "string",
+            "description": "地址",
+            "example": "桂平路180号33幢"
+          },
+          "addressDetail": {
+            "type": "string",
+            "description": "详细地址",
+            "example": "A座101室"
+          },
+          "geohash": {
+            "type": "string",
+            "description": "经纬度，格式为“纬度,经度”",
+            "example": "31.22967,121.4762"
+          },
+          "sex": {
+            "type": "number",
+            "description": "性别：1 先生，2 女士",
+            "example": 1
+          },
+          "tag": {
+            "type": "string",
+            "description": "地址标签",
+            "example": "家"
+          },
+          "tagType": {
+            "type": "number",
+            "description": "标签类型",
+            "example": 2
+          },
+          "poiType": {
+            "type": "number",
+            "description": "兴趣点类型",
+            "example": 0
+          }
+        },
+        "required": [
+          "id",
+          "customerId",
+          "name",
+          "phone",
+          "phoneBk",
+          "address",
+          "addressDetail",
+          "geohash",
+          "sex",
+          "tag",
+          "tagType",
+          "poiType"
+        ]
+      },
+      "CreateCustomerAddressDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "收货人姓名",
+            "example": "张三"
+          },
+          "phone": {
+            "type": "string",
+            "description": "联系电话",
+            "example": "13800138000"
+          },
+          "phoneBk": {
+            "type": "string",
+            "description": "备用电话",
+            "example": "13900139000"
+          },
+          "address": {
+            "type": "string",
+            "description": "地址",
+            "example": "桂平路180号33幢"
+          },
+          "addressDetail": {
+            "type": "string",
+            "description": "详细地址",
+            "example": "A座101室"
+          },
+          "geohash": {
+            "type": "string",
+            "description": "经纬度，格式为“纬度,经度”",
+            "example": "31.22967,121.4762"
+          },
+          "sex": {
+            "type": "number",
+            "description": "性别：1 先生，2 女士",
+            "example": 1,
+            "default": 1
+          },
+          "tag": {
+            "type": "string",
+            "description": "地址标签",
+            "example": "家",
+            "default": "家"
+          },
+          "tagType": {
+            "type": "number",
+            "description": "标签类型",
+            "example": 2,
+            "default": 2
+          },
+          "poiType": {
+            "type": "number",
+            "description": "兴趣点类型",
+            "example": 0,
+            "default": 0
+          }
+        },
+        "required": [
+          "name",
+          "phone",
+          "address",
+          "addressDetail"
+        ]
+      },
+      "CustomerAvatarResponseDto": {
+        "type": "object",
+        "properties": {
+          "avatar": {
+            "type": "string",
+            "description": "头像的相对路径，展示时由前端拼接访问地址",
+            "example": "avatars/3f1c2d7e-9a4b-4c6d-8e1f-2a3b4c5d6e7f.jpg"
+          }
+        },
+        "required": [
+          "avatar"
+        ]
       },
       "PagePermissionResponseDto": {
         "type": "object",
