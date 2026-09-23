@@ -191,7 +191,7 @@ function _attachLocation(config) {
     config.headers['X-Latitude'] = String(locationStore.latitude)
     config.headers['X-Longitude'] = String(locationStore.longitude)
   }
-  catch (e) {
+  catch {
     // store 未就绪时静默忽略
   }
 }
