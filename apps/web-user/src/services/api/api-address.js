@@ -2,13 +2,13 @@ import { get, http, post } from '../http/http'
 
 import { userEndpoints } from './endpoints/user.endpoints'
 
-/** 获取地址列表 */
-export const getAddress = user_id => get(userEndpoints.addresses(user_id))
+/** 获取地址列表（身份由请求头中的令牌决定） */
+export const getAddress = () => get(userEndpoints.addresses)
 
 /** 删除地址 */
-export function deleteAddress(user_id, addressid) {
+export function deleteAddress(addressId) {
   return http({
-    url: userEndpoints.addressDetail(user_id, addressid),
+    url: userEndpoints.addressDetail(addressId),
     params: {},
     method: 'DELETE',
   })
@@ -17,13 +17,10 @@ export function deleteAddress(user_id, addressid) {
 /** 新增收货地址 */
 export function addAddress(params) {
   const required = [
-    'user_id',
     'address',
-    'address_detail',
-    'geohash',
+    'addressDetail',
     'name',
     'phone',
-    'sex',
   ]
   for (const field of required) {
     if (params[field] === undefined || params[field] === '') {
@@ -33,11 +30,11 @@ export function addAddress(params) {
 
   const payload = {
     tag: '家',
-    tag_type: 2,
-    poi_type: 0,
-    phone_bk: '',
+    tagType: 2,
+    poiType: 0,
+    sex: 1,
     ...params,
   }
 
-  return post(userEndpoints.addresses(params.user_id), payload)
+  return post(userEndpoints.addresses, payload)
 }

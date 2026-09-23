@@ -1,5 +1,5 @@
-import type { CustomerPasswordLoginDto, CustomerRegisterDto, CustomerSmsLoginDto } from './dto/customer-auth.dto'
-import { BadRequestException, ConflictException, Injectable, UnauthorizedException } from '@nestjs/common'
+import type { CustomerPasswordLoginDto, CustomerRegisterDto, CustomerSmsLoginDto, ResetPasswordDto } from './dto/customer-auth.dto'
+import { BadRequestException, ConflictException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import * as bcrypt from 'bcryptjs'
 import { PrismaService } from '../../prisma/prisma.service'
@@ -32,6 +32,25 @@ export class CustomerAuthService {
     })
 
     return this.tokens.sign(user)
+  }
+
+  async resetPassword(dto: ResetPasswordDto) {
+    const user = await (this.prisma as any).customerUser.findUnique({ where: { phone: dto.phone } })
+    if (!user) {
+      throw new NotFoundException('手机号未注册')
+    }
+
+    await this.sms.verifyCode(dto.phone, 'reset_password', dto.smsCode)
+
+    await (this.prisma as any).customerUser.update({
+      where: { id: user.id },
+      data: { password: await bcrypt.hash(dto.password, 10) },
+    })
+
+    // 旧密码已失效，撤销该用户的全部刷新令牌，强制其他设备重新登录
+    await this.tokens.revokeAll(user.id)
+
+    return { success: true }
   }
 
   async loginByPassword(dto: CustomerPasswordLoginDto) {

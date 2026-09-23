@@ -17,8 +17,8 @@ export const useAddressStore = defineStore('address', () => {
     }
 
     try {
-      const res = await getAddress(userStore.userId)
-      AddressList.value = res
+      const res = await getAddress()
+      AddressList.value = Array.isArray(res?.data) ? res.data : []
     }
     catch (error) {
       console.error(error)
@@ -47,7 +47,7 @@ export const useAddressStore = defineStore('address', () => {
     const deleted = AddressList.value.splice(idx, 1)[0]
 
     try {
-      await deleteAddress(userStore.userId, addressId)
+      await deleteAddress(addressId)
       // 删除成功，不用做额外操作
     }
     catch (err) {

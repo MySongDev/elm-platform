@@ -1,5 +1,5 @@
-import type { PrismaService } from '@prisma/prisma.service'
 import type { TenantContext } from '@/modules/tenant/tenant.types'
+import type { PrismaService } from '@/prisma/prisma.service'
 import { OrderWorkflowService } from '@/modules/order/order-workflow.service'
 import { TenantAccessService } from '@/modules/tenant/tenant-access.service'
 

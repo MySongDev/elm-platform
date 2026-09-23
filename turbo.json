@@ -26,6 +26,12 @@
       ],
       "outputs": []
     },
+    "test:unit": {
+      "dependsOn": [
+        "^build"
+      ],
+      "outputs": []
+    },
     "test:cov": {
       "dependsOn": [
         "^build"

@@ -16,8 +16,10 @@ jobs:
       - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
         with: {node-version: 22, cache: pnpm}
-      - run: pnpm install --frozen-lockfile
-      - run: pnpm exec commitlint --from ${{ github.event.pull_request.base.sha }} --to ${{ github.event.pull_request.head.sha }}
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Check commit messages
+        run: pnpm exec commitlint --from ${{ github.event.pull_request.base.sha }} --to ${{ github.event.pull_request.head.sha }}
 
   lint:
     runs-on: ubuntu-latest
@@ -26,8 +28,10 @@ jobs:
       - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
         with: {node-version: 22, cache: pnpm}
-      - run: pnpm install --frozen-lockfile
-      - run: pnpm lint
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Run lint
+        run: pnpm lint
 
   build-and-test:
     runs-on: ubuntu-latest
@@ -36,16 +40,16 @@ jobs:
       - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
         with: {node-version: 22, cache: pnpm}
-      - run: pnpm install --frozen-lockfile
-      - run: pnpm build:packages
-      - run: pnpm --filter @elm-platform/server run prisma:generate
-      - run: pnpm --filter @elm-platform/server run build
-      - run: pnpm --filter @elm-platform/web-admin run build
-      - run: pnpm --filter @elm-platform/web-user run build
-      - run: pnpm type-check
-      - run: pnpm --filter @elm-platform/server run test
-      - run: pnpm --filter @elm-platform/web-admin run test:unit
-      - run: pnpm --filter @elm-platform/web-user run test
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Generate Prisma client
+        run: pnpm --filter @elm-platform/server run prisma:generate
+      - name: Build
+        run: pnpm build
+      - name: Type check
+        run: pnpm type-check
+      - name: Test
+        run: pnpm test
 
   api-drift:
     runs-on: ubuntu-latest
@@ -69,13 +73,18 @@ jobs:
       - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
         with: {node-version: 22, cache: pnpm}
-      - run: pnpm install --frozen-lockfile
-      - run: pnpm build:packages
-      - run: pnpm --filter @elm-platform/server run prisma:generate
-      - run: pnpm --filter @elm-platform/server run prisma:migrate:prod
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Build shared packages
+        run: pnpm build:packages
+      - name: Generate Prisma client
+        run: pnpm --filter @elm-platform/server run prisma:generate
+      - name: Run production database migrations
+        run: pnpm --filter @elm-platform/server run prisma:migrate:prod
         env:
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/elm_test?schema=public
-      - run: pnpm --filter @elm-platform/server run prisma:seed
+      - name: Seed database
+        run: pnpm --filter @elm-platform/server run prisma:seed
         env:
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/elm_test?schema=public
       - name: Start server
@@ -84,15 +93,15 @@ jobs:
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/elm_test?schema=public
           APP_PORT: 3000
           APP_PREFIX: api
-      - name: Wait for server (api-docs-json ready)
+      - name: Wait for server ready
         run: |
           for i in $(seq 1 30); do
             curl -s http://localhost:3000/api-docs-json > /dev/null && break
             sleep 1
           done
-      - name: Regenerate API types from live spec
+      - name: Generate API types
         run: pnpm api:generate
-      - name: Fail if generated types drifted
+      - name: Check API types drift
         run: |
           if ! git diff --quiet packages/api-types/; then
             echo "::error::API types are out of date. Run 'pnpm api:generate' locally and commit packages/api-types/."

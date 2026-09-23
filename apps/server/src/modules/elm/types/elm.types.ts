@@ -140,36 +140,6 @@ export interface MenuCategoryRecord {
 
 export type MenuCategorySeed = Omit<MenuCategoryRecord, 'foods'>
 
-export interface AddressRecord {
-  id: number
-  user_id: number
-  name: string
-  phone: string
-  phone_bk: string
-  address: string
-  address_detail: string
-  geohash: string
-  sex: number
-  tag: string
-  tag_type: number
-  poi_type: number
-}
-
-export interface ElmUserRecord {
-  user_id: number
-  id: number
-  username: string
-  mobile: string
-  email: string
-  avatar: string
-  balance: number
-  gift_amount: number
-  point: number
-  city: string
-  registe_time: string
-  is_active: number
-}
-
 export type OrderStatus = 'pending' | 'paid' | 'closed'
 
 export interface OrderRecord {

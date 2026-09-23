@@ -14,6 +14,7 @@ import {
   CustomerRefreshTokenDto,
   CustomerRegisterDto,
   CustomerSmsLoginDto,
+  ResetPasswordDto,
   SendSmsDto,
 } from './dto/customer-auth.dto'
 import { CustomerAuthGuard } from './guards/customer-auth.guard'
@@ -40,6 +41,14 @@ export class CustomerAuthController {
   @ApiErrorResponses(400, 409, 500)
   register(@Body() dto: CustomerRegisterDto) {
     return this.customerAuth.register(dto)
+  }
+
+  @Post('password/reset')
+  @ApiOperation({ summary: '通过短信验证码重置密码' })
+  @ApiEmptyResponse()
+  @ApiErrorResponses(400, 404, 500)
+  resetPassword(@Body() dto: ResetPasswordDto) {
+    return this.customerAuth.resetPassword(dto)
   }
 
   @Post('login/password')

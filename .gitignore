@@ -19,6 +19,8 @@ apps/*/.git
 dist/
 dist-ssr/
 *.local
+# rollup-plugin-visualizer 的产物，仅在 ANALYZE 构建时本地生成
+apps/web-admin/stats.html
 
 # IDE
 .vscode/*
@@ -61,7 +63,8 @@ cypress/screenshots/
 apps/server/prisma/*.db
 apps/server/prisma/*.db-journal
 
-# Turbo
+# 用户上传的文件只留在运行的机器上，不进版本库
+apps/server/uploads/
 .turbo/
 
 # Misc

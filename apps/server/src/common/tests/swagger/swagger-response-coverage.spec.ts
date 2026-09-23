@@ -102,6 +102,12 @@ const controllerEntries: ControllerEntry[] = [
   },
   {
     controller: CustomerAuthController,
+    method: 'resetPassword',
+    success: 200,
+    errors: [400, 404, 500],
+  },
+  {
+    controller: CustomerAuthController,
     method: 'loginByPassword',
     success: 201,
     errors: [400, 401, 500],

@@ -1,6 +1,6 @@
 import type { ExecutionContext } from '@nestjs/common'
 import type { Reflector } from '@nestjs/core'
-import type { PrismaService } from '@prisma/prisma.service'
+import type { PrismaService } from '@/prisma/prisma.service'
 import { PERMISSIONS_KEY } from '@/modules/auth/decorators/permissions.decorator'
 import { ROLES_KEY } from '@/modules/auth/decorators/roles.decorator'
 import { RolesGuard } from '@/modules/auth/guards/roles.guard'
