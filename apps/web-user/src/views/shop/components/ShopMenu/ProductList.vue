@@ -37,8 +37,6 @@ defineExpose({ scrollToCategory })
     <MenuCategoryBlock v-for="(cat, index) in categories" :key="cat.id"
       :category="cat" :cart-map="cartMap" :is-last="index === categories.length - 1" @add="(food, specs, rect) => emit('add', food, specs, rect)"
       @decrease="emit('decrease', $event)" />
-
-    <div class="bottom-safe" />
   </section>
 </template>
 
@@ -59,9 +57,5 @@ defineExpose({ scrollToCategory })
   color: #999;
   background: #fff;
   border-radius: 6px;
-}
-
-.bottom-safe {
-  height: 72px;
 }
 </style>

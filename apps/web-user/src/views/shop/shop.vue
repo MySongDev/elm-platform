@@ -93,45 +93,55 @@ watch(
       <div ref="outerRef" class="outer-scroller">
         <ShopNav :scroll-element="outerRef" />
 
-        <div ref="shopHeaderRef" class="header-zone">
-          <ShopHeader :shop="shopData" />
-        </div>
+        <ShopHeader ref="shopHeaderRef" :shop="shopData" />
 
         <nav class="sticky-nav">
           <div v-for="tab in TABS" :key="tab" class="tab-item" :class="{ active: activeTab === tab }"
             @click="switchTab(tab)">
-            {{ tab }}
-          </div>
+{{ tab }}
+</div>
         </nav>
 
-        <div class="content-gate">
+        <div class="content-area">
           <template v-if="activeTab === '商品'">
-            <CategoryMenu :active-id="activeCategoryId" :categories="foodMenuData" class="side-menu"
-              @update:active-id="onCategoryClick" />
-
-            <main class="main-content">
-              <ProductList ref="productListRef" :categories="foodMenuData" :active-category-id="activeCategoryId"
-                :cart-map="cartMap" :scroll-root="outerRef" @scroll-category="onScrollCategory" @add="handleAdd"
-                @decrease="decreaseFromCart" />
-            </main>
+            <CategoryMenu
+              :active-id="activeCategoryId"
+              :categories="foodMenuData"
+              class="side-menu"
+              @update:active-id="onCategoryClick"
+            />
+            <ProductList
+              ref="productListRef"
+              :categories="foodMenuData"
+              :active-category-id="activeCategoryId"
+              :cart-map="cartMap"
+              :scroll-root="outerRef"
+              @scroll-category="onScrollCategory"
+              @add="handleAdd"
+              @decrease="decreaseFromCart"
+            />
           </template>
 
           <template v-else-if="activeTab === '评价'">
-            <section class="review-page">
-              <ShopReview :shop-id="shopId" />
-            </section>
+            <ShopReview :shop-id="shopId" class="review-content" />
           </template>
         </div>
-
-        <div class="bottom-safe" />
       </div>
 
       <BackTop :target="outerRef" :show-after="shopHeaderRef" :offset="-50" />
 
-      <ShopCartBar :cart-items="cartList" :delivery-fee="shopData.float_delivery_fee || 0"
-        :min-amount="shopData.float_minimum_order_amount || 20" :shop-id="shopId" :shop-name="shopData.name"
-        :total-qty="totalQty" :total-price="totalPrice" @add="addToCart" @decrease="decreaseFromCart"
-        @clear="clearCart" />
+      <ShopCartBar
+        :cart-items="cartList"
+        :delivery-fee="shopData.float_delivery_fee || 0"
+        :min-amount="shopData.float_minimum_order_amount || 20"
+        :shop-id="shopId"
+        :shop-name="shopData.name"
+        :total-qty="totalQty"
+        :total-price="totalPrice"
+        @add="addToCart"
+        @decrease="decreaseFromCart"
+        @clear="clearCart"
+      />
 
       <div class="fly-ball-layer">
         <div v-for="ball in flyBalls" :key="ball.id" class="fly-ball-outer" :style="{

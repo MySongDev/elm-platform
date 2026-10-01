@@ -16,6 +16,7 @@
 
 .outer-scroller {
   height: 100%;
+  padding-bottom: var(--safe-bottom);
   overflow: hidden auto;
   overscroll-behavior-y: contain;
   -webkit-overflow-scrolling: touch;
@@ -23,11 +24,6 @@
   &::-webkit-scrollbar {
     display: none;
   }
-}
-
-.header-zone {
-  padding-top: var(--nav-height);
-  background: #fff;
 }
 
 .sticky-nav {
@@ -67,7 +63,7 @@
   }
 }
 
-.content-gate {
+.content-area {
   display: flex;
   align-items: flex-start;
   background: #fff;
@@ -83,20 +79,10 @@
   }
 }
 
-.main-content {
+.review-content {
   flex: 1;
   min-width: 0;
   background: #fff;
-}
-
-.review-page {
-  flex: 1;
-  background: #fff;
-}
-
-.bottom-safe {
-  flex-shrink: 0;
-  height: var(--safe-bottom);
 }
 
 .fly-ball-layer {

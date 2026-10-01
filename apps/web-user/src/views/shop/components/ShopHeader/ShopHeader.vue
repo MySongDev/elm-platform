@@ -59,7 +59,7 @@ $color-text-secondary: #888;
 $white: #fff;
 
 .shop-header {
-  padding: 0 10px 10px;
+  padding: var(--nav-height) 10px 10px 10px;
   background: $white;
   border-radius: 0 0 12px 12px;
 

@@ -61,8 +61,9 @@ loadFilters()
 
 <style lang="scss" scoped>
 .shop-review {
+  flex: 1;
   width: 100%;
-  min-height: 100%;
-  background: #f6f6f6;
+  min-width: 0;
+  background: #fff;
 }
 </style>
