@@ -11,6 +11,7 @@ import { CustomerAvatarModule } from './modules/customer-avatar/customer-avatar.
 import { ElmModule } from './modules/elm/elm.module'
 import { MerchantOnboardingModule } from './modules/merchant-onboarding/merchant-onboarding.module'
 import { NotificationModule } from './modules/notification/notification.module'
+import { OrderModule } from './modules/order/order.module'
 import { PaymentModule } from './modules/payment/payment.module'
 import { TenantModule } from './modules/tenant/tenant.module'
 import { UserModule } from './modules/user/user.module'
@@ -44,6 +45,11 @@ import { RedisModule } from './redis/redis.module'
     ElmModule,
     MerchantOnboardingModule,
     NotificationModule,
+    // OrderModule 同时被 PaymentModule / ElmModule 引入（作为 OrderWorkflowService 的提供方）。
+    // 这里显式列出，是因为它现在自己也托管了控制器（POST /api/orders）——
+    // 仓库惯例是"托管控制器的模块"都在 AppModule 显式登记，避免路由只靠传递依赖生效。
+    // Nest 的模块注册表按模块类去重，重复引入不会二次实例化，也不会重复注册路由。
+    OrderModule,
     PaymentModule,
     TenantModule,
   ],

@@ -1,13 +1,28 @@
 import type { TenantContext } from '../tenant/tenant.types'
+import type { OrderDraftInput } from './order-draft.factory'
 import type {
   AdminOrderAction,
   FulfillmentStatus,
   OrderWorkflowOperator,
   RefundStatus,
 } from './order.types'
-import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common'
+import {
+  BadRequestException,
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common'
 import { PrismaService } from '../../prisma/prisma.service'
 import { TenantAccessService } from '../tenant/tenant-access.service'
+import {
+  buildOrderDraft,
+  buildOrderSubject,
+  createOrderNo,
+  insertPendingOrder,
+  resolveTenantIdByShopId,
+  toPrice,
+} from './order-draft.factory'
 import {
   assertAdminActionAllowed,
   assertRefundRequestAllowed,
@@ -27,12 +42,9 @@ interface RequestRefundPayload {
   operator: OrderWorkflowOperator
 }
 
-function toPrice(value: unknown) {
-  const decimalLike = value as { toNumber?: () => number }
-  const amount = typeof decimalLike?.toNumber === 'function'
-    ? decimalLike.toNumber()
-    : Number.parseFloat(String(value))
-  return Number.isFinite(amount) ? Number(amount.toFixed(2)) : 0
+/** `POST /api/orders` 的入参：购物车内容 + 由守卫注入的 userId。 */
+export interface CreateOrderPayload extends OrderDraftInput {
+  userId: string
 }
 
 @Injectable()
@@ -41,6 +53,37 @@ export class OrderWorkflowService {
     private readonly prisma: PrismaService,
     private readonly tenantAccess: TenantAccessService,
   ) {}
+
+  /**
+   * 建单（不含支付渠道）：产出一行 `PENDING` 订单并返回订单摘要。
+   *
+   * 这是 `POST /api/orders` 的实现，也是**渠道无关**的建单入口 —— 微信小程序端无法走支付宝 WAP
+   * 的整页跳转，但仍需要能产生 PENDING 订单，否则订单列表页永远是空的、无法验收。
+   *
+   * ⚠️ 与 `PaymentService.createAlipayWapPayment` 是**并存的两个建单入口**，原因与约束
+   * 见 `payment.service.ts` 中该方法上方的说明；两者共用 `order-draft.factory.ts`，
+   * 因此产出的订单行完全一致。
+   */
+  async createOrder(payload: CreateOrderPayload) {
+    const draft = buildOrderDraft(payload)
+
+    if (!draft.userId)
+      throw new UnauthorizedException('请登录后再下单')
+    if (!draft.cartItems.length)
+      throw new BadRequestException('购物车为空，无法创建订单')
+    if (draft.payableAmount <= 0)
+      throw new BadRequestException('订单金额异常，无法创建订单')
+
+    const tenantId = await resolveTenantIdByShopId(this.prisma, draft.shopId)
+    const order = await insertPendingOrder(this.prisma, {
+      draft,
+      orderNo: createOrderNo(),
+      subject: buildOrderSubject(draft.shopName),
+      tenantId,
+    })
+
+    return this.toOrderSummary(order)
+  }
 
   getAdminAvailableActions(order: PaymentOrderRecord) {
     return getAdminAvailableActions(order)

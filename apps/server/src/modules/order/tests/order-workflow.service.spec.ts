@@ -1,4 +1,10 @@
-import { ConflictException, ForbiddenException, NotFoundException } from '@nestjs/common'
+import {
+  BadRequestException,
+  ConflictException,
+  ForbiddenException,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common'
 import { OrderWorkflowService } from '@/modules/order/order-workflow.service'
 import { TenantAccessService } from '@/modules/tenant/tenant-access.service'
 
@@ -34,6 +40,13 @@ function createService(orderOverrides: Record<string, unknown> = {}) {
   const prisma = {
     $transaction: jest.fn(callback => callback(prisma)),
     paymentOrder: {
+      create: jest.fn().mockImplementation(({ data }) => {
+        const created = {
+          ...createOrder(),
+          ...data,
+        }
+        return Promise.resolve(created)
+      }),
       findUnique: jest.fn().mockImplementation(() => Promise.resolve(currentOrder)),
       update: jest.fn().mockImplementation(({ data }) => {
         currentOrder = {
@@ -47,6 +60,14 @@ function createService(orderOverrides: Record<string, unknown> = {}) {
     orderActionLog: {
       create: jest.fn().mockResolvedValue({ id: 1 }),
       findMany: jest.fn().mockResolvedValue([]),
+    },
+    tenant: {
+      findUnique: jest.fn().mockResolvedValue({ id: 10 }),
+    },
+    // 租户解析改查 restaurants 表（见 resolveTenantIdByShopId）。
+    // 默认返回 null（平台自营：商家存在但未绑定租户）。
+    restaurant: {
+      findUnique: jest.fn().mockResolvedValue({ tenantId: null }),
     },
   } as any
 
@@ -313,5 +334,152 @@ describe('orderWorkflowService', () => {
       },
     })
     expect(result.fulfillmentStatus).toBe('CANCELED')
+  })
+
+  describe('createOrder（渠道无关建单入口 POST /api/orders）', () => {
+    const cartItems = [{
+      itemId: '1001',
+      qty: 2,
+      skuId: '1001',
+      title: '经典香辣鸡腿堡套餐',
+      unitPrice: 12,
+    }]
+
+    it('creates a pending order without touching any payment channel', async () => {
+      const { prisma, service } = createService()
+
+      const result = await service.createOrder({
+        cartItems,
+        deliveryFee: 5,
+        shopId: '2',
+        shopName: '示例商家',
+        userId: '42',
+      })
+
+      // 金额不变量：goodsAmount = 2 * 12 = 24，payableAmount = 24 + 5 = 29
+      expect(prisma.paymentOrder.create).toHaveBeenCalledWith({
+        data: expect.objectContaining({
+          cartItems: expect.arrayContaining([
+            expect.objectContaining({
+              itemId: '1001',
+              qty: 2,
+              totalPrice: 24,
+              unitPrice: 12,
+            }),
+          ]),
+          deliveryFee: 5,
+          goodsAmount: 24,
+          orderNo: expect.stringMatching(/^ELMALI\d+$/),
+          payableAmount: 29,
+          shopId: '2',
+          shopName: '示例商家',
+          subject: '示例商家 外卖订单',
+          userId: '42',
+        }),
+      })
+      // 新订单必须落在 PENDING / 待支付 / 无退款 的初始状态上
+      expect(prisma.paymentOrder.create).toHaveBeenCalledWith({
+        data: expect.objectContaining({
+          fulfillmentStatus: 'PENDING_PAYMENT',
+          refundStatus: 'NONE',
+          status: 'PENDING',
+          tradeStatus: 'WAIT_BUYER_PAY',
+        }),
+      })
+      // 返回订单摘要，不含 payUrl —— 建单不绑定支付渠道
+      expect(result).not.toHaveProperty('payUrl')
+      expect(result.status).toBe('PENDING')
+      expect(result.payableAmount).toBe(29)
+      expect(result.totalQty).toBe(2)
+    })
+
+    // 2026-09-30 商家数据本地化后重写：原实现按 shopId 去**内存 seed** 找 tenantCode，
+    // 而上游 shop id 1 是"效果演示"（广州）、seed id 1 是"鲜花蛋糕旗舰店" —— id 撞车会把订单
+    // 静默记到错误租户名下。现在改为查 `restaurants` 表。
+    // 用例故意让 mock 返回非空 tenantId，才能证明这条接线是通的（而不是恒为 null 的巧合）。
+    it('resolves the tenant from the restaurants table so order lists stay tenant scoped', async () => {
+      const { prisma, service } = createService()
+      prisma.restaurant.findUnique.mockResolvedValue({ tenantId: 77 })
+
+      await service.createOrder({
+        cartItems,
+        deliveryFee: 0,
+        shopId: '1',
+        shopName: '鲜花蛋糕旗舰店',
+        userId: '42',
+      })
+
+      expect(prisma.restaurant.findUnique).toHaveBeenCalledWith({
+        where: { id: 1 },
+        select: { tenantId: true },
+      })
+      expect(prisma.paymentOrder.create).toHaveBeenCalledWith({
+        data: expect.objectContaining({ tenantId: 77 }),
+      })
+    })
+
+    it('records a null tenant while every shop is platform operated', async () => {
+      const { prisma, service } = createService()
+
+      await service.createOrder({
+        cartItems,
+        deliveryFee: 0,
+        shopId: '101',
+        shopName: '示例商家',
+        userId: '42',
+      })
+
+      expect(prisma.paymentOrder.create).toHaveBeenCalledWith({
+        data: expect.objectContaining({ tenantId: null }),
+      })
+    })
+
+    it('rejects anonymous order creation', async () => {
+      const { prisma, service } = createService()
+
+      await expect(service.createOrder({
+        cartItems,
+        deliveryFee: 0,
+        userId: '',
+      })).rejects.toThrow(UnauthorizedException)
+
+      expect(prisma.paymentOrder.create).not.toHaveBeenCalled()
+    })
+
+    it('rejects empty carts and does not persist a zero amount order', async () => {
+      const { prisma, service } = createService()
+
+      await expect(service.createOrder({
+        cartItems: [],
+        deliveryFee: 0,
+        userId: '42',
+      })).rejects.toThrow(BadRequestException)
+
+      expect(prisma.paymentOrder.create).not.toHaveBeenCalled()
+    })
+
+    it('treats a cart whose items all normalize away as empty', async () => {
+      const { prisma, service } = createService()
+
+      // qty <= 0 与缺 itemId 的项会被归一化过滤掉，等价于空购物车
+      await expect(service.createOrder({
+        cartItems: [
+          {
+            itemId: '',
+            qty: 1,
+            unitPrice: 12,
+          },
+          {
+            itemId: '1001',
+            qty: 0,
+            unitPrice: 12,
+          },
+        ],
+        deliveryFee: 0,
+        userId: '42',
+      })).rejects.toThrow(BadRequestException)
+
+      expect(prisma.paymentOrder.create).not.toHaveBeenCalled()
+    })
   })
 })

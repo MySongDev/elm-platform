@@ -1,5 +1,5 @@
 import type { TenantContext } from '../tenant/tenant.types'
-import type { CreateAlipayWapPaymentDto, PaymentCartItemDto } from './dto/create-alipay-wap-payment.dto'
+import type { CreateAlipayWapPaymentDto } from './dto/create-alipay-wap-payment.dto'
 import type { ResumeAlipayWapPaymentDto } from './dto/resume-alipay-wap-payment.dto'
 import {
   BadRequestException,
@@ -8,7 +8,14 @@ import {
   UnauthorizedException,
 } from '@nestjs/common'
 import { PrismaService } from '../../prisma/prisma.service'
-import { seedRestaurants } from '../elm/data/elm.seed'
+import {
+  buildOrderDraft,
+  buildOrderSubject,
+  createOrderNo,
+  insertPendingOrder,
+  resolveTenantIdByShopId,
+  toPrice,
+} from '../order/order-draft.factory'
 import { OrderWorkflowService } from '../order/order-workflow.service'
 import { TenantAccessService } from '../tenant/tenant-access.service'
 import { AlipayService } from './alipay/alipay.service'
@@ -30,19 +37,6 @@ interface ResumeAlipayWapPaymentPayload extends ResumeAlipayWapPaymentDto {
   userId: string
 }
 
-function toPrice(value: unknown) {
-  const decimalLike = value as { toNumber?: () => number }
-  const amount = typeof decimalLike?.toNumber === 'function'
-    ? decimalLike.toNumber()
-    : Number.parseFloat(String(value))
-  return Number.isFinite(amount) ? Number(amount.toFixed(2)) : 0
-}
-
-function toQty(value: unknown) {
-  const qty = Number.parseInt(String(value), 10)
-  return Number.isFinite(qty) && qty > 0 ? qty : 0
-}
-
 function toDate(value: unknown) {
   if (!value)
     return null
@@ -60,49 +54,67 @@ export class PaymentService {
     private readonly tenantAccess: TenantAccessService,
   ) {}
 
+  /**
+   * 支付宝 WAP 建单 + 生成支付链接（一体完成）。
+   *
+   * ## ⚠️ 为什么后端会有两个建单入口
+   *
+   * 本方法是**历史入口**：建单与生成支付宝支付链接绑在同一个调用里，
+   * 因为 web-user（H5 端）的 `payment.vue` 是"点一次去支付"就完成建单+跳转收银台的。
+   *
+   * 另有 `POST /api/orders`（`OrderController` → `OrderWorkflowService.createOrder`）是**渠道无关的建单入口**，
+   * 它只产出一行 PENDING 订单、不返回 payUrl。需要它的原因：
+   * 支付宝 WAP 的机制是整页跳转（`window.location.href = payUrl`），微信小程序端没有 `window.location`
+   * 也不允许跳出到外部页面 —— 走本方法在小程序端**机制上根本不可能**。
+   * 若不给小程序端一条不含支付的建单路径，它连订单都产生不了，订单列表页永远空、无法验收。
+   *
+   * ## 为什么是"并存"而不是把本方法改成两步（先建单再支付）
+   *
+   * 迁移方案（`docs/reports/2026-09-27-uniapp迁移方案/uniapp-migration-plan.md` 议题 6 决策 2）在
+   * (a) 让 H5 也改成两步 与 (b) 保留本方法旧行为 + 新增独立建单端点 之间选了 **(b)**：
+   * web-user 是**在跑的生产资产**（GitHub Pages + Linux 两条部署路径），本次 uni-app 迁移的决策是
+   * 两端长期并存，不该为了小程序端去改 H5。代价就是后端暂时有两个建单入口。
+   *
+   * ## 两个入口的一致性由什么保证
+   *
+   * 归一化、金额计算、初始状态、订单号、租户解析、落库字段全部收敛在
+   * `../order/order-draft.factory.ts`，两个入口共用同一份实现，
+   * 所以同一个购物车经任一入口建出的订单行**完全一致**（含 `tradeStatus`）。
+   * 将来接入微信支付时，正确方向是把本方法改成"接已建订单 → 只生成支付链接"
+   * （即复用 `resumeAlipayWapPayment` 的形状），届时可删掉这里的建单分支。
+   */
   async createAlipayWapPayment(payload: CreateAlipayWapPaymentPayload) {
-    const summary = this.buildOrderPayload(payload)
+    // 归一化与金额计算共用 order-draft.factory，保证与 POST /api/orders 建出的订单行一致
+    const draft = buildOrderDraft(payload)
 
-    if (!summary.userId)
+    if (!draft.userId)
       throw new UnauthorizedException('请登录后再支付')
-    if (!summary.cartItems.length)
+    if (!draft.cartItems.length)
       throw new BadRequestException('购物车为空，无法创建支付单')
-    if (summary.payableAmount <= 0)
+    if (draft.payableAmount <= 0)
       throw new BadRequestException('订单金额异常，无法创建支付单')
 
-    const orderNo = this.createOrderNo()
-    const subject = `${summary.shopName} 外卖订单`
-    const tenantId = await this.resolveTenantIdByShopId(summary.shopId)
+    const orderNo = createOrderNo()
+    const subject = buildOrderSubject(draft.shopName)
+    const tenantId = await resolveTenantIdByShopId(this.prisma, draft.shopId)
 
-    const order = await (this.prisma as any).paymentOrder.create({
-      data: {
-        orderNo,
-        status: 'PENDING',
-        tradeStatus: 'WAIT_BUYER_PAY',
-        fulfillmentStatus: 'PENDING_PAYMENT',
-        refundStatus: 'NONE',
-        subject,
-        userId: summary.userId,
-        shopId: summary.shopId,
-        shopName: summary.shopName,
-        cartItems: summary.cartItems,
-        goodsAmount: summary.goodsAmount,
-        deliveryFee: summary.deliveryFee,
-        payableAmount: summary.payableAmount,
-        tenantId,
-      },
+    const order = await insertPendingOrder(this.prisma, {
+      draft,
+      orderNo,
+      subject,
+      tenantId,
     })
 
     const payUrl = this.alipay.createWapPayUrl({
       orderNo,
-      payableAmount: summary.payableAmount,
+      payableAmount: draft.payableAmount,
       subject,
     })
 
     return {
       orderNo: order.orderNo,
       payUrl,
-      payableAmount: summary.payableAmount,
+      payableAmount: draft.payableAmount,
     }
   }
 
@@ -217,38 +229,6 @@ export class PaymentService {
     return true
   }
 
-  private buildOrderPayload(payload: CreateAlipayWapPaymentPayload) {
-    const cartItems = (payload.cartItems || [])
-      .map(item => this.normalizeCartItem(item))
-      .filter(item => item.itemId && item.qty > 0 && item.unitPrice > 0)
-    const goodsAmount = toPrice(cartItems.reduce((sum, item) => sum + item.totalPrice, 0))
-    const deliveryFee = toPrice(payload.deliveryFee)
-
-    return {
-      userId: String(payload.userId || ''),
-      shopId: payload.shopId ? String(payload.shopId) : null,
-      shopName: String(payload.shopName || '饿了么订单'),
-      cartItems,
-      goodsAmount,
-      deliveryFee,
-      payableAmount: toPrice(goodsAmount + deliveryFee),
-    }
-  }
-
-  private normalizeCartItem(item: PaymentCartItemDto) {
-    const qty = toQty(item.qty)
-    const unitPrice = toPrice(item.unitPrice)
-
-    return {
-      itemId: String(item.itemId || item.id || ''),
-      skuId: String(item.skuId || item.itemId || item.id || ''),
-      title: String(item.title || item.name || '商品'),
-      qty,
-      unitPrice,
-      totalPrice: toPrice(unitPrice * qty),
-    }
-  }
-
   private async findOrder(orderNo: string) {
     const order = await (this.prisma as any).paymentOrder.findUnique({ where: { orderNo } })
     if (!order)
@@ -264,22 +244,6 @@ export class PaymentService {
 
     const where = this.tenantAccess.buildScopedWhere(context, query)
     return Object.keys(where).length ? where : undefined
-  }
-
-  private async resolveTenantIdByShopId(shopId?: string | null) {
-    if (!shopId)
-      return null
-
-    const seededRestaurant = seedRestaurants.find(item => String(item.id) === String(shopId))
-    if (!seededRestaurant?.tenantCode)
-      return seededRestaurant?.tenantId ?? null
-
-    const tenant = await (this.prisma as any).tenant?.findUnique?.({
-      where: { code: seededRestaurant.tenantCode },
-      select: { id: true },
-    })
-
-    return tenant?.id ?? seededRestaurant.tenantId ?? null
   }
 
   private ensureOrderOwner(order: PaymentOrderRecord, userId?: string) {
@@ -343,12 +307,6 @@ export class PaymentService {
       availableActions: this.orderWorkflow.getAdminAvailableActions(order),
       customerAvailableActions: this.orderWorkflow.getCustomerAvailableActions(order),
     }
-  }
-
-  private createOrderNo() {
-    const stamp = Date.now().toString()
-    const random = Math.floor(Math.random() * 9000 + 1000)
-    return `ELMALI${stamp}${random}`
   }
 
   private mapTradeStatus(tradeStatus: string): PaymentStatus {

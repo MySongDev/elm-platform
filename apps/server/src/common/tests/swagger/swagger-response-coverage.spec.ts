@@ -6,6 +6,7 @@ import { AuthController } from '@/modules/auth/auth.controller'
 import { CustomerAuthController } from '@/modules/customer-auth/customer-auth.controller'
 import { MerchantOnboardingController } from '@/modules/merchant-onboarding/merchant-onboarding.controller'
 import { NotificationController } from '@/modules/notification/notification.controller'
+import { OrderController } from '@/modules/order/order.controller'
 import { PaymentController } from '@/modules/payment/payment.controller'
 import { TenantController } from '@/modules/tenant/tenant.controller'
 import { UserController } from '@/modules/user/user.controller'
@@ -365,6 +366,12 @@ const controllerEntries: ControllerEntry[] = [
     errors: [400, 401, 500],
   },
   {
+    controller: OrderController,
+    method: 'createOrder',
+    success: 201,
+    errors: [400, 401, 500],
+  },
+  {
     controller: PaymentController,
     method: 'createAlipayWapPayment',
     success: 201,
@@ -419,6 +426,7 @@ describe('swagger response coverage', () => {
       TenantController,
       MerchantOnboardingController,
       NotificationController,
+      OrderController,
       PaymentController,
     ]
 

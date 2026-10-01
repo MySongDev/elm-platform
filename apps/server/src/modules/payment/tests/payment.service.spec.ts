@@ -51,6 +51,11 @@ function createService() {
     tenant: {
       findUnique: jest.fn().mockResolvedValue({ id: 10 }),
     },
+    // 租户解析改查 restaurants 表（见 resolveTenantIdByShopId）。
+    // 默认返回 null（平台自营：商家存在但未绑定租户）。
+    restaurant: {
+      findUnique: jest.fn().mockResolvedValue({ tenantId: null }),
+    },
   } as any
 
   const alipay = {
@@ -322,8 +327,13 @@ describe('paymentService', () => {
     }))
   })
 
-  it('resolves tenant id from seeded shop when creating payment orders', async () => {
+  // 2026-09-30 商家数据本地化后重写：原实现按 shopId 去**内存 seed** 找 tenantCode，
+  // 而上游 shop id 1 是"效果演示"（广州）、seed id 1 是"鲜花蛋糕旗舰店" —— id 撞车会把订单
+  // 静默记到错误租户名下。现在改为查 `restaurants` 表。
+  // 用例故意让 mock 返回非空 tenantId，才能证明这条接线是通的（而不是恒为 null 的巧合）。
+  it('resolves the tenant from the restaurants table when creating payment orders', async () => {
     const { service, prisma } = createService()
+    prisma.restaurant.findUnique.mockResolvedValue({ tenantId: 77 })
 
     await service.createAlipayWapPayment({
       userId: '1',
@@ -339,14 +349,39 @@ describe('paymentService', () => {
       }],
     })
 
-    expect(prisma.tenant.findUnique).toHaveBeenCalledWith({
-      where: { code: 'flower-cake' },
-      select: { id: true },
+    expect(prisma.restaurant.findUnique).toHaveBeenCalledWith({
+      where: { id: 1 },
+      select: { tenantId: true },
     })
     expect(prisma.paymentOrder.create).toHaveBeenCalledWith({
       data: expect.objectContaining({
         shopId: '1',
-        tenantId: 10,
+        tenantId: 77,
+      }),
+    })
+  })
+
+  it('records a null tenant while every shop is platform operated', async () => {
+    const { service, prisma } = createService()
+
+    await service.createAlipayWapPayment({
+      userId: '1',
+      shopId: '101',
+      shopName: '示例商家',
+      deliveryFee: 5,
+      cartItems: [{
+        itemId: '1001',
+        skuId: '1001',
+        title: '商品',
+        qty: 1,
+        unitPrice: 12,
+      }],
+    })
+
+    expect(prisma.paymentOrder.create).toHaveBeenCalledWith({
+      data: expect.objectContaining({
+        shopId: '101',
+        tenantId: null,
       }),
     })
   })
