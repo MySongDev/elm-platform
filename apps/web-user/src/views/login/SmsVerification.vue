@@ -2,7 +2,7 @@
 import { computed, nextTick, onBeforeUnmount, onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { customerSmsLogin, sendCustomerSms } from '@/services/api/api-login'
-import { useUserStore } from '@/stores/modules/store-user'
+import { useLoginSuccess } from './useLoginSuccess'
 
 defineOptions({ name: 'SmsVerification' })
 
@@ -10,7 +10,7 @@ const OTP_LENGTH = 6
 const RESEND_SECONDS = 60
 const route = useRoute()
 const router = useRouter()
-const userStore = useUserStore()
+const { completeLogin } = useLoginSuccess()
 const otp = ref(Array.from({ length: OTP_LENGTH }).fill(''))
 const inputRefs = ref([])
 const secondsLeft = ref(RESEND_SECONDS)
@@ -63,14 +63,6 @@ function clearError() {
   errorMessage.value = ''
 }
 
-function getRedirectTarget() {
-  const redirect = Array.isArray(route.query.redirect) ? route.query.redirect[0] : route.query.redirect
-  if (typeof redirect !== 'string' || !redirect.startsWith('/') || redirect.startsWith('//') || redirect.startsWith('/login'))
-    return '/msite'
-
-  return redirect
-}
-
 async function verifyCode() {
   if (isVerifying.value || !isPhoneValid.value)
     return
@@ -83,8 +75,7 @@ async function verifyCode() {
   isVerifying.value = true
   try {
     const response = await customerSmsLogin(phone.value, smsCode)
-    userStore.recordUserInfo(response)
-    router.replace(getRedirectTarget())
+    completeLogin(response)
   }
   catch (error) {
     errorMessage.value = error?.message || '验证码错误或已过期，请重新输入'

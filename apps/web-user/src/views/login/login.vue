@@ -2,6 +2,7 @@
 import { computed, shallowRef } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { customerPasswordLogin, sendCustomerSms } from '@/services/api/api-login'
+import { useLoginSuccess } from './useLoginSuccess'
 
 defineOptions({ name: 'Login' })
 
@@ -12,6 +13,7 @@ const passwordVisible = shallowRef(false)
 const agreementAccepted = shallowRef(false)
 const router = useRouter()
 const route = useRoute()
+const { completeLogin } = useLoginSuccess()
 
 const formattedPhone = computed(() => formatPhone(phone.value))
 const isPhoneValid = computed(() => phone.value.length === 11 && /^1\d{10}$/.test(phone.value))
@@ -57,7 +59,8 @@ async function handleSubmit() {
     })
   }
   else {
-    customerPasswordLogin(phone.value, password.value)
+    const response = await customerPasswordLogin(phone.value, password.value)
+    completeLogin(response)
   }
 }
 
