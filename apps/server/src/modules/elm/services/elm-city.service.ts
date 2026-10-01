@@ -1,12 +1,17 @@
 import type { CityRecord } from '../types/elm.types'
 import { Injectable, NotFoundException } from '@nestjs/common'
-import { createEntry, createRestaurantCategory } from '../factories/elm.factories'
+import { PrismaService } from '../../../prisma/prisma.service'
+import { toCategoryEntryResponse } from '../assemblers/elm.assemblers'
+import { createRestaurantCategory } from '../factories/elm.factories'
 import { parseGeoHash } from '../utils/elm-query'
 import { ElmStoreService } from './elm-store.service'
 
 @Injectable()
 export class ElmCityService {
-  constructor(private readonly store: ElmStoreService) {}
+  constructor(
+    private readonly store: ElmStoreService,
+    private readonly prisma: PrismaService,
+  ) {}
 
   getCities(type: string) {
     if (type === 'guess') {
@@ -81,17 +86,20 @@ export class ElmCityService {
     }
   }
 
-  getIndexEntries() {
-    return [
-      createEntry(1, '甜品饮品', '幸福甜味，准时送达', 'a867c870b22bc74c87c348b75528djpeg.jpeg', 248),
-      createEntry(2, '鲜花蛋糕', '鲜花、蛋糕与礼物', '3edf3f4ef8ed1d300896c5b9178685ebpng.png', 248),
-      createEntry(3, '品牌快餐', '大牌快餐放心点', 'd7c5f78d73756cfc7b5276f8ae901jpeg.jpeg', 1),
-      createEntry(4, '轻食简餐', '沙拉、轻食、健康餐', 'b7ba9547aa700bd20d0420e1794a8jpeg.jpeg', 2),
-      createEntry(5, '夜宵', '深夜也有热乎饭', 'b02bd836411c016935d258b300cfejpeg.jpeg', 3),
-      createEntry(6, '水果', '新鲜水果现切', '428d07ca24875e9e35723c8570c32jpeg.jpeg', 4),
-      createEntry(7, '超市便利', '日用百货及时送', '0e07558e305abfb2618ae760142222f9png.png', 5),
-      createEntry(8, '医药健康', '常备药品送到家', '512232422a83e25a2c0a5588b7b6e730png.png', 6),
-    ]
+  /**
+   * `/v2/index_entry`：首页分类入口，16 条。
+   *
+   * 原来是 8 条硬编码的本地数据，且**没有任何调用方**（控制器一直转发上游）。
+   * 现在改为读 `category_entries` 表（由 elm:import 从上游导入），本地硬编码版本已删除。
+   *
+   * ⚠️ 必须显式 `orderBy: sortOrder`：数据库不保证 findMany 的返回顺序，
+   * 而排序信息在上游是靠数组下标表达的，漏了这句首页分类会随机排列。
+   */
+  async listCategoryEntries() {
+    const rows = await this.prisma.categoryEntry.findMany({
+      orderBy: { sortOrder: 'asc' },
+    })
+    return rows.map(toCategoryEntryResponse)
   }
 
   getRestaurantCategories() {

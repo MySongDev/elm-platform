@@ -55,6 +55,7 @@ model Tenant {
   orders     PaymentOrder[]
   orderLogs  OrderActionLog[]
   actionLogs TenantActionLog[]
+  restaurants Restaurant[]
 
   @@map("tenants")
 }
@@ -340,4 +341,152 @@ model Notification {
   @@index([userId, createdAt])
   @@index([userId, type, read])
   @@map("notifications")
+}
+
+// ============================================================================
+// 商家域（2026-09-30 本地化）
+//
+// 这三个模型 + CategoryEntry 把原本分裂在「上游 elm.cangdu.org」与「进程内存
+// seed」的商家数据收敛成一张真库表：用户端浏览、管理端 CRUD、下单引用三入口
+// 指向同一份数据。
+//
+// 字段设计的取舍与实测依据见 docs/engineering/008-merchant-data-localization.md
+//   ・__v / is_essential / is_featured / attrs / display_times / pinyin_name /
+//     server_utc 共 7 个字段刻意不入库：上游恒为空值 + 全仓库零消费者（§2.5、§8.3）
+//   ・distance 不建列：上游恒为硬编码 "10公里"，本地按请求坐标实时算（§8.2）
+//   ・tenant_id 留空即"平台自营"，管道保留待将来接多租户（§8.1）
+// ============================================================================
+
+/// 商家主表。id 直接沿用上游 id（实测全局唯一），同时也是管理端 boundShopIds 的取值。
+model Restaurant {
+  id       Int     @id
+  name     String
+  address  String  @default("")
+  latitude  Float
+  longitude Float
+  /// [lng, lat]，与上游同序。注意：上游有 114 条此字段与 latitude/longitude 不一致，
+  /// 前端不读它 —— 故原样存、原样吐，不做修正（见 008 §2.6）。
+  location  Float[]
+
+  phone    String  @default("")
+  category String  @default("")
+  status   Int     @default(1)
+
+  recentOrderNum Int     @map("recent_order_num")
+  ratingCount    Int     @map("rating_count")
+  rating         Float
+  promotionInfo  String  @default("") @map("promotion_info")
+  openingHours   String[] @map("opening_hours")
+
+  isNew     Boolean @default(false) @map("is_new")
+  isPremium Boolean @default(false) @map("is_premium")
+  imagePath String  @default("")    @map("image_path")
+
+  floatMinimumOrderAmount Float  @map("float_minimum_order_amount")
+  floatDeliveryFee        Float  @map("float_delivery_fee")
+  orderLeadTime           String @default("") @map("order_lead_time")
+  description             String @default("")
+
+  /// 嵌套结构整体进 JSON 列，装配时原样吐回。
+  supports          Json @default("[]")
+  activities        Json @default("[]")
+  piecewiseAgentFee Json @default("{}") @map("piecewise_agent_fee")
+  license           Json @default("{}")
+  identification    Json @default("{}")
+  /// ⚠️ 唯一可空的嵌套字段：实测 4298 条里有 224 条上游根本不含此键，
+  /// 装配时必须「省略该键」而不是返回 null，才能与上游逐字段一致。
+  deliveryMode      Json? @map("delivery_mode")
+
+  /// 租户归属。留空 = 平台自营。管道（列 + TenantAccessService 过滤）先建好，
+  /// 将来做多租户只需填值，不需要再迁移（见 008 §8.1）。
+  tenantId Int? @map("tenant_id")
+
+  /// 数据来源：upstream = 从上游导入，local = 管理端创建。
+  source String @default("upstream")
+  /// 菜单最近同步时间。用于区分「未同步菜单」与「已同步但该店无菜单」，
+  /// 避免空菜单商家每次请求都回源（见 009 阶段 5）。
+  menuSyncedAt DateTime? @map("menu_synced_at")
+  syncedAt     DateTime?  @map("synced_at")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt      @map("updated_at")
+
+  tenant     Tenant?        @relation(fields: [tenantId], references: [id], onDelete: SetNull)
+  categories FoodCategory[]
+  foods      Food[]
+
+  @@index([tenantId])
+  @@index([name])
+  @@map("restaurants")
+}
+
+/// 菜品分类。刻意不叫 menu_categories —— 仓库已有 menus 表（后台权限菜单），
+/// 同名会让读者误以为二者相关（见 008 §8.4）。
+model FoodCategory {
+  id           Int     @id
+  restaurantId Int     @map("restaurant_id")
+  name         String
+  description  String  @default("")
+  type         Int
+  iconUrl      String  @default("") @map("icon_url")
+  isSelected   Boolean @default(false) @map("is_selected")
+  syncedAt     DateTime? @map("synced_at")
+
+  restaurant Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  foods      Food[]
+
+  @@index([restaurantId])
+  @@map("food_categories")
+}
+
+/// 菜品。item_id 与上游 _id 都保留：前者作主键，后者装配回响应时需要。
+model Food {
+  itemId Int    @id @map("item_id")
+  /// 上游 Mongo ObjectId，出参要原样返回，故必须存。
+  mongoId      String @map("_id")
+  categoryId   Int    @map("category_id")
+  restaurantId Int    @map("restaurant_id")
+
+  name        String
+  imagePath   String  @default("") @map("image_path")
+  description String  @default("")
+  tips        String  @default("")
+  monthSales   Int    @map("month_sales")
+  satisfyRate  Int    @map("satisfy_rate")
+  satisfyCount Int    @map("satisfy_count")
+  ratingCount  Int    @map("rating_count")
+  rating       Float
+
+  /// 实测 190 个菜品里 71 个为 null → 可空。
+  activity       Json?
+  attributes     Json @default("[]")
+  specifications Json @default("[]")
+  specfoods      Json @default("[]")
+
+  tenantId Int?      @map("tenant_id")
+  syncedAt DateTime? @map("synced_at")
+
+  category   FoodCategory @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  restaurant Restaurant   @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+
+  @@index([restaurantId])
+  @@index([categoryId])
+  @@map("foods")
+}
+
+/// 首页分类入口（/v2/index_entry），16 条全量。
+model CategoryEntry {
+  id          Int     @id
+  title       String
+  description String  @default("")
+  isInServing Boolean @default(false) @map("is_in_serving")
+  link        String  @default("")
+  imageUrl    String  @default("") @map("image_url")
+  iconUrl     String  @default("") @map("icon_url")
+  titleColor  String  @default("") @map("title_color")
+  /// 上游靠数组下标表达的排序，必须显式落列：数据库不保证 findMany 的顺序。
+  sortOrder   Int     @map("sort_order")
+  syncedAt    DateTime? @map("synced_at")
+
+  @@map("category_entries")
 }

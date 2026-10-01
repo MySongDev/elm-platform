@@ -1,121 +1,102 @@
 import type { ElmCityService } from '@/modules/elm/services/elm-city.service'
 import type { ElmFoodService } from '@/modules/elm/services/elm-food.service'
 import type { ElmRestaurantService } from '@/modules/elm/services/elm-restaurant.service'
-import type { ElmUpstreamService } from '@/modules/elm/services/elm-upstream.service'
 import { ElmFoodPublicController } from '@/modules/elm/controllers/elm-food-public.controller'
 import { ElmLocationController } from '@/modules/elm/controllers/elm-location.controller'
 import { ElmRestaurantPublicController } from '@/modules/elm/controllers/elm-restaurant-public.controller'
 
-describe('elm upstream public controllers', () => {
-  it('proxies index entries to the upstream service and awaits the payload', async () => {
-    const payload = { entries: [{ id: 1 }] }
+/**
+ * 这 4 个接口原先是「转发上游」的薄代理，测试断言的是 `upstream.get` 被调用 ——
+ * 那是在测实现细节（调了谁），而不是契约（返回什么）。
+ *
+ * 2026-09-30 本地化后它们改读本地库（见 docs/engineering/008-merchant-data-localization.md），
+ * 于是重写为断言「控制器把请求委派给服务层、并把结果包进 rawResponse 信封」。
+ * 顺带补上坐标透传的断言 —— 那是 distance 实时计算（方案①）的接线点，原先没有覆盖。
+ */
+describe('elm public controllers delegate to local services', () => {
+  it('serves index entries from the local table', async () => {
+    const payload = [{ id: 1 }]
     const cityService = {
-      getIndexEntries: jest.fn().mockReturnValue([{ id: 'local' }]),
+      listCategoryEntries: jest.fn().mockResolvedValue(payload),
     }
-    const upstream = {
-      get: jest.fn().mockResolvedValue(payload),
-    }
-    const controller = new ElmLocationController(
-      cityService as unknown as ElmCityService,
-      upstream as unknown as ElmUpstreamService,
-    )
+    const controller = new ElmLocationController(cityService as unknown as ElmCityService)
 
     const result = await controller.getIndexEntry()
 
-    expect(upstream.get).toHaveBeenCalledWith('/v2/index_entry')
-    expect(cityService.getIndexEntries).not.toHaveBeenCalled()
+    expect(cityService.listCategoryEntries).toHaveBeenCalled()
     expect(result).toEqual({
       __rawResponse: true,
       payload,
     })
   })
 
-  it('proxies the complete restaurant query to the upstream service', async () => {
+  it('passes the query coordinates through so distance is computed against the caller', async () => {
     const payload = [{
       id: 42,
-      name: 'upstream restaurant',
+      distance: '1.2公里',
     }]
     const query = {
-      latitude: 31.23,
-      longitude: 121.47,
-      support_ids: [7, 9],
-      keyword: '',
-    }
-    const cityService = {}
-    const restaurantService = {
-      listRestaurants: jest.fn().mockReturnValue([{ id: 'local' }]),
-    }
-    const upstream = {
-      get: jest.fn().mockResolvedValue(payload),
-    }
-    const controller = new ElmRestaurantPublicController(
-      cityService as ElmCityService,
-      restaurantService as unknown as ElmRestaurantService,
-      upstream as unknown as ElmUpstreamService,
-    )
-
-    const result = await controller.getRestaurants(query)
-
-    expect(upstream.get).toHaveBeenCalledWith('/shopping/restaurants', query)
-    expect(restaurantService.listRestaurants).not.toHaveBeenCalled()
-    expect(result).toEqual({
-      __rawResponse: true,
-      payload,
-    })
-  })
-
-  it('proxies restaurant detail without reading the local restaurant seed', async () => {
-    const payload = {
-      id: 42,
-      name: 'upstream restaurant',
+      latitude: '31.23',
+      longitude: '121.47',
+      offset: '0',
+      limit: '20',
     }
     const restaurantService = {
-      getRestaurant: jest.fn().mockReturnValue({
-        id: 42,
-        name: 'local',
-      }),
-    }
-    const upstream = {
-      get: jest.fn().mockResolvedValue(payload),
+      listForApi: jest.fn().mockResolvedValue(payload),
     }
     const controller = new ElmRestaurantPublicController(
       {} as ElmCityService,
       restaurantService as unknown as ElmRestaurantService,
-      upstream as unknown as ElmUpstreamService,
     )
 
-    const result = await controller.getRestaurant(42)
+    const result = await controller.getRestaurants(query)
 
-    expect(upstream.get).toHaveBeenCalledWith('/shopping/restaurant/42')
-    expect(restaurantService.getRestaurant).not.toHaveBeenCalled()
+    expect(restaurantService.listForApi).toHaveBeenCalledWith(query, {
+      latitude: '31.23',
+      longitude: '121.47',
+    })
     expect(result).toEqual({
       __rawResponse: true,
       payload,
     })
   })
 
-  it('proxies restaurant menus without reading the local food seed', async () => {
+  it('serves restaurant detail from the local table without touching the upstream proxy', async () => {
+    const payload = {
+      id: 42,
+      name: 'local restaurant',
+    }
+    const restaurantService = {
+      getByIdForApi: jest.fn().mockResolvedValue(payload),
+    }
+    const controller = new ElmRestaurantPublicController(
+      {} as ElmCityService,
+      restaurantService as unknown as ElmRestaurantService,
+    )
+
+    const result = await controller.getRestaurant(42)
+
+    expect(restaurantService.getByIdForApi).toHaveBeenCalledWith(42)
+    expect(result).toEqual({
+      __rawResponse: true,
+      payload,
+    })
+  })
+
+  it('serves the menu from the local table', async () => {
     const payload = [{
       id: 7,
-      name: 'upstream menu',
+      name: 'local menu',
+      foods: [],
     }]
     const foodService = {
-      getFoodMenus: jest.fn().mockReturnValue([{ id: 'local' }]),
+      getMenuForApi: jest.fn().mockResolvedValue(payload),
     }
-    const upstream = {
-      get: jest.fn().mockResolvedValue(payload),
-    }
-    const controller = new ElmFoodPublicController(
-      foodService as unknown as ElmFoodService,
-      upstream as unknown as ElmUpstreamService,
-    )
+    const controller = new ElmFoodPublicController(foodService as unknown as ElmFoodService)
 
     const result = await controller.getMenu(42)
 
-    expect(upstream.get).toHaveBeenCalledWith('/shopping/v2/menu', {
-      restaurant_id: 42,
-    })
-    expect(foodService.getFoodMenus).not.toHaveBeenCalled()
+    expect(foodService.getMenuForApi).toHaveBeenCalledWith(42)
     expect(result).toEqual({
       __rawResponse: true,
       payload,

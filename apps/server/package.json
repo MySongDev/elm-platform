@@ -21,7 +21,8 @@
     "prisma:migrate": "prisma migrate dev",
     "prisma:migrate:prod": "prisma migrate deploy",
     "prisma:studio": "prisma studio",
-    "prisma:seed": "ts-node prisma/seed.ts"
+    "prisma:seed": "ts-node prisma/seed.ts",
+    "elm:import": "ts-node src/modules/elm/scripts/import-upstream.ts"
   },
   "dependencies": {
     "@elm-platform/contracts": "workspace:*",
