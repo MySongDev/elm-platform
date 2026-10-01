@@ -1,5 +1,6 @@
 import { BadGatewayException, Injectable, Logger } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
+import { resolveUpstreamUrl } from '../utils/upstream-url'
 
 function appendQuery(url: URL, query: Record<string, unknown>): void {
   for (const [key, value] of Object.entries(query)) {
@@ -31,19 +32,7 @@ export class ElmUpstreamService {
     let timeout: ReturnType<typeof setTimeout> | undefined
 
     try {
-      if (path.startsWith('//'))
-        throw new Error('Elm upstream path must not be protocol-relative')
-
-      const baseUrl = new URL(this.baseUrl)
-      if (!['http:', 'https:'].includes(baseUrl.protocol))
-        throw new Error('Elm upstream base URL must use HTTP or HTTPS')
-      if (baseUrl.search || baseUrl.hash)
-        throw new Error('Elm upstream base URL must not contain query or fragment')
-
-      baseUrl.pathname = `${baseUrl.pathname.replace(/\/+$/, '')}/`
-      const url = new URL(path.slice(1), baseUrl)
-      if (url.origin !== baseUrl.origin)
-        throw new Error('Elm upstream URL changed origin')
+      const url = resolveUpstreamUrl(this.baseUrl, path)
 
       appendQuery(url, query)
 

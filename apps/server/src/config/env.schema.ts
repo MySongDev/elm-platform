@@ -38,6 +38,7 @@ export const envSchema = z.object({
   APP_PREFIX: z.string().trim().min(1).default('api'),
   ELM_API_BASE_URL: elmApiBaseUrlSchema.default('https://elm.cangdu.org'),
   ELM_API_TIMEOUT_MS: z.coerce.number().int().positive().default(8000),
+  ELM_IMAGE_TIMEOUT_MS: z.coerce.number().int().positive().default(15000),
 
   DATABASE_URL: z.string().trim().min(1, 'DATABASE_URL is required'),
 

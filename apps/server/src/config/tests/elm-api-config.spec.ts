@@ -12,6 +12,7 @@ describe('elm API configuration', () => {
     }
     delete process.env.ELM_API_BASE_URL
     delete process.env.ELM_API_TIMEOUT_MS
+    delete process.env.ELM_IMAGE_TIMEOUT_MS
   })
 
   afterEach(() => {
@@ -25,16 +26,19 @@ describe('elm API configuration', () => {
     expect(validated).toMatchObject({
       ELM_API_BASE_URL: 'https://elm.cangdu.org',
       ELM_API_TIMEOUT_MS: 8000,
+      ELM_IMAGE_TIMEOUT_MS: 15000,
     })
     expect(config.elmApi).toEqual({
       baseUrl: 'https://elm.cangdu.org',
       timeoutMs: 8000,
+      imageTimeoutMs: 15000,
     })
   })
 
   it('maps custom validated upstream settings', () => {
     process.env.ELM_API_BASE_URL = 'https://elm.example.test/api'
     process.env.ELM_API_TIMEOUT_MS = '2500'
+    process.env.ELM_IMAGE_TIMEOUT_MS = '4200'
 
     const validated = validateEnv(process.env)
     const config = configuration() as Record<string, unknown>
@@ -42,10 +46,12 @@ describe('elm API configuration', () => {
     expect(validated).toMatchObject({
       ELM_API_BASE_URL: 'https://elm.example.test/api',
       ELM_API_TIMEOUT_MS: 2500,
+      ELM_IMAGE_TIMEOUT_MS: 4200,
     })
     expect(config.elmApi).toEqual({
       baseUrl: 'https://elm.example.test/api',
       timeoutMs: 2500,
+      imageTimeoutMs: 4200,
     })
   })
 
@@ -59,6 +65,7 @@ describe('elm API configuration', () => {
     expect(config.elmApi).toEqual({
       baseUrl: 'https://elm.cangdu.org',
       timeoutMs: 1000,
+      imageTimeoutMs: 15000,
     })
   })
 

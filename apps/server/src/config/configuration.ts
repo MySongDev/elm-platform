@@ -12,6 +12,7 @@ export default () => ({
   elmApi: {
     baseUrl: process.env.ELM_API_BASE_URL || 'https://elm.cangdu.org',
     timeoutMs: Number(process.env.ELM_API_TIMEOUT_MS || '8000'),
+    imageTimeoutMs: Number(process.env.ELM_IMAGE_TIMEOUT_MS || '15000'),
   },
 
   // 数据库配置
