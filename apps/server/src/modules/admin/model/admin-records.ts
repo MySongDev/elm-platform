@@ -1,3 +1,5 @@
+import type { AccountStatus } from '../../../common/constants/account-status'
+
 export type TreeNode<T> = T & {
   id: number
   parentId: number | null
@@ -8,7 +10,7 @@ export interface RoleRecord {
   id: number
   name: string
   code: string
-  status: number
+  status: AccountStatus
   remark: string | null
   permissions: string[]
   createdAt: string
@@ -25,7 +27,7 @@ export interface MenuRecord {
   component: string | null
   type: 'catalog' | 'menu' | 'button'
   sort: number
-  status: number
+  status: AccountStatus
 }
 
 export interface DeptRecord {
@@ -36,7 +38,7 @@ export interface DeptRecord {
   phone: string | null
   email: string | null
   sort: number
-  status: number
+  status: AccountStatus
 }
 
 export interface LoginLogView {

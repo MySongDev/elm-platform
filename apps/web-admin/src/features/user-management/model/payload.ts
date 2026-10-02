@@ -1,4 +1,5 @@
 import type { CreateUserParams, UpdateUserParams } from '@/entities/user'
+import type { AccountStatus } from '@/shared/lib/admin-display'
 
 export interface UserFormState {
   username: string
@@ -6,7 +7,7 @@ export interface UserFormState {
   email: string
   phone: string
   role: 'admin' | 'user'
-  status: number
+  status: AccountStatus
   permissions: string[]
   tenantId: number | null
   dataScope: string

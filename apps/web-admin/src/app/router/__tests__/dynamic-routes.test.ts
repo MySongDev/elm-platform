@@ -1,4 +1,5 @@
 import type { Router, RouteRecordRaw } from 'vue-router'
+import type { BackendMenu } from '../permission'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { createMemoryHistory, createRouter } from 'vue-router'
 import { getDashboardOverview } from '@/features/dashboard/api/dashboard'
@@ -9,7 +10,7 @@ vi.mock('@/locales', () => ({
 }))
 
 /** 测试用后端菜单数据（符合 BackendMenu 类型） */
-const testMenus = [{
+const testMenus: BackendMenu[] = [{
   id: 1,
   parentId: null,
   title: 'Dashboard',
@@ -20,7 +21,7 @@ const testMenus = [{
   component: null,
   type: 'catalog' as const,
   sort: 1,
-  status: 1,
+  status: 'ACTIVE',
   children: [{
     id: 2,
     parentId: 1,
@@ -32,7 +33,7 @@ const testMenus = [{
     component: null,
     type: 'menu' as const,
     sort: 1,
-    status: 1,
+    status: 'ACTIVE',
   }],
 }, {
   id: 20,
@@ -45,7 +46,7 @@ const testMenus = [{
   component: null,
   type: 'catalog' as const,
   sort: 35,
-  status: 1,
+  status: 'ACTIVE',
   children: [{
     id: 23,
     parentId: 20,
@@ -57,7 +58,7 @@ const testMenus = [{
     component: null,
     type: 'menu' as const,
     sort: 3,
-    status: 1,
+    status: 'ACTIVE',
   }],
 }, {
   id: 25,
@@ -70,7 +71,7 @@ const testMenus = [{
   component: null,
   type: 'catalog' as const,
   sort: 36,
-  status: 1,
+  status: 'ACTIVE',
   children: [{
     id: 26,
     parentId: 25,
@@ -82,7 +83,7 @@ const testMenus = [{
     component: null,
     type: 'menu' as const,
     sort: 1,
-    status: 1,
+    status: 'ACTIVE',
   }],
 }, {
   id: 4,
@@ -95,7 +96,7 @@ const testMenus = [{
   component: null,
   type: 'catalog' as const,
   sort: 30,
-  status: 1,
+  status: 'ACTIVE',
   children: [{
     id: 8,
     parentId: 4,
@@ -107,7 +108,7 @@ const testMenus = [{
     component: null,
     type: 'menu' as const,
     sort: 4,
-    status: 1,
+    status: 'ACTIVE',
   }],
 }]
 

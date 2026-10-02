@@ -48,7 +48,7 @@ describe('customerTokenService', () => {
     phone: '13800138000',
     nickname: null,
     avatar: null,
-    status: 1,
+    status: 'ACTIVE' as const,
   }
 
   it('signs short access tokens and stores only hashed refresh tokens', async () => {

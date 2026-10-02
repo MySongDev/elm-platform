@@ -312,7 +312,7 @@ export class AdminService {
    * 创建角色
    * @param dto 角色创建 DTO
    * @returns 新建角色对象
-   * @remarks 缺省值：code=role_${timestamp}、status=1、permissions=[]
+   * @remarks 缺省值：code=role_${timestamp}、status=ACTIVE、permissions=[]
    */
   async createRole(dto: UpsertRoleDto) {
     try {
@@ -320,7 +320,7 @@ export class AdminService {
         data: {
           name: dto.name || '未命名角色',
           code: dto.code || `role_${Date.now()}`,
-          status: dto.status ?? 1,
+          status: dto.status ?? 'ACTIVE',
           remark: dto.remark,
           permissions: dto.permissions || [],
         },
@@ -331,7 +331,7 @@ export class AdminService {
         id: Date.now(),
         name: dto.name || '未命名角色',
         code: dto.code || `role_${Date.now()}`,
-        status: dto.status ?? 1,
+        status: dto.status ?? 'ACTIVE',
         remark: dto.remark || null,
         permissions: dto.permissions || [],
         createdAt: new Date().toISOString(),
@@ -589,7 +589,7 @@ export class AdminService {
    * 归一化菜单 DTO → Prisma create/update data
    * @param dto 原始 DTO
    * @returns 补全默认值后的数据对象
-   * @remarks 缺省值：parentId=null、title=未命名菜单、type=menu、sort=0、status=1
+   * @remarks 缺省值：parentId=null、title=未命名菜单、type=menu、sort=0、status=ACTIVE
    */
   private normalizeMenu(dto: UpsertMenuDto) {
     return {
@@ -602,7 +602,7 @@ export class AdminService {
       component: dto.component || null,
       type: dto.type || 'menu',
       sort: dto.sort ?? 0,
-      status: dto.status ?? 1,
+      status: dto.status ?? 'ACTIVE',
     }
   }
 
@@ -610,7 +610,7 @@ export class AdminService {
    * 归一化部门 DTO → Prisma create/update data
    * @param dto 原始 DTO
    * @returns 补全默认值后的数据对象
-   * @remarks 缺省值：parentId=null、name=未命名部门、sort=0、status=1
+   * @remarks 缺省值：parentId=null、name=未命名部门、sort=0、status=ACTIVE
    */
   private normalizeDept(dto: UpsertDeptDto) {
     return {
@@ -620,7 +620,7 @@ export class AdminService {
       phone: dto.phone || null,
       email: dto.email || null,
       sort: dto.sort ?? 0,
-      status: dto.status ?? 1,
+      status: dto.status ?? 'ACTIVE',
     }
   }
 }

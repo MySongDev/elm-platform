@@ -5,7 +5,7 @@ export const fallbackRoles: RoleRecord[] = [
     id: 1,
     name: '超级管理员',
     code: 'admin',
-    status: 1,
+    status: 'ACTIVE',
     remark: '拥有系统全部权限',
     permissions: ['*:*:*'],
     createdAt: new Date().toISOString(),
@@ -14,7 +14,7 @@ export const fallbackRoles: RoleRecord[] = [
     id: 2,
     name: '普通用户',
     code: 'user',
-    status: 1,
+    status: 'ACTIVE',
     remark: '拥有基础访问权限',
     permissions: ['permission:page:view', 'permission:button:view'],
     createdAt: new Date().toISOString(),
@@ -33,7 +33,7 @@ export const fallbackMenus: MenuRecord[] = [
     component: 'dashboard',
     type: 'catalog',
     sort: 1,
-    status: 1,
+    status: 'ACTIVE',
   },
   {
     id: 15,
@@ -46,7 +46,7 @@ export const fallbackMenus: MenuRecord[] = [
     component: 'dashboard/index',
     type: 'menu',
     sort: 1,
-    status: 1,
+    status: 'ACTIVE',
   },
   {
     id: 1,
@@ -59,7 +59,7 @@ export const fallbackMenus: MenuRecord[] = [
     component: null,
     type: 'catalog',
     sort: 20,
-    status: 1,
+    status: 'ACTIVE',
   },
   {
     id: 2,
@@ -72,7 +72,7 @@ export const fallbackMenus: MenuRecord[] = [
     component: 'permission/page',
     type: 'menu',
     sort: 1,
-    status: 1,
+    status: 'ACTIVE',
   },
   {
     id: 3,
@@ -85,7 +85,7 @@ export const fallbackMenus: MenuRecord[] = [
     component: 'permission/button',
     type: 'menu',
     sort: 2,
-    status: 1,
+    status: 'ACTIVE',
   },
   {
     id: 4,
@@ -98,7 +98,7 @@ export const fallbackMenus: MenuRecord[] = [
     component: null,
     type: 'catalog',
     sort: 30,
-    status: 1,
+    status: 'ACTIVE',
   },
   {
     id: 5,
@@ -111,7 +111,7 @@ export const fallbackMenus: MenuRecord[] = [
     component: 'monitor/online',
     type: 'menu',
     sort: 1,
-    status: 1,
+    status: 'ACTIVE',
   },
   {
     id: 6,
@@ -124,7 +124,7 @@ export const fallbackMenus: MenuRecord[] = [
     component: 'monitor/logs/login',
     type: 'menu',
     sort: 2,
-    status: 1,
+    status: 'ACTIVE',
   },
   {
     id: 7,
@@ -137,7 +137,7 @@ export const fallbackMenus: MenuRecord[] = [
     component: 'monitor/logs/operation',
     type: 'menu',
     sort: 3,
-    status: 1,
+    status: 'ACTIVE',
   },
   {
     id: 8,
@@ -150,7 +150,7 @@ export const fallbackMenus: MenuRecord[] = [
     component: 'monitor/logs/system',
     type: 'menu',
     sort: 4,
-    status: 1,
+    status: 'ACTIVE',
   },
   {
     id: 9,
@@ -163,7 +163,7 @@ export const fallbackMenus: MenuRecord[] = [
     component: null,
     type: 'catalog',
     sort: 40,
-    status: 1,
+    status: 'ACTIVE',
   },
   {
     id: 10,
@@ -176,7 +176,7 @@ export const fallbackMenus: MenuRecord[] = [
     component: 'system/user',
     type: 'menu',
     sort: 1,
-    status: 1,
+    status: 'ACTIVE',
   },
   {
     id: 11,
@@ -189,7 +189,7 @@ export const fallbackMenus: MenuRecord[] = [
     component: 'system/role',
     type: 'menu',
     sort: 2,
-    status: 1,
+    status: 'ACTIVE',
   },
   {
     id: 12,
@@ -202,7 +202,7 @@ export const fallbackMenus: MenuRecord[] = [
     component: 'system/menu',
     type: 'menu',
     sort: 3,
-    status: 1,
+    status: 'ACTIVE',
   },
   {
     id: 13,
@@ -215,7 +215,7 @@ export const fallbackMenus: MenuRecord[] = [
     component: 'system/dept',
     type: 'menu',
     sort: 4,
-    status: 1,
+    status: 'ACTIVE',
   },
   {
     id: 20,
@@ -228,7 +228,7 @@ export const fallbackMenus: MenuRecord[] = [
     component: null,
     type: 'catalog',
     sort: 35,
-    status: 1,
+    status: 'ACTIVE',
   },
   {
     id: 21,
@@ -241,7 +241,7 @@ export const fallbackMenus: MenuRecord[] = [
     component: 'commerce/restaurant',
     type: 'menu',
     sort: 1,
-    status: 1,
+    status: 'ACTIVE',
   },
   {
     id: 22,
@@ -254,7 +254,7 @@ export const fallbackMenus: MenuRecord[] = [
     component: 'commerce/food',
     type: 'menu',
     sort: 2,
-    status: 1,
+    status: 'ACTIVE',
   },
   {
     id: 23,
@@ -267,7 +267,7 @@ export const fallbackMenus: MenuRecord[] = [
     component: 'commerce/order',
     type: 'menu',
     sort: 3,
-    status: 1,
+    status: 'ACTIVE',
   },
   {
     id: 26,
@@ -280,7 +280,7 @@ export const fallbackMenus: MenuRecord[] = [
     component: null,
     type: 'menu',
     sort: 4,
-    status: 1,
+    status: 'ACTIVE',
   },
   {
     id: 24,
@@ -293,7 +293,7 @@ export const fallbackMenus: MenuRecord[] = [
     component: null,
     type: 'catalog',
     sort: 38,
-    status: 1,
+    status: 'ACTIVE',
   },
   {
     id: 25,
@@ -306,7 +306,7 @@ export const fallbackMenus: MenuRecord[] = [
     component: 'platform/tenant',
     type: 'menu',
     sort: 1,
-    status: 1,
+    status: 'ACTIVE',
   },
   {
     id: 30,
@@ -319,7 +319,7 @@ export const fallbackMenus: MenuRecord[] = [
     component: null,
     type: 'catalog',
     sort: 50,
-    status: 1,
+    status: 'ACTIVE',
   },
   {
     id: 31,
@@ -332,7 +332,7 @@ export const fallbackMenus: MenuRecord[] = [
     component: null,
     type: 'catalog',
     sort: 1,
-    status: 1,
+    status: 'ACTIVE',
   },
   {
     id: 32,
@@ -345,7 +345,7 @@ export const fallbackMenus: MenuRecord[] = [
     component: 'nested/menu1/menu1-1',
     type: 'menu',
     sort: 1,
-    status: 1,
+    status: 'ACTIVE',
   },
   {
     id: 33,
@@ -358,7 +358,7 @@ export const fallbackMenus: MenuRecord[] = [
     component: null,
     type: 'catalog',
     sort: 2,
-    status: 1,
+    status: 'ACTIVE',
   },
   {
     id: 34,
@@ -371,7 +371,7 @@ export const fallbackMenus: MenuRecord[] = [
     component: 'nested/menu1/menu1-2/menu1-2-1',
     type: 'menu',
     sort: 1,
-    status: 1,
+    status: 'ACTIVE',
   },
   {
     id: 35,
@@ -384,7 +384,7 @@ export const fallbackMenus: MenuRecord[] = [
     component: 'nested/menu1/menu1-2/menu1-2-2',
     type: 'menu',
     sort: 2,
-    status: 1,
+    status: 'ACTIVE',
   },
   {
     id: 36,
@@ -397,7 +397,7 @@ export const fallbackMenus: MenuRecord[] = [
     component: 'nested/menu1/menu1-3',
     type: 'menu',
     sort: 3,
-    status: 1,
+    status: 'ACTIVE',
   },
   {
     id: 37,
@@ -410,7 +410,7 @@ export const fallbackMenus: MenuRecord[] = [
     component: 'nested/menu2',
     type: 'menu',
     sort: 2,
-    status: 1,
+    status: 'ACTIVE',
   },
   {
     id: 101,
@@ -423,7 +423,7 @@ export const fallbackMenus: MenuRecord[] = [
     component: null,
     type: 'button',
     sort: 1,
-    status: 1,
+    status: 'ACTIVE',
   },
   {
     id: 110,
@@ -436,7 +436,7 @@ export const fallbackMenus: MenuRecord[] = [
     component: null,
     type: 'button',
     sort: 1,
-    status: 1,
+    status: 'ACTIVE',
   },
   {
     id: 111,
@@ -449,7 +449,7 @@ export const fallbackMenus: MenuRecord[] = [
     component: null,
     type: 'button',
     sort: 2,
-    status: 1,
+    status: 'ACTIVE',
   },
   {
     id: 112,
@@ -462,7 +462,7 @@ export const fallbackMenus: MenuRecord[] = [
     component: null,
     type: 'button',
     sort: 3,
-    status: 1,
+    status: 'ACTIVE',
   },
   {
     id: 120,
@@ -475,7 +475,7 @@ export const fallbackMenus: MenuRecord[] = [
     component: null,
     type: 'button',
     sort: 1,
-    status: 1,
+    status: 'ACTIVE',
   },
   {
     id: 121,
@@ -488,7 +488,7 @@ export const fallbackMenus: MenuRecord[] = [
     component: null,
     type: 'button',
     sort: 2,
-    status: 1,
+    status: 'ACTIVE',
   },
   {
     id: 122,
@@ -501,7 +501,7 @@ export const fallbackMenus: MenuRecord[] = [
     component: null,
     type: 'button',
     sort: 3,
-    status: 1,
+    status: 'ACTIVE',
   },
   {
     id: 130,
@@ -514,7 +514,7 @@ export const fallbackMenus: MenuRecord[] = [
     component: null,
     type: 'button',
     sort: 1,
-    status: 1,
+    status: 'ACTIVE',
   },
   {
     id: 131,
@@ -527,7 +527,7 @@ export const fallbackMenus: MenuRecord[] = [
     component: null,
     type: 'button',
     sort: 2,
-    status: 1,
+    status: 'ACTIVE',
   },
   {
     id: 132,
@@ -540,7 +540,7 @@ export const fallbackMenus: MenuRecord[] = [
     component: null,
     type: 'button',
     sort: 3,
-    status: 1,
+    status: 'ACTIVE',
   },
   {
     id: 140,
@@ -553,7 +553,7 @@ export const fallbackMenus: MenuRecord[] = [
     component: null,
     type: 'button',
     sort: 1,
-    status: 1,
+    status: 'ACTIVE',
   },
   {
     id: 141,
@@ -566,7 +566,7 @@ export const fallbackMenus: MenuRecord[] = [
     component: null,
     type: 'button',
     sort: 2,
-    status: 1,
+    status: 'ACTIVE',
   },
   {
     id: 142,
@@ -579,7 +579,7 @@ export const fallbackMenus: MenuRecord[] = [
     component: null,
     type: 'button',
     sort: 3,
-    status: 1,
+    status: 'ACTIVE',
   },
   {
     id: 150,
@@ -592,7 +592,7 @@ export const fallbackMenus: MenuRecord[] = [
     component: null,
     type: 'button',
     sort: 1,
-    status: 1,
+    status: 'ACTIVE',
   },
   {
     id: 151,
@@ -605,7 +605,7 @@ export const fallbackMenus: MenuRecord[] = [
     component: null,
     type: 'button',
     sort: 2,
-    status: 1,
+    status: 'ACTIVE',
   },
   {
     id: 152,
@@ -618,7 +618,7 @@ export const fallbackMenus: MenuRecord[] = [
     component: null,
     type: 'button',
     sort: 3,
-    status: 1,
+    status: 'ACTIVE',
   },
   {
     id: 160,
@@ -631,7 +631,7 @@ export const fallbackMenus: MenuRecord[] = [
     component: null,
     type: 'button',
     sort: 1,
-    status: 1,
+    status: 'ACTIVE',
   },
   {
     id: 161,
@@ -644,7 +644,7 @@ export const fallbackMenus: MenuRecord[] = [
     component: null,
     type: 'button',
     sort: 2,
-    status: 1,
+    status: 'ACTIVE',
   },
   {
     id: 162,
@@ -657,7 +657,7 @@ export const fallbackMenus: MenuRecord[] = [
     component: null,
     type: 'button',
     sort: 3,
-    status: 1,
+    status: 'ACTIVE',
   },
   {
     id: 170,
@@ -670,7 +670,7 @@ export const fallbackMenus: MenuRecord[] = [
     component: null,
     type: 'button',
     sort: 1,
-    status: 1,
+    status: 'ACTIVE',
   },
   {
     id: 180,
@@ -683,7 +683,7 @@ export const fallbackMenus: MenuRecord[] = [
     component: null,
     type: 'button',
     sort: 1,
-    status: 1,
+    status: 'ACTIVE',
   },
   {
     id: 181,
@@ -696,7 +696,7 @@ export const fallbackMenus: MenuRecord[] = [
     component: null,
     type: 'button',
     sort: 2,
-    status: 1,
+    status: 'ACTIVE',
   },
   {
     id: 182,
@@ -709,7 +709,7 @@ export const fallbackMenus: MenuRecord[] = [
     component: null,
     type: 'button',
     sort: 3,
-    status: 1,
+    status: 'ACTIVE',
   },
 ]
 
@@ -722,7 +722,7 @@ export const fallbackDepts: DeptRecord[] = [
     phone: '13800138000',
     email: 'admin@example.com',
     sort: 1,
-    status: 1,
+    status: 'ACTIVE',
   },
   {
     id: 2,
@@ -732,7 +732,7 @@ export const fallbackDepts: DeptRecord[] = [
     phone: '13800138001',
     email: 'rd@example.com',
     sort: 1,
-    status: 1,
+    status: 'ACTIVE',
   },
   {
     id: 3,
@@ -742,6 +742,6 @@ export const fallbackDepts: DeptRecord[] = [
     phone: '13800138002',
     email: 'ops@example.com',
     sort: 2,
-    status: 1,
+    status: 'ACTIVE',
   },
 ]

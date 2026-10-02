@@ -47,7 +47,7 @@ export class RolesGuard implements CanActivate {
       },
     })
 
-    if (!currentUser || currentUser.status !== 1) {
+    if (!currentUser || currentUser.status !== 'ACTIVE') {
       return false
     }
 
@@ -86,7 +86,7 @@ export class RolesGuard implements CanActivate {
         },
       })
 
-      if (!role || role.status !== 1) {
+      if (!role || role.status !== 'ACTIVE') {
         return []
       }
 

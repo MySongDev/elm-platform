@@ -1,3 +1,4 @@
+import type { AccountStatus } from '../../common/constants/account-status'
 import { createHash, randomBytes, randomUUID, timingSafeEqual } from 'node:crypto'
 import { Injectable, UnauthorizedException } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
@@ -8,7 +9,7 @@ interface CustomerUserLike {
   phone: string
   nickname?: string | null
   avatar?: string | null
-  status: number
+  status: AccountStatus
 }
 
 interface RefreshTokenRecord {

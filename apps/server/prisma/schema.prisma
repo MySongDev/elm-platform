@@ -20,7 +20,7 @@ model User {
   email        String?  @unique
   phone        String?  @unique
   avatar       String?
-  status       Int      @default(1) // 1: 启用 0: 禁用
+  status       String   @default("ACTIVE") // ACTIVE / DISABLED
   role         String   @default("user") // "admin" | "user"
   permissions  String[] @default([]) // 按钮级权限码，如 ["user:add", "user:delete"]
   tenantId     Int?     @map("tenant_id")
@@ -125,7 +125,7 @@ model CustomerUser {
   password    String?
   nickname    String?
   avatar      String?
-  status      Int               @default(1)
+  status      String            @default("ACTIVE") // ACTIVE / DISABLED
   lastLoginAt DateTime?
   createdAt   DateTime          @default(now())
   updatedAt   DateTime          @updatedAt
@@ -245,7 +245,7 @@ model Role {
   id          Int      @id @default(autoincrement())
   name        String
   code        String   @unique
-  status      Int      @default(1)
+  status      String   @default("ACTIVE") // ACTIVE / DISABLED
   remark      String?
   permissions String[] @default([])
   createdAt   DateTime @default(now())
@@ -265,7 +265,7 @@ model Menu {
   component  String?
   type       String   @default("menu") // catalog | menu | button
   sort       Int      @default(0)
-  status     Int      @default(1)
+  status     String   @default("ACTIVE") // ACTIVE / DISABLED
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 
@@ -283,7 +283,7 @@ model Dept {
   phone     String?
   email     String?
   sort      Int      @default(0)
-  status    Int      @default(1)
+  status    String    @default("ACTIVE") // ACTIVE / DISABLED
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 

@@ -65,7 +65,7 @@ async function main() {
       tenantId: null,
       dataScope: 'ALL',
       boundShopIds: [],
-      status: 1,
+      status: 'ACTIVE',
     },
     create: {
       username: 'admin',
@@ -77,7 +77,7 @@ async function main() {
       tenantId: null,
       dataScope: 'ALL',
       boundShopIds: [],
-      status: 1,
+      status: 'ACTIVE',
     },
   })
 
@@ -98,7 +98,7 @@ async function main() {
       tenantId: flowerCakeTenant.id,
       dataScope: 'TENANT',
       boundShopIds: [],
-      status: 1,
+      status: 'ACTIVE',
     },
     create: {
       username: 'tenant_admin',
@@ -115,7 +115,7 @@ async function main() {
       tenantId: flowerCakeTenant.id,
       dataScope: 'TENANT',
       boundShopIds: [],
-      status: 1,
+      status: 'ACTIVE',
     },
   })
 
@@ -135,7 +135,7 @@ async function main() {
       tenantId: flowerCakeTenant.id,
       dataScope: 'SHOP',
       boundShopIds: ['1'],
-      status: 1,
+      status: 'ACTIVE',
     },
     create: {
       username: 'shop_operator',
@@ -151,7 +151,7 @@ async function main() {
       tenantId: flowerCakeTenant.id,
       dataScope: 'SHOP',
       boundShopIds: ['1'],
-      status: 1,
+      status: 'ACTIVE',
     },
   })
 
@@ -162,13 +162,13 @@ async function main() {
     where: { phone: '13800138001' },
     update: {
       password: customerPassword,
-      status: 1,
+      status: 'ACTIVE',
     },
     create: {
       phone: '13800138001',
       password: customerPassword,
       nickname: '测试用户',
-      status: 1,
+      status: 'ACTIVE',
     },
   })
 
@@ -215,13 +215,13 @@ async function main() {
     update: {
       name: '超级管理员',
       permissions: ['*:*:*'],
-      status: 1,
+      status: 'ACTIVE',
     },
     create: {
       name: '超级管理员',
       code: 'admin',
       permissions: ['*:*:*'],
-      status: 1,
+      status: 'ACTIVE',
       remark: '拥有系统全部权限',
     },
   })
@@ -231,13 +231,13 @@ async function main() {
     update: {
       name: '普通用户',
       permissions: ['permission:page:view', 'permission:button:view'],
-      status: 1,
+      status: 'ACTIVE',
     },
     create: {
       name: '普通用户',
       code: 'user',
       permissions: ['permission:page:view', 'permission:button:view'],
-      status: 1,
+      status: 'ACTIVE',
       remark: '拥有基础访问权限',
     },
   })
@@ -247,7 +247,7 @@ async function main() {
     update: {
       name: '总公司',
       leader: '管理员',
-      status: 1,
+      status: 'ACTIVE',
     },
     create: {
       id: 1,
@@ -256,7 +256,7 @@ async function main() {
       phone: '13800138000',
       email: 'admin@example.com',
       sort: 1,
-      status: 1,
+      status: 'ACTIVE',
     },
   })
 
@@ -270,7 +270,7 @@ async function main() {
       icon: 'dashboard',
       type: 'catalog',
       sort: 1,
-      status: 1,
+      status: 'ACTIVE',
     },
     {
       id: 15,
@@ -282,7 +282,7 @@ async function main() {
       component: 'dashboard',
       type: 'menu',
       sort: 1,
-      status: 1,
+      status: 'ACTIVE',
     },
     {
       id: 1,
@@ -293,7 +293,7 @@ async function main() {
       icon: 'permission',
       type: 'catalog',
       sort: 20,
-      status: 1,
+      status: 'ACTIVE',
     },
     {
       id: 2,
@@ -306,7 +306,7 @@ async function main() {
       component: 'permission/page',
       type: 'menu',
       sort: 1,
-      status: 1,
+      status: 'ACTIVE',
     },
     {
       id: 3,
@@ -319,7 +319,7 @@ async function main() {
       component: 'permission/button',
       type: 'menu',
       sort: 2,
-      status: 1,
+      status: 'ACTIVE',
     },
     {
       id: 4,
@@ -330,7 +330,7 @@ async function main() {
       icon: 'monitor',
       type: 'catalog',
       sort: 30,
-      status: 1,
+      status: 'ACTIVE',
     },
     {
       id: 5,
@@ -343,7 +343,7 @@ async function main() {
       component: 'monitor/online',
       type: 'menu',
       sort: 1,
-      status: 1,
+      status: 'ACTIVE',
     },
     {
       id: 6,
@@ -356,7 +356,7 @@ async function main() {
       component: 'monitor/logs/login',
       type: 'menu',
       sort: 2,
-      status: 1,
+      status: 'ACTIVE',
     },
     {
       id: 7,
@@ -369,7 +369,7 @@ async function main() {
       component: 'monitor/logs/operation',
       type: 'menu',
       sort: 3,
-      status: 1,
+      status: 'ACTIVE',
     },
     {
       id: 8,
@@ -382,7 +382,7 @@ async function main() {
       component: 'monitor/logs/system',
       type: 'menu',
       sort: 4,
-      status: 1,
+      status: 'ACTIVE',
     },
     {
       id: 9,
@@ -393,7 +393,7 @@ async function main() {
       icon: 'system',
       type: 'catalog',
       sort: 40,
-      status: 1,
+      status: 'ACTIVE',
     },
     {
       id: 10,
@@ -406,7 +406,7 @@ async function main() {
       component: 'system/user',
       type: 'menu',
       sort: 1,
-      status: 1,
+      status: 'ACTIVE',
     },
     {
       id: 11,
@@ -419,7 +419,7 @@ async function main() {
       component: 'system/role',
       type: 'menu',
       sort: 2,
-      status: 1,
+      status: 'ACTIVE',
     },
     {
       id: 12,
@@ -432,7 +432,7 @@ async function main() {
       component: 'system/menu',
       type: 'menu',
       sort: 3,
-      status: 1,
+      status: 'ACTIVE',
     },
     {
       id: 13,
@@ -445,7 +445,7 @@ async function main() {
       component: 'system/dept',
       type: 'menu',
       sort: 4,
-      status: 1,
+      status: 'ACTIVE',
     },
     {
       id: 20,
@@ -456,7 +456,7 @@ async function main() {
       icon: 'document',
       type: 'catalog',
       sort: 35,
-      status: 1,
+      status: 'ACTIVE',
     },
     {
       id: 21,
@@ -469,7 +469,7 @@ async function main() {
       component: 'commerce/restaurant',
       type: 'menu',
       sort: 1,
-      status: 1,
+      status: 'ACTIVE',
     },
     {
       id: 22,
@@ -482,7 +482,7 @@ async function main() {
       component: 'commerce/food',
       type: 'menu',
       sort: 2,
-      status: 1,
+      status: 'ACTIVE',
     },
     {
       id: 23,
@@ -495,7 +495,7 @@ async function main() {
       component: 'commerce/order',
       type: 'menu',
       sort: 3,
-      status: 1,
+      status: 'ACTIVE',
     },
     {
       id: 26,
@@ -507,7 +507,7 @@ async function main() {
       permission: 'merchant:onboarding:view',
       type: 'menu',
       sort: 4,
-      status: 1,
+      status: 'ACTIVE',
     },
     {
       id: 24,
@@ -518,7 +518,7 @@ async function main() {
       icon: 'system',
       type: 'catalog',
       sort: 38,
-      status: 1,
+      status: 'ACTIVE',
     },
     {
       id: 25,
@@ -531,7 +531,7 @@ async function main() {
       component: 'platform/tenant',
       type: 'menu',
       sort: 1,
-      status: 1,
+      status: 'ACTIVE',
     },
     {
       id: 30,
@@ -542,7 +542,7 @@ async function main() {
       icon: 'nested',
       type: 'catalog',
       sort: 50,
-      status: 1,
+      status: 'ACTIVE',
     },
     {
       id: 31,
@@ -553,7 +553,7 @@ async function main() {
       icon: 'nested',
       type: 'catalog',
       sort: 1,
-      status: 1,
+      status: 'ACTIVE',
     },
     {
       id: 32,
@@ -565,7 +565,7 @@ async function main() {
       component: 'nested/menu1/menu1-1',
       type: 'menu',
       sort: 1,
-      status: 1,
+      status: 'ACTIVE',
     },
     {
       id: 33,
@@ -576,7 +576,7 @@ async function main() {
       icon: 'nested',
       type: 'catalog',
       sort: 2,
-      status: 1,
+      status: 'ACTIVE',
     },
     {
       id: 34,
@@ -588,7 +588,7 @@ async function main() {
       component: 'nested/menu1/menu1-2/menu1-2-1',
       type: 'menu',
       sort: 1,
-      status: 1,
+      status: 'ACTIVE',
     },
     {
       id: 35,
@@ -600,7 +600,7 @@ async function main() {
       component: 'nested/menu1/menu1-2/menu1-2-2',
       type: 'menu',
       sort: 2,
-      status: 1,
+      status: 'ACTIVE',
     },
     {
       id: 36,
@@ -612,7 +612,7 @@ async function main() {
       component: 'nested/menu1/menu1-3',
       type: 'menu',
       sort: 3,
-      status: 1,
+      status: 'ACTIVE',
     },
     {
       id: 37,
@@ -624,7 +624,7 @@ async function main() {
       component: 'nested/menu2',
       type: 'menu',
       sort: 2,
-      status: 1,
+      status: 'ACTIVE',
     },
     {
       id: 101,
@@ -634,7 +634,7 @@ async function main() {
       permission: 'monitor:online:force-logout',
       type: 'button',
       sort: 1,
-      status: 1,
+      status: 'ACTIVE',
     },
     {
       id: 110,
@@ -644,7 +644,7 @@ async function main() {
       permission: 'user:add',
       type: 'button',
       sort: 1,
-      status: 1,
+      status: 'ACTIVE',
     },
     {
       id: 111,
@@ -654,7 +654,7 @@ async function main() {
       permission: 'user:edit',
       type: 'button',
       sort: 2,
-      status: 1,
+      status: 'ACTIVE',
     },
     {
       id: 112,
@@ -664,7 +664,7 @@ async function main() {
       permission: 'user:delete',
       type: 'button',
       sort: 3,
-      status: 1,
+      status: 'ACTIVE',
     },
     {
       id: 120,
@@ -674,7 +674,7 @@ async function main() {
       permission: 'role:add',
       type: 'button',
       sort: 1,
-      status: 1,
+      status: 'ACTIVE',
     },
     {
       id: 121,
@@ -684,7 +684,7 @@ async function main() {
       permission: 'role:edit',
       type: 'button',
       sort: 2,
-      status: 1,
+      status: 'ACTIVE',
     },
     {
       id: 122,
@@ -694,7 +694,7 @@ async function main() {
       permission: 'role:delete',
       type: 'button',
       sort: 3,
-      status: 1,
+      status: 'ACTIVE',
     },
     {
       id: 130,
@@ -704,7 +704,7 @@ async function main() {
       permission: 'menu:add',
       type: 'button',
       sort: 1,
-      status: 1,
+      status: 'ACTIVE',
     },
     {
       id: 131,
@@ -714,7 +714,7 @@ async function main() {
       permission: 'menu:edit',
       type: 'button',
       sort: 2,
-      status: 1,
+      status: 'ACTIVE',
     },
     {
       id: 132,
@@ -724,7 +724,7 @@ async function main() {
       permission: 'menu:delete',
       type: 'button',
       sort: 3,
-      status: 1,
+      status: 'ACTIVE',
     },
     {
       id: 140,
@@ -734,7 +734,7 @@ async function main() {
       permission: 'dept:add',
       type: 'button',
       sort: 1,
-      status: 1,
+      status: 'ACTIVE',
     },
     {
       id: 141,
@@ -744,7 +744,7 @@ async function main() {
       permission: 'dept:edit',
       type: 'button',
       sort: 2,
-      status: 1,
+      status: 'ACTIVE',
     },
     {
       id: 142,
@@ -754,7 +754,7 @@ async function main() {
       permission: 'dept:delete',
       type: 'button',
       sort: 3,
-      status: 1,
+      status: 'ACTIVE',
     },
     {
       id: 150,
@@ -764,7 +764,7 @@ async function main() {
       permission: 'commerce:restaurant:add',
       type: 'button',
       sort: 1,
-      status: 1,
+      status: 'ACTIVE',
     },
     {
       id: 151,
@@ -774,7 +774,7 @@ async function main() {
       permission: 'commerce:restaurant:edit',
       type: 'button',
       sort: 2,
-      status: 1,
+      status: 'ACTIVE',
     },
     {
       id: 152,
@@ -784,7 +784,7 @@ async function main() {
       permission: 'commerce:restaurant:delete',
       type: 'button',
       sort: 3,
-      status: 1,
+      status: 'ACTIVE',
     },
     {
       id: 160,
@@ -794,7 +794,7 @@ async function main() {
       permission: 'commerce:food:add',
       type: 'button',
       sort: 1,
-      status: 1,
+      status: 'ACTIVE',
     },
     {
       id: 161,
@@ -804,7 +804,7 @@ async function main() {
       permission: 'commerce:food:edit',
       type: 'button',
       sort: 2,
-      status: 1,
+      status: 'ACTIVE',
     },
     {
       id: 162,
@@ -814,7 +814,7 @@ async function main() {
       permission: 'commerce:food:delete',
       type: 'button',
       sort: 3,
-      status: 1,
+      status: 'ACTIVE',
     },
     {
       id: 170,
@@ -824,7 +824,7 @@ async function main() {
       permission: 'commerce:order:edit',
       type: 'button',
       sort: 1,
-      status: 1,
+      status: 'ACTIVE',
     },
     {
       id: 180,
@@ -834,7 +834,7 @@ async function main() {
       permission: 'merchant:onboarding:review',
       type: 'button',
       sort: 1,
-      status: 1,
+      status: 'ACTIVE',
     },
     {
       id: 181,
@@ -844,7 +844,7 @@ async function main() {
       permission: 'merchant:onboarding:approve',
       type: 'button',
       sort: 2,
-      status: 1,
+      status: 'ACTIVE',
     },
     {
       id: 182,
@@ -854,7 +854,7 @@ async function main() {
       permission: 'merchant:onboarding:reject',
       type: 'button',
       sort: 3,
-      status: 1,
+      status: 'ACTIVE',
     },
   ]
 

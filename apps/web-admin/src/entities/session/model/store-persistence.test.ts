@@ -37,7 +37,7 @@ describe('useAuthStore persisted session recovery', () => {
       id: 1,
       username: 'admin',
       role: 'admin',
-      status: 1,
+      status: 'ACTIVE',
       permissions: ['*:*:*'],
     })
     vi.doMock('@/shared/api/request', () => ({

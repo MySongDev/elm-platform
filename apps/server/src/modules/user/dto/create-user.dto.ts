@@ -1,5 +1,7 @@
+import type { AccountStatus } from '../../../common/constants/account-status'
 import { ApiProperty } from '@nestjs/swagger'
 import { IsArray, IsEmail, IsIn, IsInt, IsOptional, IsString, MinLength } from 'class-validator'
+import { accountStatuses } from '../../../common/constants/account-status'
 
 export class CreateUserDto {
   @ApiProperty({
@@ -46,13 +48,14 @@ export class CreateUserDto {
   role?: 'admin' | 'user' | 'tenant_admin' | 'shop_operator'
 
   @ApiProperty({
-    description: '状态',
-    example: 1,
+    description: '账号状态',
+    enum: accountStatuses,
+    example: 'ACTIVE',
     required: false,
   })
-  @IsInt()
+  @IsIn(accountStatuses)
   @IsOptional()
-  status?: number
+  status?: AccountStatus
 
   @ApiProperty({
     description: '权限码',
@@ -131,13 +134,14 @@ export class UpdateUserDto {
   role?: 'admin' | 'user' | 'tenant_admin' | 'shop_operator'
 
   @ApiProperty({
-    description: '状态',
-    example: 1,
+    description: '账号状态',
+    enum: accountStatuses,
+    example: 'ACTIVE',
     required: false,
   })
-  @IsInt()
+  @IsIn(accountStatuses)
   @IsOptional()
-  status?: number
+  status?: AccountStatus
 
   @ApiProperty({
     description: '权限码',

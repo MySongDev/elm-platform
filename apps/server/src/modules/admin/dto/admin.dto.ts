@@ -1,3 +1,4 @@
+import type { AccountStatus } from '../../../common/constants/account-status'
 import { ApiPropertyOptional } from '@nestjs/swagger'
 import {
   IsArray,
@@ -7,6 +8,7 @@ import {
   IsString,
   Min,
 } from 'class-validator'
+import { accountStatuses } from '../../../common/constants/account-status'
 
 export class UpsertRoleDto {
   @ApiPropertyOptional({ description: 'ID（更新时传入）' })
@@ -24,10 +26,13 @@ export class UpsertRoleDto {
   @IsOptional()
   code?: string
 
-  @ApiPropertyOptional({ description: '状态：1启用 0停用' })
-  @IsInt()
+  @ApiPropertyOptional({
+    description: '账号状态',
+    enum: accountStatuses,
+  })
+  @IsIn(accountStatuses)
   @IsOptional()
-  status?: number
+  status?: AccountStatus
 
   @ApiPropertyOptional({ description: '备注' })
   @IsString()
@@ -92,10 +97,13 @@ export class UpsertMenuDto {
   @IsOptional()
   sort?: number
 
-  @ApiPropertyOptional({ description: '状态：1启用 0停用' })
-  @IsInt()
+  @ApiPropertyOptional({
+    description: '账号状态',
+    enum: accountStatuses,
+  })
+  @IsIn(accountStatuses)
   @IsOptional()
-  status?: number
+  status?: AccountStatus
 }
 
 export class UpsertDeptDto {
@@ -135,8 +143,11 @@ export class UpsertDeptDto {
   @IsOptional()
   sort?: number
 
-  @ApiPropertyOptional({ description: '状态：1启用 0停用' })
-  @IsInt()
+  @ApiPropertyOptional({
+    description: '账号状态',
+    enum: accountStatuses,
+  })
+  @IsIn(accountStatuses)
   @IsOptional()
-  status?: number
+  status?: AccountStatus
 }

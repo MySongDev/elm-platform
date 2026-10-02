@@ -52,7 +52,7 @@ export class AuthService {
 
     const list = (await (this.prisma as any).menu.findMany({
       where: {
-        status: 1,
+        status: 'ACTIVE',
         type: { in: ['catalog', 'menu'] },
       },
       orderBy: [{ sort: 'asc' }, { id: 'asc' }],
@@ -145,7 +145,7 @@ export class AuthService {
       throw new UnauthorizedException('用户名或密码错误')
     }
 
-    if (user.status !== 1) {
+    if (user.status !== 'ACTIVE') {
       await this.recordLoginLog(user.id, ip, userAgent, 0, '账号已被禁用')
       throw new UnauthorizedException('账号已被禁用')
     }
@@ -320,7 +320,7 @@ export class AuthService {
         },
       })
 
-      if (!role || role.status !== 1) {
+      if (!role || role.status !== 'ACTIVE') {
         return []
       }
 

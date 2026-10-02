@@ -1,6 +1,8 @@
 import type { ConfigFieldOption, Translate } from '@/shared/config-crud/model/form'
 import type { ConfigTableColumnTag } from '@/shared/config-crud/model/table'
 
+export type AccountStatus = 'ACTIVE' | 'DISABLED'
+
 interface EnabledStatusText {
   normal?: string
   disabled?: string
@@ -25,25 +27,22 @@ export function createEnabledStatusOptions(text?: EnabledStatusText): ConfigFiel
   return [
     {
       label: labels.normal,
-      value: 1,
+      value: 'ACTIVE',
     },
     {
       label: labels.disabled,
-      value: 0,
+      value: 'DISABLED',
     },
   ]
 }
 
 export function createEnabledStatusSearchOptions(text?: EnabledStatusText): ConfigFieldOption[] {
-  return createEnabledStatusOptions(text).map(item => ({
-    ...item,
-    value: String(item.value),
-  }))
+  return createEnabledStatusOptions(text)
 }
 
-export function getEnabledStatusTag(status: number, text?: EnabledStatusText): ConfigTableColumnTag {
+export function getEnabledStatusTag(status: AccountStatus, text?: EnabledStatusText): ConfigTableColumnTag {
   const labels = resolveStatusText(text)
-  return status === 1
+  return status === 'ACTIVE'
     ? {
         label: labels.normal,
         type: 'success',

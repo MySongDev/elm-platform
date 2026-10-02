@@ -19,7 +19,7 @@ const menus: MenuItem[] = [
     permission: null,
     type: 'catalog',
     sort: 1,
-    status: 1,
+    status: 'ACTIVE',
     children: [
       {
         id: 2,
@@ -31,7 +31,7 @@ const menus: MenuItem[] = [
         permission: 'user:view',
         type: 'menu',
         sort: 1,
-        status: 1,
+        status: 'ACTIVE',
       },
       {
         id: 6,
@@ -43,7 +43,7 @@ const menus: MenuItem[] = [
         permission: null,
         type: 'menu',
         sort: 3,
-        status: 1,
+        status: 'ACTIVE',
       },
       {
         id: 3,
@@ -55,7 +55,7 @@ const menus: MenuItem[] = [
         permission: 'user:add',
         type: 'button',
         sort: 2,
-        status: 1,
+        status: 'ACTIVE',
       },
     ],
   },
@@ -69,7 +69,7 @@ const menus: MenuItem[] = [
     permission: null,
     type: 'catalog',
     sort: 2,
-    status: 0,
+    status: 'DISABLED',
     children: [
       {
         id: 5,
@@ -81,7 +81,7 @@ const menus: MenuItem[] = [
         permission: 'log:login:view',
         type: 'menu',
         sort: 1,
-        status: 1,
+        status: 'ACTIVE',
       },
     ],
   },

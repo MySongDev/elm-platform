@@ -1,3 +1,4 @@
+import type { AccountStatus } from '../../common/constants/account-status'
 import type { TenantContext } from '../tenant/tenant.types'
 import type { CreateUserDto, UpdateUserDto } from './dto/create-user.dto'
 import { BadRequestException, ConflictException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common'
@@ -12,7 +13,7 @@ export interface UserWithoutPassword {
   email: string | null
   phone: string | null
   avatar: string | null
-  status: number
+  status: AccountStatus
   role: string
   permissions: string[]
   tenantId: number | null
@@ -61,7 +62,7 @@ export class UserService {
     // 清除列表缓存
     await this.redis.del('users:all')
 
-    return user
+    return user as UserWithoutPassword
   }
 
   /**
@@ -82,7 +83,7 @@ export class UserService {
     // 存入缓存，5 分钟过期
     await this.redis.set('users:all', users, 300)
 
-    return users
+    return users as UserWithoutPassword[]
   }
 
   /**
@@ -107,7 +108,7 @@ export class UserService {
     // 存入缓存，10 分钟过期
     await this.redis.set(`users:${id}`, user, 600)
 
-    return user
+    return user as UserWithoutPassword
   }
 
   /**
@@ -128,7 +129,7 @@ export class UserService {
 
       await this.redis.del(`users:${id}`)
       await this.redis.del('users:all')
-      return user
+      return user as UserWithoutPassword
     }
     catch (error) {
       if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') {

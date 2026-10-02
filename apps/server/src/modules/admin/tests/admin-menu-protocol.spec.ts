@@ -1,3 +1,4 @@
+import type { AccountStatus } from '@/common/constants/account-status'
 import * as fs from 'node:fs'
 import * as path from 'node:path'
 import * as ts from 'typescript'
@@ -14,7 +15,7 @@ interface MenuSeedRecord {
   permission?: string | null
   type: 'catalog' | 'menu' | 'button'
   sort: number
-  status: number
+  status: AccountStatus
 }
 
 function readSeedSource() {
@@ -105,7 +106,7 @@ function normalizeMenu(menu: MenuSeedRecord) {
 
 function menuPages(menus: MenuSeedRecord[]) {
   return menus
-    .filter(menu => menu.type === 'menu' && menu.status === 1)
+    .filter(menu => menu.type === 'menu' && menu.status === 'ACTIVE')
     .map(normalizeMenu)
 }
 

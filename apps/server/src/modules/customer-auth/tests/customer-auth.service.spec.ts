@@ -15,7 +15,7 @@ describe('customerAuthService', () => {
         create: jest.fn().mockImplementation(({ data }) => {
           customer = {
             id: 1,
-            status: 1,
+            status: 'ACTIVE',
             createdAt: new Date(),
             updatedAt: new Date(),
             ...data,
@@ -62,7 +62,7 @@ describe('customerAuthService', () => {
       id: 1,
       phone: '13800138001',
       password: bcrypt.hashSync('password123', 10),
-      status: 1,
+      status: 'ACTIVE',
     }
     const { service } = createService({ existingUser })
 
@@ -80,7 +80,7 @@ describe('customerAuthService', () => {
         id: 1,
         phone: '13800138001',
         password: null,
-        status: 1,
+        status: 'ACTIVE',
       },
     })
 
@@ -115,7 +115,7 @@ describe('customerAuthService', () => {
     const existingUser = {
       id: 1,
       phone: '13800138001',
-      status: 1,
+      status: 'ACTIVE',
     }
     const { service, tokens } = createService({ existingUser })
 
@@ -131,7 +131,7 @@ describe('customerAuthService', () => {
       existingUser: {
         id: 1,
         phone: '13800138001',
-        status: 0,
+        status: 'DISABLED',
       },
     })
 

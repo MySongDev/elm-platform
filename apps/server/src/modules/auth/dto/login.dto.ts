@@ -1,5 +1,7 @@
+import type { AccountStatus } from '../../../common/constants/account-status'
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger'
 import { IsBoolean, IsOptional, IsString, MinLength, ValidateIf } from 'class-validator'
+import { accountStatuses } from '../../../common/constants/account-status'
 
 export class LoginDto {
   @ApiProperty({
@@ -78,8 +80,11 @@ export class LoginUserDto {
   })
   avatar: string | null
 
-  @ApiProperty({ example: 1 })
-  status: number
+  @ApiProperty({
+    enum: accountStatuses,
+    example: 'ACTIVE',
+  })
+  status: AccountStatus
 
   @ApiProperty({
     enum: ['admin', 'user'],

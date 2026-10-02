@@ -25,7 +25,7 @@ const defaultForm: UserFormState = {
   email: '',
   phone: '',
   role: 'user',
-  status: 1,
+  status: 'ACTIVE',
   permissions: [],
   tenantId: null,
   dataScope: 'ALL',

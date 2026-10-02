@@ -7038,73 +7038,36 @@
         ]
       }
     },
-    "/api/v2/pois": {
+    "/api/geo/reverse-geocode": {
       "get": {
-        "operationId": "ElmLocationController_getPoiByQuery",
-        "summary": "根据经纬度详细定位（query）",
+        "operationId": "ElmLocationController_getPoi",
+        "summary": "逆地理编码：坐标反查地址与城市",
         "parameters": [
           {
             "name": "geohash",
-            "required": true,
+            "required": false,
             "in": "query",
             "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "tags": [
-          "Elm 兼容接口 - 城市定位"
-        ]
-      }
-    },
-    "/api/v2/pois/{geohash}": {
-      "get": {
-        "operationId": "ElmLocationController_getPoiByParam",
-        "summary": "根据经纬度详细定位（param）",
-        "parameters": [
-          {
-            "name": "geohash",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "tags": [
-          "Elm 兼容接口 - 城市定位"
-        ]
-      }
-    },
-    "/api/restapi/bgs/poi/reverse_geo_coding": {
-      "get": {
-        "operationId": "ElmLocationController_reverseGeoCoding",
-        "summary": "逆地理编码兼容接口",
-        "parameters": [
-          {
-            "name": "latitude",
-            "required": true,
-            "in": "query",
-            "schema": {
+              "example": "31.22967,121.4762",
               "type": "string"
             }
           },
           {
-            "name": "longitude",
-            "required": true,
+            "name": "latitude",
+            "required": false,
             "in": "query",
             "schema": {
-              "type": "string"
+              "example": 31.22967,
+              "type": "number"
+            }
+          },
+          {
+            "name": "longitude",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "example": 121.4762,
+              "type": "number"
             }
           }
         ],
@@ -7532,6 +7495,21 @@
         },
         "tags": [
           "Elm 兼容接口 - 订单"
+        ]
+      }
+    },
+    "/api/img/*": {
+      "get": {
+        "operationId": "ElmImageProxyController_proxyImage",
+        "summary": "代理上游图片（长期契约，小程序端唯一图片来源）",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Elm 兼容接口 - 图片代理"
         ]
       }
     },
@@ -8637,6 +8615,113 @@
             "bearer": []
           }
         ]
+      },
+      "post": {
+        "operationId": "OrderController_createOrder",
+        "summary": "创建订单（不含支付）",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateOrderDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "请求成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaymentOrderSummaryResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "请求参数错误",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiErrorResponseDto"
+                    },
+                    {
+                      "properties": {
+                        "code": {
+                          "example": 400
+                        },
+                        "message": {
+                          "example": "请求参数错误"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "未认证或认证已失效",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiErrorResponseDto"
+                    },
+                    {
+                      "properties": {
+                        "code": {
+                          "example": 401
+                        },
+                        "message": {
+                          "example": "未认证或认证已失效"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "服务器内部错误",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiErrorResponseDto"
+                    },
+                    {
+                      "properties": {
+                        "code": {
+                          "example": 500
+                        },
+                        "message": {
+                          "example": "服务器内部错误"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "订单"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
       }
     },
     "/api/admin/merchant-applications": {
@@ -9480,9 +9565,13 @@
             "nullable": true
           },
           "status": {
-            "type": "number",
-            "description": "状态：1 启用 0 停用",
-            "example": 1
+            "type": "string",
+            "description": "账号状态",
+            "enum": [
+              "ACTIVE",
+              "DISABLED"
+            ],
+            "example": "ACTIVE"
           },
           "role": {
             "type": "string",
@@ -9576,9 +9665,13 @@
             "example": "user"
           },
           "status": {
-            "type": "number",
-            "description": "状态",
-            "example": 1
+            "type": "string",
+            "description": "账号状态",
+            "enum": [
+              "ACTIVE",
+              "DISABLED"
+            ],
+            "example": "ACTIVE"
           },
           "permissions": {
             "description": "权限码",
@@ -9640,9 +9733,13 @@
             "example": "user"
           },
           "status": {
-            "type": "number",
-            "description": "状态",
-            "example": 1
+            "type": "string",
+            "description": "账号状态",
+            "enum": [
+              "ACTIVE",
+              "DISABLED"
+            ],
+            "example": "ACTIVE"
           },
           "permissions": {
             "description": "权限码",
@@ -9730,8 +9827,12 @@
             "nullable": true
           },
           "status": {
-            "type": "number",
-            "example": 1
+            "type": "string",
+            "enum": [
+              "ACTIVE",
+              "DISABLED"
+            ],
+            "example": "ACTIVE"
           },
           "role": {
             "type": "string",
@@ -9895,12 +9996,17 @@
           "avatar": {
             "type": "string",
             "description": "头像",
+            "example": null,
             "nullable": true
           },
           "status": {
-            "type": "number",
-            "description": "状态：1 启用 0 停用",
-            "example": 1
+            "type": "string",
+            "description": "账号状态",
+            "enum": [
+              "ACTIVE",
+              "DISABLED"
+            ],
+            "example": "ACTIVE"
           },
           "role": {
             "type": "string",
@@ -9927,10 +10033,8 @@
             "example": "ALL"
           },
           "boundShopIds": {
-            "description": "绑定的店铺ID列表",
-            "example": [
-              "shop-1"
-            ],
+            "description": "绑定的店铺ID列表（商家 id 的字符串形式，如 \"12345\"）；仅在 dataScope=SHOP 时参与数据过滤",
+            "example": [],
             "type": "array",
             "items": {
               "type": "string"
@@ -10026,9 +10130,13 @@
             "example": 1
           },
           "status": {
-            "type": "number",
-            "description": "状态：1 启用 0 停用",
-            "example": 1
+            "type": "string",
+            "description": "账号状态",
+            "enum": [
+              "ACTIVE",
+              "DISABLED"
+            ],
+            "example": "ACTIVE"
           },
           "children": {
             "description": "子菜单列表",
@@ -10079,12 +10187,17 @@
           "avatar": {
             "type": "string",
             "description": "头像",
+            "example": null,
             "nullable": true
           },
           "status": {
-            "type": "number",
-            "description": "状态：1 启用 0 停用",
-            "example": 1
+            "type": "string",
+            "description": "账号状态",
+            "enum": [
+              "ACTIVE",
+              "DISABLED"
+            ],
+            "example": "ACTIVE"
           },
           "role": {
             "type": "string",
@@ -10751,25 +10864,10 @@
             "description": "用户ID",
             "example": 1
           },
-          "user_id": {
-            "type": "number",
-            "description": "用户ID（别名）",
-            "example": 1
-          },
           "phone": {
             "type": "string",
             "description": "手机号",
             "example": "13800138000"
-          },
-          "mobile": {
-            "type": "string",
-            "description": "手机号（别名）",
-            "example": "13800138000"
-          },
-          "username": {
-            "type": "string",
-            "description": "用户名",
-            "example": "john_doe"
           },
           "nickname": {
             "type": "string",
@@ -10780,20 +10878,22 @@
           "avatar": {
             "type": "string",
             "description": "头像",
-            "example": "https://example.com/avatar.jpg"
+            "example": "https://example.com/avatar.jpg",
+            "nullable": true
           },
           "status": {
-            "type": "number",
-            "description": "状态：1 启用 0 停用",
-            "example": 1
+            "type": "string",
+            "description": "账号状态",
+            "enum": [
+              "ACTIVE",
+              "DISABLED"
+            ],
+            "example": "ACTIVE"
           }
         },
         "required": [
           "id",
-          "user_id",
           "phone",
-          "mobile",
-          "username",
           "nickname",
           "avatar",
           "status"
@@ -11411,9 +11511,13 @@
             "example": "admin"
           },
           "status": {
-            "type": "number",
-            "description": "状态：1 启用 0 停用",
-            "example": 1
+            "type": "string",
+            "description": "账号状态",
+            "enum": [
+              "ACTIVE",
+              "DISABLED"
+            ],
+            "example": "ACTIVE"
           },
           "remark": {
             "type": "string",
@@ -11462,8 +11566,12 @@
             "description": "角色编码"
           },
           "status": {
-            "type": "number",
-            "description": "状态：1启用 0停用"
+            "type": "string",
+            "description": "账号状态",
+            "enum": [
+              "ACTIVE",
+              "DISABLED"
+            ]
           },
           "remark": {
             "type": "string",
@@ -11538,9 +11646,13 @@
             "example": 1
           },
           "status": {
-            "type": "number",
-            "description": "状态：1 启用 0 停用",
-            "example": 1
+            "type": "string",
+            "description": "账号状态",
+            "enum": [
+              "ACTIVE",
+              "DISABLED"
+            ],
+            "example": "ACTIVE"
           },
           "children": {
             "description": "子菜单列表",
@@ -11608,8 +11720,12 @@
             "description": "排序"
           },
           "status": {
-            "type": "number",
-            "description": "状态：1启用 0停用"
+            "type": "string",
+            "description": "账号状态",
+            "enum": [
+              "ACTIVE",
+              "DISABLED"
+            ]
           }
         }
       },
@@ -11652,9 +11768,13 @@
             "example": 1
           },
           "status": {
-            "type": "number",
-            "description": "状态：1 启用 0 停用",
-            "example": 1
+            "type": "string",
+            "description": "账号状态",
+            "enum": [
+              "ACTIVE",
+              "DISABLED"
+            ],
+            "example": "ACTIVE"
           },
           "children": {
             "description": "子部门列表",
@@ -11707,8 +11827,12 @@
             "description": "排序"
           },
           "status": {
-            "type": "number",
-            "description": "状态：1启用 0停用"
+            "type": "string",
+            "description": "账号状态",
+            "enum": [
+              "ACTIVE",
+              "DISABLED"
+            ]
           }
         }
       },
@@ -12345,9 +12469,90 @@
           "payableAmount"
         ]
       },
+      "PaymentCartItemDto": {
+        "type": "object",
+        "properties": {
+          "shopId": {
+            "type": "string",
+            "description": "所属店铺 ID（前端购物车项可能自带，建单时以顶层 shopId 为准）",
+            "example": "1"
+          },
+          "shopName": {
+            "type": "string",
+            "description": "所属店铺名称",
+            "example": "鲜花蛋糕旗舰店"
+          },
+          "itemId": {
+            "type": "string",
+            "description": "商品项 ID（与 id 二选一，归一化后统一写入 itemId）",
+            "example": "1001"
+          },
+          "id": {
+            "type": "string",
+            "description": "商品项 ID 的兼容字段名（等价于 itemId）",
+            "example": "1001"
+          },
+          "skuId": {
+            "type": "string",
+            "description": "SKU ID，缺省时回退为 itemId/id",
+            "example": "1001"
+          },
+          "title": {
+            "type": "string",
+            "description": "商品标题（与 name 二选一，归一化后统一写入 title）",
+            "example": "经典香辣鸡腿堡套餐"
+          },
+          "name": {
+            "type": "string",
+            "description": "商品标题的兼容字段名（等价于 title）",
+            "example": "经典香辣鸡腿堡套餐"
+          },
+          "qty": {
+            "type": "number",
+            "description": "数量，必须为正整数；qty <= 0 的项会在归一化时被丢弃",
+            "example": 2
+          },
+          "unitPrice": {
+            "type": "number",
+            "description": "单价，必须 > 0；unitPrice <= 0 的项会在归一化时被丢弃",
+            "example": 19.9
+          }
+        },
+        "required": [
+          "qty",
+          "unitPrice"
+        ]
+      },
       "CreateAlipayWapPaymentDto": {
         "type": "object",
-        "properties": {}
+        "properties": {
+          "shopId": {
+            "type": "string",
+            "description": "店铺 ID，用于解析订单归属的租户",
+            "example": "1"
+          },
+          "shopName": {
+            "type": "string",
+            "description": "店铺名称，缺省时落库为「饿了么订单」",
+            "example": "鲜花蛋糕旗舰店"
+          },
+          "deliveryFee": {
+            "type": "object",
+            "description": "配送费，计入应付金额",
+            "example": 5
+          },
+          "cartItems": {
+            "description": "购物车商品列表，至少一项且每项 qty > 0、unitPrice > 0",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PaymentCartItemDto"
+            }
+          }
+        },
+        "required": [
+          "deliveryFee",
+          "cartItems"
+        ]
       },
       "ResumeAlipayWapPaymentDto": {
         "type": "object",
@@ -12631,6 +12836,37 @@
         },
         "required": [
           "orders"
+        ]
+      },
+      "CreateOrderDto": {
+        "type": "object",
+        "properties": {
+          "shopId": {
+            "type": "string",
+            "description": "店铺 ID，用于解析订单归属的租户",
+            "example": "1"
+          },
+          "shopName": {
+            "type": "string",
+            "description": "店铺名称，缺省时落库为「饿了么订单」",
+            "example": "鲜花蛋糕旗舰店"
+          },
+          "deliveryFee": {
+            "type": "object",
+            "description": "配送费，计入应付金额",
+            "example": 5
+          },
+          "cartItems": {
+            "description": "购物车商品列表，至少一项且每项 qty > 0、unitPrice > 0",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PaymentCartItemDto"
+            }
+          }
+        },
+        "required": [
+          "deliveryFee",
+          "cartItems"
         ]
       },
       "MerchantMaterialResponseDto": {

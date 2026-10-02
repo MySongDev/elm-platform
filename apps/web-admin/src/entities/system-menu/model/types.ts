@@ -1,3 +1,5 @@
+import type { AccountStatus } from '@/shared/lib/admin-display'
+
 export interface MenuItem {
   id: number
   parentId: number | null
@@ -8,6 +10,6 @@ export interface MenuItem {
   permission: string | null
   type: 'catalog' | 'menu' | 'button'
   sort: number
-  status: number
+  status: AccountStatus
   children?: MenuItem[]
 }

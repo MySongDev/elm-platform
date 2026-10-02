@@ -1,4 +1,6 @@
+import type { AccountStatus } from '../../../common/constants/account-status'
 import { ApiProperty } from '@nestjs/swagger'
+import { accountStatuses } from '../../../common/constants/account-status'
 
 export class UserResponseDto {
   @ApiProperty({
@@ -37,10 +39,11 @@ export class UserResponseDto {
   avatar: string | null
 
   @ApiProperty({
-    description: '状态：1 启用 0 停用',
-    example: 1,
+    description: '账号状态',
+    enum: accountStatuses,
+    example: 'ACTIVE',
   })
-  status: number
+  status: AccountStatus
 
   @ApiProperty({
     description: '角色',

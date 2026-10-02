@@ -20,7 +20,7 @@ describe('admin login API contract', () => {
       email: 'admin@example.com',
       phone: '13800138000',
       avatar: null,
-      status: 1,
+      status: 'ACTIVE',
       role: 'admin',
       permissions: ['user:own'],
       tenant: {
@@ -40,7 +40,7 @@ describe('admin login API contract', () => {
       role: {
         findUnique: jest.fn().mockResolvedValue({
           permissions: ['dashboard:view'],
-          status: 1,
+          status: 'ACTIVE',
         }),
       },
       loginLog: {
@@ -107,7 +107,7 @@ describe('admin login API contract', () => {
           email: 'admin@example.com',
           phone: '13800138000',
           avatar: null,
-          status: 1,
+          status: 'ACTIVE',
           role: 'admin',
           permissions: ['dashboard:view'],
           tenant: null,
@@ -172,7 +172,7 @@ describe('admin login API contract', () => {
         email: 'admin@example.com',
         phone: '13800138000',
         avatar: null,
-        status: 1,
+        status: 'ACTIVE',
         role: 'admin',
         permissions: ['dashboard:view', 'user:own'],
         tenant: {

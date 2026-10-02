@@ -22,7 +22,7 @@ describe('authService admin login', () => {
     email: 'admin@example.com',
     phone: '13800138000',
     avatar: null,
-    status: 1,
+    status: 'ACTIVE',
     role: 'admin',
     permissions: ['*:*:*'],
     tenant: null,
@@ -156,7 +156,7 @@ describe('authService admin login', () => {
   it('does not emit security-login notification when account is disabled', async () => {
     const disabledAdmin = {
       ...admin,
-      status: 0,
+      status: 'DISABLED',
     }
     const { service, notificationService } = createService(disabledAdmin)
 
@@ -187,7 +187,7 @@ describe('authService menu permissions', () => {
       role: {
         findUnique: jest.fn().mockResolvedValue({
           permissions: ['permission:page:view'],
-          status: 1,
+          status: 'ACTIVE',
         }),
       },
       menu: {
@@ -202,7 +202,7 @@ describe('authService menu permissions', () => {
             permission: null,
             type: 'catalog',
             sort: 1,
-            status: 1,
+            status: 'ACTIVE',
           },
           {
             id: 2,
@@ -214,7 +214,7 @@ describe('authService menu permissions', () => {
             permission: 'permission:page:view',
             type: 'menu',
             sort: 1,
-            status: 1,
+            status: 'ACTIVE',
           },
           {
             id: 3,
@@ -226,7 +226,7 @@ describe('authService menu permissions', () => {
             permission: 'permission:button:view',
             type: 'menu',
             sort: 2,
-            status: 1,
+            status: 'ACTIVE',
           },
         ]),
       },
@@ -272,7 +272,7 @@ describe('authService account center', () => {
       email: null,
       phone: null,
       avatar: null,
-      status: 1,
+      status: 'ACTIVE',
       role: 'admin',
       permissions: ['admin:profile:update'],
       createdAt: new Date('2026-05-27T00:00:00.000Z'),
@@ -285,7 +285,7 @@ describe('authService account center', () => {
       role: {
         findUnique: jest.fn().mockResolvedValue({
           permissions: ['admin:dashboard:view'],
-          status: 1,
+          status: 'ACTIVE',
         }),
       },
       loginLog: {

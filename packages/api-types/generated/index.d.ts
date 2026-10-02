@@ -735,49 +735,15 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/v2/pois": {
+    "/api/geo/reverse-geocode": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /** 根据经纬度详细定位（query） */
-        get: operations["ElmLocationController_getPoiByQuery"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v2/pois/{geohash}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** 根据经纬度详细定位（param） */
-        get: operations["ElmLocationController_getPoiByParam"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/restapi/bgs/poi/reverse_geo_coding": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** 逆地理编码兼容接口 */
-        get: operations["ElmLocationController_reverseGeoCoding"];
+        /** 逆地理编码：坐标反查地址与城市 */
+        get: operations["ElmLocationController_getPoi"];
         put?: never;
         post?: never;
         delete?: never;
@@ -1177,6 +1143,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/img/*": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 代理上游图片（长期契约，小程序端唯一图片来源） */
+        get: operations["ElmImageProxyController_proxyImage"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/admin/commerce/restaurants": {
         parameters: {
             query?: never;
@@ -1480,7 +1463,8 @@ export interface paths {
         /** 用户支付订单列表 */
         get: operations["PaymentController_listOrders"];
         put?: never;
-        post?: never;
+        /** 创建订单（不含支付） */
+        post: operations["OrderController_createOrder"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1664,10 +1648,11 @@ export interface components {
             /** @description 头像 */
             avatar: string | null;
             /**
-             * @description 状态：1 启用 0 停用
-             * @example 1
+             * @description 账号状态
+             * @example ACTIVE
+             * @enum {string}
              */
-            status: number;
+            status: "ACTIVE" | "DISABLED";
             /**
              * @description 角色
              * @example admin
@@ -1735,10 +1720,11 @@ export interface components {
              */
             role?: string;
             /**
-             * @description 状态
-             * @example 1
+             * @description 账号状态
+             * @example ACTIVE
+             * @enum {string}
              */
-            status?: number;
+            status?: "ACTIVE" | "DISABLED";
             /**
              * @description 权限码
              * @example [
@@ -1786,10 +1772,11 @@ export interface components {
              */
             role?: string;
             /**
-             * @description 状态
-             * @example 1
+             * @description 账号状态
+             * @example ACTIVE
+             * @enum {string}
              */
-            status?: number;
+            status?: "ACTIVE" | "DISABLED";
             /**
              * @description 权限码
              * @example [
@@ -1836,8 +1823,11 @@ export interface components {
             phone: string | null;
             /** @example null */
             avatar: string | null;
-            /** @example 1 */
-            status: number;
+            /**
+             * @example ACTIVE
+             * @enum {string}
+             */
+            status: "ACTIVE" | "DISABLED";
             /**
              * @example admin
              * @enum {string}
@@ -1931,13 +1921,17 @@ export interface components {
              * @example 13800138000
              */
             phone: string | null;
-            /** @description 头像 */
+            /**
+             * @description 头像
+             * @example null
+             */
             avatar: string | null;
             /**
-             * @description 状态：1 启用 0 停用
-             * @example 1
+             * @description 账号状态
+             * @example ACTIVE
+             * @enum {string}
              */
-            status: number;
+            status: "ACTIVE" | "DISABLED";
             /**
              * @description 角色
              * @example admin
@@ -1957,10 +1951,8 @@ export interface components {
              */
             dataScope: string;
             /**
-             * @description 绑定的店铺ID列表
-             * @example [
-             *       "shop-1"
-             *     ]
+             * @description 绑定的店铺ID列表（商家 id 的字符串形式，如 "12345"）；仅在 dataScope=SHOP 时参与数据过滤
+             * @example []
              */
             boundShopIds: string[];
             /** @description 所属租户 */
@@ -2012,10 +2004,11 @@ export interface components {
              */
             sort: number;
             /**
-             * @description 状态：1 启用 0 停用
-             * @example 1
+             * @description 账号状态
+             * @example ACTIVE
+             * @enum {string}
              */
-            status: number;
+            status: "ACTIVE" | "DISABLED";
             /** @description 子菜单列表 */
             children?: components["schemas"]["AdminMenuResponseDto"][];
         };
@@ -2040,13 +2033,17 @@ export interface components {
              * @example 13800138000
              */
             phone: string | null;
-            /** @description 头像 */
+            /**
+             * @description 头像
+             * @example null
+             */
             avatar: string | null;
             /**
-             * @description 状态：1 启用 0 停用
-             * @example 1
+             * @description 账号状态
+             * @example ACTIVE
+             * @enum {string}
              */
-            status: number;
+            status: "ACTIVE" | "DISABLED";
             /**
              * @description 角色
              * @example admin
@@ -2485,25 +2482,10 @@ export interface components {
              */
             id: number;
             /**
-             * @description 用户ID（别名）
-             * @example 1
-             */
-            user_id: number;
-            /**
              * @description 手机号
              * @example 13800138000
              */
             phone: string;
-            /**
-             * @description 手机号（别名）
-             * @example 13800138000
-             */
-            mobile: string;
-            /**
-             * @description 用户名
-             * @example john_doe
-             */
-            username: string;
             /**
              * @description 昵称
              * @example 小明
@@ -2513,12 +2495,13 @@ export interface components {
              * @description 头像
              * @example https://example.com/avatar.jpg
              */
-            avatar: string;
+            avatar: string | null;
             /**
-             * @description 状态：1 启用 0 停用
-             * @example 1
+             * @description 账号状态
+             * @example ACTIVE
+             * @enum {string}
              */
-            status: number;
+            status: "ACTIVE" | "DISABLED";
         };
         CustomerTokenResponseDto: {
             /**
@@ -2939,10 +2922,11 @@ export interface components {
              */
             code: string;
             /**
-             * @description 状态：1 启用 0 停用
-             * @example 1
+             * @description 账号状态
+             * @example ACTIVE
+             * @enum {string}
              */
-            status: number;
+            status: "ACTIVE" | "DISABLED";
             /** @description 备注 */
             remark: string | null;
             /**
@@ -2965,8 +2949,11 @@ export interface components {
             name?: string;
             /** @description 角色编码 */
             code?: string;
-            /** @description 状态：1启用 0停用 */
-            status?: number;
+            /**
+             * @description 账号状态
+             * @enum {string}
+             */
+            status?: "ACTIVE" | "DISABLED";
             /** @description 备注 */
             remark?: string;
             /** @description 权限码列表 */
@@ -3013,10 +3000,11 @@ export interface components {
              */
             sort: number;
             /**
-             * @description 状态：1 启用 0 停用
-             * @example 1
+             * @description 账号状态
+             * @example ACTIVE
+             * @enum {string}
              */
-            status: number;
+            status: "ACTIVE" | "DISABLED";
             /** @description 子菜单列表 */
             children?: components["schemas"]["MenuResponseDto"][];
         };
@@ -3041,8 +3029,11 @@ export interface components {
             type?: string;
             /** @description 排序 */
             sort?: number;
-            /** @description 状态：1启用 0停用 */
-            status?: number;
+            /**
+             * @description 账号状态
+             * @enum {string}
+             */
+            status?: "ACTIVE" | "DISABLED";
         };
         DeptResponseDto: {
             /**
@@ -3069,10 +3060,11 @@ export interface components {
              */
             sort: number;
             /**
-             * @description 状态：1 启用 0 停用
-             * @example 1
+             * @description 账号状态
+             * @example ACTIVE
+             * @enum {string}
              */
-            status: number;
+            status: "ACTIVE" | "DISABLED";
             /** @description 子部门列表 */
             children?: components["schemas"]["DeptResponseDto"][];
         };
@@ -3091,8 +3083,11 @@ export interface components {
             email?: string;
             /** @description 排序 */
             sort?: number;
-            /** @description 状态：1启用 0停用 */
-            status?: number;
+            /**
+             * @description 账号状态
+             * @enum {string}
+             */
+            status?: "ACTIVE" | "DISABLED";
         };
         AdminOrderSummaryDto: {
             /** @example 1 */
@@ -3298,7 +3293,72 @@ export interface components {
              */
             payableAmount: number;
         };
-        CreateAlipayWapPaymentDto: Record<string, never>;
+        PaymentCartItemDto: {
+            /**
+             * @description 所属店铺 ID（前端购物车项可能自带，建单时以顶层 shopId 为准）
+             * @example 1
+             */
+            shopId?: string;
+            /**
+             * @description 所属店铺名称
+             * @example 鲜花蛋糕旗舰店
+             */
+            shopName?: string;
+            /**
+             * @description 商品项 ID（与 id 二选一，归一化后统一写入 itemId）
+             * @example 1001
+             */
+            itemId?: string;
+            /**
+             * @description 商品项 ID 的兼容字段名（等价于 itemId）
+             * @example 1001
+             */
+            id?: string;
+            /**
+             * @description SKU ID，缺省时回退为 itemId/id
+             * @example 1001
+             */
+            skuId?: string;
+            /**
+             * @description 商品标题（与 name 二选一，归一化后统一写入 title）
+             * @example 经典香辣鸡腿堡套餐
+             */
+            title?: string;
+            /**
+             * @description 商品标题的兼容字段名（等价于 title）
+             * @example 经典香辣鸡腿堡套餐
+             */
+            name?: string;
+            /**
+             * @description 数量，必须为正整数；qty <= 0 的项会在归一化时被丢弃
+             * @example 2
+             */
+            qty: number;
+            /**
+             * @description 单价，必须 > 0；unitPrice <= 0 的项会在归一化时被丢弃
+             * @example 19.9
+             */
+            unitPrice: number;
+        };
+        CreateAlipayWapPaymentDto: {
+            /**
+             * @description 店铺 ID，用于解析订单归属的租户
+             * @example 1
+             */
+            shopId?: string;
+            /**
+             * @description 店铺名称，缺省时落库为「饿了么订单」
+             * @example 鲜花蛋糕旗舰店
+             */
+            shopName?: string;
+            /**
+             * @description 配送费，计入应付金额
+             * @example 5
+             */
+            deliveryFee: Record<string, never>;
+            /** @description 购物车商品列表，至少一项且每项 qty > 0、unitPrice > 0 */
+            cartItems: components["schemas"]["PaymentCartItemDto"][];
+        };
         ResumeAlipayWapPaymentDto: {
             /**
              * @description Payment order number to resume.
@@ -3478,6 +3538,25 @@ export interface components {
         PaymentOrdersResponseDto: {
             /** @description 订单列表 */
             orders: components["schemas"]["PaymentOrderSummaryResponseDto"][];
+        };
+        CreateOrderDto: {
+            /**
+             * @description 店铺 ID，用于解析订单归属的租户
+             * @example 1
+             */
+            shopId?: string;
+            /**
+             * @description 店铺名称，缺省时落库为「饿了么订单」
+             * @example 鲜花蛋糕旗舰店
+             */
+            shopName?: string;
+            /**
+             * @description 配送费，计入应付金额
+             * @example 5
+             */
+            deliveryFee: Record<string, never>;
+            /** @description 购物车商品列表，至少一项且每项 qty > 0、unitPrice > 0 */
+            cartItems: components["schemas"]["PaymentCartItemDto"][];
         };
         MerchantMaterialResponseDto: {
             /**
@@ -7530,49 +7609,12 @@ export interface operations {
             };
         };
     };
-    ElmLocationController_getPoiByQuery: {
+    ElmLocationController_getPoi: {
         parameters: {
-            query: {
-                geohash: string;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    ElmLocationController_getPoiByParam: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                geohash: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    ElmLocationController_reverseGeoCoding: {
-        parameters: {
-            query: {
-                latitude: string;
-                longitude: string;
+            query?: {
+                geohash?: string;
+                latitude?: number;
+                longitude?: number;
             };
             header?: never;
             path?: never;
@@ -7979,6 +8021,23 @@ export interface operations {
         };
     };
     ElmOrderPublicController_getOrderCount: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    ElmImageProxyController_proxyImage: {
         parameters: {
             query?: never;
             header?: never;
@@ -8663,6 +8722,72 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["PaymentOrdersResponseDto"];
+                };
+            };
+            /** @description 未认证或认证已失效 */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 401 */
+                        code?: unknown;
+                        /** @example 未认证或认证已失效 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 服务器内部错误 */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 500 */
+                        code?: unknown;
+                        /** @example 服务器内部错误 */
+                        message?: unknown;
+                    };
+                };
+            };
+        };
+    };
+    OrderController_createOrder: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateOrderDto"];
+            };
+        };
+        responses: {
+            /** @description 请求成功 */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaymentOrderSummaryResponseDto"];
+                };
+            };
+            /** @description 请求参数错误 */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 400 */
+                        code?: unknown;
+                        /** @example 请求参数错误 */
+                        message?: unknown;
+                    };
                 };
             };
             /** @description 未认证或认证已失效 */

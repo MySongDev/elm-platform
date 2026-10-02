@@ -1,3 +1,5 @@
+import type { AccountStatus } from '@/shared/lib/admin-display'
+
 export type { UserInfo } from '@/entities/user'
 
 export interface UserMenuNode {
@@ -11,7 +13,7 @@ export interface UserMenuNode {
   component: string | null
   type: 'catalog' | 'menu'
   sort: number
-  status: number
+  status: AccountStatus
   children?: UserMenuNode[]
 }
 

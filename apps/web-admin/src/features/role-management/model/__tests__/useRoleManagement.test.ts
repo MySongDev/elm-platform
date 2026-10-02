@@ -53,7 +53,7 @@ const menus: MenuItem[] = [
     permission: null,
     type: 'catalog',
     sort: 1,
-    status: 1,
+    status: 'ACTIVE',
     children: [
       {
         id: 2,
@@ -65,7 +65,7 @@ const menus: MenuItem[] = [
         permission: 'user:view',
         type: 'menu',
         sort: 1,
-        status: 1,
+        status: 'ACTIVE',
       },
       {
         id: 3,
@@ -77,7 +77,7 @@ const menus: MenuItem[] = [
         permission: 'user:add',
         type: 'button',
         sort: 2,
-        status: 1,
+        status: 'ACTIVE',
       },
     ],
   },
@@ -91,7 +91,7 @@ const menus: MenuItem[] = [
     permission: null,
     type: 'catalog',
     sort: 2,
-    status: 1,
+    status: 'ACTIVE',
     children: [
       {
         id: 5,
@@ -103,7 +103,7 @@ const menus: MenuItem[] = [
         permission: 'log:login:view',
         type: 'menu',
         sort: 1,
-        status: 1,
+        status: 'ACTIVE',
       },
     ],
   },
@@ -113,7 +113,7 @@ const normalRole: RoleItem = {
   id: 2,
   name: '普通用户',
   code: 'user',
-  status: 1,
+  status: 'ACTIVE',
   remark: '基础权限',
   permissions: ['user:view', 'user:add'],
   createdAt: '2026-05-23T00:00:00.000Z',

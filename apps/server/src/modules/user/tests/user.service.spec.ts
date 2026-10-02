@@ -27,7 +27,7 @@ function createService() {
         email: null,
         phone: null,
         avatar: null,
-        status: 1,
+        status: 'ACTIVE',
         role: 'tenant_admin',
         permissions: [],
         tenantId: 10,

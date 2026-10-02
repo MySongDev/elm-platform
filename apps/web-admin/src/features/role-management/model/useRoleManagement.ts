@@ -8,6 +8,7 @@ import type { FormRules } from 'element-plus'
 import type { ButtonPermission } from '@/entities/permission'
 import type { RoleItem } from '@/entities/role'
 import type { MenuItem } from '@/entities/system-menu'
+import type { AccountStatus } from '@/shared/lib/admin-display'
 import { ElMessage } from 'element-plus'
 import { onScopeDispose } from 'vue'
 import { getButtonPermissions } from '@/entities/permission'
@@ -32,7 +33,7 @@ export interface RoleFormState {
   id: number
   name: string
   code: string
-  status: number
+  status: AccountStatus
   remark: string
   permissions: string[]
 }
@@ -41,7 +42,7 @@ const defaultForm: RoleFormState = {
   id: 0,
   name: '',
   code: '',
-  status: 1,
+  status: 'ACTIVE',
   remark: '',
   permissions: [],
 }

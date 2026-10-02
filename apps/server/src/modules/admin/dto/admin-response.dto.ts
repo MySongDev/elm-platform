@@ -1,4 +1,6 @@
+import type { AccountStatus } from '../../../common/constants/account-status'
 import { ApiProperty } from '@nestjs/swagger'
+import { accountStatuses } from '../../../common/constants/account-status'
 
 export class PagePermissionResponseDto {
   @ApiProperty({
@@ -309,10 +311,11 @@ export class RoleResponseDto {
   code: string
 
   @ApiProperty({
-    description: '状态：1 启用 0 停用',
-    example: 1,
+    description: '账号状态',
+    enum: accountStatuses,
+    example: 'ACTIVE',
   })
-  status: number
+  status: AccountStatus
 
   @ApiProperty({
     description: '备注',
@@ -404,10 +407,11 @@ export class MenuResponseDto {
   sort: number
 
   @ApiProperty({
-    description: '状态：1 启用 0 停用',
-    example: 1,
+    description: '账号状态',
+    enum: accountStatuses,
+    example: 'ACTIVE',
   })
-  status: number
+  status: AccountStatus
 
   @ApiProperty({
     description: '子菜单列表',
@@ -465,10 +469,11 @@ export class DeptResponseDto {
   sort: number
 
   @ApiProperty({
-    description: '状态：1 启用 0 停用',
-    example: 1,
+    description: '账号状态',
+    enum: accountStatuses,
+    example: 'ACTIVE',
   })
-  status: number
+  status: AccountStatus
 
   @ApiProperty({
     description: '子部门列表',

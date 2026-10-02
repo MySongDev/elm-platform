@@ -3,6 +3,7 @@
  * @description 后端菜单树 → Vue Router 动态路由，单文件闭环，面试可现场讲解
  */
 import type { RouteMeta, Router, RouteRecordRaw } from 'vue-router'
+import type { AccountStatus } from '@/shared/lib/admin-display'
 import { notFoundRoute } from './routes/error'
 
 // 后端菜单类型（精简自 UserMenuNode，仅保留必需字段）
@@ -17,7 +18,7 @@ export interface BackendMenu {
   component: string | null
   type: 'catalog' | 'menu'
   sort: number
-  status: number
+  status: AccountStatus
   children?: BackendMenu[]
 }
 
@@ -65,7 +66,7 @@ function resolveComponent(menu: BackendMenu, fullPath: string): RouteRecordRaw['
 /** 递归构建路由节点 */
 function buildRoute(menu: BackendMenu, parentPath = ''): RouteRecordRaw | null {
   // 过滤禁用菜单
-  if (menu.status !== 1)
+  if (menu.status !== 'ACTIVE')
     return null
 
   // 计算完整路径：绝对路径直接用，相对路径拼接父路径

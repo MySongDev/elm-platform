@@ -5,6 +5,7 @@
  */
 
 import type { MenuItem } from '@/entities/system-menu'
+import type { AccountStatus } from '@/shared/lib/admin-display'
 import { createMenu, deleteMenu, getMenus, updateMenu } from '@/entities/system-menu'
 import { useConfigCrud } from '@/shared/config-crud'
 import { filterTree, flattenTree } from '@/shared/lib/tree'
@@ -25,7 +26,7 @@ export interface MenuFormState {
   permission: string
   type: MenuItem['type']
   sort: number
-  status: number
+  status: AccountStatus
 }
 
 const defaultForm: MenuFormState = {
@@ -38,7 +39,7 @@ const defaultForm: MenuFormState = {
   permission: '',
   type: 'menu',
   sort: 0,
-  status: 1,
+  status: 'ACTIVE',
 }
 
 /**

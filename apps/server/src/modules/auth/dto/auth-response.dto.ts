@@ -1,4 +1,6 @@
+import type { AccountStatus } from '../../../common/constants/account-status'
 import { ApiProperty } from '@nestjs/swagger'
+import { accountStatuses } from '../../../common/constants/account-status'
 
 export class AdminTenantResponseDto {
   @ApiProperty({
@@ -57,16 +59,18 @@ export class AdminProfileResponseDto {
 
   @ApiProperty({
     description: '头像',
+    example: null,
     nullable: true,
     type: String,
   })
   avatar: string | null
 
   @ApiProperty({
-    description: '状态：1 启用 0 停用',
-    example: 1,
+    description: '账号状态',
+    enum: accountStatuses,
+    example: 'ACTIVE',
   })
-  status: number
+  status: AccountStatus
 
   @ApiProperty({
     description: '角色',
@@ -89,9 +93,9 @@ export class AdminProfileResponseDto {
   dataScope: string
 
   @ApiProperty({
-    description: '绑定的店铺ID列表',
+    description: '绑定的店铺ID列表（商家 id 的字符串形式，如 "12345"）；仅在 dataScope=SHOP 时参与数据过滤',
     type: [String],
-    example: ['shop-1'],
+    example: [],
   })
   boundShopIds: string[]
 
@@ -146,16 +150,18 @@ export class AdminUpdatedProfileResponseDto {
 
   @ApiProperty({
     description: '头像',
+    example: null,
     nullable: true,
     type: String,
   })
   avatar: string | null
 
   @ApiProperty({
-    description: '状态：1 启用 0 停用',
-    example: 1,
+    description: '账号状态',
+    enum: accountStatuses,
+    example: 'ACTIVE',
   })
-  status: number
+  status: AccountStatus
 
   @ApiProperty({
     description: '角色',
@@ -245,10 +251,11 @@ export class AdminMenuResponseDto {
   sort: number
 
   @ApiProperty({
-    description: '状态：1 启用 0 停用',
-    example: 1,
+    description: '账号状态',
+    enum: accountStatuses,
+    example: 'ACTIVE',
   })
-  status: number
+  status: AccountStatus
 
   @ApiProperty({
     description: '子菜单列表',

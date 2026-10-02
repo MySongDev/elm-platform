@@ -6,6 +6,7 @@
 
 import type { FormRules } from 'element-plus'
 import type { DeptItem } from '@/entities/department'
+import type { AccountStatus } from '@/shared/lib/admin-display'
 import { createDept, deleteDept, getDepts, updateDept } from '@/entities/department'
 import { useConfigCrud } from '@/shared/config-crud'
 import { filterTree, flattenTree } from '@/shared/lib/tree'
@@ -23,7 +24,7 @@ export interface DeptFormState {
   phone: string
   email: string
   sort: number
-  status: number
+  status: AccountStatus
 }
 
 const defaultForm: DeptFormState = {
@@ -34,7 +35,7 @@ const defaultForm: DeptFormState = {
   phone: '',
   email: '',
   sort: 0,
-  status: 1,
+  status: 'ACTIVE',
 }
 
 /**

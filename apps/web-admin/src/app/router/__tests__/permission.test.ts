@@ -26,7 +26,7 @@ function createMenu(overrides: Partial<Parameters<typeof buildRoutes>[0][0]> = {
     component: null,
     type: 'menu' as const,
     sort: 1,
-    status: 1,
+    status: 'ACTIVE' as const,
     ...overrides,
   }
 }
@@ -137,13 +137,13 @@ describe('permission.ts - 精简版权限路由构建器', () => {
         createMenu({
           title: 'route.disabled',
           path: '/disabled',
-          status: 0,
+          status: 'DISABLED',
         }),
         createMenu({
           title: 'route.valid',
           path: '/valid',
           name: 'Valid',
-          status: 1,
+          status: 'ACTIVE',
         }),
       ])
 

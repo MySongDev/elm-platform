@@ -1,4 +1,5 @@
 import type { MenuItem } from '@/entities/system-menu'
+import type { AccountStatus } from '@/shared/lib/admin-display'
 
 export interface RoleMenuPermissionNode {
   id: number
@@ -13,7 +14,7 @@ export interface RoleMenuPermissionNode {
 interface MenuPermissionSourceNode {
   id: number
   permission: string | null
-  status?: number
+  status?: AccountStatus
   type?: MenuItem['type']
   children?: MenuPermissionSourceNode[]
 }
@@ -78,12 +79,12 @@ export function mergeRoleMenuPermissions(
 }
 
 function isActivePageMenu(menu: MenuItem): menu is MenuItem & { type: Extract<MenuItem['type'], 'catalog' | 'menu'> } {
-  return menu.status === 1 && menu.type !== 'button'
+  return menu.status === 'ACTIVE' && menu.type !== 'button'
 }
 
 function collectPageMenuNodes(menus: MenuPermissionSource): MenuPermissionSourceNode[] {
   return menus.flatMap((menu) => {
-    if (menu.status !== undefined && menu.status !== 1)
+    if (menu.status !== undefined && menu.status !== 'ACTIVE')
       return []
 
     if (menu.type === 'button')

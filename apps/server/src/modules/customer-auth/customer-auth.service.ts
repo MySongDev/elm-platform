@@ -39,7 +39,7 @@ export class CustomerAuthService {
     if (!user) {
       throw new UnauthorizedException('手机号或密码错误')
     }
-    if (user.status !== 1) {
+    if (user.status !== 'ACTIVE') {
       throw new UnauthorizedException('账号已被禁用')
     }
     if (!user.password) {
@@ -70,7 +70,7 @@ export class CustomerAuthService {
       user = await (this.prisma as any).customerUser.create({
         data: {
           phone: dto.phone,
-          status: 1,
+          status: 'ACTIVE',
         },
       })
     }
@@ -78,7 +78,7 @@ export class CustomerAuthService {
       await this.sms.verifyCode(dto.phone, 'login', dto.smsCode)
     }
 
-    if (user.status !== 1) {
+    if (user.status !== 'ACTIVE') {
       throw new UnauthorizedException('账号已被禁用')
     }
 
@@ -92,7 +92,7 @@ export class CustomerAuthService {
 
   async getProfile(userId: number) {
     const user = await (this.prisma as any).customerUser.findUnique({ where: { id: userId } })
-    if (!user || user.status !== 1) {
+    if (!user || user.status !== 'ACTIVE') {
       throw new UnauthorizedException('用户不存在或已禁用')
     }
     return this.tokens.toProfile(user)
@@ -101,7 +101,7 @@ export class CustomerAuthService {
   async refresh(refreshToken: string) {
     const { userId } = await this.tokens.consumeRefreshToken(refreshToken)
     const user = await (this.prisma as any).customerUser.findUnique({ where: { id: userId } })
-    if (!user || user.status !== 1) {
+    if (!user || user.status !== 'ACTIVE') {
       throw new UnauthorizedException('用户不存在或已禁用')
     }
 

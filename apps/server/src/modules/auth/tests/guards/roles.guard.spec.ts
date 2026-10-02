@@ -1,5 +1,6 @@
 import type { ExecutionContext } from '@nestjs/common'
 import type { Reflector } from '@nestjs/core'
+import type { AccountStatus } from '@/common/constants/account-status'
 import type { PrismaService } from '@/prisma/prisma.service'
 import { PERMISSIONS_KEY } from '@/modules/auth/decorators/permissions.decorator'
 import { ROLES_KEY } from '@/modules/auth/decorators/roles.decorator'
@@ -15,11 +16,11 @@ interface GuardOptions {
   currentUser?: {
     role: string
     permissions?: string[] | null
-    status: number
+    status: AccountStatus
   } | null
   roleRecord?: {
     permissions?: string[] | null
-    status: number
+    status: AccountStatus
   } | null
 }
 
@@ -101,7 +102,7 @@ describe('rolesGuard', () => {
       currentUser: {
         role: 'admin',
         permissions: ['*:*:*'],
-        status: 1,
+        status: 'ACTIVE',
       },
     })
 
@@ -121,7 +122,7 @@ describe('rolesGuard', () => {
       currentUser: {
         role: 'admin',
         permissions: ['system:user:list'],
-        status: 0,
+        status: 'DISABLED',
       },
     })
 
@@ -137,7 +138,7 @@ describe('rolesGuard', () => {
       currentUser: {
         role: 'admin',
         permissions: ['system:user:list', 'system:user:create'],
-        status: 1,
+        status: 'ACTIVE',
       },
     })
 
@@ -159,7 +160,7 @@ describe('rolesGuard', () => {
       currentUser: {
         role: 'admin',
         permissions: [],
-        status: 1,
+        status: 'ACTIVE',
       },
     })
 
@@ -174,7 +175,7 @@ describe('rolesGuard', () => {
       currentUser: {
         role: 'user',
         permissions: ['system:user:list', '*:*:*'],
-        status: 1,
+        status: 'ACTIVE',
       },
     })
 
@@ -188,7 +189,7 @@ describe('rolesGuard', () => {
       currentUser: {
         role: 'user',
         permissions: ['*:*:*'],
-        status: 1,
+        status: 'ACTIVE',
       },
     })
 
@@ -202,11 +203,11 @@ describe('rolesGuard', () => {
       currentUser: {
         role: 'user',
         permissions: [],
-        status: 1,
+        status: 'ACTIVE',
       },
       roleRecord: {
         permissions: ['permission:page:view'],
-        status: 1,
+        status: 'ACTIVE',
       },
     })
 
@@ -227,7 +228,7 @@ describe('rolesGuard', () => {
       currentUser: {
         role: 'admin',
         permissions: null,
-        status: 1,
+        status: 'ACTIVE',
       },
     })
 
@@ -241,7 +242,7 @@ describe('rolesGuard', () => {
       currentUser: {
         role: 'admin',
         permissions: ['system:user:list'],
-        status: 1,
+        status: 'ACTIVE',
       },
     })
 

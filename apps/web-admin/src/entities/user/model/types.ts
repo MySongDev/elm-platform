@@ -1,4 +1,5 @@
 import type { Role } from '@/shared/config/access'
+import type { AccountStatus } from '@/shared/lib/admin-display'
 
 export interface UserTenantInfo {
   id: number
@@ -13,7 +14,7 @@ export interface UserInfo {
   email: string | null
   phone: string | null
   avatar: string | null
-  status: number
+  status: AccountStatus
   role: Role
   permissions: string[]
   tenant?: UserTenantInfo | null
@@ -29,7 +30,7 @@ export interface CreateUserParams {
   email?: string
   phone?: string
   role?: Role
-  status?: number
+  status?: AccountStatus
   permissions?: string[]
   tenantId?: number | null
   dataScope?: string
@@ -40,7 +41,7 @@ export interface UpdateUserParams {
   username?: string
   email?: string | null
   phone?: string | null
-  status?: number
+  status?: AccountStatus
   role?: Role
   permissions?: string[]
   tenantId?: number | null
@@ -51,5 +52,5 @@ export interface UpdateUserParams {
 export interface UserListQuery {
   username: string
   role: '' | Role
-  status: '' | '0' | '1'
+  status: '' | AccountStatus
 }
