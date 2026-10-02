@@ -8,28 +8,10 @@ export class CustomerProfileResponseDto {
   id: number
 
   @ApiProperty({
-    description: '用户ID（别名）',
-    example: 1,
-  })
-  user_id: number
-
-  @ApiProperty({
     description: '手机号',
     example: '13800138000',
   })
   phone: string
-
-  @ApiProperty({
-    description: '手机号（别名）',
-    example: '13800138000',
-  })
-  mobile: string
-
-  @ApiProperty({
-    description: '用户名',
-    example: 'john_doe',
-  })
-  username: string
 
   @ApiProperty({
     description: '昵称',
@@ -42,8 +24,10 @@ export class CustomerProfileResponseDto {
   @ApiProperty({
     description: '头像',
     example: 'https://example.com/avatar.jpg',
+    nullable: true,
+    type: String,
   })
-  avatar: string
+  avatar: string | null
 
   @ApiProperty({
     description: '状态：1 启用 0 停用',

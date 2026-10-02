@@ -111,12 +111,9 @@ export class CustomerTokenService {
   toProfile(user: CustomerUserLike) {
     return {
       id: user.id,
-      user_id: user.id,
       phone: user.phone,
-      mobile: user.phone,
-      username: user.nickname || user.phone,
-      nickname: user.nickname,
-      avatar: user.avatar,
+      nickname: user.nickname ?? null,
+      avatar: user.avatar ?? null,
       status: user.status,
     }
   }
