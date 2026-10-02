@@ -14,12 +14,10 @@ defineOptions({
 })
 
 const userStore = useUserStore()
-const { userInfo, isLogin } = storeToRefs(userStore)
+const { userInfo, isLogin, userName, userAvatar } = storeToRefs(userStore)
 const { getUserInfo } = userStore
 
 const isLoggedIn = computed(() => isLogin.value)
-const userName = computed(() => userInfo.value.username || '')
-const userAvatar = computed(() => userInfo.value.avatar || '')
 const profileLink = computed(() => isLoggedIn.value ? '/profile/info' : '/login')
 
 const displayName = computed(() => userName.value || profileCardConfig.guest.name)

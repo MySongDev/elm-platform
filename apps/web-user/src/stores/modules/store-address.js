@@ -10,8 +10,8 @@ export const useAddressStore = defineStore('address', () => {
   const userStore = useUserStore()
 
   const loadAddresses = async () => {
-    // 未登录时不请求，也不再用兜底 id 冒充身份
-    if (!userStore.userId) {
+    // 未登录时不请求；身份由请求头令牌决定，前端不再持有 userId
+    if (!userStore.isLogin) {
       AddressList.value = []
       return
     }
@@ -25,11 +25,10 @@ export const useAddressStore = defineStore('address', () => {
     }
   }
   watch(
-    () => userStore.userId,
-    async (newUserId) => {
-      if (newUserId) {
+    () => userStore.isLogin,
+    async (loggedIn) => {
+      if (loggedIn) {
         await loadAddresses()
-        // console.log(newUserId)
       }
       else {
         AddressList.value = []

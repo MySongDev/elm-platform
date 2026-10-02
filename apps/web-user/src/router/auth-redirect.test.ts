@@ -7,7 +7,6 @@ describe('user router auth redirects', () => {
   })
 
   it('sends restored users away from login to the redirect target', async () => {
-    localStorage.setItem('user_id', '9')
     localStorage.setItem('customer_refresh_token', 'refresh-token')
     localStorage.setItem('customer_refresh_token_expires_at', String(Date.now() + 60_000))
 

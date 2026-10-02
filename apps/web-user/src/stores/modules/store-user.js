@@ -5,7 +5,6 @@ import { getUserInfo as getUserInfoApi } from '@/services/api'
 import {
   clearAuthSession,
   persistAuthTokens,
-  persistUserId,
   readAuthSession,
 } from '@/services/http/auth-storage'
 
@@ -15,8 +14,6 @@ const USER_INFO_TTL_MS = 5 * 60 * 1000
 export const useUserStore = defineStore('user', () => {
   // State
   const userInfo = ref({})
-  const userId = ref('')
-  const userName = ref('')
   const lastFetchTime = ref(0)
   const customerToken = ref('')
   const customerRefreshToken = ref('')
@@ -27,6 +24,12 @@ export const useUserStore = defineStore('user', () => {
 
   // 计算属性
   const userAvatar = computed(() => userInfo.value.avatar || '')
+  // 展示用用户名：与 userAvatar 一样统一从 userInfo 派生，避免同一份数据存两处而漂移
+  const userName = computed(() =>
+    userInfo.value.nickname
+    || userInfo.value.phone
+    || '',
+  )
   // 登录态的唯一判据：本地存在未过期的 refresh 会话
   const isLogin = computed(() =>
     Boolean(customerRefreshToken.value && customerRefreshTokenExpiresAt.value > now.value),
@@ -34,7 +37,6 @@ export const useUserStore = defineStore('user', () => {
 
   /** 将持久化快照应用为响应式状态，保证内存与本地存储同源 */
   const applySession = (session) => {
-    userId.value = session.userId
     customerToken.value = session.accessToken
     customerRefreshToken.value = session.refreshToken
     customerTokenExpiresAt.value = session.accessTokenExpiresAt
@@ -44,7 +46,6 @@ export const useUserStore = defineStore('user', () => {
   // Actions
   const logout = () => {
     userInfo.value = {}
-    userName.value = ''
     lastFetchTime.value = 0
     clearAuthSession()
     applySession(readAuthSession())
@@ -67,13 +68,21 @@ export const useUserStore = defineStore('user', () => {
   }
 
   /**
-   * 记录登录响应中的令牌与用户资料
+   * 记录用户资料（不涉及令牌）。登录与资料刷新共用。
+   * @param {object} profile 后端用户对象（profile 接口直出，或登录响应里的 user）
    */
-  const recordUserInfo = (info) => {
-    // 登录接口返回 { code, data } 信封，令牌在 data 内；其余调用方直接传业务对象
-    const payload = typeof info?.code === 'number' && info.data ? info.data : info
-    const profile = payload.user || payload
-    const normalizedUserId = profile.user_id == null ? String(profile.id || '') : String(profile.user_id)
+  const recordUserInfo = (profile) => {
+    userInfo.value = { ...profile }
+    lastFetchTime.value = Date.now()
+  }
+
+  /**
+   * 落地登录响应：先持久化令牌，再记录用户资料。仅登录流程调用。
+   * @param {object} response 登录接口响应（可能带 { code, data } 信封）
+   */
+  const recordLoginSession = (response) => {
+    // 登录接口返回 { code, data } 信封，令牌与 user 都在 data 内；其余调用方直接传业务对象
+    const payload = typeof response?.code === 'number' && response.data ? response.data : response
 
     persistAuthTokens({
       accessToken: payload.accessToken || payload.token,
@@ -81,18 +90,12 @@ export const useUserStore = defineStore('user', () => {
       expiresIn: payload.expiresIn,
       refreshExpiresIn: payload.refreshExpiresIn,
     })
-    persistUserId(normalizedUserId)
 
     // 回读持久化结果，避免内存状态与本地存储各自漂移
     now.value = Date.now()
     applySession(readAuthSession())
 
-    userInfo.value = {
-      ...profile,
-      user_id: normalizedUserId,
-    }
-    userName.value = profile.username || profile.nickname || profile.mobile || profile.phone || ''
-    lastFetchTime.value = Date.now()
+    recordUserInfo(payload.user || payload)
   }
 
   /**
@@ -117,7 +120,8 @@ export const useUserStore = defineStore('user', () => {
     try {
       const info = await getUserInfoApi()
       recordUserInfo(info)
-      return info
+      // 返回规范化后的 userInfo，与命中缓存的返回结构保持一致
+      return userInfo.value
     }
     catch (error) {
       console.error('获取用户信息失败:', error)
@@ -128,10 +132,10 @@ export const useUserStore = defineStore('user', () => {
   }
 
   /**
-   * 更新用户名
+   * 更新用户名：写回 userInfo，派生出的 userName 与各页面随之一致
    */
   const updateUserName = (name) => {
-    userName.value = name
+    userInfo.value.username = name
   }
 
   /**
@@ -145,7 +149,6 @@ export const useUserStore = defineStore('user', () => {
   syncAuthSessionFromStorage()
 
   return {
-    userId,
     userInfo,
     userName,
     userAvatar,
@@ -156,6 +159,7 @@ export const useUserStore = defineStore('user', () => {
     customerRefreshTokenExpiresAt,
     syncAuthSessionFromStorage,
     recordUserInfo,
+    recordLoginSession,
     getUserInfo: fetchUserInfo,
     updateUserName,
     updateAvatar,

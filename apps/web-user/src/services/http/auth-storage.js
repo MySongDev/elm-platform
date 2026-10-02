@@ -4,7 +4,6 @@ export const ACCESS_TOKEN_KEY = 'customer_token'
 export const REFRESH_TOKEN_KEY = 'customer_refresh_token'
 export const ACCESS_TOKEN_EXPIRES_AT_KEY = 'customer_token_expires_at'
 export const REFRESH_TOKEN_EXPIRES_AT_KEY = 'customer_refresh_token_expires_at'
-export const USER_ID_KEY = 'user_id'
 
 function toTimestamp(value) {
   const parsed = Number(value)
@@ -13,7 +12,7 @@ function toTimestamp(value) {
 
 /**
  * 读取本地会话快照。
- * 这里是令牌与用户标识的唯一读取入口，其他模块不得再自行拼接 key 读取，
+ * 这里是令牌的唯一读取入口，其他模块不得再自行拼接 key 读取，
  * 否则 key 一旦变更就会出现静默不一致。
  */
 export function readAuthSession() {
@@ -22,7 +21,6 @@ export function readAuthSession() {
     refreshToken: getStore(REFRESH_TOKEN_KEY) || '',
     accessTokenExpiresAt: toTimestamp(getStore(ACCESS_TOKEN_EXPIRES_AT_KEY)),
     refreshTokenExpiresAt: toTimestamp(getStore(REFRESH_TOKEN_EXPIRES_AT_KEY)),
-    userId: String(getStore(USER_ID_KEY) || ''),
   }
 }
 
@@ -32,10 +30,6 @@ export function getAccessToken() {
 
 export function getRefreshToken() {
   return getStore(REFRESH_TOKEN_KEY) || ''
-}
-
-export function persistUserId(userId) {
-  setStore(USER_ID_KEY, String(userId || ''))
 }
 
 /**
@@ -57,5 +51,4 @@ export function clearAuthSession() {
   removeStore(REFRESH_TOKEN_KEY)
   removeStore(ACCESS_TOKEN_EXPIRES_AT_KEY)
   removeStore(REFRESH_TOKEN_EXPIRES_AT_KEY)
-  removeStore(USER_ID_KEY)
 }

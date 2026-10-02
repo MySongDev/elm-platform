@@ -15,24 +15,10 @@ describe('useUserStore', () => {
     vi.mocked(getUserInfoApi).mockReset()
   })
 
-  it('normalizes backend numeric user ids to strings', () => {
-    const store = useUserStore()
-
-    store.recordUserInfo({
-      user_id: 80251,
-      username: 'song',
-      avatar: 'default.jpg',
-    })
-
-    expect(store.userId).toBe('80251')
-    expect(store.userInfo.user_id).toBe('80251')
-    expect(localStorage.getItem('user_id')).toBe('80251')
-  })
-
   it('stores customer tokens from auth responses', () => {
     const store = useUserStore()
 
-    store.recordUserInfo({
+    store.recordLoginSession({
       token: 'customer-token',
       refreshToken: 'refresh-token',
       expiresIn: 1800,
@@ -47,7 +33,6 @@ describe('useUserStore', () => {
     expect(store.customerToken).toBe('customer-token')
     expect(store.customerRefreshToken).toBe('refresh-token')
     expect(store.isLogin).toBe(true)
-    expect(store.userId).toBe('9')
     expect(store.userName).toBe('13800138000')
     expect(localStorage.getItem('customer_token')).toBe('customer-token')
     expect(localStorage.getItem('customer_refresh_token')).toBe('refresh-token')
@@ -58,7 +43,7 @@ describe('useUserStore', () => {
   it('unwraps the { code, data } envelope from login responses', () => {
     const store = useUserStore()
 
-    store.recordUserInfo({
+    store.recordLoginSession({
       code: 200,
       message: 'success',
       data: {
@@ -77,7 +62,6 @@ describe('useUserStore', () => {
     expect(store.customerToken).toBe('customer-token')
     expect(store.customerRefreshToken).toBe('refresh-token')
     expect(store.isLogin).toBe(true)
-    expect(store.userId).toBe('9')
   })
 
   it('clears expired refresh sessions before treating users as authenticated', () => {
@@ -85,12 +69,10 @@ describe('useUserStore', () => {
     localStorage.setItem('customer_refresh_token', 'expired-refresh-token')
     localStorage.setItem('customer_token_expires_at', String(Date.now() - 1000))
     localStorage.setItem('customer_refresh_token_expires_at', String(Date.now() - 1000))
-    localStorage.setItem('user_id', '9')
 
     const store = useUserStore()
 
     expect(store.isLogin).toBe(false)
-    expect(store.userId).toBe('')
     expect(localStorage.getItem('customer_token')).toBeNull()
     expect(localStorage.getItem('customer_refresh_token')).toBeNull()
   })
@@ -110,6 +92,5 @@ describe('useUserStore', () => {
     expect(getUserInfoApi).toHaveBeenCalledTimes(1)
     expect(profile).toMatchObject({ id: 9 })
     expect(store.isLogin).toBe(true)
-    expect(store.userId).toBe('9')
   })
 })

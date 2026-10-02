@@ -22,7 +22,7 @@ export function useLoginSuccess() {
 
   // 把响应里的令牌/资料落地为登录态，再跳回用户原本想去的页面
   function completeLogin(response) {
-    userStore.recordUserInfo(response)
+    userStore.recordLoginSession(response)
     router.replace(resolveRedirectTarget())
   }
 
