@@ -1,7 +1,11 @@
+import type { AccountStatus } from '@elm-platform/contracts'
 import type { ConfigFieldOption, Translate } from '@/shared/config-crud/model/form'
 import type { ConfigTableColumnTag } from '@/shared/config-crud/model/table'
+import { accountStatuses } from '@elm-platform/contracts'
 
-export type AccountStatus = 'ACTIVE' | 'DISABLED'
+export type { AccountStatus }
+
+const [ACTIVE_STATUS, DISABLED_STATUS] = accountStatuses
 
 interface EnabledStatusText {
   normal?: string
@@ -27,11 +31,11 @@ export function createEnabledStatusOptions(text?: EnabledStatusText): ConfigFiel
   return [
     {
       label: labels.normal,
-      value: 'ACTIVE',
+      value: ACTIVE_STATUS,
     },
     {
       label: labels.disabled,
-      value: 'DISABLED',
+      value: DISABLED_STATUS,
     },
   ]
 }
@@ -42,7 +46,7 @@ export function createEnabledStatusSearchOptions(text?: EnabledStatusText): Conf
 
 export function getEnabledStatusTag(status: AccountStatus, text?: EnabledStatusText): ConfigTableColumnTag {
   const labels = resolveStatusText(text)
-  return status === 'ACTIVE'
+  return status === ACTIVE_STATUS
     ? {
         label: labels.normal,
         type: 'success',

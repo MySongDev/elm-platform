@@ -1,4 +1,2 @@
-export const accountStatuses = ['ACTIVE', 'DISABLED'] as const
-export type AccountStatus = (typeof accountStatuses)[number]
-
-export const DEFAULT_ACCOUNT_STATUS: AccountStatus = 'ACTIVE'
+export { accountStatuses, DEFAULT_ACCOUNT_STATUS } from '@elm-platform/contracts'
+export type { AccountStatus } from '@elm-platform/contracts'
