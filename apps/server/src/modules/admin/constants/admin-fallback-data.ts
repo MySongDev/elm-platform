@@ -30,7 +30,7 @@ export const fallbackMenus: MenuRecord[] = [
     name: 'Dashboard',
     icon: 'dashboard',
     permission: null,
-    component: 'dashboard',
+    component: null,
     type: 'catalog',
     sort: 1,
     status: 'ACTIVE',

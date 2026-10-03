@@ -13,6 +13,7 @@ interface MenuSeedRecord {
   name?: string | null
   icon?: string | null
   permission?: string | null
+  component?: string | null
   type: 'catalog' | 'menu' | 'button'
   sort: number
   status: AccountStatus
@@ -98,6 +99,7 @@ function normalizeMenu(menu: MenuSeedRecord) {
     name: menu.name ?? null,
     icon: menu.icon ?? null,
     permission: menu.permission ?? null,
+    component: menu.component ?? null,
     type: menu.type,
     sort: menu.sort,
     status: menu.status,
@@ -181,6 +183,20 @@ describe('admin menu protocol', () => {
         componentKey: resolveFreshMenuComponentKey(menu.path),
       }))
       .filter(menu => !componentKeys.has(menu.componentKey))
+
+    expect(missingComponents).toEqual([])
+  })
+
+  it('maps every menu component field to an existing page component', () => {
+    const componentKeys = readAdminPageComponentKeys()
+    const missingComponents = menuPages(fallbackMenus).flatMap(menu =>
+      menu.component && !componentKeys.has(menu.component)
+        ? [{
+            path: menu.path,
+            component: menu.component,
+          }]
+        : [],
+    )
 
     expect(missingComponents).toEqual([])
   })
