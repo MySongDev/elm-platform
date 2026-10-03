@@ -43,7 +43,7 @@ export const fallbackMenus: MenuRecord[] = [
     name: 'DashboardView',
     icon: 'dashboard',
     permission: null,
-    component: 'dashboard/index',
+    component: 'dashboard',
     type: 'menu',
     sort: 1,
     status: 'ACTIVE',
