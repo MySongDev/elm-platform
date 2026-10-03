@@ -15,13 +15,17 @@ async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule)
   const configService = app.get(ConfigService)
 
-  // 对外暴露本地上传目录。数据库里只存相对路径，这里把它映射成可访问的 URL。
-  app.useStaticAssets(UPLOAD_DIR, { prefix: UPLOAD_PUBLIC_PREFIX })
+  // 全局前缀（控制器路由用）。注意：useStaticAssets 是 Express 层中间件，
+  // 不受 setGlobalPrefix 影响，所以静态目录的 prefix 要手动带上同一前缀，
+  // 否则前端按 /<prefix>/uploads 取文件会 404。
+  const prefix = configService.get<string>('APP_PREFIX', 'api')
+
+  // 对外暴露本地上传目录。数据库里只存相对路径，这里把它映射成可访问的 URL，
+  // 并与全局前缀对齐（前端 UPLOAD_BASE_URL = API_BASE_URL + '/uploads/'）。
+  app.useStaticAssets(UPLOAD_DIR, { prefix: `/${prefix}${UPLOAD_PUBLIC_PREFIX}` })
 
   app.use(requestIdMiddleware)
 
-  // 全局前缀
-  const prefix = configService.get<string>('APP_PREFIX', 'api')
   app.setGlobalPrefix(prefix)
 
   // 全局过滤器 - 异常处理
