@@ -3,6 +3,6 @@
 export const cityEndpoints = {
   cities: '/v1/cities',
   cityInfo: cityId => `/v1/cities/${cityId}`,
-  reverseGeoCoding: `/restapi/bgs/poi/reverse_geo_coding`,
+  reverseGeoCoding: '/geo/reverse-geocode',
   searchPois: '/v1/pois',
 }

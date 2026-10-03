@@ -15,6 +15,7 @@ export const getUserInfo = getCustomerProfile
 export function uploadUserAvatar(file) {
   const formData = new FormData()
   formData.append('file', file)
+
   return post(authEndpoints.customerAvatar, formData)
 }
 export function signout() {
