@@ -77,5 +77,6 @@ backup/
 # Docs
 docs/*
 !docs/engineering
+!docs/refactor
 apps/*/docs
 reports/
