@@ -1,5 +1,5 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { clearHttpCache, getBusinessMessage, isBusinessError, useCache, useDedupe, useLocation, useRetry } from './policies'
+import { describe, expect, it, vi } from 'vitest'
+import { getBusinessMessage, isBusinessError, useLocation } from './policies'
 
 // Mock axios
 vi.mock('axios', () => {
@@ -78,66 +78,8 @@ describe('hTTP Policies - 核心功能', () => {
   })
 })
 
+// 缓存 / 去重 / 重试的开关用例已随实现迁到 ../extras/optional-policies.test.js
 describe('hTTP Policies - 可选策略插件', () => {
-  beforeEach(() => {
-    clearHttpCache()
-    vi.clearAllMocks()
-  })
-
-  describe('useCache', () => {
-    it('标记 meta.cache 并可设置 maxAge', () => {
-      const config = {
-        method: 'get',
-        url: '/api/test',
-        params: { a: 1 },
-      }
-      const result = useCache(config, { maxAge: 60000 })
-      expect(result.meta.cache).toBe(true)
-      expect(result.meta.cacheMaxAge).toBe(60000)
-    })
-  })
-
-  describe('useDedupe', () => {
-    it('标记 meta.dedupe 模式', () => {
-      const config = {
-        method: 'post',
-        url: '/api/test',
-        data: { b: 2 },
-      }
-      const result = useDedupe(config, 'ignoreCurrent')
-      expect(result.meta.dedupe).toBe('ignoreCurrent')
-    })
-
-    it('默认模式为 cancelPrevious', () => {
-      const config = {
-        method: 'get',
-        url: '/api/test',
-      }
-      const result = useDedupe(config)
-      expect(result.meta.dedupe).toBe('cancelPrevious')
-    })
-  })
-
-  describe('useRetry', () => {
-    it('标记 meta.retry 并可设置最大重试次数', () => {
-      const config = {
-        method: 'get',
-        url: '/api/test',
-      }
-      const result = useRetry(config, { maxRetries: 5 })
-      expect(result.meta.retry).toBe(5)
-    })
-
-    it('默认重试 3 次', () => {
-      const config = {
-        method: 'get',
-        url: '/api/test',
-      }
-      const result = useRetry(config)
-      expect(result.meta.retry).toBe(3)
-    })
-  })
-
   describe('useLocation', () => {
     it('标记 meta.location', () => {
       const config = {
@@ -146,14 +88,6 @@ describe('hTTP Policies - 可选策略插件', () => {
       }
       const result = useLocation(config)
       expect(result.meta.location).toBe(true)
-    })
-  })
-
-  describe('clearHttpCache', () => {
-    it('清空内存缓存', () => {
-      clearHttpCache()
-      // 无报错即通过
-      expect(true).toBe(true)
     })
   })
 })

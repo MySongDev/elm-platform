@@ -10,7 +10,7 @@
 | 路由 | Vue Router 4（Hash 模式�?|
 | 状态管�?| Pinia 3 + pinia-plugin-persistedstate |
 | UI 组件�?| Vant 4（按需自动导入�?|
-| HTTP | Axios（自研策略层：重�?/ 去重 / 缓存 / Loading�?|
+| HTTP | Axios（token 注入 / 401 刷新 / 定位注入 / 全局 Loading）|
 | 样式 | SCSS + 全局 Mixin & Variables |
 | Mock | vite-plugin-mock + Mock.js |
 | 代码规范 | ESLint（@antfu/eslint-config�?|
@@ -98,21 +98,26 @@ pnpm test:watch
 
 - **TypeScript 渐进式迁�?* �?`allowJs: true`，composables / router 已迁移为 `.ts`，构建时自动类型检�?- **路由模块�?* �?`router/modules/*.ts` 自动收集，新增页面零配置
 - **API 路径集中管理** �?`services/api/endpoints/*.js` 统一维护接口路径，消除硬编码散落
-- **HTTP 策略�?* �?请求重试（指数退避）、请求去重、内存缓存、全局 Loading、错误节流提示、日志脱�?- **状态分�?* �?用户、地址、定位、Loading 各自独立 Store，持久化按需开�?- **页面状态标准化** �?BaseState 统一管理 Loading / Empty / Error 三�?- **Mock 动态生�?* �?基于关键词动态生�?POI 数据，不依赖硬编�?
+- **HTTP 层** —— 全局 Loading、业务错误码识别、401 自动刷新、定位注入、错误节流提示、日志脱敏
+- **状态分�?* �?用户、地址、定位、Loading 各自独立 Store，持久化按需开�?- **页面状态标准化** �?BaseState 统一管理 Loading / Empty / Error 三�?- **Mock 动态生�?* �?基于关键词动态生�?POI 数据，不依赖硬编�?
 ## 架构设计
 
 ### HTTP 层（`src/services/http/`�?
 ```
-http.js        �?对外门面（get/post/put/patch/del�?request.js     �?Axios 实例 + 拦截器编�?policies.js    �?策略逻辑：重试、去重、缓存、位置注入、错误处�?loading.js     �?全局 Loading 状态联�?log.js         �?请求日志 & 敏感数据脱敏
+http.js        —— 对外门面（get/post/put/patch/del）
+request.js     —— Axios 实例 + 拦截器编排（token 注入、401 刷新、定位注入）
+policies/      —— meta 驱动的辅助逻辑（定位、loading、业务错误码、错误提示、脱敏）
+loading.js     —— 全局 Loading 状态联动
+extras/        —— 未接入的留档策略（缓存/去重/重试），见 docs/engineering/010
 ```
 
 通过 `config.meta` 携带行为标记，业务调用时声明式开启能力：
 
 ```js
 get('/api/shops', params, {
-  cache: true, // 启用内存缓存
-  cacheMaxAge: 60000, // 缓存 60 �?  dedupe: 'cancelPrevious', // 取消前一个相同请�?  retry: 3, // 失败重试 3 �?  loading: true, // 显示全局 Loading
-  location: true, // 注入经纬�?})
+  loading: true, // 显示全局 Loading
+  location: true, // 注入经纬度
+})
 ```
 
 ### 路由模块�?

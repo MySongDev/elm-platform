@@ -34,7 +34,7 @@ pnpm clean            # removes node_modules, dist, .turbo in workspaces
 ### Backend (`apps/server`)
 
 ```bash
-pnpm --filter @elm-platform/server run start:dev
+pnpm --filter @elm-platform/server run dev
 pnpm --filter @elm-platform/server run build
 pnpm --filter @elm-platform/server run lint
 pnpm --filter @elm-platform/server run test
@@ -98,7 +98,7 @@ HTTP access goes through `src/shared/api`: `createHttpClient` unwraps `{ code, d
 
 Routing is module based: `src/router/index.ts` auto-collects `src/router/modules/*.ts` using `import.meta.glob`, creates hash history, and applies auth/page-title guards. When adding pages, define the route in the relevant module and keep route meta consistent with the existing `RouteMeta` type.
 
-API calls are organized by feature under `src/services/api`, with endpoint constants under `src/services/api/endpoints`. All network traffic should go through `src/services/http`: `http.js` exposes `get/post/put/patch/del`, `request.js` owns the Axios instance/interceptors, and `policies.js` implements request retry, dedupe, cache, location injection, loading integration, throttled error alerts, and log sanitization via `config.meta` options.
+API calls are organized by feature under `src/services/api`, with endpoint constants under `src/services/api/endpoints`. All network traffic should go through `src/services/http`: `http.js` exposes `get/post/put/patch/del`, `request.js` owns the Axios instance/interceptors plus token injection and 401 refresh, and `policies/` holds the meta-driven helpers (location injection, loading integration, business-error detection, throttled error alerts, log sanitization) read through `config.meta`. Cache/dedupe/retry strategies were removed from the pipeline on 2026-10-02 for having no callers; their code is archived (not wired in) at `src/services/http/extras/optional-policies.js`, with re-enable steps in `docs/engineering/010-http-optional-policies.md`.
 
 Pinia stores live in `src/stores/modules` for user/session, addresses, locations, and loading. Location state is important because HTTP policies can inject latitude/longitude into location-based requests. Composables are grouped by scope: `app` for app-level behavior, `ui` for interface interactions, `swr` for stale-while-revalidate data fetching, and `features` for business-specific logic.
 

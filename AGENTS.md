@@ -34,7 +34,7 @@ pnpm clean            # 清理 workspace 中的 node_modules、dist、.turbo
 ### 后端（`apps/server`）
 
 ```bash
-pnpm --filter @elm-platform/server run start:dev
+pnpm --filter @elm-platform/server run dev
 pnpm --filter @elm-platform/server run build
 pnpm --filter @elm-platform/server run lint
 pnpm --filter @elm-platform/server run test
@@ -98,7 +98,7 @@ HTTP 访问经由 `src/shared/api`：`createHttpClient` 解包 `{ code, data, me
 
 路由按模块组织：`src/router/index.ts` 使用 `import.meta.glob` 自动收集 `src/router/modules/*.ts`，创建 hash 路由，并应用认证/页面标题守卫。新增页面时在对应模块中定义路由，并保持路由 meta 与现有 `RouteMeta` 类型一致。
 
-API 调用按功能组织在 `src/services/api` 下，端点常量位于 `src/services/api/endpoints`。所有网络流量应经由 `src/services/http`：`http.js` 暴露 `get/post/put/patch/del`，`request.js` 拥有 Axios 实例/拦截器，`policies.js` 通过 `config.meta` 选项实现请求重试、去重、缓存、定位注入、loading 集成、节流错误提示和日志脱敏。
+API 调用按功能组织在 `src/services/api` 下，端点常量位于 `src/services/api/endpoints`。所有网络流量应经由 `src/services/http`：`http.js` 暴露 `get/post/put/patch/del`，`request.js` 拥有 Axios 实例/拦截器、token 注入与 401 刷新，`policies/` 提供 `config.meta` 驱动的辅助逻辑（定位注入、loading 集成、业务错误识别、节流错误提示、日志脱敏）。缓存/去重/重试三段策略因项目内从无调用方，已于 2026-10-02 从链路剔除，代码留档（未接入）在 `src/services/http/extras/optional-policies.js`，启用步骤见 `docs/engineering/010-http-optional-policies.md`。
 
 Pinia store 位于 `src/stores/modules`，涵盖用户/会话、地址、定位和 loading。定位状态很重要，因为 HTTP 策略会向基于位置的请求注入经纬度。Composables 按作用域分组：`app` 为应用级行为，`ui` 为界面交互，`swr` 为 stale-while-revalidate 数据获取，`features` 为业务特定逻辑。
 

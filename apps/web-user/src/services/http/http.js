@@ -1,4 +1,4 @@
-import { clearHttpCache, setUnauthorizedHandler } from './policies'
+import { setUnauthorizedHandler } from './policies'
 import { request } from './request'
 
 export function http(options = {}) {
@@ -14,12 +14,6 @@ export function http(options = {}) {
     loadingMinDuration,
 
     location = false,
-    retry,
-    dedupe,
-    dedupeKey,
-
-    cache = false,
-    cacheMaxAge,
 
     ...rest
   } = options
@@ -43,12 +37,6 @@ export function http(options = {}) {
       loadingMinDuration,
 
       location,
-      retry,
-      dedupe,
-      dedupeKey,
-
-      cache,
-      cacheMaxAge,
     },
   })
 }
@@ -98,4 +86,4 @@ export function del(url, data, options = {}) {
   })
 }
 
-export { clearHttpCache, request, setUnauthorizedHandler }
+export { request, setUnauthorizedHandler }
