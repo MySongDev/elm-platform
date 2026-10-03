@@ -15,7 +15,7 @@ export function createDevMockUserInfo(account = 'dev-admin'): UserInfo {
     email: `${username}@example.com`,
     phone: null,
     avatar: null,
-    status: 1,
+    status: 'ACTIVE',
     role: 'admin',
     permissions: ['*:*:*'],
     tenant: null,
@@ -50,7 +50,7 @@ const devMockUserMenus: UserMenuNode[] = [
     component: 'dashboard',
     type: 'catalog',
     sort: 1,
-    status: 1,
+    status: 'ACTIVE',
     children: [
       {
         id: 15,
@@ -60,10 +60,10 @@ const devMockUserMenus: UserMenuNode[] = [
         name: 'DashboardView',
         icon: 'dashboard',
         permission: null,
-        component: 'dashboard/index',
+        component: 'dashboard',
         type: 'menu',
         sort: 1,
-        status: 1,
+        status: 'ACTIVE',
       },
     ],
   },
@@ -78,7 +78,7 @@ const devMockUserMenus: UserMenuNode[] = [
     component: null,
     type: 'catalog',
     sort: 20,
-    status: 1,
+    status: 'ACTIVE',
     children: [
       {
         id: 2,
@@ -91,7 +91,7 @@ const devMockUserMenus: UserMenuNode[] = [
         component: 'permission/page',
         type: 'menu',
         sort: 1,
-        status: 1,
+        status: 'ACTIVE',
       },
       {
         id: 3,
@@ -104,7 +104,7 @@ const devMockUserMenus: UserMenuNode[] = [
         component: 'permission/button',
         type: 'menu',
         sort: 2,
-        status: 1,
+        status: 'ACTIVE',
       },
     ],
   },
@@ -119,7 +119,7 @@ const devMockUserMenus: UserMenuNode[] = [
     component: null,
     type: 'catalog',
     sort: 30,
-    status: 1,
+    status: 'ACTIVE',
     children: [
       {
         id: 5,
@@ -132,7 +132,7 @@ const devMockUserMenus: UserMenuNode[] = [
         component: 'monitor/online',
         type: 'menu',
         sort: 1,
-        status: 1,
+        status: 'ACTIVE',
       },
       {
         id: 6,
@@ -145,7 +145,7 @@ const devMockUserMenus: UserMenuNode[] = [
         component: 'monitor/logs/login',
         type: 'menu',
         sort: 2,
-        status: 1,
+        status: 'ACTIVE',
       },
       {
         id: 7,
@@ -158,7 +158,7 @@ const devMockUserMenus: UserMenuNode[] = [
         component: 'monitor/logs/operation',
         type: 'menu',
         sort: 3,
-        status: 1,
+        status: 'ACTIVE',
       },
       {
         id: 8,
@@ -171,7 +171,7 @@ const devMockUserMenus: UserMenuNode[] = [
         component: 'monitor/logs/system',
         type: 'menu',
         sort: 4,
-        status: 1,
+        status: 'ACTIVE',
       },
     ],
   },
@@ -186,7 +186,7 @@ const devMockUserMenus: UserMenuNode[] = [
     component: null,
     type: 'catalog',
     sort: 35,
-    status: 1,
+    status: 'ACTIVE',
     children: [
       {
         id: 21,
@@ -199,7 +199,7 @@ const devMockUserMenus: UserMenuNode[] = [
         component: 'commerce/restaurant',
         type: 'menu',
         sort: 1,
-        status: 1,
+        status: 'ACTIVE',
       },
       {
         id: 22,
@@ -212,7 +212,7 @@ const devMockUserMenus: UserMenuNode[] = [
         component: 'commerce/food',
         type: 'menu',
         sort: 2,
-        status: 1,
+        status: 'ACTIVE',
       },
       {
         id: 23,
@@ -225,7 +225,7 @@ const devMockUserMenus: UserMenuNode[] = [
         component: 'commerce/order',
         type: 'menu',
         sort: 3,
-        status: 1,
+        status: 'ACTIVE',
       },
       {
         id: 26,
@@ -239,7 +239,7 @@ const devMockUserMenus: UserMenuNode[] = [
         component: null,
         type: 'menu',
         sort: 4,
-        status: 1,
+        status: 'ACTIVE',
       },
     ],
   },
@@ -254,7 +254,7 @@ const devMockUserMenus: UserMenuNode[] = [
     component: null,
     type: 'catalog',
     sort: 38,
-    status: 1,
+    status: 'ACTIVE',
     children: [
       {
         id: 25,
@@ -267,7 +267,7 @@ const devMockUserMenus: UserMenuNode[] = [
         component: 'platform/tenant',
         type: 'menu',
         sort: 1,
-        status: 1,
+        status: 'ACTIVE',
       },
     ],
   },
@@ -282,7 +282,7 @@ const devMockUserMenus: UserMenuNode[] = [
     component: null,
     type: 'catalog',
     sort: 40,
-    status: 1,
+    status: 'ACTIVE',
     children: [
       {
         id: 10,
@@ -295,7 +295,7 @@ const devMockUserMenus: UserMenuNode[] = [
         component: 'system/user',
         type: 'menu',
         sort: 1,
-        status: 1,
+        status: 'ACTIVE',
       },
       {
         id: 11,
@@ -308,7 +308,7 @@ const devMockUserMenus: UserMenuNode[] = [
         component: 'system/role',
         type: 'menu',
         sort: 2,
-        status: 1,
+        status: 'ACTIVE',
       },
       {
         id: 12,
@@ -321,7 +321,7 @@ const devMockUserMenus: UserMenuNode[] = [
         component: 'system/menu',
         type: 'menu',
         sort: 3,
-        status: 1,
+        status: 'ACTIVE',
       },
       {
         id: 13,
@@ -334,7 +334,7 @@ const devMockUserMenus: UserMenuNode[] = [
         component: 'system/dept',
         type: 'menu',
         sort: 4,
-        status: 1,
+        status: 'ACTIVE',
       },
     ],
   },
@@ -349,7 +349,7 @@ const devMockUserMenus: UserMenuNode[] = [
     component: null,
     type: 'catalog',
     sort: 50,
-    status: 1,
+    status: 'ACTIVE',
     children: [
       {
         id: 31,
@@ -362,7 +362,7 @@ const devMockUserMenus: UserMenuNode[] = [
         component: null,
         type: 'catalog',
         sort: 1,
-        status: 1,
+        status: 'ACTIVE',
         children: [
           {
             id: 32,
@@ -375,7 +375,7 @@ const devMockUserMenus: UserMenuNode[] = [
             component: 'nested/menu1/menu1-1',
             type: 'menu',
             sort: 1,
-            status: 1,
+            status: 'ACTIVE',
           },
           {
             id: 33,
@@ -388,7 +388,7 @@ const devMockUserMenus: UserMenuNode[] = [
             component: null,
             type: 'catalog',
             sort: 2,
-            status: 1,
+            status: 'ACTIVE',
             children: [
               {
                 id: 34,
@@ -401,7 +401,7 @@ const devMockUserMenus: UserMenuNode[] = [
                 component: 'nested/menu1/menu1-2/menu1-2-1',
                 type: 'menu',
                 sort: 1,
-                status: 1,
+                status: 'ACTIVE',
               },
               {
                 id: 35,
@@ -414,7 +414,7 @@ const devMockUserMenus: UserMenuNode[] = [
                 component: 'nested/menu1/menu1-2/menu1-2-2',
                 type: 'menu',
                 sort: 2,
-                status: 1,
+                status: 'ACTIVE',
               },
             ],
           },
@@ -429,7 +429,7 @@ const devMockUserMenus: UserMenuNode[] = [
             component: 'nested/menu1/menu1-3',
             type: 'menu',
             sort: 3,
-            status: 1,
+            status: 'ACTIVE',
           },
         ],
       },
@@ -444,7 +444,7 @@ const devMockUserMenus: UserMenuNode[] = [
         component: 'nested/menu2',
         type: 'menu',
         sort: 2,
-        status: 1,
+        status: 'ACTIVE',
       },
     ],
   },

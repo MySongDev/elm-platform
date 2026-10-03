@@ -14,6 +14,7 @@ function buildItem(overrides: Partial<NotificationItem> = {}): NotificationItem 
     avatar: null,
     status: null,
     read: false,
+    source: 'SEED',
     createdAt: new Date('2026-06-20T08:00:00.000Z').toISOString(),
     readAt: null,
     ...overrides,

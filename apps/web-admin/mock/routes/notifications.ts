@@ -1,5 +1,6 @@
 import type { MockMethod } from 'vite-plugin-mock'
 import type { NotificationItem } from '../../src/entities/notification'
+import type { MockResponseOptions } from './types'
 import {
   MockNotificationNotFound,
   sharedNotificationMockState,
@@ -38,7 +39,7 @@ export function createNotificationMockRoutes(): MockMethod[] {
     {
       url: '/api/admin/notifications',
       method: 'get',
-      response: ({ query }) => {
+      response: ({ query }: MockResponseOptions) => {
         try {
           const type = normalizeType(query?.type)
           return success(sharedNotificationMockState.list(type))
@@ -51,7 +52,7 @@ export function createNotificationMockRoutes(): MockMethod[] {
     {
       url: '/api/admin/notifications/read-all',
       method: 'patch',
-      response: ({ body }) => {
+      response: ({ body }: MockResponseOptions) => {
         try {
           const type = normalizeType((body as { type?: unknown } | undefined)?.type)
           const updatedCount = sharedNotificationMockState.markAllRead(type)
@@ -65,7 +66,7 @@ export function createNotificationMockRoutes(): MockMethod[] {
     {
       url: '/api/admin/notifications/:id/read',
       method: 'patch',
-      response: ({ params }) => {
+      response: ({ params }: MockResponseOptions) => {
         try {
           return success(sharedNotificationMockState.markRead(params.id))
         }
@@ -79,7 +80,7 @@ export function createNotificationMockRoutes(): MockMethod[] {
     {
       url: '/api/admin/notifications/:id',
       method: 'delete',
-      response: ({ params }) => {
+      response: ({ params }: MockResponseOptions) => {
         try {
           sharedNotificationMockState.remove(params.id)
           return success({ success: true })
@@ -94,7 +95,7 @@ export function createNotificationMockRoutes(): MockMethod[] {
     {
       url: '/api/admin/notifications',
       method: 'delete',
-      response: ({ query }) => {
+      response: ({ query }: MockResponseOptions) => {
         try {
           const type = normalizeType(query?.type)
           const deletedCount = sharedNotificationMockState.clear(type)

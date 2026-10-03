@@ -1,5 +1,6 @@
 import type { MockMethod } from 'vite-plugin-mock'
 import type { UpdateProfileParams } from '../../src/entities/session/model/types'
+import type { MockResponseOptions } from './types'
 import {
   createDevMockLoginResult,
   createDevMockUserInfo,
@@ -39,7 +40,7 @@ export function createAuthMockRoutes(): MockMethod[] {
     {
       url: '/api/auth/login',
       method: 'post',
-      response: ({ body, headers }) => {
+      response: ({ body, headers }: MockResponseOptions) => {
         const credentials = body && typeof body === 'object'
           ? body as {
             account?: string
@@ -82,7 +83,7 @@ export function createAuthMockRoutes(): MockMethod[] {
     {
       url: '/api/auth/profile',
       method: 'patch',
-      response: ({ body }) => {
+      response: ({ body }: MockResponseOptions) => {
         currentUser = {
           ...currentUser,
           ...normalizeProfilePatch(body),
@@ -99,7 +100,7 @@ export function createAuthMockRoutes(): MockMethod[] {
     {
       url: '/api/auth/security-logs',
       method: 'get',
-      response: ({ query }) => success({
+      response: ({ query }: MockResponseOptions) => success({
         list: [],
         total: 0,
         page: normalizePositiveInteger(query?.page, 1),
