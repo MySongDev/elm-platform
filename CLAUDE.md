@@ -110,6 +110,16 @@ Pinia stores live in `src/stores/modules` for user/session, addresses, locations
 
 `apps/web-user` has its own existing `CLAUDE.md` and `AGENTS.md`; consult them when working only inside that app because they contain more detailed mobile-app guidance.
 
+## Comment Policy
+
+编写或修改任何源码前，先读 [docs/engineering/011-teaching-comments.md](docs/engineering/011-teaching-comments.md)。要点：
+
+- 默认采用教学型注释，**判据只有一条：删掉这条注释，未来改这里的人会不会做出错误决策？** 会则必留，不会则删。
+- **禁止编造机制**（浏览器 / Vue 内部 / 第三方库行为）。不确定就只写代码能证明的事实——错注释比没注释更有害。
+- 行内只写 WHY，不写代码翻译；只对函数头、状态变量、异步回调、兜底分支、注册/注销这五类位置加注释。
+- 发现旧注释与实现不符时改代码，不要为了迁就旧注释保留错误实现。
+- **只对本次新增或修改的文件补注释，不做全仓普查。**
+
 ## Test Policy
 
 Before creating, changing, or deleting automated tests, read and follow the repository-wide [AI_TEST_POLICY.md](AI_TEST_POLICY.md). By default, do not add or change tests. Only do so when a policy-defined necessary scenario applies or the user explicitly requests it. If the need is unclear, do not write tests; instead run the smallest relevant validation and state why no test was added.
