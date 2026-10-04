@@ -90,12 +90,12 @@ src/
 
 ## 5. 偏差与遗留
 
-### 5.1 build 基线即坏，本次全程未跑
+### 5.1 build 基线即坏，本次全程未跑（已修，见 commit `c159676`）
 
 - 现象：`pnpm --filter @elm-platform/web-admin run build` 在**改动前**就跑 `element-plus@2.14.1` ESM 产物的 `import '@vue/shared'` 报 `Rolldown failed to resolve import` 错误，与本次目录重构完全无关。
-- 已尝试：`pnpm install` 重装依赖，无效（依赖本身是缺声明，不是脏缓存）。
-- 处理：经用户确认（选择"跳过"路线），本次 5 个步骤的验收均降为 **type-check + test:unit + 路由冒烟**，build 未纳入验收项。
-- **遗留任务**：需另开任务修 `element-plus`/`@vue/shared` 的依赖声明缺口（如 `build.rolldownOptions.external` 或补 `@vue/shared` 为直接依赖）后，补跑一次全量 build 确认无新增错误。
+- 根因：`element-plus` 的 ESM 产物（`es/utils/functions.mjs` 等 14 处）直接 `import '@vue/shared'`，但 `@vue/shared` 并非其声明的依赖项（是 `vue` 的传递依赖）。pnpm 严格节点结构下，从 `element-plus` 的虚拟目录向上找不到 `@vue/shared`。
+- 修复（`c159676`）：在 `apps/web-admin/vite.config.ts` 的 `rolldownOptions.resolve.alias` 里把 `@vue/shared` 指向根 `node_modules/@vue/shared`，是比改 `element-plus` 内部文件或加公共 hoist-pattern 侵入性最小的做法。同一次提交还补上了 `src/typings/components.d.ts` 里 `widgets/admin-layout/**` 组件注册项的删除（步骤 4 漏掉的自动产物文件）。
+- 结果：`pnpm --filter @elm-platform/web-admin run build` 现在通过（5.4s，产物正常）。后续 CI / 提交前可直接跑 build 作为正式验收项。
 
 ### 5.2 keep-alive 手工验证未做
 
