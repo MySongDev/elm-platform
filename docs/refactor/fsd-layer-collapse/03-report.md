@@ -17,6 +17,7 @@
 | 3 | `68dd2e2` | 6 个单消费 entity 下沉（order/role/department/food/restaurant/monitor） | ✅ |
 | 4 | `f6a8a90` | `widgets/admin-layout/` 并入 `layouts/admin-layout/`，widgets 层消失 | ✅ |
 | 5 | `0217968` | eslint 边界规则改写：删 3 块死/失效规则，shared/entities 提升 error，新增 pages 块 | ✅ |
+| 修复 | `c159676` | build 的 `@vue/shared` 解析缺口 + 补删 `widgets/` 遗留的组件注册 | ✅ |
 
 ---
 
@@ -60,7 +61,7 @@ src/
 | `pnpm --filter @elm-platform/web-admin run lint` | 0 error | 0 error（36 个既有 warning，非本次引入） | ✅ |
 | `pnpm --filter @elm-platform/web-admin run test:unit` | 45 files / 178 tests | 45 / 178 | ✅ |
 | `pnpm --filter @elm-platform/server exec jest --maxWorkers=2` | 38 suites / 527 tests | 38 / 527 | ✅ |
-| `pnpm --filter @elm-platform/web-admin run build` | 通过 | **基线即坏，本次全程未跑**（见 §5.1） | ⚠️ 跳过 |
+| `pnpm --filter @elm-platform/web-admin run build` | 通过 | 通过（修复后，`c159676`；此前基线即坏，详见 §5.1） | ✅ |
 | 路由冒烟（`--port 5199`，22 页） | 全部 200/HTML | 全部 200/HTML | ✅ |
 
 每步（1~5）结束均单独跑过 type-check + test:unit + 路由冒烟，结果全绿，非仅末次验证。
