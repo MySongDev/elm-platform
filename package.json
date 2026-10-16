@@ -24,6 +24,7 @@
     "test:cov": "turbo run test:cov",
     "test:e2e": "pnpm --filter @elm-platform/server run prisma:generate && node scripts/run-playwright-e2e.mjs",
     "api:generate": "pnpm --filter @elm-platform/api-types run generate",
+    "validate:uniapp": "node scripts/validate-uniapp-versions.mjs",
     "bundle:report": "pnpm build:admin && pnpm build:user && node scripts/report-bundle-size.mjs",
     "clean": "pnpm -r exec rm -rf node_modules dist .turbo",
     "prepare": "husky",

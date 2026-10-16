@@ -25,6 +25,7 @@ export default {
         'server',
         'admin',
         'user',
+        'uni-user',
         'contracts',
         'tsconfig',
         'vite-config',

@@ -1,0 +1,45 @@
+{
+  "name": "@elm-platform/uni-user",
+  "version": "0.0.0",
+  "private": true,
+  "description": "uni-app 用户端（微信小程序优先）。版本约束原因见 README.md，不得随意统一版本。",
+  "engines": {
+    "node": "^20.19.0 || >=22.12.0"
+  },
+  "scripts": {
+    "dev": "uni -p mp-weixin",
+    "dev:mp-weixin": "uni -p mp-weixin",
+    "build": "uni build -p mp-weixin",
+    "build:mp-weixin": "uni build -p mp-weixin",
+    "dev:h5": "uni",
+    "build:h5": "uni build",
+    "type-check": "vue-tsc --noEmit",
+    "test:unit": "vitest run",
+    "lint": "eslint . --fix --cache"
+  },
+  "dependencies": {
+    "@dcloudio/uni-app": "catalog:",
+    "@dcloudio/uni-components": "catalog:",
+    "@dcloudio/uni-i18n": "catalog:",
+    "@dcloudio/uni-mp-vue": "catalog:",
+    "@dcloudio/uni-mp-weixin": "catalog:",
+    "@dcloudio/uni-shared": "catalog:",
+    "@dcloudio/uni-ui": "catalog:",
+    "@vant/area-data": "catalog:",
+    "pinia": "catalog:conflicts_pinia_2_1_7",
+    "vue": "catalog:conflicts_vue_3_4_21"
+  },
+  "devDependencies": {
+    "@dcloudio/types": "catalog:",
+    "@dcloudio/vite-plugin-uni": "catalog:",
+    "@elm-platform/api-types": "workspace:*",
+    "@elm-platform/contracts": "workspace:*",
+    "@elm-platform/tsconfig": "workspace:*",
+    "sass": "catalog:",
+    "svgtofont": "catalog:",
+    "typescript": "catalog:",
+    "vite": "catalog:conflicts_vite_5_2_8",
+    "vitest": "catalog:conflicts_vitest_3_2_4",
+    "vue-tsc": "catalog:"
+  }
+}

@@ -5,9 +5,17 @@ trustPolicyExclude:
   - chokidar
   - semver
   - undici-types
+  # @dcloudio/vite-plugin-uni 精确锁 @vitejs/plugin-legacy@5.3.2（传递依赖）。
+  # pnpm 信任策略按发布日期比对：5.0.0-beta.0/beta.1（2023-09）带 SLSA provenance，
+  # 其后 5.0.0-beta.2 至 5.4.3 连续 10 个正式版均无 → Vite 官方短暂启用后停用，6.1.0 才重启，
+  # 属发布流程变化而非单版本被接管。已核实 5.3.2 的 maintainers 全为 Vite 官方成员
+  # （soda / vitebot / yyx990803 / patak / antfu）。5.x 全线无 attestation，
+  # 故无「升级到同 major 的有证据版本」这条退路；6.x 需 vite 6，与 uni-app 锁的 5.2.8 不兼容。
+  - '@vitejs/plugin-legacy'
 
 packages:
   - apps/server
+  - apps/uni-user
   - apps/web-admin
   - apps/web-user
   - 'packages/*'
@@ -26,6 +34,15 @@ catalog:
   '@commitlint/cli': ^19.8.1
   '@commitlint/config-conventional': ^19.8.1
   '@compodoc/compodoc': ^1.1.25
+  '@dcloudio/types': 3.4.31
+  '@dcloudio/uni-app': 3.0.0-5020620260917001
+  '@dcloudio/uni-components': 3.0.0-5020620260917001
+  '@dcloudio/uni-i18n': 3.0.0-5020620260917001
+  '@dcloudio/uni-mp-vue': 3.0.0-5020620260917001
+  '@dcloudio/uni-mp-weixin': 3.0.0-5020620260917001
+  '@dcloudio/uni-shared': 3.0.0-5020620260917001
+  '@dcloudio/uni-ui': ^1.5.12
+  '@dcloudio/vite-plugin-uni': 3.0.0-5020620260917001
   '@iconify-prerendered/vue-ep': ^0.28.1754542231
   '@nestjs/cli': ^10.4.4
   '@nestjs/common': ^10.4.1
@@ -84,6 +101,7 @@ catalog:
   reflect-metadata: ^0.2.2
   rollup-plugin-visualizer: ^7.0.1
   rxjs: ^7.8.1
+  sass: ^1.77.0
   sass-embedded: ^1.97.3
   source-map-support: ^0.5.21
   stylelint: ^16.21.0
@@ -93,6 +111,7 @@ catalog:
   stylelint-order: ^6.0.4
   stylelint-scss: ^6.0.0
   supertest: ^7.0.0
+  svgtofont: ^6.5.3
   swiper: ^12.1.2
   ts-jest: ^29.2.4
   ts-loader: ^9.5.1
@@ -125,5 +144,24 @@ allowBuilds:
   '@parcel/watcher': true
   '@prisma/client': true
   '@prisma/engines': true
+  # core-js / core-js-pure 的 postinstall 只打印 OpenCollective 捐赠横幅
+  # （脚本自身检测 CI/ADBLOCK/DISABLE_OPENCOLLECTIVE 即跳过），无功能作用 → 不批准。
+  # 二者由 @dcloudio/vite-plugin-uni 的传递依赖引入（core-js 3.50.0）。
+  core-js: false
+  core-js-pure: false
   esbuild: true
   prisma: true
+  ttf2woff2: true
+  # vue-demi 的 postinstall 会按实际 vue 版本 switchVersion()，切换 lib 产物指向
+  # Vue2/Vue3 实现 → 有功能作用，批准。pinia 2.x 依赖它；
+  # uni-user 的 vue 是 3.4.21，发布产物默认已是 isVue3=true，批准可避免边界情况下留在 v2 占位。
+  vue-demi: true
+catalogs:
+  conflicts_pinia_2_1_7:
+    pinia: 2.1.7
+  conflicts_vue_3_4_21:
+    vue: 3.4.21
+  conflicts_vite_5_2_8:
+    vite: 5.2.8
+  conflicts_vitest_3_2_4:
+    vitest: 3.2.4

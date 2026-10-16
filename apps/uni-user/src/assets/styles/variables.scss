@@ -1,0 +1,7 @@
+// ⚠️ 与 apps/web-user/src/assets/styles/_variables.scss 同源
+// 这 4 个颜色变量无单位，是端无关的；样式文件整体划为端相关资产（迁移方案议题 4 / 7）。
+// 修改需同步两处。
+$e4: #e4e4e4;
+$ff: #fff;
+$blue: #3190e8;
+$fc: #fff;

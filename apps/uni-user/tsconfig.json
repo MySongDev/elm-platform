@@ -1,0 +1,19 @@
+{
+  "extends": "@elm-platform/tsconfig/vue-app.json",
+  "compilerOptions": {
+    "paths": {
+      "@/*": ["./src/*"]
+    },
+    "types": ["@dcloudio/types", "vite/client"],
+    "allowJs": true,
+    "strict": false
+  },
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.d.ts",
+    "src/**/*.tsx",
+    "src/**/*.vue",
+    "src/**/*.js"
+  ],
+  "exclude": ["node_modules", "dist"]
+}

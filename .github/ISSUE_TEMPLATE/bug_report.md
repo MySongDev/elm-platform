@@ -24,7 +24,7 @@ labels: bug
 
 ## 环境
 
-- App: server / web-admin / web-user
+- App: server / web-admin / web-user / uni-user
 - Branch/Commit:
 - Browser/Node version:
 - OS:

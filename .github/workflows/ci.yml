@@ -40,6 +40,12 @@ jobs:
       - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
         with: {node-version: 22, cache: pnpm}
+      # 只读 apps/uni-user/package.json，不需要依赖 → 放在 install 之前，违规时最快失败。
+      # 防止「顺手统一版本」把 uni-app 工程搞坏：@dcloudio/uni-app 的 dist-tag latest
+      # 指向活跃发版的 Vue 2 线，写成 latest 能装上能跑但运行时是 Vue2，发现得很晚。
+      # 约束依据见 docs/engineering/007-uniapp-uni-user-constraints.md
+      - name: Validate uni-app version policy
+        run: node scripts/validate-uniapp-versions.mjs
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
       - name: Generate Prisma client

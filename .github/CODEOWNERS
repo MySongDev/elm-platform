@@ -12,6 +12,7 @@
 # Frontend apps
 /apps/web-admin/ @MySongDev
 /apps/web-user/ @MySongDev
+/apps/uni-user/ @MySongDev
 
 # CI/CD and governance
 /.github/ @MySongDev

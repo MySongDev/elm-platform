@@ -1,0 +1,35 @@
+{
+  "name": "elm-uni-user",
+  "appid": "",
+  "description": "elm 用户端小程序（Batch 0 骨架，appid 待填）",
+  "versionName": "0.0.1",
+  "versionCode": "1",
+  "transformPx": false,
+  "app-plus": {
+    "usingComponents": true,
+    "nvueStyleCompiler": "uni-app",
+    "compilerVersion": 3
+  },
+  "quickapp": {},
+  "mp-weixin": {
+    "appid": "",
+    "setting": {
+      "urlCheck": false,
+      "es6": true,
+      "minified": true
+    },
+    "usingComponents": true,
+    "optimization": {
+      "subPackages": true
+    },
+    "requiredPrivateInfos": [
+      "getLocation"
+    ],
+    "permission": {
+      "scope.userLocation": {
+        "desc": "你的位置将用于推荐附近的商家与配送范围"
+      }
+    }
+  },
+  "vueVersion": "3"
+}

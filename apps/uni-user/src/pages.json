@@ -1,0 +1,207 @@
+{
+  "easycom": {
+    "autoscan": true,
+    "custom": {
+      "^uni-(.*)": "@dcloudio/uni-ui/lib/uni-$1/uni-$1.vue",
+      "^BaseState$": "@/components/common/BaseState/BaseState.vue",
+      "^StarRating$": "@/components/common/StarRating.vue",
+      "^LocalLoading$": "@/components/common/Loading/LocalLoading.vue"
+    }
+  },
+  "pages": [
+    {
+      "path": "pages/msite/msite",
+      "style": {
+        "navigationBarTitleText": "外卖",
+        "enablePullDownRefresh": true
+      }
+    },
+    {
+      "path": "pages/search/SearchHome",
+      "style": {
+        "navigationBarTitleText": "搜索"
+      }
+    },
+    {
+      "path": "pages/cart/cart",
+      "style": {
+        "navigationBarTitleText": "购物车"
+      }
+    },
+    {
+      "path": "pages/profile/profile",
+      "style": {
+        "navigationBarTitleText": "我的",
+        "navigationStyle": "custom"
+      }
+    },
+    {
+      "path": "pages/error/404",
+      "style": {
+        "navigationBarTitleText": "404"
+      }
+    },
+    {
+      "path": "pages/index/index",
+      "style": {
+        "navigationBarTitleText": "Batch 0 骨架验证"
+      }
+    },
+    {
+      "path": "pages/poc-shop/poc-shop",
+      "style": {
+        "navigationBarTitleText": "shop 滚动 PoC（Batch 0.5，验完删）"
+      }
+    }
+  ],
+  "subPackages": [
+    {
+      "root": "pkg-shop",
+      "pages": [
+        {
+          "path": "shop",
+          "style": {
+            "navigationStyle": "custom"
+          }
+        }
+      ]
+    },
+    {
+      "root": "pkg-order",
+      "pages": [
+        {
+          "path": "order",
+          "style": {
+            "navigationBarTitleText": "我的订单"
+          }
+        },
+        {
+          "path": "payment",
+          "style": {
+            "navigationBarTitleText": "在线支付"
+          }
+        },
+        {
+          "path": "PaymentResult",
+          "style": {
+            "navigationBarTitleText": "支付结果"
+          }
+        }
+      ]
+    },
+    {
+      "root": "pkg-profile",
+      "pages": [
+        {
+          "path": "info",
+          "style": {
+            "navigationBarTitleText": "账户信息"
+          }
+        },
+        {
+          "path": "setusername",
+          "style": {
+            "navigationBarTitleText": "修改用户名"
+          }
+        },
+        {
+          "path": "addressHome",
+          "style": {
+            "navigationBarTitleText": "收货地址"
+          }
+        },
+        {
+          "path": "AddressAdd",
+          "style": {
+            "navigationBarTitleText": "添加地址"
+          }
+        },
+        {
+          "path": "AddressDatil",
+          "style": {
+            "navigationBarTitleText": "地址详情"
+          }
+        }
+      ]
+    },
+    {
+      "root": "pkg-auth",
+      "pages": [
+        {
+          "path": "login",
+          "style": {
+            "navigationBarTitleText": "登录"
+          }
+        },
+        {
+          "path": "SmsVerification",
+          "style": {
+            "navigationBarTitleText": "短信验证码"
+          }
+        },
+        {
+          "path": "forget",
+          "style": {
+            "navigationBarTitleText": "忘记密码"
+          }
+        }
+      ]
+    }
+  ],
+  "preloadRule": {
+    "pages/msite/msite": {
+      "network": "all",
+      "packages": ["pkg-shop"]
+    },
+    "pages/search/SearchHome": {
+      "network": "all",
+      "packages": ["pkg-shop"]
+    },
+    "pages/cart/cart": {
+      "network": "wifi",
+      "packages": ["pkg-order"]
+    },
+    "pages/profile/profile": {
+      "network": "wifi",
+      "packages": ["pkg-profile", "pkg-auth"]
+    }
+  },
+  "globalStyle": {
+    "navigationBarTextStyle": "black",
+    "navigationBarTitleText": "elm",
+    "navigationBarBackgroundColor": "#FFFFFF",
+    "backgroundColor": "#F5F5F5"
+  },
+  "tabBar": {
+    "color": "#999999",
+    "selectedColor": "#0089dc",
+    "backgroundColor": "#ffffff",
+    "borderStyle": "black",
+    "list": [
+      {
+        "pagePath": "pages/msite/msite",
+        "text": "外卖",
+        "iconPath": "static/tabbar/msite.png",
+        "selectedIconPath": "static/tabbar/msite_active.png"
+      },
+      {
+        "pagePath": "pages/search/SearchHome",
+        "text": "搜索",
+        "iconPath": "static/tabbar/search.png",
+        "selectedIconPath": "static/tabbar/search_active.png"
+      },
+      {
+        "pagePath": "pages/cart/cart",
+        "text": "购物车",
+        "iconPath": "static/tabbar/cart.png",
+        "selectedIconPath": "static/tabbar/cart_active.png"
+      },
+      {
+        "pagePath": "pages/profile/profile",
+        "text": "我的",
+        "iconPath": "static/tabbar/profile.png",
+        "selectedIconPath": "static/tabbar/profile_active.png"
+      }
+    ]
+  }
+}

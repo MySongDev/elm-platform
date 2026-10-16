@@ -1,0 +1,44 @@
+// ⚠️ 与 apps/web-user/src/assets/styles/_mixins.scss 同源
+// 实测不含任何 px/vw 字面量（全部是参数化 mixin），因此端无关，可直接复用。
+// 修改需同步两处。
+
+// 多行省略号
+@mixin text-ellipsis{
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap; // 强制不换行，一行显示
+}
+
+@mixin flex-center($justify:center) {
+  display: flex;
+  align-items: center; /* 垂直居中 */
+  justify-content: $justify;
+}
+
+@mixin wh($width, $height){
+	width: $width;
+	height: $height;
+};
+
+@mixin  size-color($size,$color){
+  font-size: $size;
+  color: $color;
+};
+
+// 定位全屏
+@mixin allcover{
+	position:absolute;
+	top:0;
+	right:0;
+}
+
+@mixin borderRadius($radius) {
+    border-radius: $radius;
+}
+
+// 定位左右居中
+@mixin cl {
+	position: absolute;
+	left: 50%;
+    transform: translateX(-50%);
+}

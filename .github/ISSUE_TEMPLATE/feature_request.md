@@ -23,7 +23,7 @@ labels: enhancement
 
 ## 影响范围
 
-- App: server / web-admin / web-user / packages
+- App: server / web-admin / web-user / uni-user / packages
 - 是否涉及 API 变更：是 / 否
 - 是否涉及数据库变更：是 / 否
 - 是否涉及权限变更：是 / 否
