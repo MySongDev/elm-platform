@@ -7,8 +7,8 @@ const mocks = vi.hoisted(() => ({
   task: null,
 }))
 
-vi.mock('./useImageVisibilityPriority', () => ({
-  useImageVisibilityPriority: vi.fn((options) => {
+vi.mock('./useImageVisibility', () => ({
+  useImageVisibility: vi.fn((options) => {
     mocks.visibilityOptions = options
     return {
       start: vi.fn(),
@@ -17,16 +17,11 @@ vi.mock('./useImageVisibilityPriority', () => ({
   }),
 }))
 
-vi.mock('@/utils/image/imageCandidates', () => ({
-  buildImageCandidateUrls: vi.fn(() => ['primary.jpg', 'fallback.jpg']),
-}))
-
 vi.mock('@/utils/image/imageLoadScheduler', () => ({
   scheduleImageTask: vi.fn((options) => {
     mocks.task = {
       options,
       cancel: vi.fn(),
-      updatePriority: vi.fn(),
     }
     return mocks.task
   }),
@@ -36,23 +31,15 @@ function createSubject() {
   const scope = effectScope()
   const src = shallowRef('source.jpg')
   const img = document.createElement('img')
-  const onLoad = vi.fn()
-  const onError = vi.fn()
   const subject = scope.run(() => useSmartImage({
     src,
-    eager: () => false,
-    priority: () => 10,
     rootMargin: () => '0px 0px 200px 0px',
     loadDelay: () => 150,
     rootEl: () => document.createElement('div'),
     imgEl: () => img,
-    onLoad,
-    onError,
   }))
   return {
     img,
-    onError,
-    onLoad,
     scope,
     src,
     subject,
@@ -65,44 +52,33 @@ describe('useSmartImage', () => {
     mocks.task = null
   })
 
-  it('成功加载当前候选并报告真实 URL', () => {
-    const { img, onLoad, subject } = createSubject()
-    mocks.visibilityOptions.loadNow(-90)
-    mocks.task.options.run(vi.fn())
+  it('加载成功后进入完成状态并归还名额', () => {
+    const { img, subject } = createSubject()
+    const release = vi.fn()
+    mocks.visibilityOptions.onEnter()
+    mocks.task.options.run(release)
 
     img.onload()
 
+    expect(img.src).toContain('source.jpg')
     expect(subject.loaded.value).toBe(true)
     expect(subject.failed.value).toBe(false)
-    expect(onLoad).toHaveBeenCalledWith({ src: 'primary.jpg' })
+    expect(release).toHaveBeenCalledOnce()
   })
 
-  it('当前候选失败后调度下一个候选', () => {
-    const { img } = createSubject()
-    mocks.visibilityOptions.loadNow(10)
+  it('加载失败后进入失败状态', () => {
+    const { img, subject } = createSubject()
+    mocks.visibilityOptions.onEnter()
     mocks.task.options.run(vi.fn())
 
-    img.onerror()
-    mocks.task.options.run(vi.fn())
-
-    expect(img.src).toContain('fallback.jpg')
-  })
-
-  it('候选耗尽后进入失败状态', () => {
-    const { img, onError, subject } = createSubject()
-    mocks.visibilityOptions.loadNow(10)
-    mocks.task.options.run(vi.fn())
-    img.onerror()
-    mocks.task.options.run(vi.fn())
     img.onerror()
 
     expect(subject.failed.value).toBe(true)
-    expect(onError).toHaveBeenCalledWith({ src: 'fallback.jpg' })
   })
 
   it('src 更新时重置状态并清理旧任务', async () => {
     const { img, src, subject } = createSubject()
-    mocks.visibilityOptions.schedule(10)
+    mocks.visibilityOptions.onEnter()
 
     src.value = 'next.jpg'
     await nextTick()
@@ -111,5 +87,16 @@ describe('useSmartImage', () => {
     expect(subject.loaded.value).toBe(false)
     expect(subject.failed.value).toBe(false)
     expect(img.hasAttribute('src')).toBe(false)
+  })
+
+  it('下载中卸载时归还并发名额', () => {
+    const { scope } = createSubject()
+    const release = vi.fn()
+    mocks.visibilityOptions.onEnter()
+    mocks.task.options.run(release)
+
+    scope.stop()
+
+    expect(release).toHaveBeenCalledOnce()
   })
 })

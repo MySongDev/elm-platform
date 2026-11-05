@@ -10,7 +10,6 @@
  */
 import SmartImage from '@/components/common/SmartImage/SmartImage.vue'
 import StarRating from '@/components/common/StarRating.vue'
-import { IMAGE_PRIORITY } from '@/config'
 import { getImageUrl } from '@/platform/image'
 
 const {
@@ -39,7 +38,6 @@ function navToShop() {
       :src="getImageUrl(item.image_path)"
       :alt="item.name"
       class="item-img"
-      :priority="IMAGE_PRIORITY.NORMAL"
     />
     <view class="shop-item_right">
       <view class="shop-detail_header">

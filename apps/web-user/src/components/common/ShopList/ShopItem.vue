@@ -2,7 +2,6 @@
 import SmartImage from '@/components/common/SmartImage/SmartImage.vue'
 import StarRating from '@/components/common/StarRating.vue'
 import { IMAGE_BASE_URL } from '@/config'
-import { IMAGE_PRIORITY } from '@/config/imageLoading'
 /**
  * 遵循 Vue 3.5+ 规范，解构 props 保持响应性
  * 基础原理：单数组件只做一件事情。
@@ -52,7 +51,6 @@ function navToShop() {
       :src="imgBaseUrl + item.image_path"
       :alt="item.name"
       class="item-img"
-      :priority="IMAGE_PRIORITY.NORMAL"
     />
     <div class="shop-item_right">
       <div class="shop-detail_header">

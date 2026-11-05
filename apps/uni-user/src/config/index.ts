@@ -37,18 +37,6 @@ export const ELM_ASSET_HOST = import.meta.env.VITE_ELM_ASSET_HOST || API_BASE_UR
 /** 图片代理前缀。对应后端 GET /api/img/*（长期契约，迁移方案议题 2） */
 export const IMAGE_BASE_URL = `${ELM_ASSET_HOST}/img/`
 
-/**
- * 图片源回退列表。
- * ⚠️ 刻意留空：改走后端代理后，回退到第三方域名在小程序端必然失败（不在白名单），
- * 只会白白消耗一次重试。容错收敛到后端代理内部。
- */
-export const IMAGE_ORIGIN_FALLBACKS: string[] = (
-  import.meta.env.VITE_IMAGE_ORIGIN_FALLBACKS || ''
-)
-  .split(',')
-  .map(item => item.trim())
-  .filter(Boolean)
-
 /** 请求超时（毫秒） */
 export const REQUEST_TIMEOUT = 10000
 
@@ -90,19 +78,6 @@ export const DEV_FALLBACK_LOCATION: {
     longitude: lng,
   }
 })()
-
-/**
- * 图片优先级（数值越小越先加载）。
- * ⚠️ 与 apps/web-user/src/config/imageLoading.js 同源（值一致）。
- * ⚠️ uni-user 已废弃 IMAGE_VIEWPORT_PRIORITY_OFFSET（视口内提优先级）：
- * 小程序无 IntersectionObserver，D3 退化方案只保留并发控制（Batch 5 O3 再评估）。
- */
-export const IMAGE_PRIORITY = {
-  CRITICAL: 0,
-  ABOVE_THE_FOLD: 3,
-  NORMAL: 10,
-  BELOW: 20,
-} as const
 
 /**
  * 图片并发基础值。

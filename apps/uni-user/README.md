@@ -213,7 +213,7 @@ src/
 | `navigation.ts` | 跳转 + 路由拦截器 + 鉴权守卫 | `router/`（364 行整体作废） |
 | `location.ts` | `uni.getLocation` + 超时兜底 + 授权引导 | `navigator.geolocation` |
 | `feedback.ts` | toast / confirm / loading（引用计数） | Vant 函数式 API + `AlterTip`/`ConfirmDialog`/`GlobalLoading`（命令式挂载 DOM） |
-| `image.ts` | 图片 URL 构建 + 候选回退 | `utils/image/imageCandidates.js` |
+| `image.ts` | 图片 URL 构建 | `config/index.js` 的 `IMAGE_BASE_URL` |
 
 ⚠️ **不要一开始就铺满 `#ifdef`** —— 那是「三端全要」的写法，会显著增加当下复杂度。
 当前只做小程序端，用 adapter 收口即可。

@@ -1,6 +1,5 @@
 <script setup>
 import { useTemplateRef } from 'vue'
-import { IMAGE_PRIORITY } from '@/config/imageLoading'
 import { useSmartImage } from './useSmartImage'
 
 const props = defineProps({
@@ -11,14 +10,6 @@ const props = defineProps({
   alt: {
     type: String,
     default: '',
-  },
-  eager: {
-    type: Boolean,
-    default: false,
-  },
-  priority: {
-    type: Number,
-    default: IMAGE_PRIORITY.NORMAL,
   },
   skeleton: {
     type: Boolean,
@@ -38,21 +29,15 @@ const props = defineProps({
   },
 })
 
-const emit = defineEmits(['load', 'error'])
-
 const rootEl = useTemplateRef('rootEl')
 const imgEl = useTemplateRef('imgEl')
 
 const { loaded, failed } = useSmartImage({
   src: () => props.src,
-  eager: () => props.eager,
-  priority: () => props.priority,
   rootMargin: () => props.rootMargin,
   loadDelay: () => props.loadDelay,
   rootEl,
   imgEl,
-  onLoad: payload => emit('load', payload),
-  onError: payload => emit('error', payload),
 })
 </script>
 

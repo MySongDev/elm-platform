@@ -1,31 +1,21 @@
 <script setup>
 /**
  * ⚠️ 与 apps/web-user/src/components/common/SmartImage/SmartImage.vue 同源改造，
- * 但**调度模型重写**（迁移方案 D3 / Batch 2 第 7 项，全组件层最难）。
+ * 但**调度模型重写**（迁移方案 D3 / Batch 2 第 7 项）。
  *
- * web-user 的机制：IntersectionObserver 判可视 → 视口内任务优先级提升 -100 →
- * 并发队列 → `<img>` 手动赋 src → 失败换候选 origin。
+ * web-user 的机制：IntersectionObserver 判可视 + 停留时间 → 并发队列 → `<img>` 手动赋 src。
  *
- * 小程序端**没有可用于任意元素的 IntersectionObserver** → 按方案选定的退化路线：
+ * 小程序端**没有可用于任意元素的 IntersectionObserver** → 退化路线：
  * - 懒加载交给 `<image lazy-load>`（小程序原生）
- * - 并发控制保留（imageLoadScheduler 端无关，队列逻辑本身有价值）
- * - **放弃「视口内提优先级」**（IMAGE_VIEWPORT_PRIORITY_OFFSET 废弃；
- *   是否恢复列入 Batch 5 O3，且要先评估收益 —— 小程序端复现可能性能更差）
- * - 候选回退保留（platform/image 的 buildImageCandidateUrls；
- *   ⚠️ uni-user 默认 fallback 为空数组，故默认单候选，回退逻辑是防御性的）
+ * - 并发控制保留（imageLoadScheduler 端无关）
+ * - loadDelay 退化为「挂载后延迟入队」，错开首屏请求峰
  *
- * 删除的 web-user 依赖：useSmartImage.js / useImageVisibilityPriority.js
- * （两者围绕 IntersectionObserver 与 useTemplateRef(Vue3.5 API)，整体作废）。
- *
- * 保留的对外 API：src / alt / eager / priority / skeleton / progressive / loadDelay
- * + load / error 事件 → 调用方（ShopItem 等）零改动。
- * ⚠️ rootMargin prop 移除：它是 IntersectionObserver 参数，小程序端无意义。
- * 调用方若传了会被 Vue 忽略（不报错），Batch 3 迁页面时顺手清理。
+ * 2026-11-06 精简（与 web-user 同步）：删掉 priority、候选 origin 回退、load/error 事件。
+ * 三者均无调用方：priority 只有 ShopItem 传了默认值，回退列表默认为空，事件无人监听。
+ * eager 保留：pkg-shop/components/ShopHeader.vue 用它让店铺头图跳过延迟。
  */
 import { onScopeDispose, shallowRef, watch } from 'vue'
 
-import { IMAGE_PRIORITY } from '@/config'
-import { buildImageCandidateUrls, nextImageCandidate } from '@/platform/image'
 import { scheduleImageTask } from '@/utils/image/imageLoadScheduler'
 
 const props = defineProps({
@@ -37,14 +27,10 @@ const props = defineProps({
     type: String,
     default: '',
   },
-  /** 跳过懒加载与延迟，立即进队列（首屏关键图） */
+  /** 跳过延迟，立即进队列（首屏关键图） */
   eager: {
     type: Boolean,
     default: false,
-  },
-  priority: {
-    type: Number,
-    default: IMAGE_PRIORITY.NORMAL,
   },
   skeleton: {
     type: Boolean,
@@ -60,12 +46,9 @@ const props = defineProps({
   },
 })
 
-const emit = defineEmits(['load', 'error'])
-
 const loaded = shallowRef(false)
 const failed = shallowRef(false)
 const currentSrc = shallowRef('')
-const candidateIndex = shallowRef(0)
 
 let imageTask = null
 let delayTimer = null
@@ -73,6 +56,7 @@ let delayTimer = null
 // ⚠️ 声明在 enqueue 之前：enqueue 的 run 闭包会写它（no-use-before-define）
 let pendingRelease = null
 
+// 撤掉延迟和排队中的任务；已赋 src 的那次加载也要归还名额，否则名额会一直被占着
 function clearPending() {
   if (delayTimer !== null) {
     clearTimeout(delayTimer)
@@ -80,6 +64,8 @@ function clearPending() {
   }
   imageTask?.cancel()
   imageTask = null
+  pendingRelease?.()
+  pendingRelease = null
 }
 
 /**
@@ -90,55 +76,31 @@ function enqueue() {
   if (loaded.value || failed.value || imageTask)
     return
 
-  const candidates = buildImageCandidateUrls(props.src)
-  const url = candidates[candidateIndex.value]
-
-  if (!url) {
+  if (!props.src) {
     failed.value = true
-    emit('error', { src: props.src })
     return
   }
 
   imageTask = scheduleImageTask({
-    priority: props.priority,
     run(release) {
-      currentSrc.value = url
+      currentSrc.value = props.src
       pendingRelease = release
     },
   })
 }
 
-function onLoad(event) {
+function settle(ok) {
   pendingRelease?.()
   pendingRelease = null
   imageTask = null
-  loaded.value = true
-  failed.value = false
-  emit('load', event?.detail || { src: currentSrc.value })
-}
-
-function onError() {
-  pendingRelease?.()
-  pendingRelease = null
-  imageTask = null
-
-  // 候选回退：还有下一个候选就重试，否则判失败
-  const next = nextImageCandidate(buildImageCandidateUrls(props.src), candidateIndex.value)
-  if (next) {
-    candidateIndex.value += 1
-    enqueue()
-    return
-  }
-
-  failed.value = true
-  emit('error', { src: currentSrc.value })
+  loaded.value = ok
+  failed.value = !ok
 }
 
 function start() {
   clearPending()
   loaded.value = false
   failed.value = false
-  candidateIndex.value = 0
   currentSrc.value = ''
 
   if (props.eager) {
@@ -158,7 +120,7 @@ watch(
   () => start(),
 )
 watch(
-  () => [props.eager, props.priority],
+  () => props.eager,
   () => {
     if (!loaded.value)
       start()
@@ -167,11 +129,7 @@ watch(
 
 start()
 
-onScopeDispose(() => {
-  clearPending()
-  pendingRelease?.()
-  pendingRelease = null
-})
+onScopeDispose(clearPending)
 </script>
 
 <template>
@@ -195,8 +153,8 @@ onScopeDispose(() => {
       :aria-label="alt"
       mode="aspectFill"
       lazy-load
-      @load="onLoad"
-      @error="onError"
+      @load="settle(true)"
+      @error="settle(false)"
     />
 
     <view

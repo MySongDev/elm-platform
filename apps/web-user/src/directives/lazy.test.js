@@ -34,8 +34,8 @@ function createBinding(value, oldValue) {
 }
 
 async function createHarness() {
+  vi.doMock('@/config/imageLoading', () => ({ IMAGE_LOAD_BASE_CONCURRENCY: 1 }))
   const scheduler = await import('../utils/image/imageLoadScheduler.js')
-  scheduler.setImageLoadMaxConcurrent(1)
   const { default: directive } = await import('./lazy.js')
 
   return {

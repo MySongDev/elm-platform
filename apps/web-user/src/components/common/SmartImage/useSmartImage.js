@@ -1,5 +1,4 @@
 import {
-  computed,
   nextTick,
   onScopeDispose,
   readonly,
@@ -7,31 +6,24 @@ import {
   toValue,
   watch,
 } from 'vue'
-import { IMAGE_VIEWPORT_PRIORITY_OFFSET } from '@/config/imageLoading'
-import { buildImageCandidateUrls } from '@/utils/image/imageCandidates'
 import { scheduleImageTask } from '@/utils/image/imageLoadScheduler'
-import { useImageVisibilityPriority } from './useImageVisibilityPriority'
+import { useImageVisibility } from './useImageVisibility'
 
 export function useSmartImage(options) {
   const {
     src,
-    eager,
-    priority,
     rootMargin,
     loadDelay,
     rootEl,
     imgEl,
-    onLoad,
-    onError,
   } = options
 
-  const candidates = computed(() => buildImageCandidateUrls(toValue(src)))
-  const candidateIndex = shallowRef(0)
   const loaded = shallowRef(false)
   const failed = shallowRef(false)
 
   let imageTask = null
-  let requestStarted = false
+  // 浏览器已经在下载时，这里保存调度器给的 release，用来归还并发名额
+  let releaseSlot = null
 
   function clearImageHandlers() {
     const image = toValue(imgEl)
@@ -41,129 +33,74 @@ export function useSmartImage(options) {
     image.onerror = null
   }
 
-  function cancelPending() {
-    if (requestStarted)
-      return
+  // 离开可视区：只撤掉还在排队的任务。已经开始下载的请求无法取消，让它下完。
+  function cancelQueued() {
     imageTask?.cancel()
     imageTask = null
   }
 
-  function finishAttempt() {
+  // src 变化或组件卸载：排队的撤掉，下载中的也要归还名额，否则这个名额会一直被占着
+  function abort() {
+    cancelQueued()
+    clearImageHandlers()
+    releaseSlot?.()
+    releaseSlot = null
+  }
+
+  function settle(ok) {
+    clearImageHandlers()
+    releaseSlot?.()
+    releaseSlot = null
     imageTask = null
-    requestStarted = false
+    loaded.value = ok
+    failed.value = !ok
   }
 
-  function attachHandlers(image, url, release) {
-    image.onload = () => {
-      clearImageHandlers()
-      release()
-      finishAttempt()
-      loaded.value = true
-      failed.value = false
-      onLoad({ src: url })
-    }
-    image.onerror = () => {
-      clearImageHandlers()
-      release()
-      finishAttempt()
-      const nextIndex = candidateIndex.value + 1
-      if (nextIndex < candidates.value.length) {
-        candidateIndex.value = nextIndex
-        loadNow(toValue(priority))
-        return
-      }
-      failed.value = true
-      onError({ src: url })
-    }
-  }
+  function load() {
+    if (loaded.value || failed.value || imageTask || releaseSlot)
+      return
 
-  function createTask(taskPriority) {
-    const url = candidates.value[candidateIndex.value]
+    const url = toValue(src)
     const image = toValue(imgEl)
     if (!url || !image) {
       failed.value = true
-      onError({ src: url || toValue(src) })
-      return null
+      return
     }
 
-    return scheduleImageTask({
-      priority: taskPriority,
+    imageTask = scheduleImageTask({
       run(release) {
-        requestStarted = true
-        attachHandlers(image, url, release)
+        releaseSlot = release
+        image.onload = () => settle(true)
+        image.onerror = () => settle(false)
         image.src = url
       },
     })
   }
 
-  function schedule(taskPriority) {
-    if (loaded.value || failed.value || requestStarted)
-      return
-    if (imageTask) {
-      imageTask.updatePriority(taskPriority)
-      return
-    }
-    imageTask = createTask(taskPriority)
-  }
-
-  function loadNow(taskPriority) {
-    if (loaded.value || failed.value || requestStarted)
-      return
-    if (imageTask) {
-      imageTask.updatePriority(taskPriority)
-      return
-    }
-    imageTask = createTask(taskPriority)
-  }
-
-  function updatePriority(taskPriority) {
-    if (!requestStarted)
-      imageTask?.updatePriority(taskPriority)
-  }
-
-  const visibility = useImageVisibilityPriority({
+  const visibility = useImageVisibility({
     target: rootEl,
-    eager,
     rootMargin,
     loadDelay,
-    priority,
-    viewportPriorityOffset: IMAGE_VIEWPORT_PRIORITY_OFFSET,
-    schedule,
-    loadNow,
-    updatePriority,
-    cancelPending,
+    onEnter: load,
+    onLeave: cancelQueued,
   })
-
-  function reset() {
-    visibility.stop()
-    cancelPending()
-    clearImageHandlers()
-    requestStarted = false
-    imageTask = null
-    candidateIndex.value = 0
-    loaded.value = false
-    failed.value = false
-    toValue(imgEl)?.removeAttribute('src')
-    nextTick(visibility.start)
-  }
 
   watch(
     () => toValue(src),
-    reset,
-  )
-  watch(
-    () => [toValue(eager), toValue(priority)],
     () => {
-      if (!loaded.value)
-        nextTick(visibility.start)
+      visibility.stop()
+      abort()
+      loaded.value = false
+      failed.value = false
+      toValue(imgEl)?.removeAttribute('src')
+      nextTick(visibility.start)
     },
   )
 
   nextTick(visibility.start)
   onScopeDispose(() => {
     visibility.stop()
-    cancelPending()
-    clearImageHandlers()
+    abort()
   })
 
   return {

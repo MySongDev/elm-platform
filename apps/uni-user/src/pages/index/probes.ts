@@ -10,7 +10,7 @@
  */
 
 import { paymentStatuses } from '@elm-platform/contracts/order'
-import { API_BASE_URL, ELM_ASSET_HOST, IMAGE_BASE_URL, IMAGE_ORIGIN_FALLBACKS } from '@/config'
+import { API_BASE_URL, ELM_ASSET_HOST, IMAGE_BASE_URL } from '@/config'
 
 export type ProbeKind = 'auto' | 'runtime' | 'manual'
 export type ProbeStatus = 'pass' | 'fail' | 'pending' | 'info'
@@ -201,10 +201,10 @@ export function createProbes(): ProbeItem[] {
       id: 12,
       title: '图片域名已收敛到自己后端（议题 2 / D5）',
       kind: 'auto',
-      status: IMAGE_ORIGIN_FALLBACKS.length === 0 && ELM_ASSET_HOST === API_BASE_URL
+      status: ELM_ASSET_HOST === API_BASE_URL
         ? 'pass'
         : 'fail',
-      detail: `ELM_ASSET_HOST=${ELM_ASSET_HOST} | IMAGE_BASE_URL=${IMAGE_BASE_URL} | fallbacks=[${IMAGE_ORIGIN_FALLBACKS.join(',')}]（应为空，避免小程序端请求非白名单域名白白重试）`,
+      detail: `ELM_ASSET_HOST=${ELM_ASSET_HOST} | IMAGE_BASE_URL=${IMAGE_BASE_URL}（图片回退列表已于 2026-11-06 删除，只剩自身后端一个来源）`,
     },
   ]
 }

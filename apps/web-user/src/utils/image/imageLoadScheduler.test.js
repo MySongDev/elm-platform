@@ -1,9 +1,8 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 async function createScheduler() {
-  const scheduler = await import('./imageLoadScheduler.js')
-  scheduler.setImageLoadMaxConcurrent(1)
-  return scheduler
+  vi.doMock('@/config/imageLoading', () => ({ IMAGE_LOAD_BASE_CONCURRENCY: 1 }))
+  return import('./imageLoadScheduler.js')
 }
 
 describe('imageLoadScheduler', () => {
@@ -11,7 +10,7 @@ describe('imageLoadScheduler', () => {
     vi.resetModules()
   })
 
-  it('runs a queued task first after its priority is raised', async () => {
+  it('runs queued tasks in arrival order', async () => {
     const { scheduleImageTask } = await createScheduler()
     const order = []
     let releaseBlocker
@@ -22,54 +21,21 @@ describe('imageLoadScheduler', () => {
       },
     })
     scheduleImageTask({
-      priority: 5,
       run(release) {
         order.push('first')
         release()
       },
     })
-    const promoted = scheduleImageTask({
-      priority: 10,
-      run(release) {
-        order.push('promoted')
-        release()
-      },
-    })
-
-    promoted.updatePriority(0)
-    releaseBlocker()
-
-    expect(order).toEqual(['promoted', 'first'])
-  })
-
-  it('runs a later high-priority task before an earlier low-priority task', async () => {
-    const { scheduleImageTask } = await createScheduler()
-    const order = []
-    let releaseBlocker
-
     scheduleImageTask({
       run(release) {
-        releaseBlocker = release
-      },
-    })
-    scheduleImageTask({
-      priority: 10,
-      run(release) {
-        order.push('low')
-        release()
-      },
-    })
-    scheduleImageTask({
-      priority: 1,
-      run(release) {
-        order.push('high')
+        order.push('second')
         release()
       },
     })
 
     releaseBlocker()
 
-    expect(order).toEqual(['high', 'low'])
+    expect(order).toEqual(['first', 'second'])
   })
 
   it('continues queued work when a task throws synchronously', async () => {
@@ -116,34 +82,7 @@ describe('imageLoadScheduler', () => {
     expect(queuedRun).not.toHaveBeenCalled()
   })
 
-  it('cancels a queued preload through its public cancel function', async () => {
-    const { preloadImageUrl, scheduleImageTask } = await createScheduler()
-    const OriginalImage = globalThis.Image
-    const ImageMock = vi.fn()
-    let releaseBlocker
-
-    globalThis.Image = ImageMock
-
-    try {
-      scheduleImageTask({
-        run(release) {
-          releaseBlocker = release
-        },
-      })
-      const preload = preloadImageUrl('/queued-image.png')
-
-      preload.cancel()
-      releaseBlocker()
-
-      expect(ImageMock).not.toHaveBeenCalled()
-    }
-    finally {
-      releaseBlocker?.()
-      globalThis.Image = OriginalImage
-    }
-  })
-
-  it('does not interrupt or rerun a running task when updated or cancelled', async () => {
+  it('does not interrupt or rerun a running task when cancelled', async () => {
     const { scheduleImageTask } = await createScheduler()
     const running = vi.fn()
     const following = vi.fn()
@@ -162,9 +101,7 @@ describe('imageLoadScheduler', () => {
       },
     })
 
-    handle.updatePriority(0)
     handle.cancel()
-    handle.updatePriority(20)
     handle.cancel()
 
     expect(running).toHaveBeenCalledTimes(1)

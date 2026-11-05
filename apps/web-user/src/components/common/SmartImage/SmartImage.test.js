@@ -5,12 +5,10 @@ import SmartImage from './SmartImage.vue'
 const facade = vi.hoisted(() => ({
   loaded: false,
   failed: false,
-  options: null,
 }))
 
 vi.mock('./useSmartImage', () => ({
-  useSmartImage: vi.fn((options) => {
-    facade.options = options
+  useSmartImage: vi.fn(() => {
     return {
       loaded: ref(facade.loaded),
       failed: ref(facade.failed),
@@ -21,20 +19,13 @@ vi.mock('./useSmartImage', () => ({
 async function mountSmartImage(props = {}) {
   const root = document.createElement('div')
   document.body.appendChild(root)
-  const events = {
-    load: vi.fn(),
-    error: vi.fn(),
-  }
   const app = createApp(SmartImage, {
     src: 'https://img.example.test/a.jpg',
-    onLoad: events.load,
-    onError: events.error,
     ...props,
   })
   app.mount(root)
   await nextTick()
   return {
-    events,
     root,
     unmount() {
       app.unmount()
@@ -71,19 +62,6 @@ describe('smartImage facade', () => {
 
     expect(wrapper.root.querySelector('.smart-img__broken')).not.toBeNull()
     expect(wrapper.root.querySelector('.smart-img__broken').getAttribute('aria-label')).toBe('商家图片')
-    wrapper.unmount()
-  })
-
-  it('透传 load 与 error 事件载荷', async () => {
-    facade.loaded = false
-    facade.failed = false
-    const wrapper = await mountSmartImage()
-
-    facade.options.onLoad({ src: 'loaded.jpg' })
-    facade.options.onError({ src: 'failed.jpg' })
-
-    expect(wrapper.events.load).toHaveBeenCalledWith({ src: 'loaded.jpg' })
-    expect(wrapper.events.error).toHaveBeenCalledWith({ src: 'failed.jpg' })
     wrapper.unmount()
   })
 })
