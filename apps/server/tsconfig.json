@@ -17,7 +17,7 @@
       "@prisma/*": [
         "./prisma/*"
       ],
-      "@redis/*": [
+      "@redis-service/*": [
         "./src/redis/*"
       ]
     },

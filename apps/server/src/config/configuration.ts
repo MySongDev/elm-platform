@@ -27,6 +27,7 @@ export default () => ({
     password: process.env.REDIS_PASSWORD || undefined,
     db: Number.parseInt(process.env.REDIS_DB || '0', 10),
     tls: process.env.REDIS_TLS === 'true',
+    commandTimeoutMs: Number.parseInt(process.env.REDIS_COMMAND_TIMEOUT_MS || '5000', 10),
   },
 
   auth: {

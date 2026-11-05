@@ -1,5 +1,5 @@
 import type { JwtService } from '@nestjs/jwt'
-import type { RedisService } from '@redis/redis.service'
+import type { RedisService } from '@redis-service/redis.service'
 import type { Request } from 'express'
 import type { PrismaService } from '@/prisma/prisma.service'
 import { UnauthorizedException } from '@nestjs/common'

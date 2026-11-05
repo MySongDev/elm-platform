@@ -1,7 +1,7 @@
 import { BadRequestException, HttpException, HttpStatus, InternalServerErrorException } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import { Test } from '@nestjs/testing'
-import { RedisService } from '@redis/redis.service'
+import { RedisService } from '@redis-service/redis.service'
 import { SmsService } from '@/modules/sms/sms.service'
 
 describe('smsService', () => {

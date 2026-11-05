@@ -47,6 +47,7 @@ export const envSchema = z.object({
   REDIS_PASSWORD: optionalString,
   REDIS_DB: z.coerce.number().int().min(0).default(0),
   REDIS_TLS: z.enum(['true', 'false']).default('false').transform(value => value === 'true'),
+  REDIS_COMMAND_TIMEOUT_MS: z.coerce.number().int().positive().default(5000),
 
   CUSTOMER_LOGIN_AUTO_REGISTER: z
     .enum(['true', 'false'])

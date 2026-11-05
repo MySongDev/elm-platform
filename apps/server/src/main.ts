@@ -68,6 +68,9 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, swaggerConfig)
   SwaggerModule.setup('api-docs', app, document)
 
+  // 显式启用关闭钩子，确保 SIGTERM（Render 等平台）时执行各模块的 onModuleDestroy
+  app.enableShutdownHooks()
+
   // 启动服务
   const port = configService.get<number>('APP_PORT', 3000)
   await app.listen(port)

@@ -38,7 +38,7 @@ elm-platform/
 - **框架**: NestJS 10
 - **数据库**: Prisma ORM
 - **认证**: JWT + Passport
-- **缓存**: Redis (ioredis)
+- **缓存**: Redis (node-redis)
 - **文档**: Swagger
 
 ### 管理后台 (web-admin)
