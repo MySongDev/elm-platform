@@ -3,7 +3,7 @@ import Breadcrumb from './Breadcrumb/index.vue'
 import HeaderSidebarToggle from './HeaderSidebarToggle/index.vue'
 import LangSwitcher from './LangSwitcher/index.vue'
 import NotificationBell from './NotificationBell/index.vue'
-import SearchButton from './SearchButton/index.vue'
+import TopNavigationSearch from './Search/index.vue'
 import TenantContextBadge from './TenantContextBadge/index.vue'
 import UserMenu from './UserMenu/index.vue'
 
@@ -30,7 +30,7 @@ const emit = defineEmits<{
 
     <div class="app-header__right">
       <TenantContextBadge />
-      <SearchButton />
+      <TopNavigationSearch />
       <NotificationBell />
       <LangSwitcher />
       <UserMenu />

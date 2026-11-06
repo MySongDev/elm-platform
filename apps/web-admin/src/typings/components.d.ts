@@ -87,7 +87,7 @@ declare module 'vue' {
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     Search: typeof import('./../widgets/admin-layout/ui/TopNavigation/Search/index.vue')['default']
-    SearchButton: typeof import('./../widgets/admin-layout/ui/TopNavigation/SearchButton/index.vue')['default']
+    SearchDialog: typeof import('./../widgets/admin-layout/ui/TopNavigation/Search/SearchDialog.vue')['default']
     SearchResultItem: typeof import('./../widgets/admin-layout/ui/TopNavigation/Search/SearchResultItem.vue')['default']
     SelectField: typeof import('./../shared/ui/form/FieldRenderer/renderers/SelectField.vue')['default']
     Sidebar: typeof import('./../widgets/admin-layout/ui/Sidebar/index.vue')['default']

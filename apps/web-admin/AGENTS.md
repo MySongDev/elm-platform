@@ -120,17 +120,18 @@ pnpm --filter @elm-platform/web-admin run preview
 | `ui/TabBar/ui/TabBarContextMenu.vue` | 右键命令菜单(Teleport 到 body,暴露 `rootEl` 供测量) |
 | `ui/TabBar/ui/TabBarItem.vue` | 单个页签(激活态、关闭按钮、键盘支持) |
 | `ui/TopNavigation/index.vue` | 顶栏:折叠按钮、面包屑、租户徽标、搜索、通知、语言、用户菜单 |
+| `ui/TopNavigation/README.md` | 顶栏功能地图、搜索链路、数据来源、公共组件契约与修改约束 |
 | `ui/TopNavigation/components/HoverDropdown.vue` | 悬停下拉包装 |
 | `ui/TopNavigation/components/TopNavigationAction.vue` | 顶栏圆形/胶囊操作按钮 |
 | `ui/TopNavigation/Breadcrumb/index.vue` | 面包屑(基于 `route.matched`) |
 | `ui/TopNavigation/HeaderSidebarToggle/index.vue` | 顶栏折叠按钮 |
 | `ui/TopNavigation/LangSwitcher/index.vue` | 语言切换 |
 | `ui/TopNavigation/NotificationBell/index.vue` | 通知铃铛:未读徽标、分类标签、已读/清除 |
-| `ui/TopNavigation/Search/index.vue` | 全局搜索弹窗(Ctrl+K):Teleport、键盘导航 |
+| `ui/TopNavigation/Search/index.vue` | 搜索功能入口:顶栏按钮、挂载并打开搜索弹窗 |
+| `ui/TopNavigation/Search/SearchDialog.vue` | 全局搜索弹窗(Ctrl+K / Cmd+K):Teleport、键盘导航 |
 | `ui/TopNavigation/Search/useSearchDialog.ts` | 搜索逻辑:菜单扁平化、关键词过滤、历史记录(localStorage) |
 | `ui/TopNavigation/Search/SearchResultItem.vue`、`types.ts` | 搜索结果项组件与类型(含 `isSearchHistoryItem` 类型守卫) |
 | `ui/TopNavigation/Search/lib/flatten-menu.ts` | 路由树 → 扁平搜索菜单项(图标继承、父子路径拼接),`flattenRoutes` / `FlatRoute` |
-| `ui/TopNavigation/SearchButton/index.vue` | 顶栏搜索入口按钮 |
 | `ui/TopNavigation/TenantContextBadge/index.vue` | 租户上下文徽标(平台/租户/店铺数据范围) |
 | `ui/TopNavigation/UserMenu/index.vue` | 用户菜单:账号设置、退出登录(清标签页/通知) |
 
