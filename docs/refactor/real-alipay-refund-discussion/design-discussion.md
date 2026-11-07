@@ -183,7 +183,7 @@ async approveRefund(orderNo, operator, remark, context) {
 - 支付宝 `alipay.trade.refund` **多数情况同步返回结果**（`fund_change=Y` 即已退）。
 - 但存在"退款受理中、稍后到账"的异步情况。**严格生产系统**会加一个 `REFUNDING` 中间态：
   - `REQUESTED`（用户申请）→ 管理员同意 → `REFUNDING`（已发起、等支付宝确认）→ `APPROVED`（确认到账）
-- **本项目的取舍建议**：作为作品集，可以先按"同步成功"处理（`REQUESTED → APPROVED`），在文档/注释里标注"生产环境需补 `REFUNDING` 态 + 对账"。这与状态机"拒绝过度设计"的既有风格一致（见 `reports/order-state-machine-simplify-20260823/`）。
+- **本项目的取舍建议**：作为作品集，可以先按"同步成功"处理（`REQUESTED → APPROVED`），在文档/注释里标注"生产环境需补 `REFUNDING` 态 + 对账"。这与状态机"拒绝过度设计"的既有风格一致（见 `docs/reports/server/order-state-machine-simplify-20260823/`）。
 
 ---
 
@@ -245,7 +245,7 @@ async approveRefund(orderNo, operator, remark, context) {
 
 ## 8. 关联
 
-- 状态机精简复盘：`reports/order-state-machine-simplify-20260823/`
+- 状态机精简复盘：`docs/reports/server/order-state-machine-simplify-20260823/`
 - 订单状态规范：`docs/engineering/004-order-status-convention.md`
 - 可视化对照页：`./refund-visual-comparison.html`
 

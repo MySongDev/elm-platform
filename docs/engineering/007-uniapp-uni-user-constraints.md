@@ -2,7 +2,7 @@
 
 > **适用范围:** `apps/uni-user`（uni-app 微信小程序端）
 > **状态:** Batch 0 骨架验证已完成（2026-09-28）
-> **详细实测过程:** `docs/reports/2026-09-27-uniapp迁移方案/batch0-verification.md`
+> **详细实测过程:** `docs/reports/uni-user/2026-09-27-uniapp迁移方案/batch0-verification.md`
 > ⚠️ 该报告目录被 `.gitignore:81` 忽略（仅本地），**本文是可进 git 的结论固化版**
 
 本文件记录**必须遵守的版本/配置约束**与**已实测推翻方案文档的结论**。
@@ -11,6 +11,12 @@
 ---
 
 ## 一、版本约束（★ 违反会静默失败，不是报错）
+
+> ⚠️ **本节讲的是「版本值必须是什么」，不是「写在哪个文件里」**。
+> 2026-10-16 起，`apps/uni-user/package.json` 走 **pnpm catalog 间接引用**
+> （`"catalog:"` / `"catalog:conflicts_vue_3_4_21"`），真实版本值在 `pnpm-workspace.yaml`。
+> 下面示例里的字面版本号是**catalog 中应有的值**，改版本请改 workspace 文件。
+> 详见第十一节**坑 23**（含为什么必须用命名 catalog 绕开根 catalog）。
 
 ### 1. `@dcloudio/*` 必须写精确完整版本号
 
@@ -216,6 +222,47 @@ elm.cangdu.org/img/2/35/xxx.jpeg    -> 404
 前端用 `platform/image.ts` 的 `getCarouselImageUrl()`（拼 cdn 前缀）。
 ⚠️ 将来图片字节本地化时（议题 2 决策 3），**两条路由要一起换实现**。
 
+### ★★ 坑 6：`image_path` 里的脏值 —— `blob:` / `localhost` / `"null"` 字面量（2026-10-19 坐实）
+
+**实测**：`restaurant_id=1` 的菜单里混入 **50 条**浏览器会话级脏值：
+```
+"image_path":"blob:http://localhost:8002/cb165b6f-1ef7-4ed3-a738-045f98ad1e72"
+"image_path":"blob:http://localhost:8080/98880d3b-b2ea-428c-9fcd-0307d28b3c6f"
+```
+`blob:` 是**浏览器会话内的临时对象 URL**，离开那个页面即永久失效，**任何端都取不到**
+（它连「外域」都算不上，是死链）。另外上游把 null 序列化成了字面量 `"null"`。
+
+**为什么必须显式判掉，不能靠「请求失败再回退」**：SmartImage 没有失败回退
+（原先的 `IMAGE_ORIGIN_FALLBACKS` 刻意留空，外域不在小程序白名单；2026-11-06 整套候选回退已删除）
+→ SmartImage 失败后只会显示**「加载失败」破图**，不会自动换占位图。用户体验上「破图」比「占位图」更糟。
+
+**修正**：`config/index.ts` 的 `isUnusableImagePath()`，`getImageUrl()` 首行判它 →
+命中则返回 `DEFAULT_RESTAURANT_IMAGE`。覆盖 `blob:` / `filesystem:` / `localhost`
+（含 `127.0.0.1`/`[::1]`/`0.0.0.0` 及任意端口）/ `"null"` / `"undefined"` 字面量。
+
+⚠️ 顺带收紧了 `getImageUrl` 的透传分支：**绝对 `http(s)://` 与协议相对 `//` 不再原样透传**，
+一律走占位图（小程序端只有自己后端在白名单里，透传外域必然失败）。
+
+### ★★ 坑 7：构建目标 ≠ 调试目标 → 全站图片白、请求失败（2026-10-19 坐实）
+
+**两个产物连的域名不同**，因为读的是不同 `.env`：
+
+| 命令 | 读的 env | 内联的 API_BASE_URL | 用途 |
+|---|---|---|---|
+| `pnpm build:mp-weixin`（`uni build`） | `.env.production` | **`https://elm-platform.onrender.com/api`** | 生产；`VITE_API_BASE_URL` 在文件里**刻意注释掉**，回退到代码默认值 |
+| `pnpm dev:mp-weixin`（`uni`） | `.env.development` | `http://127.0.0.1:3000/api` | 开发；连本地后端 |
+
+→ **连本地后端调试必须导入 `dist/dev/mp-weixin`**，不是 `dist/build/mp-weixin`。
+用错产物时：数据可能靠缓存渲染出来，但**图片全白**（图片与 API 同源，都打到不可达的域名），
+极易误判成组件 bug。
+
+**验收**（一眼看出产物连哪儿）：
+```bash
+grep -o "127.0.0.1:3000\|onrender" apps/uni-user/dist/*/mp-weixin/config/index.js
+```
+⚠️ 真机预览时 `127.0.0.1` 不可达（手机的 localhost 是手机自己）→ 改 `.env.development`
+的 `VITE_API_HOST_OVERRIDE` 为开发机局域网 IP。
+
 ### SSRF 防护：安全性是结构性的
 
 `resolveUpstreamUrl()`（`modules/elm/utils/upstream-url.ts`，由 `elm-upstream.service.ts`
@@ -406,7 +453,7 @@ uni-user 要 import **运行时常量值**（`paymentStatuses.includes(...)`）�
 | 1 | 后端图片代理 `GET /api/img/*` | ✅ **完成并端到端验证** | 见第三节；修了两个方案未预见的 bug（前缀映射 / `@Header` 污染 404） |
 | 2 | `platform/storage.ts` + 改造 3 个文件 | ✅ **完成** | `SearchHistory.js`/`FormDraft.js` 改走封装（原直接用 localStorage，小程序端会 ReferenceError） |
 | 3 | `transport.ts` + 重写 `request.js` | ✅ **完成** | 含 query 序列化（uni.request 不自动拼 GET 参数）、超时识别（errMsg 含 timeout） |
-| 4 | `config/index.ts` 域名配置化 | ✅ **完成** | `ELM_ASSET_HOST` 默认跟随 `API_BASE_URL`；`IMAGE_ORIGIN_FALLBACKS` 清空 |
+| 4 | `config/index.ts` 域名配置化 | ✅ **完成** | `ELM_ASSET_HOST` 默认跟随 `API_BASE_URL`；`IMAGE_ORIGIN_FALLBACKS` 清空（2026-11-06 该常量连同候选回退一起删除） |
 | 5 | `pages.json` 17 页 + 分包 + tabBar + `routes.ts` | ✅ **完成** | 4 分包 + preloadRule 构建产物验证生效；tabBar 8 张 PNG 已生成 |
 | 6 | `platform/navigation.ts` 拦截器 + 鉴权 | ✅ **完成** | 实测修正方案 E 节误判：需鉴权的 9 页**无一是 tabBar 页** |
 | 7 | `platform/feedback.ts` | ✅ **完成** | loading 用引用计数；confirm 失败时 resolve(false) 防危险操作误执行 |
@@ -423,7 +470,7 @@ uni-user 要 import **运行时常量值**（`paymentStatuses.includes(...)`）�
 ### Batch 0.5 — shop 滚动 PoC（代码就绪，⚠️ 结论待人工实测）
 
 PoC 页 `apps/uni-user/src/pages/poc-shop/poc-shop.vue`（已注册进 pages.json 主包）+
-测量指南 `docs/reports/2026-09-27-uniapp迁移方案/batch05-poc-measure.md`。
+测量指南 `docs/reports/uni-user/2026-09-27-uniapp迁移方案/batch05-poc-measure.md`。
 
 页面自带：方案 A（三层 sticky）/ 方案 B（固定布局）切换、批量锚点查询 + 缓存二分的
 双向联动、rpx→px 系数打印、`calc(100vh - 300rpx)` 混合单位探针、
@@ -455,7 +502,8 @@ PoC 页 `apps/uni-user/src/pages/poc-shop/poc-shop.vue`（已注册进 pages.jso
     `lower-threshold` 补偿；且 scrolltolower 连续触发需自己加冷却（web-user 靠
     isIntersecting 边沿天然去重）。
 14. **`image` 组件无 alt / `new Image()` 不存在** → 调度器的 preloadImageUrl 删除
-    （实测业务零调用，仅自身测试调用）。
+    （实测业务零调用，仅自身测试调用）。2026-11-06 web-user 也删了它，两端调度器
+    已统一为「并发上限 + 先进先出」，不再有优先级与网络自适应。
 15. **easycom autoscan 只认 `components/组件名/组件名.vue`** → BaseState/StarRating/
     LocalLoading/BackTop/head 等嵌套或非同名路径**不会自动导入**，
     已在 pages.json 的 easycom.custom 补 3 条映射（其余靠显式 import）。
@@ -556,10 +604,13 @@ PoC 页 `apps/uni-user/src/pages/poc-shop/poc-shop.vue`（已注册进 pages.jso
     `font-size`，宽度会偏大。迁移时统一按「取 web-user 的 height 作为 font-size」换算，
     宽高比差异列入真机目视验收项。
 
-20. **`head.vue` 当前零引用** —— 全仓 grep `header/head|HeadTop` 只命中它自己的注释，
-    且 `dist/build/mp-weixin` 里搜不到 `left_area` → Batch 2 迁移好的 head 组件
-    **还没被任何页面接入**（easycom autoscan 也不认 `components/header/head.vue` 这种非同名路径，
-    见坑 15）。它的样式修复无法用 build 产物核对，接入页面后才能验收。
+20. **~~`head.vue` 当前零引用~~ → ✅ 已解决（2026-10-06 任务 B 起）** —— 原先全仓 grep
+    `header/head|HeadTop` 只命中它自己的注释，Batch 2 迁移好的 head 组件还没被任何页面接入。
+    **现已有 4 个页面显式 import**（easycom autoscan 不认 `components/header/head.vue`
+    这种非同名路径，见坑 15，所以必须显式 import）：
+    `pkg-profile/addressHome.vue:26`、`pkg-profile/AddressDatil.vue:14`、
+    `pkg-order/payment.vue:25`、`pkg-order/PaymentResult.vue:24`
+    → 它的样式修复现在**可以**用 build 产物核对了。
 
 21. **★ `v-show` 在「组件根节点自带 `display:flex/grid`」时静默失效** —— 根因是 CSS 权重，不是渲染 bug：
     `v-show` 被 uni-app 降级为 `hidden` 属性，底层是低权重的全局选择器
@@ -571,6 +622,128 @@ PoC 页 `apps/uni-user/src/pages/poc-shop/poc-shop.vue`（已注册进 pages.jso
     ③ 不用 hidden，改 `opacity:0 + pointer-events:none`（保留 flex 居中 + 白捡淡入淡出动画）。
     ⚠️ 「改用 v-show」**不是**解法——v-show 正是病根。
     详见 `uniapp-migration-diffs.md` 第 10.1 节。
+    **影响面不止 BackTop（2026-10-16 shop 重设计时坐实第二处）**：任何「scoped 类写了
+    display:flex/grid + 用 v-show 控制」的节点都中。已按修法②修两处：
+    `components/common/BaseState/BaseState.vue` 的 `.state-overlay`（success 态下白罩常显、
+    盖住整页内容）与 `pkg-shop/shop.vue` 的 `.menu-area`（切评价 tab 时点菜区不隐藏）。
+    写新组件时只要「自定义 display + v-show」同现，就必须补 `[hidden]{display:none !important}`。
+
+22. **★★ stylelint 的 `order/order` 强制 at-rule 前置会静默破坏 CSS 级联**（2026-10-16 入库时坐实）——
+    根 `stylelint.config.mjs` 的 `order/order` 原本含 `'at-rules'`（要求 at-rule 排在
+    `declarations`/`rules` 之前），于是 pre-commit 的 `stylelint --fix` 把 `@media` **整块搬到
+    style 块开头**。但 **at-rule 的位置在 CSS 里是有语义的，不是纯风格问题**：
+
+    ```scss
+    /* 正确（移动优先）：基础规则在前，@media 在后 */
+    .store-card { padding: 20rpx; }         /* 简写 */
+    @media (width <= 374px) {
+      .store-card { padding-inline: 14px; } /* 长写，小屏覆盖 */
+    }
+    ```
+
+    两条规则编译后选择器特异性**完全相同**（都是 `.store-card.data-v-9f33c959`），只按源码顺序决胜。
+    `@media` 前移后，后面的简写 `padding` 会**反向重置**长写 `padding-inline`
+    → **小屏适配静默失效**（`pages/cart/components/CartStoreCard.vue`）。
+
+    **更危险的是它会污染人工实测结论**：`pages/poc-shop/poc-shop.vue` 的断点探针原本
+    「基础 `background:#0f0`（绿）→ `@media` 里 `#f00`（红）」，前移后变成红被绿覆盖
+    → 窄屏下探针**恒显绿色** → 按 `batch05-poc-measure.md` 的 **C4** 项实测时会读出
+    「小程序端 `@media (width<=360px)` 不触发」的**假结论**，并据此做错 shop 方案决策。
+
+    **已修**：`order/order` 删掉 `'at-rules'`（保留 custom-properties/dollar-variables/
+    declarations/rules），两处 `@media` 还原原位并各加「位置有语义、不要移动本块」注释。
+    `@keyframes` 位置确实无所谓（靠名字被 `animation` 引用，不参与级联），但同一条规则
+    区分不了 `@keyframes` 与 `@media`，只能整体放开。
+    ⚠️ 现在写错 at-rule 顺序**不会再报错**，全靠自觉。
+
+    **验收方式**：产物是压缩单行的 `.wxss`，用**字节偏移**比先后（源码顺序对不代表产物对）：
+    ```bash
+    f=apps/uni-user/dist/build/mp-weixin/pages/cart/components/CartStoreCard.wxss
+    grep -bo "\.store-card\.data-v" "$f" | head -1   # → 0:
+    grep -bo "@media" "$f" | head -1                 # → 1313:（1313 > 0，顺序正确）
+    ```
+
+23. **★ 版本锁定的实现方式已改为 pnpm catalog 间接引用**（2026-10-16）——
+    本节 1-4 条的**约束不变**（@dcloudio/* 精确日期戳、vue 3.4.21、pinia 2.1.7、vite 5.2.8），
+    但 `apps/uni-user/package.json` 里**不再写字面版本号**：
+
+    ```jsonc
+    "@dcloudio/uni-app": "catalog:",                  // → 根 catalog 的精确日期戳
+    "vue":   "catalog:conflicts_vue_3_4_21",          // → 命名 catalog，刻意绕开根 catalog
+    "pinia": "catalog:conflicts_pinia_2_1_7",
+    "vite":  "catalog:conflicts_vite_5_2_8"
+    ```
+
+    **为什么必须用命名 catalog**：根 `catalog` 是 `vue: ^3.5.26` / `vite: ^8.0.16` /
+    `pinia: ^3.0.4`（供 web-admin/web-user 用），与 uni-app 内部精确锁的
+    `@vue/compiler-* 3.4.21` 直接冲突。`pnpm-workspace.yaml` 末尾的 `catalogs.conflicts_*`
+    四个命名段就是为此存在的隔离层（lockfile 已验证：uni-user 解析到 vue 3.4.21，
+    web-admin 仍是 3.5.35，互不干扰）。
+
+    **改版本时要改 `pnpm-workspace.yaml`，不要回 package.json 写字面版本号**
+    （写了也能用，但会绕过 catalog 的统一管理，且下面这条校验会报「不得走根 catalog」类错误）。
+
+    ⚠️ CI 的 `scripts/validate-uniapp-versions.mjs` 已改为**先解析 workspace 的 catalog 段、
+    再校验真实版本**（原先直接比对字面值 → 14 条全误报）。该步骤在 ci.yml 里排在
+    `pnpm install` **之前**，所以脚本**不能引任何第三方依赖**（含 `yaml` 包），解析器是手写的，
+    只认缩进 0/2/4 三种形态；catalog 段或条目缺失一律**报错退出**，不静默放过。
+    若 workspace 改用 YAML 锚点或行内 flow（`{ vue: 3.4.21 }`），需同步改 `parseCatalogs`。
+
+24. **★ 自定义组件宿主节点高度 `auto` → 插槽内容高度链断掉，页面「滚不动」**（2026-10-16 shop 页坐实）——
+    把「需要撑满高度」的布局塞进自定义组件的 `slot` 里，在 mp 端会失效：宿主节点是
+    **独立节点**，塞进插槽的内容若依赖 `height:100%`，参照物是一个 `height:auto` 的宿主。
+
+    真实案例：`pkg-shop/shop.vue` 原本把主体塞进 `<BaseState>` 的 success 插槽，
+    而 `BaseState.wxss` 只有 `state-container{position:relative}` 与
+    `state-container.is-active{min-height:240rpx}`，**`is-active` 的启用条件是 `state !== ''`**
+    → **success 态下没有任何高度声明** → `.state-content{height:100%}` 塌成内容高 →
+    内层 `scroll-view{height:100%}` 无从计算 → **整页不可滚动**（build/tsc/lint 全绿）。
+
+    **修正（首选第 1 条）**：
+    ① 布局留在页面自己的节点上（根 `height:100vh + flex column`，中间层 `flex:1 + min-height:0`），
+       状态遮罩改成**兄弟节点绝对定位**（`position:absolute; inset:0`）——不要走插槽；
+    ② 给组件根节点显式 `flex:1`/`height:100%`（改的是公共组件，影响所有调用方，慎用）。
+
+    **验收要到产物 wxss 核完整链**，缺一环即失效：
+    ```
+    .shop-page{height:100vh;display:flex;flex-direction:column}
+    .shop-body{flex:1;min-height:0;display:flex;flex-direction:column}
+    .content-area{flex:1;min-height:0}
+    .menu-area__list{height:100%}
+    ```
+    详见 `uniapp-migration-diffs.md` 第 10.2 节。
+
+25. **★ 组件用了却没注册 `usingComponents` → 整个不渲染，但四项校验全绿**（2026-10-16 shop 页坐实）——
+    uni-app 的 easycom **只对「同名同路径」的组件自动导入**（约定：`components/组件名/组件名.vue`）。
+    `SmartImage` 落在 `components/common/SmartImage/SmartImage.vue`，**不符约定** → 自动扫描不命中。
+    又因为项目里大部分组件走 easycom，模板里直接写 `<SmartImage>` 看起来「跟别的一样」，
+    但没有 `import` 也不会报错 → **组件根本不渲染**（本案例：全页图片空白）。
+
+    **怎么发现**：产物 json 的 `usingComponents` 里没有它。**验收方式**：
+    ```bash
+    grep -o "smart-image" dist/build/mp-weixin/**/*.json   # 每个用到它的组件 json 都应有命中
+    ```
+    ⚠️ 反过来说：**easycom 命中的组件在模板里不需要 import，命不中的必须显式 import**。
+    排查「组件不渲染」时先看产物 json，不要只看源码模板（源码看起来完全正常）。
+
+    **已修**：`pages.json` 的 `easycom.custom` 加 `"^SmartImage$": "@/components/common/SmartImage/SmartImage.vue"`。
+
+26. **★ `scroll-into-view` 同值不再触发（连点同一分类第二次失效）**（2026-10-16 shop 页坐实）——
+    只有绑定值相对**上一次渲染**发生变化才会滚动，同值赋值是 no-op。
+    ⚠️ `nextTick` 里「先清空再赋值」**不够**：两次写会被合并进同一个渲染周期，
+    观察到的值没变过。必须用 `setTimeout(0)` 隔开两拍，让空值真正提交一次渲染。
+
+    ```js
+    // 见 pkg-shop/shop.vue 的 onCategorySelect
+    menuScrollViewId.value = ''                                    // 第 1 拍：清空
+    scrollTimer = setTimeout(() => {                               // 第 2 拍：赋目标
+      menuScrollViewId.value = `food-cat-${id}`
+    }, 0)
+    ```
+
+    ⚠️ 另一条**容易误判**的：`id` 必须打在滚动容器的**直接子节点**上。本项目 `id` 落在
+    `<scroll-view>` 内层的 `.food-category`（中间只隔 `wx:for` 模板层，不算额外节点），
+    产物核对过是**正确**的 —— 排查「跳不动」时别先怀疑 id 位置。详见 `uniapp-migration-diffs.md` 第 10.3 节。
 
 ---
 

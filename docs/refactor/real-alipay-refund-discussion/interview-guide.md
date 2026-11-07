@@ -108,6 +108,6 @@
 
 - 设计讨论：`./design-discussion.md`
 - 可视化对照页：`./refund-visual-comparison.html`
-- 状态机精简复盘（"拒绝过度设计"的同源取舍）：`reports/order-state-machine-simplify-20260823/`
+- 状态机精简复盘（"拒绝过度设计"的同源取舍）：`docs/reports/server/order-state-machine-simplify-20260823/`
 
 *指南生成时间：2026-08-23 · 面试备考用，无代码改动*

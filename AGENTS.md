@@ -114,16 +114,27 @@ Pinia store 位于 `src/stores/modules`，涵盖用户/会话、地址、定位�
 - Web 构建在 `vite build` 前运行 `vue-tsc --noEmit`；修复类型错误后再视为构建成功。
 - 用户端 Vitest 运行在 `happy-dom` 环境，匹配 `src/**/*.test.{js,ts}`。管理端 Vitest 运行在 `node` 环境，匹配 `src/**/*.{test,spec}.ts`。后端 Jest 通过包内 Jest 配置匹配 `apps/server/src/**/*.spec.ts`。
 
+## 大任务执行与上下文控制
+
+- 大任务开始时，先自主拆分为可独立验收的子任务，明确目标、依赖、涉及文件和验证方式，再持续执行。
+- 每次仅阅读当前子任务所需的文件，限制搜索结果和日志输出。
+- 已完成阶段只保留关键决策、修改文件、验证结果和待办摘要。
+- 对独立且边界明确的工作，允许自主使用子代理；优先只传递必要背景，避免复制整段对话。
+- 子代理返回结论、文件位置和验证结果，控制摘要长度。
+- 简单任务直接完成；依赖紧密的任务顺序执行，避免过度拆分。
+- 最后由主代理检查整体一致性并完成必要验证。
+
 ## 写报告约定
 
-任何工程变更（重构、缺陷修复、新功能、配置、依赖升级）都必须在 `reports/` 中留档，供后续 AI 会话和人类复查。此规则适用于在本仓库工作的所有 AI 工具。
+任何工程变更（重构、缺陷修复、新功能、配置、依赖升级）都必须在 `docs/reports/` 中留档，供后续 AI 会话和人类复查。此规则适用于在本仓库工作的所有 AI 工具。
 
-- **目录命名**：`reports/YYYY-MM-DD-中文名称/` —— 日期加简短中文标题（内部允许英文术语，如 `2026-08-19-购物车store瘦身`）。不要使用纯英文 slug。
+- **分类目录**：`docs/reports/<类别>/`，类别固定为 `server`（后端）、`web-admin`（管理端）、`web-user`（H5 用户端）、`uni-user`（小程序端）、`ci-cd`（部署/CI）、`tooling`（工具链/工程化）、`architecture`（选型/架构评估）。跨端改动按「主体代码所在端」归类，纯基建归 `tooling`。
+- **目录命名**：`docs/reports/<类别>/YYYY-MM-DD-中文名称/` —— 日期加简短中文标题（内部允许英文术语，如 `2026-08-19-购物车store瘦身`）。不要使用纯英文 slug。
 - **报告文件**：日期目录内固定为 `engineering-report.md`（学习笔记则为 `learning-report.md`）。
-- **模板**：复制 `reports/report-templates/engineering-report.md` 并填充 `{{占位符}}`。保留全部章节，不要另创新结构。
+- **模板**：复制 `docs/reports/report-templates/engineering-report.md` 并填充 `{{占位符}}`。保留全部章节，不要另创新结构。
 - **必备内容**：变更前后量化统计（行数、文件数、耗时）；带证据的决策依据（`file:line`、grep 结果、版本号）；被否决的方案及理由；具体改动；验证结果（只能使用你实际执行过的 lint / type-check / 测试命令）；影响范围；风险；回滚指南。
 - 当你的改动涉及 store 时，检查是否存在 `apps/web-user/src/utils/cart.js` 式的纯函数抽取机会，并遵循既有模块约定。
-- `reports/README.md` 维护报告索引；将你的报告登记进去。
+- `docs/reports/README.md` 维护报告索引；将你的报告登记进去。**不要**再在仓库根目录新建 `reports/`（2026-11-06 已并入 `docs/reports/`，历史存档见 `docs/reports/archive/`）。
 
 ## 自动报告生成规则
 
@@ -156,8 +167,8 @@ pnpm --filter @elm-platform/web-user run type-check
 ```
 
 ### 第三步：生成报告
-1. 创建报告目录：`reports/YYYY-MM-DD-中文名称/`
-2. 复制模板：`cp reports/report-templates/engineering-report.md reports/YYYY-MM-DD-中文名称/engineering-report.md`
+1. 创建报告目录：`docs/reports/<类别>/YYYY-MM-DD-中文名称/`
+2. 复制模板：`cp docs/reports/report-templates/engineering-report.md docs/reports/<类别>/YYYY-MM-DD-中文名称/engineering-report.md`
 3. 填充内容（**重点是说清楚事情，不是填表格**）：
 
 **可以包含以下几个问题**：
@@ -191,14 +202,14 @@ pnpm --filter @elm-platform/web-user run type-check
 **但是，要讲清楚具体改动结果**
 
 ### 第四步：更新索引
-将新报告登记到 `reports/README.md`。
+将新报告登记到 `docs/reports/README.md`。
 
 **输出格式**：
 完成上述步骤后，在回复末尾输出以下摘要：
 ```
 ---
 ## 📋 改动报告摘要
-- **报告路径**：reports/YYYY-MM-DD-中文名称/engineering-report.md
+- **报告路径**：docs/reports/<类别>/YYYY-MM-DD-中文名称/engineering-report.md
 - **改动文件**：N 个文件（+X 新增, Y 修改, Z 删除）
 - **验证状态**：✅ 已通过 lint / type-check
 - **下一步**：[如果有待办事项]

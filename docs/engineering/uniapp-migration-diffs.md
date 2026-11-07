@@ -123,6 +123,13 @@
 | easycom 不识别非同名组件 | 组件不自动导入 | 只认 `components/组件名/组件名.vue` | `pages.json easycom.custom` 补映射（007 坑 15） |
 | `useTemplateRef` 报错 | `useTemplateRef is not a function` | Vue 3.5 API，项目锁 3.4.21 | 改 `ref` + 模板 ref（007 坑 10） |
 | `<image>` 写 `alt` | 属性无效 | 小程序无 alt | 无障碍用 `aria-label`（007 坑 11） |
+| stylelint 报 `rpx` 未知单位 | 750 个 `unit-no-unknown` error，pre-commit 直接失败 | stylelint 默认单位表只认 CSS 规范单位，不认小程序响应式单位 | 根 `stylelint.config.mjs` 的 `unit-no-unknown` 加 `ignoreUnits: ['rpx']`（对 H5 两端 no-op，它们全用 px） |
+| stylelint 报 `page`/`swiper` 未知选择器 | `selector-type-no-unknown` error | 小程序原生标签不在 HTML 标签表里 | `ignoreTypes` 只列**实际用到的**三个；刻意不预先放行 `view`/`text`/`image`，否则会掩盖 H5 端真实拼写错误（007 坑 22 同批处理） |
+| ★ stylelint `--fix` 把 `@media` 搬到基础规则之前 | **三项校验全绿**，但小屏适配静默失效、PoC 断点探针恒显绿色（→ C4 假结论） | 根配置 `order/order` 含 `at-rules`（要求 at-rule 前置），而**at-rule 位置在 CSS 里有语义**：特异性相同时只按源码顺序决胜，简写 `padding` 反向重置了长写 `padding-inline` | `order/order` 删掉 `at-rules`；`@media` 一律写在被覆盖的基础规则**之后**；验收要到 `.wxss` 产物用 `grep -bo` 比字节偏移（007 坑 22，含完整推导） |
+| `svgtofont` 生成的 css 被 `--fix` 改写 | 每次「生成 ↔ 提交」来回翻烧饼 | `--fix` 把 `font-family: "elm-iconfont"` 改成不带引号，重跑生成脚本又写回带引号 | 根 stylelint 的 `ignoreFiles` 排除 `apps/uni-user/src/static/iconfont/elm-iconfont.css`（产物不参与 lint） |
+| ★ 组件用了却没注册 `usingComponents` | 图片/子组件**整个不渲染**，但 build / vue-tsc / eslint **全绿** | uni-app 只对「同名同路径」的组件做 easycom 自动导入；`SmartImage` 在 `components/common/SmartImage/`，不符 `components/组件名/组件名.vue` 约定 → 自动扫描不命中 | `pages.json` 的 `easycom.custom` 加 `"^SmartImage$": "@/components/common/SmartImage/SmartImage.vue"`。**验收看产物 json**：`grep smart-image "dist/build/mp-weixin/**/*.json"`（2026-10-16 shop 页坐实，图片全白） |
+| ★ `image_path` 里的 `blob:` / `localhost` 脏值 | 部分图恒显示占位图或破图 | 上游 seed 数据混入浏览器会话级对象 URL（`blob:http://localhost:8002/xxx`，`restaurant_id=1` 菜单里实测 **50 条**）；`blob:` 离开原页面即永久失效，任何端都取不到 | `config/index.ts` 的 `isUnusableImagePath()` 显式判掉 `blob:` / `filesystem:` / `localhost` / `"null"` 字面量 → 走 `DEFAULT_RESTAURANT_IMAGE`。⚠️ 不能靠「请求失败再回退」：`IMAGE_ORIGIN_FALLBACKS` 刻意留空 → 失败只会显示「加载失败」破图，不会自动换占位图（2026-10-19 坐实；2026-11-06 候选回退整套删除，SmartImage 已无失败回退） |
+| ★ 构建目标与调试目标不一致 → 全站图片/请求失败 | 页面数据能渲染（命中过缓存或另一产物），但图片全白 | `pnpm build` 读 `.env.production`（`VITE_API_BASE_URL` **刻意注释掉**）→ 回退到代码里的 `https://elm-platform.onrender.com/api`；而 `pnpm dev` 读 `.env.development` → `http://127.0.0.1:3000/api`。**两个产物的图片域名不同** | 连本地后端调试要导入 **`dist/dev/mp-weixin`**（`pnpm dev:mp-weixin`），不是 `dist/build/mp-weixin`。验收：`grep -o "127.0.0.1:3000\|onrender" dist/*/mp-weixin/config/index.js`（2026-10-19 坐实） |
 
 ---
 
@@ -140,6 +147,39 @@
 3. **不用 hidden，改用透明度**：`opacity:0 + pointer-events:none`（保留 flex 居中，还能白捡淡入淡出动画）。
 
 **注意**：`v-show` 编译成 `hidden`，所以「改用 v-show」**不是**解法（它正是病根）。H5 同理 `display:flex` 也会覆盖 `hidden`，并非小程序独有问题，只是小程序里 `v-show` 一律走 `hidden` 而更容易踩。
+
+**已修两处（2026-10-16 shop 重设计时坐实）**：`BaseState.vue` 的 `.state-overlay`（success 态下白罩常显、盖住整页）、`pkg-shop/shop.vue` 的 `.menu-area`（切评价 tab 时点菜区不隐藏）。规律：**只要「scoped 类写了 display:flex/grid」+「用 v-show 控制」同现，就必须补 `[hidden]{display:none!important}`**（007 坑 21）。
+
+---
+
+## 10.2. 自定义组件宿主节点高度 `auto` → 插槽内容高度链断掉，页面「滚不动」
+**证据**：`BaseState.wxml` 产物根节点 `class="{{['state-container', ...]}}"` 无内联高度；`BaseState.wxss` 仅 `state-container{position:relative}` 与 `state-container.is-active{min-height:240rpx}`，而 `is-active` 的启用条件是 `state !== ''` → **success 态下整条高度链无从计算**。
+
+| 项 | H5 | 小程序（uni-app 编译后） | 后果 |
+|---|---|---|---|
+| 组件宿主节点 | 就是普通 DOM 节点，`flex:1` / `height:100%` 直接生效 | 宿主节点是独立节点；塞进 `slot` 的内容若依赖 `height:100%`，会落在一个 `height:auto` 的宿主上 | 内层 `scroll-view{height:100%}` 失去参照 → **内容不可滚动** |
+| 跨组件传高度 | 父子同一渲染上下文 | 宿主节点样式由组件自己的 wxss 决定，父页面的 class 不天然生效 | 父页面写 `.xxx{flex:1}` 想撑开插槽内容，常常无效 |
+
+**修正**：**别把「需要撑满高度」的布局塞进自定义组件的插槽**。两条路——
+1. **首选**：布局留在页面自己的节点上（根 `height:100vh + flex column`，中间层 `flex:1 + min-height:0`），状态遮罩改成**兄弟节点绝对定位**（`position:absolute; inset:0`）。
+2. 给组件根节点显式 `flex:1`/`height:100%`（改的是公共组件，影响所有调用方，慎用）。
+
+**验收要到产物 wxss 核完整链**：`.page{height:100vh;display:flex;flex-direction:column}` → `.body{flex:1;min-height:0;display:flex;flex-direction:column}` → `.content{flex:1;min-height:0}` → `.scroll{height:100%}`，缺一环则滚动失效（2026-10-16 shop 页坐实）。
+
+---
+
+## 10.3. `scroll-into-view` 同值不再触发（连点同一分类第二次失效）
+**证据**：`pkg-shop/shop.vue` 的 `onCategorySelect`；现象 = 第一次点分类能跳，连点第二次不动。
+
+| 项 | 行为 | 说明 |
+|---|---|---|
+| `scroll-into-view` 触发条件 | 绑定值相对**上一次渲染**发生变化 | 值相同视为无变化，不滚动 |
+| `nextTick` 里「先清空再赋值」 | **不够** | 两次写在同一渲染周期会被合并成一次提交，观察到的值没变过 |
+| 正确做法 | 用 `setTimeout(0)` 隔开两拍 | 让空值真正提交一次渲染，下个值与之必然不同 |
+
+**修正**：见 `pkg-shop/shop.vue` 的 `onCategorySelect` —— 第 1 拍清空，第 2 拍（`setTimeout(0)`）赋 `food-cat-<id>`。
+
+⚠️ 另一条易误判的：**`id` 必须打在滚动容器的直接子节点上**。本项目 `id` 落在 `<scroll-view>` 内层的 `.food-category`（中间只隔 `wx:for` 模板层，不算额外节点），产物核对过是正确的 —— 排查「跳不动」时别先怀疑 id 位置。
 
 ---
 

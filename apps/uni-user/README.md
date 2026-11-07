@@ -270,4 +270,4 @@ Batch 1 第 8 项落地图标方案时要复测。
 
 详细实测记录：
 - `docs/engineering/007-uniapp-uni-user-constraints.md`（**可进 git，权威结论**）
-- `docs/reports/2026-09-27-uniapp迁移方案/batch0-verification.md`（⚠️ 该目录被 `.gitignore:81` 忽略，仅本地）
+- `docs/reports/uni-user/2026-09-27-uniapp迁移方案/batch0-verification.md`（⚠️ 该目录被 `.gitignore:81` 忽略，仅本地）
