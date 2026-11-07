@@ -10,7 +10,8 @@
  *    - `router.replace('/shop', query)` → `navigateTo(withQuery(ROUTES.SHOP, ...))`
  *    - **`router.replace('/home')` 死链**（HANDOFF 明确：home 页不在迁移范围）
  *      → `reLaunchToTab(ROUTES.MSITE)`（回落 msite tabBar 首页）
- * 2. `head-top` 显式 import（007 坑 15）
+ * 2. 导航统一走原生导航栏（2026-11-07）：原蓝色 head-top（`Head` 组件，
+ *    与原生栏双头）已移除，页面标题由 pages.json 的 navigationBarTitleText 承担。
  * 3. `window.setTimeout`/`window.clearTimeout` → `setTimeout`/`clearTimeout`
  *    （小程序有全局定时器，与 HANDOFF 记录的 web-user `:28,30` 差异一致）
  * 4. PENDING 时 2.5s 轮询刷新逻辑与 web-user 逐行一致；PAID 时
@@ -21,7 +22,6 @@
 import { onLoad, onShow, onUnload } from '@dcloudio/uni-app'
 import { ref } from 'vue'
 
-import Head from '@/components/header/head.vue'
 import { withQuery } from '@/config/routes'
 import { showToast } from '@/platform/feedback'
 import {
@@ -116,11 +116,6 @@ onUnload(() => {
 
 <template>
   <view class="payment-result-page">
-    <Head
-      head-title="支付结果"
-      theme="light"
-    />
-
     <view class="result-content">
       <template v-if="loading">
         <view class="status-icon pending">
@@ -217,7 +212,10 @@ onUnload(() => {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-height: calc(100vh - 96rpx);
+
+  /* 2026-11-07：蓝色 Head 已移除，结果区直接撑满 webview 可视区做垂直居中
+     （原 calc(100vh - 96rpx) 是为 90rpx 的 Head 让位，Head 删了就是负补偿） */
+  min-height: 100vh;
   padding: 48rpx 32rpx 80rpx;
   text-align: center;
 }

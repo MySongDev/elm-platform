@@ -177,7 +177,7 @@ async function handleSubmit() {
         :class="{ 'submit-btn_disabled': !canSubmit || isLoading }"
         @click="handleSubmit"
       >
-        {{ isLoading ? '提交中...' : '新增地址' }}
+        {{ isLoading ? '提交中...' : '保存地址' }}
       </view>
     </view>
   </view>

@@ -7,10 +7,12 @@
  * 1. `router.push('/profile/address/add')` → `navigateTo(ROUTES.ADDRESS_ADD)`；
  *    带 query 的编辑跳转 → `navigateTo(withQuery(ROUTES.ADDRESS_ADD, { id }))`
  *    （uni-app 的 navigateTo url 直接拼 `?id=` 即可，withQuery 收口处理拼接）
- * 2. `head-top` 组件：uni-user 里实际文件是 `src/components/header/head.vue`
+ * 2. `head-top` 组件在 uni-user 里实际文件是 `src/components/extras/head.vue`
  *    （easycom autoscan 只认 `components/HeadTop/HeadTop.vue` 这种同名结构，
- *    见 007 坑 15）→ **显式 import**（顺带接入 head.vue，解决 HANDOFF 任务 A3
- *    「head.vue 零引用」问题，addressHome 第一个接进它）
+ *    见 007 坑 15；2026-11-07 导航统一后已归档到 extras/，见 013）。本页已移除
+ *    Head 自定义头部：pages.json 的
+ *    navigationBarTitleText 承担原生导航栏标题；原 Head #edit slot 里的
+ *    「新增地址」按钮改为页面底部悬浮胶囊按钮（.add-address-bar）。
  * 3. `loadAddresses()` 的调用时机：web-user 是 setup 顶层直接调（等价 onMounted），
  *    uni-app 里 onShow 更合适——本页在列表页/添加页间来回跳时，每次回到列表
  *    都应刷新（新增/编辑过地址）。改用 `onShow(loadAddresses)`。
@@ -23,7 +25,6 @@
 import { onShow } from '@dcloudio/uni-app'
 import { storeToRefs } from 'pinia'
 
-import Head from '@/components/header/head.vue'
 import { useAddressDisplay } from '@/composables/features/address'
 import { ROUTES, withQuery } from '@/config/routes'
 import { navigateTo } from '@/platform/navigation'
@@ -54,18 +55,6 @@ onShow(loadAddresses)
 
 <template>
   <view class="address-page">
-    <Head
-      head-title="收货地址"
-      theme="light"
-      class="address-head"
-    >
-      <template #edit>
-        <view class="add-button" @click="goAddAddress">
-          新增地址
-        </view>
-      </template>
-    </Head>
-
     <view class="address-list">
       <view v-for="item in displayAddresses" :key="item.id" class="address-item">
         <view class="address-info">
@@ -83,6 +72,10 @@ onShow(loadAddresses)
         </view>
       </view>
     </view>
+
+    <view class="add-address-bar" @click="goAddAddress">
+      + 新增地址
+    </view>
   </view>
 </template>
 
@@ -93,15 +86,11 @@ onShow(loadAddresses)
   background: #fff;
 }
 
-.add-button {
-  padding: 16rpx 0;
-  font-size: 30rpx;
-  color: #fff;
-  white-space: nowrap;
-}
-
 .address-list {
   padding: 28rpx 36rpx 0;
+
+  /* 底部给悬浮胶囊按钮留避让空间 */
+  margin-bottom: 160rpx;
 }
 
 .address-item {
@@ -143,5 +132,25 @@ onShow(loadAddresses)
   height: 80rpx;
   font-size: 24rpx;
   color: #888;
+}
+
+.add-address-bar {
+  position: fixed;
+  right: 48rpx;
+  bottom: calc(48rpx + env(safe-area-inset-bottom, 0px));
+  left: 48rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 88rpx;
+  background: $blue;
+  border-radius: 44rpx;
+  box-shadow: 0 8rpx 24rpx rgb(49 144 232 / 35%);
+
+  text {
+    font-size: 32rpx;
+    font-weight: 500;
+    color: #fff;
+  }
 }
 </style>

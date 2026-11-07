@@ -4,6 +4,7 @@
     "custom": {
       "^uni-(.*)": "@dcloudio/uni-ui/lib/uni-$1/uni-$1.vue",
       "^BaseState$": "@/components/common/BaseState/BaseState.vue",
+      "^SmartImage$": "@/components/common/SmartImage/SmartImage.vue",
       "^StarRating$": "@/components/common/StarRating.vue",
       "^LocalLoading$": "@/components/common/Loading/LocalLoading.vue"
     }
@@ -61,7 +62,7 @@
         {
           "path": "shop",
           "style": {
-            "navigationStyle": "custom"
+            "navigationBarTitleText": "商家详情"
           }
         }
       ]

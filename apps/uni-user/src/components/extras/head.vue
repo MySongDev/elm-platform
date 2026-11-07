@@ -1,5 +1,13 @@
 <script setup>
 /**
+ * ⚠️ 死代码留档（2026-11-07 导航统一后剔除主链路）。
+ *
+ * 背景：uni-user 导航统一走原生导航栏（navigationBarTitleText + 微信原生返回按钮），
+ * 本页原来引用本组件的三处（payment / PaymentResult / AddressDatil，双头栏）与
+ * shop.vue 的自画返回条已全部移除，本组件无引用方。按「死代码留档而非删除」策略
+ * 从 src/components/header/ 迁到 src/components/extras/ 归档，启用步骤见
+ * docs/engineering/013-uni-user-nav-head-extras.md。
+ *
  * ⚠️ 与 apps/web-user/src/components/header/head.vue 同源改造。
  *
  * 差异：

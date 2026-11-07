@@ -11,7 +11,9 @@
  *    小程序端当前返回「当前端暂不支持支付」的留桩（建单已在后端独立完成，
  *    将来接微信支付时调用方零改动）。详见 platform/payment.ts 头部说明。
  * 3. `showAlert`（AlterTip DOM）→ platform/feedback showToast
- * 4. `head-top` 显式 import（007 坑 15）
+ * 4. 导航统一走原生导航栏（2026-11-07）：原蓝色 head-top（`Head` 组件，
+ *    与原生栏双头）已移除，页面标题由 pages.json 的 navigationBarTitleText 承担，
+ *    返回按钮用微信原生 ←。`Head` 组件无引用方后按死代码留档策略处理。
  * 5. 支付成功后 web-user 跳转 payUrl 会离开 App 到支付宝收银台；
  *    小程序端 requestPayment 返回 success 后跳 PaymentResult 页查询结果
  *    （对齐 PaymentResult 的 PENDING 轮询逻辑）。当前留桩永远 success=false，
@@ -22,7 +24,6 @@ import { onLoad, onShow } from '@dcloudio/uni-app'
 import { storeToRefs } from 'pinia'
 import { computed, ref } from 'vue'
 
-import Head from '@/components/header/head.vue'
 import { withQuery } from '@/config/routes'
 import { showToast } from '@/platform/feedback'
 import { createAuthGuard, navigateTo, ROUTES } from '@/platform/navigation'
@@ -108,11 +109,6 @@ onLoad((options) => {
 
 <template>
   <view class="payment-page">
-    <Head
-      head-title="在线支付"
-      theme="light"
-    />
-
     <view class="payment-content">
       <view class="amount-panel">
         <text class="amount-label">
