@@ -2,7 +2,6 @@ import piniaPersist from 'pinia-plugin-persistedstate'
 
 import { createApp } from 'vue'
 import BaseState from '@/components/common/BaseState/BaseState.vue'
-import SmartImage from '@/components/common/SmartImage/SmartImage.vue'
 import FootGuide from '@/components/footer/footGuide.vue'
 import HeadTop from '@/components/header/head.vue'
 import SvgIcon from '@/components/SvgIcon/index.vue'
@@ -46,6 +45,5 @@ app.component('FootGuide', FootGuide) // 底部组件
 app.component('HeadTop', HeadTop) // 头部组件
 app.component('SvgIcon', SvgIcon) // SVG
 app.component('BaseState', BaseState)
-app.component('SmartImage', SmartImage)
 
 app.mount('#app')

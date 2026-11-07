@@ -99,5 +99,12 @@ defineEmits(['retry'])
   align-items: center;
   justify-content: center;
   background: #fff;
+
+  /* ⚠️ 坑 10.1（uniapp-migration-diffs.md）：v-show 在 mp 端编译成 hidden 属性，
+     而全局 hidden 规则权重低于本类的 scoped display:flex → 不兜底则 success 态下
+     这层白罩常显、盖住内容。2026-10-16 shop 页重设计时坐实并修（坑文档修法 2） */
+  &[hidden] {
+    display: none !important;
+  }
 }
 </style>

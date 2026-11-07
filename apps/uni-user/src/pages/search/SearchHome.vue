@@ -15,10 +15,13 @@
  *    橙色描边小标签写「支付」。转 PNG 不能跟随主题、CSS clip-path 小程序支持有限。
  * 6. `close.png` → `/static/images/close.png`（已复制；小程序本地资源走 static）
  * 7. px → rpx；⑧ 类 `@include size-color(14px, #666)` → `size-color(28rpx, #666)`
+ * 8. 搜索结果商家图 `<image>` → `SmartImage`（懒加载 + 骨架屏 + 并发排队），
+ *    与 ShopItem 同款。⚠️ 宿主 `.item-left` 必须给定尺寸（组件内部 width/height 100%）。
  */
 import { ref, shallowRef } from 'vue'
 
 import BaseState from '@/components/common/BaseState/BaseState.vue'
+import SmartImage from '@/components/common/SmartImage/SmartImage.vue'
 import { useAuthRedirect } from '@/composables/app/useAuthRedirect'
 import { useStateContainer } from '@/composables/ui/useStateContainer'
 import { ROUTES, withQuery } from '@/config/routes'
@@ -132,10 +135,9 @@ loadHistory()
           >
             <view class="list-item">
               <view class="item-left">
-                <image
+                <SmartImage
                   :src="getImageUrl(item.image_path)"
-                  mode="aspectFill"
-                  aria-label="餐厅图片"
+                  alt="餐厅图片"
                 />
               </view>
               <view class="item-right">
@@ -269,12 +271,10 @@ loadHistory()
 }
 
 .item-left {
+  flex-shrink: 0;
+  width: 120rpx;
+  height: 120rpx;
   margin-right: 20rpx;
-
-  image {
-    width: 120rpx;
-    height: 120rpx;
-  }
 }
 
 .item-right {
