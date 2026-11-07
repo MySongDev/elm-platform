@@ -1,6 +1,8 @@
 <script setup>
 import { computed } from 'vue'
 
+import { API_BASE_URL } from '@/config'
+
 const props = defineProps({
   categories: {
     type: Array,
@@ -44,7 +46,10 @@ function getImageUrl(filename) {
     return ''
   if (/^https?:\/\//.test(filename))
     return filename
-  return `https://fuss10.elemecdn.com/${filename}`
+  // 011 商家图片本地化收口：原先硬编码直连 fuss10.elemecdn.com，
+  // 现走自身后端 /img/cdn/（数据源为服务端工厂硬编码的 2 张 CDN 类目图，
+  // 已纳入 elm:import:images 预下载清单，离线可读本地资产）。
+  return `${API_BASE_URL}/img/cdn/${String(filename).replace(/^\/+/, '')}`
 }
 </script>
 

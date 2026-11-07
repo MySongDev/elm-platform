@@ -7,7 +7,7 @@
 import 'reflect-metadata'
 import 'dotenv/config'
 import { NestFactory } from '@nestjs/core'
-import { AppModule } from '../../../app.module'
+import { AppModule } from '@/app.module'
 import { ElmUpstreamImportService } from '../services/elm-upstream-import.service'
 
 /**

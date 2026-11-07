@@ -39,6 +39,8 @@ export const envSchema = z.object({
   ELM_API_BASE_URL: elmApiBaseUrlSchema.default('https://elm.cangdu.org'),
   ELM_API_TIMEOUT_MS: z.coerce.number().int().positive().default(8000),
   ELM_IMAGE_TIMEOUT_MS: z.coerce.number().int().positive().default(15000),
+  // Elm 图片本地化资产目录（011）。默认相对 apps/server 工作目录；生产建议绝对路径。
+  ELM_IMAGE_DIR: z.string().trim().min(1).default('uploads/elm-images'),
 
   DATABASE_URL: z.string().trim().min(1, 'DATABASE_URL is required'),
 

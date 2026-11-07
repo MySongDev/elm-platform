@@ -9,6 +9,7 @@ import ShopList from '@/components/common/ShopList/ShopList.vue'
 
 import { useAuthRedirect, useLoadMore } from '@/composables/app'
 import { useScrollPosition } from '@/composables/ui'
+import { API_BASE_URL } from '@/config'
 import { getFoodCategoryList, getShopList } from '@/services/api/api-miste'
 import { useLocationStore } from '@/stores/modules/store-locations'
 import 'swiper/css'
@@ -26,7 +27,14 @@ getFoodCategoryList()
   .then(res => FoodCategoryList.value = res)
   .finally(() => foodCategoryLoading.value = false)
 
-const imgBaseUrl = 'https://fuss10.elemecdn.com'
+/**
+ * 首页轮播图（/v2/index_entry 的 image_url，形如 /2/35/xxx）走本地后端的 /img/cdn/
+ * （011 商家图片本地化收口：原先硬编码直连 fuss10.elemecdn.com，现在由后端从
+ * 本地资产目录读取，离线时不再裂图）。image_url 带前导斜杠，这里保证单斜杠拼接。
+ */
+function categoryImageUrl(imageUrl) {
+  return `${API_BASE_URL}/img/cdn/${String(imageUrl).replace(/^\/+/, '')}`
+}
 
 // ========== 数据 ==========
 const {
@@ -195,7 +203,7 @@ onDeactivated(() => {
               <router-link v-slot="{ navigate }"
                 :to="{ path: '/food', query: { foodtitle: item.title, restaurant_category_id: extractIdFromUrl(item.link) } }"
                 custom>
-                <img :src="imgBaseUrl + item.image_url" :alt="item.title" class="slide-img" @click="navigate">
+                <img :src="categoryImageUrl(item.image_url)" :alt="item.title" class="slide-img" @click="navigate">
                 <figcaption class="slide-title">
                   {{ item.title }}
                 </figcaption>

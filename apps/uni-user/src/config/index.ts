@@ -92,16 +92,61 @@ export const DEFAULT_RESTAURANT_IMAGE = `${IMAGE_BASE_URL}187bcca1ec6114376.jpg`
 /** 上传资源前缀，指向自己后端（main.ts 的 useStaticAssets），备案域名下可用 */
 export const UPLOAD_BASE_URL = `${API_BASE_URL.replace(/\/api\/?$/, '')}/uploads/`
 
-/** 拼接图片完整 URL。⚠️ 上游路径形态不一致，有的带前导斜杠有的不带，必须归一化 */
+/**
+ * 拼接图片完整 URL。⚠️ 上游路径形态不一致，有的带前导斜杠有的不带，必须归一化。
+ *
+ * ⚠️ **协议判定见 `isUnusableImagePath`**：`blob:` / `http://localhost` 这类
+ * 「只在原浏览器会话里有效」的地址**必须**当作无图处理（见其注释），
+ * 不能进 `IMAGE_BASE_URL` 拼接，也不能原样透传。
+ */
 export function getImageUrl(path?: string | null): string {
-  if (!path) {
+  if (!path || isUnusableImagePath(path)) {
     return DEFAULT_RESTAURANT_IMAGE
   }
-  // 已是绝对地址（http(s):// 或协议相对 //）或 data: URI → 原样返回
-  if (/^(?:https?:)?\/\//.test(path) || path.startsWith('data:')) {
+  // data: URI 原样返回（内联图，不涉网络与域名白名单）
+  if (path.startsWith('data:')) {
     return path
   }
+  // 相对协议 `//host/x.jpg` 仍是外域，小程序白名单不放行 → 也走占位图
+  if (/^\/\//.test(path)) {
+    return DEFAULT_RESTAURANT_IMAGE
+  }
+  // ⚠️ 绝对 http(s) 不再原样透传：小程序端只有自己后端在白名单里，
+  // 透传外域必然加载失败（还会白占一次请求）。统一收敛到后端代理。
+  if (/^https?:\/\//i.test(path)) {
+    return DEFAULT_RESTAURANT_IMAGE
+  }
   return `${IMAGE_BASE_URL}${path.replace(/^\/+/, '')}`
+}
+
+/**
+ * 判定「这条 image_path 在小程序端不可能加载成功」。
+ *
+ * 来源是上游 seed 数据的脏值（2026-10-19 实测 `restaurant_id=1` 的菜单里 50 条）：
+ * - `blob:http://localhost:8002/xxx` / `blob:http://localhost:8080/xxx`
+ *   —— `blob:` 是**浏览器会话内的临时对象 URL**，离开那个页面就永久失效，
+ *     任何端都取不到；它连「外域」都算不上，是死链。
+ * - `http://localhost:...` —— 指向开发机自己，小程序端必然失败（且不在白名单）。
+ *
+ * 为什么必须显式判掉而不是「让它请求失败再回退」：SmartImage 没有失败回退
+ * （2026-11-06 删掉了候选 origin 回退，它的列表本来就为空），失败后只会显示
+ * 「加载失败」，不会自动换占位图 —— 用户看到的是破图而非占位图。
+ */
+export function isUnusableImagePath(path: string): boolean {
+  const lower = path.toLowerCase()
+  // 协议相对 / 绝对协议 一律交回 getImageUrl 走占位图分支
+  if (lower.startsWith('blob:') || lower.startsWith('filesystem:')) {
+    return true
+  }
+  // 上游把 null 序列化成了字符串字面量（形如 "null" / "undefined"）→ 当无图
+  if (lower === 'null' || lower === 'undefined') {
+    return true
+  }
+  // 指向本机的绝对地址（含 127.0.0.1 / ::1 / localhost 及常见 dev 端口）
+  if (/^https?:\/\/(?:localhost|127\.0\.0\.1|\[::1\]|0\.0\.0\.0)(?::\d+)?(?:\/|$)/i.test(path)) {
+    return true
+  }
+  return false
 }
 
 /** 拼接上传资源完整 URL */

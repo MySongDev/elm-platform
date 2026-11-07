@@ -10,7 +10,9 @@ import { ElmOrderPublicController } from './controllers/elm-order-public.control
 import { ElmRestaurantPublicController } from './controllers/elm-restaurant-public.controller'
 import { ElmCityService } from './services/elm-city.service'
 import { ElmFoodService } from './services/elm-food.service'
+import { ElmImageImportService } from './services/elm-image-import.service'
 import { ElmImageProxyService } from './services/elm-image-proxy.service'
+import { ElmImageStorageService } from './services/elm-image-storage.service'
 import { ElmOrderService } from './services/elm-order.service'
 import { ElmRestaurantService } from './services/elm-restaurant.service'
 import { ElmStoreService } from './services/elm-store.service'
@@ -36,6 +38,8 @@ import { ElmUpstreamService } from './services/elm-upstream.service'
     ElmUpstreamService,
     ElmUpstreamImportService,
     ElmImageProxyService,
+    ElmImageStorageService,
+    ElmImageImportService,
   ],
   exports: [
     ElmCityService,

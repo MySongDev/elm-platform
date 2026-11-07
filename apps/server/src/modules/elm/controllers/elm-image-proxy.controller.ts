@@ -5,30 +5,30 @@ import { rawResponse } from '../../../common/interceptors/transform.interceptor'
 import { ElmImageProxyService } from '../services/elm-image-proxy.service'
 
 /**
- * 图片代理端点。
+ * 图片端点。
  *
  * ★ `GET /api/img/*` 是**长期契约**（迁移方案议题 2 决策 2）：
- * 这个对外 URL 形状一旦上线不再改。将来内部实现从「转发上游」演进到
- * 「读自己的存储」时，前端零改动。
+ * 这个对外 URL 形状一旦上线不再改。内部实现已从「转发上游」演进到「读自己的本地资产」，
+ * 前端零改动（011 §6.1）。
  *
- * 为什么必须自己中转而不是 302 重定向：
- * 重定向目标 elm.cangdu.org 仍不在小程序合法域名白名单内，能否放行不确定 →
- * 必须真正中转字节流（议题 2 / 阻塞项 B）。
+ * 本地化后：正常图片请求只读本地文件（ElmImageProxyService.getImage），不发起任何上游网络调用。
+ * 上游只在导入命令显式下载（downloadImage）时被访问；本地缺失 → 404，不回源、不重定向。
  *
- * ⚠️ 通配而非 `:filename`：上游路径含子目录，
- * seed 数据里的 image_path 形如 `shop/15c1513a00615.jpg`（真实上游数据多为裸文件名）。
+ * 为什么必须自己中转而不是 302 重定向（历史背景）：
+ * 重定向目标 elm.cangdu.org 不在小程序合法域名白名单 → 必须自己出字节。
  *
- * ⚠️ 对外前缀 `/api/img/` 与上游前缀 `/img/` 是**两回事**：
- * Express 通配只捕获 `img/` 之后的部分，必须由 service 补回上游前缀，
- * 否则 `/api/img/a.jpg` 会被解析成上游 `/a.jpg`（404）。
+ * ⚠️ 通配而非 `:filename`：图片路径含子目录，image_path 形如 `shop/15c1513a00615.jpg`。
+ *
+ * ⚠️ `/cdn/` 子命名空间（首页轮播图）：`/api/img/cdn/X` → 本地键含 `/cdn/` 前缀，
+ * 与默认源同名尾路径互不串图（见 utils/elm-image.ts resolveContractPath）。
  */
-@ApiTags('Elm 兼容接口 - 图片代理')
+@ApiTags('Elm 兼容接口 - 图片（本地读取）')
 @Controller()
 export class ElmImageProxyController {
   constructor(private readonly imageProxy: ElmImageProxyService) {}
 
   @Get('img/*')
-  @ApiOperation({ summary: '代理上游图片（长期契约，小程序端唯一图片来源）' })
+  @ApiOperation({ summary: '本地读取图片（长期契约，小程序端唯一图片来源；正常请求不访问上游）' })
   async proxyImage(
     @Req() req: Request,
     // passthrough: 可以设响应头，但仍由 Nest 处理返回的 StreamableFile 走流式响应。
