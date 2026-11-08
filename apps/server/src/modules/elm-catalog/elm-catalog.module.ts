@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common'
 import { ElmUpstreamModule } from '../elm-upstream/elm-upstream.module'
 import { TenantModule } from '../tenant/tenant.module'
 import { ElmFoodService } from './services/elm-food.service'
+import { ElmHomeMetaService } from './services/elm-home-meta.service'
 import { ElmRestaurantService } from './services/elm-restaurant.service'
 
 /**
@@ -11,7 +12,7 @@ import { ElmRestaurantService } from './services/elm-restaurant.service'
  */
 @Module({
   imports: [TenantModule, ElmUpstreamModule],
-  providers: [ElmRestaurantService, ElmFoodService],
-  exports: [ElmRestaurantService, ElmFoodService],
+  providers: [ElmRestaurantService, ElmFoodService, ElmHomeMetaService],
+  exports: [ElmRestaurantService, ElmFoodService, ElmHomeMetaService],
 })
 export class ElmCatalogModule {}

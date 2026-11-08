@@ -1,6 +1,7 @@
 import type { ElmFoodService } from '@/modules/elm-catalog/services/elm-food.service'
+import type { ElmHomeMetaService } from '@/modules/elm-catalog/services/elm-home-meta.service'
 import type { ElmRestaurantService } from '@/modules/elm-catalog/services/elm-restaurant.service'
-import type { ElmCityService } from '@/modules/elm/services/elm-city.service'
+import type { ElmCityService } from '@/modules/elm-location/services/elm-city.service'
 import { ElmFoodPublicController } from '@/api/customer/food/elm-food-public.controller'
 import { ElmLocationController } from '@/api/customer/location/elm-location.controller'
 import { ElmRestaurantPublicController } from '@/api/customer/restaurant/elm-restaurant-public.controller'
@@ -16,14 +17,17 @@ import { ElmRestaurantPublicController } from '@/api/customer/restaurant/elm-res
 describe('elm public controllers delegate to local services', () => {
   it('serves index entries from the local table', async () => {
     const payload = [{ id: 1 }]
-    const cityService = {
+    const homeMeta = {
       listCategoryEntries: jest.fn().mockResolvedValue(payload),
     }
-    const controller = new ElmLocationController(cityService as unknown as ElmCityService)
+    const controller = new ElmLocationController(
+      {} as ElmCityService,
+      homeMeta as unknown as ElmHomeMetaService,
+    )
 
     const result = await controller.getIndexEntry()
 
-    expect(cityService.listCategoryEntries).toHaveBeenCalled()
+    expect(homeMeta.listCategoryEntries).toHaveBeenCalled()
     expect(result).toEqual({
       __rawResponse: true,
       payload,
@@ -45,7 +49,7 @@ describe('elm public controllers delegate to local services', () => {
       listForApi: jest.fn().mockResolvedValue(payload),
     }
     const controller = new ElmRestaurantPublicController(
-      {} as ElmCityService,
+      {} as ElmHomeMetaService,
       restaurantService as unknown as ElmRestaurantService,
     )
 
@@ -70,7 +74,7 @@ describe('elm public controllers delegate to local services', () => {
       getByIdForApi: jest.fn().mockResolvedValue(payload),
     }
     const controller = new ElmRestaurantPublicController(
-      {} as ElmCityService,
+      {} as ElmHomeMetaService,
       restaurantService as unknown as ElmRestaurantService,
     )
 

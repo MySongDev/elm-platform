@@ -2,14 +2,14 @@ import { Controller, Get, Param, ParseIntPipe, Query } from '@nestjs/common'
 import { ApiOperation, ApiTags } from '@nestjs/swagger'
 import { rawResponse } from '../../../common/interceptors/transform.interceptor'
 import { parseGeoHash } from '../../../common/utils/query-values'
+import { ElmHomeMetaService } from '../../../modules/elm-catalog/services/elm-home-meta.service'
 import { ElmRestaurantService } from '../../../modules/elm-catalog/services/elm-restaurant.service'
-import { ElmCityService } from '../../../modules/elm/services/elm-city.service'
 
 @ApiTags('消费者端－餐馆浏览')
 @Controller()
 export class ElmRestaurantPublicController {
   constructor(
-    private readonly cityService: ElmCityService,
+    private readonly homeMeta: ElmHomeMetaService,
     private readonly restaurantService: ElmRestaurantService,
   ) {}
 
@@ -47,19 +47,19 @@ export class ElmRestaurantPublicController {
   @Get('shopping/v2/restaurant/category')
   @ApiOperation({ summary: '商铺分类列表' })
   getRestaurantCategories() {
-    return rawResponse(this.cityService.getRestaurantCategories())
+    return rawResponse(this.homeMeta.getRestaurantCategories())
   }
 
   @Get('shopping/v1/restaurants/delivery_modes')
   @ApiOperation({ summary: '配送方式列表' })
   getDeliveryModes() {
-    return rawResponse(this.cityService.getDeliveryModes())
+    return rawResponse(this.homeMeta.getDeliveryModes())
   }
 
   @Get('shopping/v1/restaurants/activity_attributes')
   @ApiOperation({ summary: '商家属性活动列表' })
   getActivityAttributes() {
-    return rawResponse(this.cityService.getActivityAttributes())
+    return rawResponse(this.homeMeta.getActivityAttributes())
   }
 
   @Get('shopping/restaurant/:shopId')

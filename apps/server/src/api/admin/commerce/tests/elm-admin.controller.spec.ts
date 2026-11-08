@@ -1,6 +1,8 @@
-import { ElmAdminController } from '@/modules/elm/controllers/admin/elm-admin.controller'
+import { AdminFoodController } from '@/api/admin/commerce/admin-food.controller'
+import { AdminOrderController } from '@/api/admin/commerce/admin-order.controller'
+import { AdminRestaurantController } from '@/api/admin/commerce/admin-restaurant.controller'
+import { OrderQueryService } from '@/modules/order/order-query.service'
 import { OrderWorkflowService } from '@/modules/order/order-workflow.service'
-import { PaymentService } from '@/modules/payment/payment.service'
 import { TenantContextService } from '@/modules/tenant/tenant-context.service'
 import 'reflect-metadata'
 
@@ -10,8 +12,9 @@ function createController() {
     status: 'PENDING',
     tradeStatus: 'WAIT_BUYER_PAY',
   }]
-  const paymentService = {
+  const orderQuery = {
     listAdminOrders: jest.fn().mockResolvedValue(paymentOrders),
+    getAdminOrderDetail: jest.fn().mockResolvedValue({ orderNo: 'ELMALI202605241200000001' }),
   }
   const tenantContext = {
     fromRequestUser: jest.fn().mockResolvedValue({
@@ -39,7 +42,6 @@ function createController() {
     deleteFood: jest.fn().mockResolvedValue({ status: 1 }),
   }
   const orderWorkflow = {
-    getAdminOrderDetail: jest.fn().mockResolvedValue({ orderNo: 'ELMALI202605241200000001' }),
     acceptOrder: jest.fn().mockResolvedValue({ fulfillmentStatus: 'ACCEPTED' }),
     startPreparing: jest.fn().mockResolvedValue({ fulfillmentStatus: 'PREPARING' }),
     startDelivery: jest.fn().mockResolvedValue({ fulfillmentStatus: 'DELIVERING' }),
@@ -47,10 +49,8 @@ function createController() {
     approveRefund: jest.fn().mockResolvedValue({ refundStatus: 'APPROVED' }),
     rejectRefund: jest.fn().mockResolvedValue({ refundStatus: 'REJECTED' }),
   }
-  const controller = new ElmAdminController(
-    restaurantService as any,
-    foodService as any,
-    paymentService as any,
+  const controller = new AdminOrderController(
+    orderQuery as any,
     orderWorkflow as any,
     tenantContext as any,
   )
@@ -63,36 +63,39 @@ function createController() {
 
   return {
     controller,
-    paymentService,
+    orderQuery,
     orderWorkflow,
     paymentOrders,
     request,
     tenantContext,
     restaurantService,
     foodService,
+    restaurantController: new AdminRestaurantController(restaurantService as any, tenantContext as any),
+    foodController: new AdminFoodController(foodService as any, tenantContext as any),
   }
 }
 
 describe('elmAdminController order management', () => {
-  it('keeps PaymentService and OrderWorkflowService as runtime dependencies', () => {
-    const paramTypes = Reflect.getMetadata('design:paramtypes', ElmAdminController)
+  it('keeps OrderQueryService and OrderWorkflowService as runtime dependencies', () => {
+    const paramTypes = Reflect.getMetadata('design:paramtypes', AdminOrderController)
 
-    expect(paramTypes).toContain(PaymentService)
+    expect(paramTypes).toContain(OrderQueryService)
     expect(paramTypes).toContain(OrderWorkflowService)
     expect(paramTypes).toContain(TenantContextService)
   })
 
   it('passes tenant context to admin restaurant and food services', async () => {
     const {
-      controller,
+      restaurantController,
+      foodController,
       request,
       tenantContext,
       restaurantService,
       foodService,
     } = createController()
 
-    await controller.getRestaurants(request)
-    await controller.getFoods(request)
+    await restaurantController.getRestaurants(request)
+    await foodController.getFoods(request)
 
     const context = await tenantContext.fromRequestUser.mock.results[0].value
     expect(restaurantService.listRestaurants).toHaveBeenCalledWith({ limit: 100 }, context)
@@ -102,7 +105,7 @@ describe('elmAdminController order management', () => {
   it('reads admin orders from real payment orders', async () => {
     const {
       controller,
-      paymentService,
+      orderQuery,
       paymentOrders,
       request,
       tenantContext,
@@ -114,13 +117,13 @@ describe('elmAdminController order management', () => {
 
     await expect(controller.getOrders(request, query)).resolves.toBe(paymentOrders)
     const context = await tenantContext.fromRequestUser.mock.results[0].value
-    expect(paymentService.listAdminOrders).toHaveBeenCalledWith('20', context, query)
+    expect(orderQuery.listAdminOrders).toHaveBeenCalledWith('20', context, query)
   })
 
-  it('reads admin order detail from the workflow service', async () => {
+  it('reads admin order detail from the query service', async () => {
     const {
       controller,
-      orderWorkflow,
+      orderQuery,
       request,
       tenantContext,
     } = createController()
@@ -128,7 +131,7 @@ describe('elmAdminController order management', () => {
     await controller.getOrderDetail('ELMALI202605241200000001', request)
 
     const context = await tenantContext.fromRequestUser.mock.results[0].value
-    expect(orderWorkflow.getAdminOrderDetail).toHaveBeenCalledWith('ELMALI202605241200000001', context)
+    expect(orderQuery.getAdminOrderDetail).toHaveBeenCalledWith('ELMALI202605241200000001', context)
   })
 
   it('runs admin order actions with the authenticated admin operator', async () => {

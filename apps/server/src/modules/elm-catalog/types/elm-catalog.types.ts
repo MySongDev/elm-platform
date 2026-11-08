@@ -1,16 +1,3 @@
-export interface CityRecord {
-  id: number
-  name: string
-  abbr: string
-  area_code: string
-  sort: number
-  latitude: number
-  longitude: number
-  geohash: string
-  is_map: boolean
-  pinyin: string
-}
-
 export interface ActivityRecord {
   id: number
   _id: string
@@ -139,19 +126,6 @@ export interface MenuCategoryRecord {
 }
 
 export type MenuCategorySeed = Omit<MenuCategoryRecord, 'foods'>
-
-export type OrderStatus = 'pending' | 'paid' | 'closed'
-
-export interface OrderRecord {
-  id: number
-  orderNo: string
-  userId: number
-  restaurantId: number
-  restaurantName: string
-  amount: number
-  status: OrderStatus
-  createdAt: string
-}
 
 export interface RestaurantSeedInput {
   id: number
