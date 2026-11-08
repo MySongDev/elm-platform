@@ -1,10 +1,10 @@
-import type { MerchantApplicationReviewAction } from '../merchant-onboarding.types'
+import type { MerchantApplicationReviewAction } from '../../../../modules/merchant-onboarding/merchant-onboarding.types'
 import { Type } from 'class-transformer'
 import { IsIn, IsInt, IsOptional, IsString, Min } from 'class-validator'
 import {
   merchantApplicationReviewActions,
   merchantApplicationStatuses,
-} from '../merchant-onboarding.types'
+} from '../../../../modules/merchant-onboarding/merchant-onboarding.types'
 
 export class MerchantApplicationQueryDto {
   @IsOptional()

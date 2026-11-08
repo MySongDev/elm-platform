@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger'
 import {
   merchantApplicationReviewActions,
   merchantApplicationStatuses,
-} from '../merchant-onboarding.types'
+} from '../../../../modules/merchant-onboarding/merchant-onboarding.types'
 
 export class MerchantMaterialResponseDto {
   @ApiProperty({

@@ -1,5 +1,5 @@
 import { IsEmail, IsIn, IsOptional, IsString, Length } from 'class-validator'
-import { tenantEvents } from '../tenant.types'
+import { tenantEvents } from '../../../../modules/tenant/tenant.types'
 
 export class CreateTenantDto {
   @IsString()

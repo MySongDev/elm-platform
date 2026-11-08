@@ -1,5 +1,5 @@
 import { IsIn, IsOptional } from 'class-validator'
-import { NOTIFICATION_TYPES, NotificationType } from '../notification.service'
+import { NOTIFICATION_TYPES, NotificationType } from '../../../../modules/notification/notification.service'
 
 export class NotificationTypeQueryDto {
   @IsOptional()

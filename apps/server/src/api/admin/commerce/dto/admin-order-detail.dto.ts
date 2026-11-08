@@ -6,7 +6,7 @@ import {
   operatorTypes,
   paymentStatuses,
   refundStatuses,
-} from '../order.types'
+} from '../../../../modules/order/order.types'
 
 export class AdminOrderActionLogDto {
   @ApiProperty({ example: 1 })

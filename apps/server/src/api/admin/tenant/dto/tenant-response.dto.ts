@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger'
-import { tenantStatuses } from '../tenant.types'
+import { tenantStatuses } from '../../../../modules/tenant/tenant.types'
 
 export class TenantCountResponseDto {
   @ApiProperty({

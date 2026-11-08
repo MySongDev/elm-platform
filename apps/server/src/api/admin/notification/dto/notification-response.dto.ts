@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger'
-import { NOTIFICATION_TYPES } from '../notification.service'
+import { NOTIFICATION_TYPES } from '../../../../modules/notification/notification.service'
 
 export class NotificationItemResponseDto {
   @ApiProperty({
