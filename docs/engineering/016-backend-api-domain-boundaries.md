@@ -194,18 +194,18 @@ Swagger 默认根据类名和方法名生成 operationId。拆分类时，即使
 
 移动但未改名的 Controller 沿用原类名；拆分后换名的 Controller 显式保留旧 operationId。请求与响应 DTO 的类名也保留，防止 schema 名称随目录变化。
 
-### 5.1 DTO 当前归属与未来统一的含义
+### 5.1 DTO 归属现状与已实施的统一规则
 
-当前 HTTP DTO 多数位于 `modules/**/dto/`，保留了原 feature module 的组织习惯；权限目录响应 DTO 位于 `api/admin/system/dto/`。部分业务 Service 用 `import type` 引用请求 DTO，支付业务 payload 还直接 `extends` DTO。`import type` 避免运行时加载，却没有消除源码层的耦合。
+HTTP DTO 已按「端 → 资源」迁入接口层：`api/<端>/<资源>/dto/`（管理端 `api/admin/{system,auth,tenant,monitor,notification,commerce}/dto/`、消费者端 `api/customer/{auth,address,profile,order,payment}/dto/`、共享 `api/shared/health/dto/`）。`modules/` 与 `health/` 下不再保留 `*.dto.ts`；业务 Service 改用框架无关的输入类型（`modules/<domain>/*.inputs.ts` 的 `*Input`/`*Payload`），支付业务不再 `extends` HTTP DTO，接口层反向依赖已解除。
 
-因此，“所有业务类型已脱离 HTTP”不是当前事实；“全部 HTTP DTO 必须立刻移动”也不是现行强制规则。这是需要后续收敛的归属问题，不是运行故障或 Nest 不允许的用法。
+实施顺序为「先解耦业务输入，再迁 HTTP DTO」（016 §3 评审第 3 条），全程未改 DTO 类名、字段、验证/转换装饰器与 operationId，schema 名称保持不变。
 
-推荐的未来职责划分如下，**尚未全仓实施**：
+职责划分落点如下，已实施：
 
-| 模型职责 | 推荐归属 | 说明 |
+| 模型职责 | 归属 | 说明 |
 |---|---|---|
-| HTTP 请求/响应 DTO | 接口适配层 `api/` | class-validator、class-transformer、Swagger 和对外响应契约 |
-| 业务 Input / Payload / Query | 对应 `modules/` | Service 所需输入，不从接口层反向导入类型 |
+| HTTP 请求/响应 DTO | 接口适配层 `api/<端>/<资源>/dto/` | class-validator、class-transformer、Swagger 和对外响应契约 |
+| 业务 Input / Payload / Query | 对应 `modules/<domain>/`（`*.inputs.ts`） | Service 所需输入，不从接口层反向导入类型 |
 | 跨端共享常量与类型 | `packages/contracts` | 框架无关的共享语义，不加入 Nest/Swagger 装饰器 |
 
 先解除业务输入依赖，再迁移 HTTP DTO：
@@ -224,7 +224,7 @@ Swagger 默认根据类名和方法名生成 operationId。拆分类时，即使
 - `modules/order/order-query.service.ts`：`AdminOrderQuery`。
 - `modules/merchant-onboarding/merchant-onboarding.types.ts`：`MerchantApplicationQuery`、`MerchantApplicationReviewPayload`。
 
-**schema 名称不是文件不能移动的理由。**未来迁移时保留 DTO 类名、字段、默认值、验证/转换/Swagger 装饰器和被装饰器使用的值引用，更新 import，通常可保持原 schema。全局 ValidationPipe 的白名单和转换行为仍须核对，不能把 `@Type()` 或 Swagger 使用的类误改成 type-only import。
+**schema 名称不是文件不能移动的理由。**2026-11-08 的迁移即按此执行：保留 DTO 类名、字段、默认值、验证/转换/Swagger 装饰器和被装饰器使用的值引用，只更新 import，schema 名称保持不变。后续任何移动仍须核对全局 ValidationPipe 的白名单和转换行为，不能把 `@Type()` 或 Swagger 使用的类误改成 type-only import。
 
 DTO 文件路径不决定 operationId；拆分类时的显式旧 operationId 仍需保留。每轮迁移应执行请求/响应及 schema 契约对比，而不是重生成历史基线来掩盖差异。
 
@@ -247,7 +247,7 @@ DTO 文件路径不决定 operationId；拆分类时的显式旧 operationId 仍
 - 保留角色、菜单、部门原有数据库异常→内存回退行为。它不提供可靠的生产持久化保证。
 - 保留 `forceLogout` 原来的 Redis 键删除实现；本次不承诺新增 JWT 撤销机制。
 - H5 建单并生成支付链接与消费者独立建单仍并存，共用 `order-draft.factory.ts`。
-- 订单响应 DTO 暂保留在 payment 下，这是既有 schema 的复用，不另建重复定义；不是对文件位置的永久限制，未来迁移须先解除业务输入对 HTTP DTO 的依赖。
+- 订单响应 DTO 在 2026-11-08 DTO 归属统一前暂留在 payment 下（既有 schema 复用，不另建重复定义）；迁移后落点为 `api/customer/payment/dto/`，`customer-order` 跨目录复用它们（同属 api 层，允许）。
 - 没有为餐馆、食品、支付等所有 Service 机械拆分，也没有增加 Repository、通用基类或抽象工厂。
 
 ## 8. 首次接口重构的历史验收
@@ -264,15 +264,15 @@ DTO 文件路径不决定 operationId；拆分类时的显式旧 operationId 仍
 
 ## 9. 后续演进与依赖边界实施状态
 
-本节对应2026-11-08分层评审中的第1、3、4条。第1条已按 `docs/superpowers/plans/2026-11-08-后端剩余两项演进实施计划.md` 实施完成（Elm 拆分为 media/upstream/catalog/location/legacy 五个模块，`ElmModule` 退化为纯聚合根）；第3条（HTTP DTO 统一归属）仍为后续建议，尚未实施；第4条已由用户确认，并加入下述 ESLint 错误级约束。不能把已实施条目的完成延伸为其他重构或安全治理也已完成。
+本节对应2026-11-08分层评审中的第1、3、4条。三条均已实施：第1条（Elm 拆分为 media/upstream/catalog/location/legacy 五个模块，`ElmModule` 退化为纯聚合根）与第3条（HTTP DTO 按「端 → 资源」迁入 `api/`，业务 Service 改用 `*.inputs.ts` 输入类型）按 `docs/superpowers/plans/2026-11-08-后端剩余两项演进实施计划.md` 完成；第4条（自动依赖边界）由用户确认后加入 ESLint 错误级约束。不能把这三条的完成延伸为安全治理或数据库隔离等其他未实施事项也已完成。
 
 | 评审项 | 必要性与建议 | 实施前必须守住的边界 |
 |---|---|---|
 | 第1：Elm 职责拆分 | **已实施（2026-11-08）**：先拆边界最清晰的图片资产（`elm-media`），再整理上游导入（`elm-upstream`）、商业目录与首页元数据（`elm-catalog`）、城市定位（`elm-location`）与历史演示订单（`elm-legacy`），`modules/elm/elm.module.ts` 退化为只做 imports/exports 的组合根 | 已守住：菜单读链路的按需导入保留（`elm-catalog → elm-upstream` 单向）；定位与首页元数据分归 `elm-location` 与 `elm-catalog`；mock 订单未与真实订单合并；两种存储契约未强行合并；无 media/legacy 双向依赖 |
-| 第3：HTTP DTO 统一归属 | 值得收敛，按第5.1节先使用业务 Input/Payload，再迁 HTTP DTO；单独做契约闭环 | 不反向导入 api；不将 Nest/Swagger 装饰器塞进共享包；保留类名、字段、验证/转换、schema 与 operationId |
+| 第3：HTTP DTO 统一归属 | **已实施（2026-11-08）**：按第5.1节先为 9 个 Service 建立框架无关的 `*.inputs.ts` 业务输入类型解除反向依赖，再把 33 个 HTTP DTO 文件按「端 → 资源」迁入 `api/<端>/<资源>/dto/`；`modules/` 与 `health/` 下不再保留 `*.dto.ts` | 已守住：未反向导入 api；未将 Nest/Swagger 装饰器塞进共享包；保留类名、字段、验证/转换、schema 与 operationId，契约脚本对比通过 |
 | 第4：自动依赖边界 | **已实施**：复用 ESLint `no-restricted-imports`，对后端生产静态依赖启用 `error`；没有新增插件或工具链 | 覆盖常规相对路径、别名、Prisma Service/生成客户端；测试和两个已知 CLI 豁免；不保证鉴权或数据库租户安全 |
 
-第1、4条已完成。第3条仍待实施；不能因它出现在指南中就顺带修改。
+第1、3、4条均已实施。后续协作者不应把这三条完成延伸为类型、密钥、内存回退或数据库隔离等未实施事项。
 
 当前最小约束：生产 `modules → api` 禁止、`api → Prisma` 禁止、`common → modules/api` 禁止。规则匹配静态 import/export 的字符串路径，不等同完整依赖图解析，也不能代替权限、状态流转或租户隔离验证。
 
@@ -337,4 +337,4 @@ pnpm --filter @elm-platform/server exec eslint src --quiet
 - 第5b：`modules/role/role.service.ts`、`modules/menu/menu.service.ts`、`modules/dept/dept.service.ts`。
 - 第6：`modules/tenant/tenant-context.service.ts`、`modules/tenant/tenant-access.service.ts`、`modules/order/order-query.service.ts`；平台自营数据选择另见 [商家数据本地化说明](008-merchant-data-localization.md)。
 
-截至本轮第4条依赖边界实施，没有实施上述类型、配置、降级或数据库隔离改动。新增的是 lint 结构约束，原接口、权限、密钥、状态流转和数据库行为保持原状。
+第1、3、4条实施完成后，仍没有实施上述第2、5a、5b、6条的类型、密钥、降级或数据库隔离改动。新增的是 Elm 模块拆分、HTTP DTO 归属统一与 lint 结构约束；原接口的 URL、Guard、权限、状态流转、密钥与数据库行为保持原状。
