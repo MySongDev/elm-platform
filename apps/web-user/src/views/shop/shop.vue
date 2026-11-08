@@ -1,5 +1,5 @@
 <script setup>
-import { computed, ref, watch } from 'vue'
+import { computed, nextTick, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import BackTop from '@/components/common/BackTop/BackTop.vue'
 
@@ -43,6 +43,9 @@ const {
   foodMenuData,
   activeCategoryId,
   pageLoading,
+  loadError,
+  loadShopData,
+  loadCategoryFoods,
 } = useShopPageData({
   shopId,
   onPaidOrderConsumed: clearCart,
@@ -56,11 +59,29 @@ const { activeTab, switchTab } = useTabSwitch({
 
 const { flyBalls, handleAdd } = useFlyCartAnimation({ addToCart })
 
-function onCategoryClick(id) {
+let categorySelection = 0
+async function onCategoryClick(id) {
+  const selection = ++categorySelection
+  const restaurantId = shopId.value
+  const category = foodMenuData.value.find(item => String(item.id) === String(id))
+  if (!category) {
+    return
+  }
   activeCategoryId.value = id
-  requestAnimationFrame(() => {
-    productListRef.value?.scrollToCategory?.(id)
-  })
+  // 已加载的分类点击只定位，不能每点一次就多取一页。
+  if (!category.loaded) {
+    await loadCategoryFoods(id)
+  }
+  if (selection !== categorySelection || restaurantId !== shopId.value) {
+    return
+  }
+  activeCategoryId.value = id
+  await nextTick()
+  productListRef.value?.scrollToCategory?.(String(id))
+}
+
+function onLoadCategory(id, retry = false) {
+  return loadCategoryFoods(id, { retry })
 }
 
 function onScrollCategory(id) {
@@ -88,6 +109,12 @@ watch(
 <template>
   <div class="shop-page">
     <ShopPageSkeleton v-if="pageLoading && !shopData" />
+    <div v-else-if="loadError" class="shop-load-error">
+      <p>店铺加载失败</p>
+      <button type="button" @click="loadShopData">
+点击重试
+</button>
+    </div>
 
     <div v-else-if="shopData" class="shop-layout">
       <div ref="outerRef" class="outer-scroller">
@@ -117,6 +144,7 @@ watch(
               :cart-map="cartMap"
               :scroll-root="outerRef"
               @scroll-category="onScrollCategory"
+              @load-category="onLoadCategory"
               @add="handleAdd"
               @decrease="decreaseFromCart"
             />

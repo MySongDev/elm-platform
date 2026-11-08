@@ -1,6 +1,9 @@
 import type { Ref } from 'vue'
 import { nextTick, onScopeDispose, ref, toValue, watchEffect } from 'vue'
 
+// 导航 50px + tab 42px：点击定位与反向高亮必须用同一条可见内容边界。
+const STICKY_HEIGHT = 92
+
 interface UseMenuScrollOptions {
   scrollRoot: Ref<HTMLElement | null> | (() => HTMLElement | null)
   onActiveChange?: (id: string) => void
@@ -28,9 +31,7 @@ export function useMenuScroll(options: UseMenuScrollOptions): UseMenuScrollRetur
 
     const relativeTop = elRect.top - rootRect.top + root.scrollTop
 
-    const stickyHeight = 92
-
-    const target = relativeTop - stickyHeight
+    const target = relativeTop - STICKY_HEIGHT
 
     const maxScroll = root.scrollHeight - root.clientHeight
     return Math.max(0, Math.min(target, maxScroll))
@@ -69,7 +70,7 @@ export function useMenuScroll(options: UseMenuScrollOptions): UseMenuScrollRetur
     }
 
     const containerRect = root.getBoundingClientRect()
-    const thresholdY = containerRect.top + 8
+    const thresholdY = containerRect.top + STICKY_HEIGHT + 1
 
     let lo = 0
     let hi = anchors.length - 1

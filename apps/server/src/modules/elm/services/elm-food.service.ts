@@ -37,11 +37,25 @@ export class ElmFoodService {
   /**
    * `/shopping/v2/menu?restaurant_id=`。
    *
-   * 返回「分类数组 + 每类内嵌 foods」—— 与 `/shopping/getcategory/:id` 是同构数据，
-   * 实测两个上游/本地接口返回的是同一个东西（008 §2.3 发现二）。
+   * 默认返回「分类数组 + 每类内嵌 foods」，保留与 `/shopping/getcategory/:id` 的兼容形状。
+   * includeFoods=false 时仅返回分类元数据与 food_count，菜品由分类分页接口另取。
    */
-  async getMenuForApi(restaurantId: number) {
+  async getMenuForApi(restaurantId: number, includeFoods = true) {
     await this.ensureMenuSynced(restaurantId)
+
+    // 点菜页只需分类导航。计数不读取 specfoods 等大 JSON 字段，不能先全量查出再删 foods。
+    // 默认保留旧契约；新客户端显式传 include_foods=false，避免管理端/旧客户端被一起改坏。
+    if (!includeFoods) {
+      const categories = await this.prisma.foodCategory.findMany({
+        where: { restaurantId },
+        orderBy: { id: 'asc' },
+        include: { _count: { select: { foods: true } } },
+      })
+      return categories.map(category => ({
+        ...toFoodCategoryResponse(category),
+        food_count: category._count.foods,
+      }))
+    }
 
     const categories = await this.prisma.foodCategory.findMany({
       where: { restaurantId },
@@ -58,6 +72,40 @@ export class ElmFoodService {
   /** `/shopping/getcategory/:restaurantId`：与菜单同源，只是外面套一层 `category_list`。 */
   async getFoodMenus(restaurantId: number, _context?: TenantContext) {
     return this.getMenuForApi(restaurantId)
+  }
+
+  /**
+   * 分类内分页。分类必须属于请求的餐馆；仅按 categoryId 查会允许客户端混入别店菜品。
+   * 多取一条判断 has_more，不用分类总数推断末页（总数可能在菜单编辑后变化）。
+   * offset 分页适合一次点餐期间基本不变的菜单；并发删菜仍可能移动后续页的位置。
+   */
+  async getCategoryFoods(restaurantId: number, categoryId: number, offset: number, limit: number) {
+    const category = await this.prisma.foodCategory.findFirst({
+      where: {
+        id: categoryId,
+        restaurantId,
+      },
+      select: { id: true },
+    })
+    if (!category)
+      throw new NotFoundException('食品种类不存在或不属于该餐馆')
+
+    const rows = await this.prisma.food.findMany({
+      where: {
+        restaurantId,
+        categoryId,
+      },
+      orderBy: { itemId: 'asc' },
+      skip: offset,
+      take: limit + 1,
+    })
+    const items = rows.slice(0, limit).map(toFoodResponse)
+    const hasMore = rows.length > limit
+    return {
+      items,
+      has_more: hasMore,
+      next_offset: hasMore ? offset + items.length : null,
+    }
   }
 
   /** `/shopping/v2/menu/:categoryId`。 */

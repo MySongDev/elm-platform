@@ -1,7 +1,8 @@
 import type { FoodRecord } from '../../types/elm.types'
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Query } from '@nestjs/common'
-import { ApiOperation, ApiTags } from '@nestjs/swagger'
+import { Body, Controller, DefaultValuePipe, Delete, Get, Param, ParseBoolPipe, ParseIntPipe, Post, Query } from '@nestjs/common'
+import { ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger'
 import { rawResponse } from '../../../../common/interceptors/transform.interceptor'
+import { CategoryFoodsQueryDto } from '../../dto/category-foods-query.dto'
 import { ElmFoodService } from '../../services/elm-food.service'
 
 /**
@@ -17,9 +18,34 @@ export class ElmFoodPublicController {
   constructor(private readonly foodService: ElmFoodService) {}
 
   @Get('shopping/v2/menu')
-  @ApiOperation({ summary: '获取菜单列表' })
-  async getMenu(@Query('restaurant_id', ParseIntPipe) restaurantId: number) {
-    return rawResponse(await this.foodService.getMenuForApi(restaurantId))
+  @ApiOperation({ summary: '获取菜单列表；include_foods=false 时只返回分类和菜品数量' })
+  @ApiQuery({
+    name: 'include_foods',
+    required: false,
+    type: Boolean,
+    description: '默认 true（兼容全量菜单）；点菜页传 false',
+  })
+  async getMenu(
+    @Query('restaurant_id', ParseIntPipe) restaurantId: number,
+    @Query('include_foods', new DefaultValuePipe(true), ParseBoolPipe) includeFoods = true,
+  ) {
+    return rawResponse(await (includeFoods
+      ? this.foodService.getMenuForApi(restaurantId)
+      : this.foodService.getMenuForApi(restaurantId, false)))
+  }
+
+  @Get('shopping/v2/menu/:categoryId/foods')
+  @ApiOperation({ summary: '按分类分页获取菜品（每页默认 20 条，上限 50 条）' })
+  async getCategoryFoods(
+    @Param('categoryId', ParseIntPipe) categoryId: number,
+    @Query() query: CategoryFoodsQueryDto,
+  ) {
+    return rawResponse(await this.foodService.getCategoryFoods(
+      query.restaurant_id,
+      categoryId,
+      query.offset,
+      query.limit,
+    ))
   }
 
   @Get('shopping/getcategory/:restaurantId')

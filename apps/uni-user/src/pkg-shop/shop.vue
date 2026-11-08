@@ -27,7 +27,7 @@
  *    草稿形状）；支付成功回到本页时在 onShow 清空本店购物车（见 useShopPageData）。
  */
 import { onLoad, onShow } from '@dcloudio/uni-app'
-import { computed, getCurrentInstance, nextTick, ref, watch } from 'vue'
+import { computed, getCurrentInstance, nextTick, onScopeDispose, ref, watch } from 'vue'
 
 import { ROUTES, withQuery } from '@/config/routes'
 import { showToast } from '@/platform/feedback'
@@ -68,6 +68,7 @@ const {
   activeCategoryId,
   pageLoading,
   loadError,
+  loadCategoryFoods,
   loadShopData,
   consumePaidOrder,
 } = useShopPageData(shopId, { onPaidOrderConsumed: clearCart })
@@ -113,40 +114,90 @@ let scrollTimer = null
 let anchorTops = []
 let isProgramScrolling = false
 let programScrollTimer = null
+let loaderBounds = []
+let menuScrollTop = 0
+let menuViewportHeight = 0
+let anchorQueryRevision = 0
+let categorySelection = 0
+let disposed = false
+
+onScopeDispose(() => {
+  disposed = true
+  anchorQueryRevision += 1
+  clearTimeout(scrollTimer)
+  clearTimeout(programScrollTimer)
+})
+
+watch(shopId, () => {
+  categorySelection += 1
+  anchorQueryRevision += 1
+  anchorTops = []
+  loaderBounds = []
+  menuScrollTop = 0
+  menuScrollViewId.value = ''
+  isProgramScrolling = false
+  clearTimeout(scrollTimer)
+  clearTimeout(programScrollTimer)
+})
 
 // getCurrentInstance 只能在 setup 同步阶段调用，exec 回调里再取就是 null
 const instance = getCurrentInstance()
 
 /**
- * 批量查全部分类块的 top，换算成「相对 scroll-view 内容顶部」的偏移并缓存。
- *
- * 换算：块在内容里的偏移 = 块的视口 top − scroll-view 的视口 top + 当前 scrollTop。
- * 同一次 exec 里同时查容器与 scrollOffset，三个量取自同一帧，不会错位。
- * 只在菜单数据变化、切回点菜 tab 时重查：菜品图是固定 156rpx 宽高，图片加载
- * 不会改变块高度，所以滚动途中锚点不会过时。查询发生在渲染前时结果为空数组，
- * onMenuScroll 第一次滚动时会补查。
+ * 一次批量查询缓存分类锚点与各分类页尾。滚动事件只读缓存，不逐帧异步查节点。
+ * 分页追加会改变分类高度，必须在每次数据渲染后重测；仅固定图片尺寸已不足以保证锚点不变。
+ * 小程序不能用 DOM IntersectionObserver，页尾进入视口附近后触发与 H5 相同的分页会话。
  */
 function refreshAnchors() {
+  if (disposed || pageLoading.value || activeTab.value !== '点菜') {
+    return
+  }
+  const revision = ++anchorQueryRevision
   const query = uni.createSelectorQuery().in(instance?.proxy)
   query.select('.menu-area__list').boundingClientRect()
   query.select('.menu-area__list').scrollOffset()
   query.selectAll('.food-category').boundingClientRect()
+  query.selectAll('.category-loader').boundingClientRect()
   query.exec((result) => {
-    const [listRect, offset, catRects] = result || []
-    if (!listRect || !Array.isArray(catRects)) {
+    if (disposed || revision !== anchorQueryRevision) {
       return
     }
-    const scrollTop = offset?.scrollTop || 0
-    anchorTops = catRects.map(rect => rect.top - listRect.top + scrollTop)
+    const [listRect, offset, catRects, footerRects] = result || []
+    if (!listRect || !Array.isArray(catRects) || !Array.isArray(footerRects)) {
+      return
+    }
+    menuScrollTop = offset?.scrollTop || 0
+    menuViewportHeight = listRect.height
+    anchorTops = catRects.map(rect => rect.top - listRect.top + menuScrollTop)
+    loaderBounds = footerRects.map(rect => ({
+      top: rect.top - listRect.top + menuScrollTop,
+      bottom: rect.bottom - listRect.top + menuScrollTop,
+    }))
+    loadVisibleCategoryFoods()
   })
 }
 
-// 菜单数据到位、DOM 渲染完后查一次；切回点菜 tab 时也重查（v-show 隐藏期间量不到尺寸）
-watch(foodMenuData, () => nextTick(refreshAnchors))
-watch(activeTab, (tab) => {
-  if (tab === '点菜') {
-    nextTick(refreshAnchors)
+function loadVisibleCategoryFoods() {
+  if (isProgramScrolling || activeTab.value !== '点菜') {
+    return
   }
+  const activeIndex = foodMenuData.value.findIndex(category => String(category.id) === String(activeCategoryId.value))
+  loaderBounds.forEach((bounds, index) => {
+    // 不补载跳转目标上方的占位分类，避免它们增高后把当前目标挤下去；向上滚时会重新解锁。
+    if (index >= activeIndex && bounds.bottom >= menuScrollTop && bounds.top <= menuScrollTop + menuViewportHeight + 160) {
+      const category = foodMenuData.value[index]
+      if (category && !category.loading) {
+        loadCategoryFoods(category.id)
+      }
+    }
+  })
+}
+
+// 隐藏/首屏 loading 时不量节点；分页追加后重新测量，再判断不足一屏时是否还需补页。
+watch([foodMenuData, activeTab, pageLoading], () => {
+  loaderBounds = []
+  anchorQueryRevision += 1
+  nextTick(refreshAnchors)
 })
 
 /** 二分找「top ≤ scrollTop 的最后一个分类」。分类块按源码顺序排列，tops 单调递增 */
@@ -169,6 +220,7 @@ function findActiveIndex(scrollTop) {
 }
 
 function onMenuScroll(event) {
+  menuScrollTop = event.detail?.scrollTop || 0
   if (isProgramScrolling) {
     return
   }
@@ -185,6 +237,7 @@ function onMenuScroll(event) {
   if (id != null && String(id) !== String(activeCategoryId.value)) {
     activeCategoryId.value = id
   }
+  loadVisibleCategoryFoods()
 }
 
 /** 滚到底：最后一个分类可能不够高、顶边永远到不了容器顶 → 直接高亮最后一个 */
@@ -195,34 +248,43 @@ function onMenuScrollToLower() {
   const last = foodMenuData.value.at(-1)
   if (last) {
     activeCategoryId.value = last.id
+    loadCategoryFoods(last.id)
   }
 }
 
-function onCategorySelect(id) {
+async function onCategorySelect(id) {
+  const selection = ++categorySelection
+  const restaurantId = shopId.value
+  const category = foodMenuData.value.find(item => String(item.id) === String(id))
+  if (!category) {
+    return
+  }
   activeCategoryId.value = id
 
-  // 程序滚动期间压住反向联动：滚动途经的分类不许把高亮抢回去。
-  // 500ms 覆盖 scroll-with-animation 的动画时长（微信默认约 300ms）
+  // 等待首批菜品时就压住反向回写和自动预取，避免请求尚未完成却又被旧滚动位置抢走高亮。
   isProgramScrolling = true
-  if (programScrollTimer) {
-    clearTimeout(programScrollTimer)
+  clearTimeout(programScrollTimer)
+  clearTimeout(scrollTimer)
+  if (!category.loaded) {
+    await loadCategoryFoods(id)
   }
-  programScrollTimer = setTimeout(() => {
-    isProgramScrolling = false
-    programScrollTimer = null
-  }, 500)
-
-  if (scrollTimer) {
-    clearTimeout(scrollTimer)
+  if (disposed || selection !== categorySelection || restaurantId !== shopId.value) {
+    return
   }
+  activeCategoryId.value = id
+  await nextTick()
 
-  // 第 1 拍：清空（提交一次渲染，使下个值与上一次必然不同）
+  // 两拍提交仍不可合并（scroll-into-view 同值不触发）；等菜品渲染后再定位目标分类。
   menuScrollViewId.value = ''
-  // 第 2 拍：赋目标 id
   scrollTimer = setTimeout(() => {
     menuScrollViewId.value = `food-cat-${id}`
     scrollTimer = null
   }, 0)
+  programScrollTimer = setTimeout(() => {
+    isProgramScrolling = false
+    programScrollTimer = null
+    refreshAnchors()
+  }, 500)
 }
 
 // ============ 结算 ============
@@ -326,6 +388,9 @@ const pageState = computed(() => {
               温馨提示：请适量点餐
             </text>
 
+            <text v-if="!foodMenuData.length" class="menu-area__tip">
+              本店暂无菜品
+            </text>
             <view
               v-for="cat in foodMenuData"
               :id="`food-cat-${cat.id}`"
@@ -349,6 +414,26 @@ const pageState = computed(() => {
                 @add="addToCart"
                 @decrease="decreaseFromCart"
               />
+              <view class="category-loader" :class="{ 'is-placeholder': !cat.loaded }">
+                <text v-if="cat.loading">
+                  菜品加载中…
+                </text>
+                <text
+                  v-else-if="cat.loadError" class="category-loader__action"
+                  @click="loadCategoryFoods(cat.id, { retry: true })"
+                >
+                  加载失败，点击重试
+                </text>
+                <text
+                  v-else-if="!cat.loaded || cat.hasMore" class="category-loader__action"
+                  @click="loadCategoryFoods(cat.id)"
+                >
+                  {{ cat.loaded ? '加载更多菜品' : '加载本分类菜品' }}
+                </text>
+                <text v-else>
+                  {{ cat.foods.length ? '本分类已全部加载' : '本分类暂无菜品' }}
+                </text>
+              </view>
             </view>
 
             <!-- 末分类撑开：保证它也能被 scroll-into-view 顶到可视区 -->
@@ -496,6 +581,26 @@ const pageState = computed(() => {
 .food-category__desc {
   font-size: 22rpx;
   color: #999;
+}
+
+.category-loader {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 96rpx;
+  font-size: 24rpx;
+  color: #888;
+
+  &.is-placeholder {
+    min-height: 280rpx;
+  }
+}
+
+.category-loader__action {
+  padding: 20rpx 24rpx;
+  color: #666;
+  background: #f7f7f7;
+  border-radius: 16rpx;
 }
 
 /* 末分类撑开补丁：web-user 用 min-height: calc(100vh - 150px)，

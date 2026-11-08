@@ -4,21 +4,22 @@
 // 1. consumePaidOrder 改为**暴露给页面在 onShow 调用**，不在 loadShopData 里调：
 //    小程序从支付链路 navigateBack 回到本页时 onLoad 不重跑、shopId 不变 →
 //    挂在 watch(shopId) 上的检查永远不会再触发。onShow 是「每次回到页面」的唯一时机。
-// 2. 新增 loadError：web-user 加载失败只有 finally 里的 pageLoading=false，
-//    页面静默空白；这里暴露错误态给 BaseState 的 retry 用。
-import { ref, watch } from 'vue'
+// 2. 两端均暴露 loadError；本端交给 BaseState 的 retry，H5 使用页面内重试入口。
+import { onScopeDispose, ref, watch } from 'vue'
 
-import { getFoodMenu, getShopDetails } from '@/services/api/api-shop'
+import { getMenuCategories, getShopDetails } from '@/services/api/api-shop'
 import { clearPaymentSuccessContext, getPaymentSuccessContext } from '@/utils/payment'
+import { useCategoryFoods } from './useCategoryFoods'
 
 export function useShopPageData(shopId, options = {}) {
   const { onPaidOrderConsumed } = options
 
   const shopData = ref(null)
-  const foodMenuData = ref([])
-  const activeCategoryId = ref(null)
+  const { foodMenuData, activeCategoryId, resetMenu, loadCategoryFoods } = useCategoryFoods(shopId)
   const pageLoading = ref(false)
   const loadError = ref(false)
+  let loadRevision = 0
+  onScopeDispose(() => { loadRevision += 1 })
 
   /**
    * 本店的订单已支付成功 → 清空本店购物车并消费掉成功上下文。
@@ -43,7 +44,12 @@ export function useShopPageData(shopId, options = {}) {
   }
 
   async function loadShopData() {
-    if (!shopId.value) {
+    const revision = ++loadRevision
+    const restaurantId = shopId.value
+    shopData.value = null
+    resetMenu()
+    if (!restaurantId) {
+      pageLoading.value = false
       return
     }
 
@@ -51,21 +57,29 @@ export function useShopPageData(shopId, options = {}) {
     loadError.value = false
     try {
       const [shopRes, menuRes] = await Promise.all([
-        getShopDetails(shopId.value),
-        getFoodMenu(shopId.value),
+        getShopDetails(restaurantId),
+        getMenuCategories(restaurantId),
       ])
-
+      if (revision !== loadRevision) {
+        return
+      }
+      resetMenu(Array.isArray(menuRes) ? menuRes : [])
+      // 先加载首分类，再挂载连续商品流，避免占位块短暂全落入可视区而同时发出大量请求。
+      await loadCategoryFoods(activeCategoryId.value)
+      if (revision !== loadRevision) {
+        return
+      }
       shopData.value = shopRes
-      foodMenuData.value = Array.isArray(menuRes) ? menuRes : []
-
-      const selected = foodMenuData.value.find(item => item.is_selected)
-      activeCategoryId.value = selected?.id ?? foodMenuData.value[0]?.id ?? null
     }
     catch {
-      loadError.value = true
+      if (revision === loadRevision) {
+        loadError.value = true
+      }
     }
     finally {
-      pageLoading.value = false
+      if (revision === loadRevision) {
+        pageLoading.value = false
+      }
     }
   }
 
@@ -77,6 +91,7 @@ export function useShopPageData(shopId, options = {}) {
     activeCategoryId,
     pageLoading,
     loadError,
+    loadCategoryFoods,
     loadShopData,
     consumePaidOrder,
   }

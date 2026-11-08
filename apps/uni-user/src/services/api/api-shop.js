@@ -8,9 +8,24 @@ import { shopEndpoints } from './endpoints/shop.endpoints'
 /** 获取商铺详情 */
 export const getShopDetails = shopid => get(shopEndpoints.detail(shopid), {})
 
-/** 获取菜单列表 */
-export function getFoodMenu(restaurant_id) {
-  return get(shopEndpoints.menu, { restaurant_id })
+/** 首屏分类导航：不下载全部菜品，数量仅用于展示，不用于判定分页结束。 */
+export function getMenuCategories(restaurant_id) {
+  return get(shopEndpoints.menu, {
+    restaurant_id,
+    include_foods: false,
+  }, { loading: false })
+}
+
+/** 后续分页不遮住整个店铺；错误交给分类内的重试入口展示。 */
+export function getCategoryFoods(restaurant_id, categoryId, offset = 0, limit = 20) {
+  return get(shopEndpoints.categoryFoods(categoryId), {
+    restaurant_id,
+    offset,
+    limit,
+  }, {
+    loading: false,
+    meta: { silent: true },
+  })
 }
 
 /** 获取评价分类列表 */

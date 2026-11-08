@@ -1,14 +1,17 @@
-import { ref, watch } from 'vue'
-import { getFoodMenu, getShopDetails } from '@/services/api/api-shop'
+import { onScopeDispose, ref, watch } from 'vue'
+import { getMenuCategories, getShopDetails } from '@/services/api/api-shop'
 import { clearPaymentSuccessContext, getPaymentSuccessContext } from '@/utils/payment'
+import { useCategoryFoods } from './useCategoryFoods'
 
 export function useShopPageData(options) {
   const { shopId, onPaidOrderConsumed } = options
 
   const shopData = ref(null)
-  const foodMenuData = ref([])
-  const activeCategoryId = ref(null)
+  const { foodMenuData, activeCategoryId, resetMenu, loadCategoryFoods } = useCategoryFoods(shopId)
   const pageLoading = ref(true)
+  const loadError = ref(false)
+  let loadRevision = 0
+  onScopeDispose(() => { loadRevision += 1 })
 
   function consumePaidOrder() {
     const successContext = getPaymentSuccessContext()
@@ -24,26 +27,43 @@ export function useShopPageData(options) {
   }
 
   async function loadShopData() {
-    if (!shopId.value)
+    const revision = ++loadRevision
+    const restaurantId = shopId.value
+    shopData.value = null
+    resetMenu()
+    if (!restaurantId) {
+      pageLoading.value = false
       return
+    }
 
     pageLoading.value = true
+    loadError.value = false
     try {
       const [shopRes, menuRes] = await Promise.all([
-        getShopDetails(shopId.value),
-        getFoodMenu(shopId.value),
+        getShopDetails(restaurantId),
+        getMenuCategories(restaurantId),
       ])
-
+      if (revision !== loadRevision) {
+        return
+      }
+      resetMenu(Array.isArray(menuRes) ? menuRes : [])
+      // 先加载首分类，再挂载连续商品流，避免占位块短暂全落入可视区而同时发出大量请求。
+      await loadCategoryFoods(activeCategoryId.value)
+      if (revision !== loadRevision) {
+        return
+      }
       shopData.value = shopRes
-      foodMenuData.value = Array.isArray(menuRes) ? menuRes : []
-
-      const selected = foodMenuData.value.find(item => item.is_selected)
-      activeCategoryId.value = selected?.id ?? foodMenuData.value[0]?.id ?? null
-
       consumePaidOrder()
     }
+    catch {
+      if (revision === loadRevision) {
+        loadError.value = true
+      }
+    }
     finally {
-      pageLoading.value = false
+      if (revision === loadRevision) {
+        pageLoading.value = false
+      }
     }
   }
 
@@ -54,6 +74,8 @@ export function useShopPageData(options) {
     foodMenuData,
     activeCategoryId,
     pageLoading,
+    loadError,
+    loadCategoryFoods,
     loadShopData,
   }
 }
