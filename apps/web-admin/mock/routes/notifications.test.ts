@@ -73,8 +73,9 @@ describe('admin notification mock routes', () => {
   it('gET / returns seed list sorted by createdAt desc', () => {
     const data = invoke<NotificationItem[]>('get', '/api/admin/notifications').data
     expect(data).toHaveLength(6)
-    // First item is the newest = system upgrade (10 minutes ago)
-    expect(data[0].id).toBe('seed-notify-1')
+    // 种子混用“几分钟前”和“当天固定时刻”，最新 ID 会随执行时间变化；契约只要求时间降序。
+    const createdAt = data.map(item => Date.parse(item.createdAt))
+    expect(createdAt).toEqual([...createdAt].sort((a, b) => b - a))
   })
 
   it('gET /?type filters by type', () => {
