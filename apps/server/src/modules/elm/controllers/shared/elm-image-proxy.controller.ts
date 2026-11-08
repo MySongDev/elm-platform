@@ -1,8 +1,8 @@
 import type { Request, Response } from 'express'
 import { Controller, Get, Req, Res, StreamableFile } from '@nestjs/common'
 import { ApiOperation, ApiTags } from '@nestjs/swagger'
-import { rawResponse } from '../../../common/interceptors/transform.interceptor'
-import { ElmImageProxyService } from '../services/elm-image-proxy.service'
+import { rawResponse } from '../../../../common/interceptors/transform.interceptor'
+import { ElmImageProxyService } from '../../services/elm-image-proxy.service'
 
 /**
  * 图片端点。

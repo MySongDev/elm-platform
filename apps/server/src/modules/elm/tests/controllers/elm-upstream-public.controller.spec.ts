@@ -1,9 +1,9 @@
 import type { ElmCityService } from '@/modules/elm/services/elm-city.service'
 import type { ElmFoodService } from '@/modules/elm/services/elm-food.service'
 import type { ElmRestaurantService } from '@/modules/elm/services/elm-restaurant.service'
-import { ElmFoodPublicController } from '@/modules/elm/controllers/elm-food-public.controller'
-import { ElmLocationController } from '@/modules/elm/controllers/elm-location.controller'
-import { ElmRestaurantPublicController } from '@/modules/elm/controllers/elm-restaurant-public.controller'
+import { ElmFoodPublicController } from '@/modules/elm/controllers/user/elm-food-public.controller'
+import { ElmLocationController } from '@/modules/elm/controllers/user/elm-location.controller'
+import { ElmRestaurantPublicController } from '@/modules/elm/controllers/user/elm-restaurant-public.controller'
 
 /**
  * 这 4 个接口原先是「转发上游」的薄代理，测试断言的是 `upstream.get` 被调用 ——

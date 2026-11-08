@@ -1,8 +1,8 @@
-import type { FoodRecord } from '../types/elm.types'
+import type { FoodRecord } from '../../types/elm.types'
 import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Query } from '@nestjs/common'
 import { ApiOperation, ApiTags } from '@nestjs/swagger'
-import { rawResponse } from '../../../common/interceptors/transform.interceptor'
-import { ElmFoodService } from '../services/elm-food.service'
+import { rawResponse } from '../../../../common/interceptors/transform.interceptor'
+import { ElmFoodService } from '../../services/elm-food.service'
 
 /**
  * 商品公共接口。

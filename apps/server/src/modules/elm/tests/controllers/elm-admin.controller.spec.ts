@@ -1,4 +1,4 @@
-import { ElmAdminController } from '@/modules/elm/controllers/elm-admin.controller'
+import { ElmAdminController } from '@/modules/elm/controllers/admin/elm-admin.controller'
 import { OrderWorkflowService } from '@/modules/order/order-workflow.service'
 import { PaymentService } from '@/modules/payment/payment.service'
 import { TenantContextService } from '@/modules/tenant/tenant-context.service'

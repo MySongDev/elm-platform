@@ -1,10 +1,10 @@
-import type { RestaurantRecord } from '../types/elm.types'
+import type { RestaurantRecord } from '../../types/elm.types'
 import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Query } from '@nestjs/common'
 import { ApiOperation, ApiTags } from '@nestjs/swagger'
-import { rawResponse } from '../../../common/interceptors/transform.interceptor'
-import { ElmCityService } from '../services/elm-city.service'
-import { ElmRestaurantService } from '../services/elm-restaurant.service'
-import { parseGeoHash } from '../utils/elm-query'
+import { rawResponse } from '../../../../common/interceptors/transform.interceptor'
+import { ElmCityService } from '../../services/elm-city.service'
+import { ElmRestaurantService } from '../../services/elm-restaurant.service'
+import { parseGeoHash } from '../../utils/elm-query'
 
 /**
  * 商家公共接口。
