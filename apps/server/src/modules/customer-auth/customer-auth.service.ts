@@ -1,4 +1,4 @@
-import type { CustomerPasswordLoginDto, CustomerSmsLoginDto, ResetPasswordDto } from './dto/customer-auth.dto'
+import type { CustomerPasswordLoginInput, CustomerPasswordResetInput, CustomerSmsLoginInput } from './customer-auth.inputs'
 import { BadRequestException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import * as bcrypt from 'bcryptjs'
@@ -15,7 +15,7 @@ export class CustomerAuthService {
     private readonly config: ConfigService,
   ) {}
 
-  async resetPassword(dto: ResetPasswordDto) {
+  async resetPassword(dto: CustomerPasswordResetInput) {
     const user = await (this.prisma as any).customerUser.findUnique({ where: { phone: dto.phone } })
     if (!user) {
       throw new NotFoundException('手机号未注册')
@@ -34,7 +34,7 @@ export class CustomerAuthService {
     return { success: true }
   }
 
-  async loginByPassword(dto: CustomerPasswordLoginDto) {
+  async loginByPassword(dto: CustomerPasswordLoginInput) {
     const user = await (this.prisma as any).customerUser.findUnique({ where: { phone: dto.phone } })
     if (!user) {
       throw new UnauthorizedException('手机号或密码错误')
@@ -59,7 +59,7 @@ export class CustomerAuthService {
     return this.tokens.sign(updated)
   }
 
-  async loginBySms(dto: CustomerSmsLoginDto) {
+  async loginBySms(dto: CustomerSmsLoginInput) {
     let user = await (this.prisma as any).customerUser.findUnique({ where: { phone: dto.phone } })
     if (!user) {
       const autoRegister = this.config.get<boolean>('auth.customerLoginAutoRegister', true)

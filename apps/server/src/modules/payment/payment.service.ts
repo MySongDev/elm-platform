@@ -1,41 +1,14 @@
-import type { TenantContext } from '../tenant/tenant.types'
-import type { CreateAlipayWapPaymentDto } from './dto/create-alipay-wap-payment.dto'
-import type { ResumeAlipayWapPaymentDto } from './dto/resume-alipay-wap-payment.dto'
-import {
-  BadRequestException,
-  Injectable,
-  NotFoundException,
-  UnauthorizedException,
-} from '@nestjs/common'
+import type { AlipayWapCreatePayload, AlipayWapResumePayload } from './payment.inputs'
+import { BadRequestException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common'
 import { PrismaService } from '../../prisma/prisma.service'
-import {
-  buildOrderDraft,
-  buildOrderSubject,
-  createOrderNo,
-  insertPendingOrder,
-  resolveTenantIdByShopId,
-  toPrice,
-} from '../order/order-draft.factory'
+import { buildOrderDraft, buildOrderSubject, createOrderNo, insertPendingOrder, resolveTenantIdByShopId, toPrice } from '../order/order-draft.factory'
+import { toOrderSummary } from '../order/order-summary.mapper'
 import { OrderWorkflowService } from '../order/order-workflow.service'
-import { TenantAccessService } from '../tenant/tenant-access.service'
 import { AlipayService } from './alipay/alipay.service'
 
 type PaymentStatus = 'PENDING' | 'PAID' | 'CLOSED'
 
 type PaymentOrderRecord = Record<string, any>
-
-interface AdminOrderQuery {
-  tenantId?: number | string | null
-  shopId?: string | number | null
-}
-
-interface CreateAlipayWapPaymentPayload extends CreateAlipayWapPaymentDto {
-  userId: string
-}
-
-interface ResumeAlipayWapPaymentPayload extends ResumeAlipayWapPaymentDto {
-  userId: string
-}
 
 function toDate(value: unknown) {
   if (!value)
@@ -51,7 +24,6 @@ export class PaymentService {
     private readonly prisma: PrismaService,
     private readonly alipay: AlipayService,
     private readonly orderWorkflow: OrderWorkflowService,
-    private readonly tenantAccess: TenantAccessService,
   ) {}
 
   /**
@@ -83,7 +55,7 @@ export class PaymentService {
    * 将来接入微信支付时，正确方向是把本方法改成"接已建订单 → 只生成支付链接"
    * （即复用 `resumeAlipayWapPayment` 的形状），届时可删掉这里的建单分支。
    */
-  async createAlipayWapPayment(payload: CreateAlipayWapPaymentPayload) {
+  async createAlipayWapPayment(payload: AlipayWapCreatePayload) {
     // 归一化与金额计算共用 order-draft.factory，保证与 POST /api/orders 建出的订单行一致
     const draft = buildOrderDraft(payload)
 
@@ -137,35 +109,13 @@ export class PaymentService {
         },
       })
       const syncedOrder = await this.orderWorkflow.syncPaymentStatus(updatedOrder)
-      return this.toOrderSummary(syncedOrder)
+      return toOrderSummary(syncedOrder)
     }
 
-    return this.toOrderSummary(order)
+    return toOrderSummary(order)
   }
 
-  async listOrders(userId: string, limit?: unknown) {
-    const take = Number.parseInt(String(limit || ''), 10)
-    const orders = await (this.prisma as any).paymentOrder.findMany({
-      where: { userId: String(userId) },
-      orderBy: [{ paidAt: 'desc' }, { updatedAt: 'desc' }, { createdAt: 'desc' }],
-      take: Number.isFinite(take) && take > 0 ? take : 20,
-    })
-
-    return { orders: orders.map((order: PaymentOrderRecord) => this.toOrderSummary(order)) }
-  }
-
-  async listAdminOrders(limit?: unknown, context?: TenantContext, query: AdminOrderQuery = {}) {
-    const take = Number.parseInt(String(limit || ''), 10)
-    const orders = await (this.prisma as any).paymentOrder.findMany({
-      where: this.buildOrderWhere(context, query),
-      orderBy: [{ paidAt: 'desc' }, { updatedAt: 'desc' }, { createdAt: 'desc' }],
-      take: Number.isFinite(take) && take > 0 ? take : 100,
-    })
-
-    return orders.map((order: PaymentOrderRecord) => this.toOrderSummary(order))
-  }
-
-  async resumeAlipayWapPayment(payload: ResumeAlipayWapPaymentPayload) {
+  async resumeAlipayWapPayment(payload: AlipayWapResumePayload) {
     let order = await this.findOrder(payload.orderNo)
     this.ensureOrderOwner(order, payload.userId)
 
@@ -236,16 +186,6 @@ export class PaymentService {
     return order as PaymentOrderRecord
   }
 
-  private buildOrderWhere(context?: TenantContext, query: AdminOrderQuery = {}) {
-    if (!context)
-      return undefined
-
-    this.tenantAccess.assertCanRead(context)
-
-    const where = this.tenantAccess.buildScopedWhere(context, query)
-    return Object.keys(where).length ? where : undefined
-  }
-
   private ensureOrderOwner(order: PaymentOrderRecord, userId?: string) {
     if (userId && String(order.userId) !== String(userId)) {
       throw new UnauthorizedException('无权访问该订单')
@@ -269,44 +209,6 @@ export class PaymentService {
     })
 
     return this.orderWorkflow.syncPaymentStatus(updatedOrder)
-  }
-
-  private toOrderSummary(order: PaymentOrderRecord) {
-    const cartItems = Array.isArray(order.cartItems) ? order.cartItems : []
-
-    return {
-      id: order.id,
-      orderNo: order.orderNo,
-      userId: order.userId,
-      shopId: order.shopId,
-      shopName: order.shopName,
-      status: order.status,
-      tradeStatus: order.tradeStatus,
-      fulfillmentStatus: order.fulfillmentStatus || (order.status === 'PAID' ? 'AWAITING_ACCEPTANCE' : order.status === 'CLOSED' ? 'CANCELED' : 'PENDING_PAYMENT'),
-      refundStatus: order.refundStatus || 'NONE',
-      refundBaseFulfillmentStatus: order.refundBaseFulfillmentStatus || null,
-      refundReason: order.refundReason || null,
-      refundRejectReason: order.refundRejectReason || null,
-      payableAmount: toPrice(order.payableAmount),
-      goodsAmount: toPrice(order.goodsAmount),
-      deliveryFee: toPrice(order.deliveryFee),
-      cartItems,
-      totalQty: cartItems.reduce((sum: number, item: Record<string, any>) => sum + Number(item.qty || 0), 0),
-      paidAt: order.paidAt || null,
-      acceptedAt: order.acceptedAt || null,
-      preparingAt: order.preparingAt || null,
-      deliveringAt: order.deliveringAt || null,
-      completedAt: order.completedAt || null,
-      canceledAt: order.canceledAt || null,
-      refundRequestedAt: order.refundRequestedAt || null,
-      refundedAt: order.refundedAt || null,
-      refundRejectedAt: order.refundRejectedAt || null,
-      createdAt: order.createdAt,
-      updatedAt: order.updatedAt,
-      tradeNo: order.tradeNo || null,
-      availableActions: this.orderWorkflow.getAdminAvailableActions(order),
-      customerAvailableActions: this.orderWorkflow.getCustomerAvailableActions(order),
-    }
   }
 
   private mapTradeStatus(tradeStatus: string): PaymentStatus {

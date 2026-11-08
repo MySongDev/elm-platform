@@ -1,6 +1,6 @@
 import type { AccountStatus } from '../../common/constants/account-status'
 import type { TenantContext } from '../tenant/tenant.types'
-import type { CreateUserDto, UpdateUserDto } from './dto/create-user.dto'
+import type { UserCreateInput, UserUpdateInput } from './user.inputs'
 import { BadRequestException, ConflictException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common'
 import * as bcrypt from 'bcryptjs'
 import { Prisma } from '../../generated/prisma/client'
@@ -33,7 +33,7 @@ export class UserService {
   /**
    * 创建用户
    */
-  async create(createUserDto: CreateUserDto, actorContext?: TenantContext): Promise<UserWithoutPassword> {
+  async create(createUserDto: UserCreateInput, actorContext?: TenantContext): Promise<UserWithoutPassword> {
     this.assertUserTenantScope(createUserDto)
     if (actorContext)
       this.assertUserMutationAllowed(actorContext, createUserDto)
@@ -114,7 +114,7 @@ export class UserService {
   /**
    * 更新用户
    */
-  async update(id: number, updateUserDto: UpdateUserDto, actorContext?: TenantContext): Promise<UserWithoutPassword> {
+  async update(id: number, updateUserDto: UserUpdateInput, actorContext?: TenantContext): Promise<UserWithoutPassword> {
     await this.findOne(id)
     this.assertUserTenantScope(updateUserDto)
     if (actorContext)

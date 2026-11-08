@@ -1,4 +1,4 @@
-import type { CreateTenantDto, TenantTransitionDto, UpdateTenantDto } from './dto/tenant.dto'
+import type { TenantCreateInput, TenantTransitionInput, TenantUpdateInput } from './tenant.inputs'
 import type { TenantEvent, TenantStateActor, TenantStatus } from './tenant.types'
 import { Injectable, NotFoundException } from '@nestjs/common'
 import { PrismaService } from '../../prisma/prisma.service'
@@ -19,7 +19,7 @@ export class TenantService {
     return tenants.map((tenant: { status: string }) => this.withAvailableActions(tenant))
   }
 
-  async createTenant(dto: CreateTenantDto) {
+  async createTenant(dto: TenantCreateInput) {
     const tenant = await this.prisma.tenant.create({
       data: {
         code: dto.code,
@@ -34,7 +34,7 @@ export class TenantService {
     return this.withAvailableActions(tenant)
   }
 
-  async updateTenant(id: number, dto: UpdateTenantDto) {
+  async updateTenant(id: number, dto: TenantUpdateInput) {
     await this.ensureTenantExists(id)
     const tenant = await this.prisma.tenant.update({
       where: { id },
@@ -81,7 +81,7 @@ export class TenantService {
     id: number,
     event: TenantEvent,
     actor: TenantStateActor,
-    dto: TenantTransitionDto,
+    dto: TenantTransitionInput,
   ) {
     return this.stateMachine.transitionTenant({
       tenantId: id,

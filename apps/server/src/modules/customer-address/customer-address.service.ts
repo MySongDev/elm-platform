@@ -1,6 +1,6 @@
+import type { CustomerAddressCreateInput } from './customer-address.inputs'
 import { Injectable, NotFoundException } from '@nestjs/common'
 import { PrismaService } from '../../prisma/prisma.service'
-import { CreateCustomerAddressDto } from './dto/customer-address.dto'
 
 @Injectable()
 export class CustomerAddressService {
@@ -13,7 +13,7 @@ export class CustomerAddressService {
     })
   }
 
-  create(customerId: number, dto: CreateCustomerAddressDto) {
+  create(customerId: number, dto: CustomerAddressCreateInput) {
     return this.prisma.customerAddress.create({
       data: {
         customerId,
