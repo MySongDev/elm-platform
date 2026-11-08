@@ -1,7 +1,7 @@
-import type { AccountStatus } from '../../../common/constants/account-status'
+import type { AccountStatus } from '../../../../common/constants/account-status'
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger'
 import { IsBoolean, IsOptional, IsString, MinLength, ValidateIf } from 'class-validator'
-import { accountStatuses } from '../../../common/constants/account-status'
+import { accountStatuses } from '../../../../common/constants/account-status'
 
 export class LoginDto {
   @ApiProperty({

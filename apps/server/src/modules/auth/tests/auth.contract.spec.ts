@@ -5,9 +5,9 @@ import type { PrismaService } from '@/prisma/prisma.service'
 import { UnauthorizedException } from '@nestjs/common'
 import * as bcrypt from 'bcryptjs'
 import { validate } from 'class-validator'
-import { AuthController } from '@/modules/auth/auth.controller'
+import { AuthController } from '@/api/admin/auth/admin-auth.controller'
+import { LoginDto } from '@/api/admin/auth/dto/login.dto'
 import { AuthService } from '@/modules/auth/auth.service'
-import { LoginDto } from '@/modules/auth/dto/login.dto'
 
 describe('admin login API contract', () => {
   const passwordHash = bcrypt.hashSync('admin123', 10)

@@ -1,7 +1,7 @@
-import type { AccountStatus } from '../../../common/constants/account-status'
+import type { AccountStatus } from '../../../../common/constants/account-status'
 import { ApiProperty } from '@nestjs/swagger'
 import { IsArray, IsEmail, IsIn, IsInt, IsOptional, IsString, MinLength } from 'class-validator'
-import { accountStatuses } from '../../../common/constants/account-status'
+import { accountStatuses } from '../../../../common/constants/account-status'
 
 export class CreateUserDto {
   @ApiProperty({

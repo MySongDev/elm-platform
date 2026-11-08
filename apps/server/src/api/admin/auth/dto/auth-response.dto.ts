@@ -1,6 +1,6 @@
-import type { AccountStatus } from '../../../common/constants/account-status'
+import type { AccountStatus } from '../../../../common/constants/account-status'
 import { ApiProperty } from '@nestjs/swagger'
-import { accountStatuses } from '../../../common/constants/account-status'
+import { accountStatuses } from '../../../../common/constants/account-status'
 
 export class AdminTenantResponseDto {
   @ApiProperty({
