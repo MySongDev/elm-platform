@@ -27,7 +27,7 @@ async function generate() {
       throw new Error(`HTTP ${response.status}`)
 
     const spec = await response.json()
-    writeFileSync(SPEC_FILE, JSON.stringify(spec, null, 2))
+    writeFileSync(SPEC_FILE, `${JSON.stringify(spec, null, 2)}\n`)
     console.log(`✓ Fetched OpenAPI spec from ${SPEC_URL}`)
   }
   catch {
