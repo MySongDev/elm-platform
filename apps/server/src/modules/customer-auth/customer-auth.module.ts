@@ -1,7 +1,6 @@
 import { Module } from '@nestjs/common'
 import { JwtModule } from '@nestjs/jwt'
 import { SmsModule } from '../sms/sms.module'
-import { CustomerAuthController } from './customer-auth.controller'
 import { CustomerAuthService } from './customer-auth.service'
 import { CustomerTokenService } from './customer-token.service'
 
@@ -13,7 +12,7 @@ import { CustomerTokenService } from './customer-token.service'
     }),
     SmsModule,
   ],
-  controllers: [CustomerAuthController],
   providers: [CustomerAuthService, CustomerTokenService],
+  exports: [CustomerAuthService, CustomerTokenService, SmsModule],
 })
 export class CustomerAuthModule {}

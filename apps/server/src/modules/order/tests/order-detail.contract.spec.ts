@@ -1,6 +1,6 @@
 import type { TenantContext } from '@/modules/tenant/tenant.types'
 import type { PrismaService } from '@/prisma/prisma.service'
-import { OrderWorkflowService } from '@/modules/order/order-workflow.service'
+import { OrderQueryService } from '@/modules/order/order-query.service'
 import { TenantAccessService } from '@/modules/tenant/tenant-access.service'
 
 function createOrder(overrides: Record<string, unknown> = {}) {
@@ -79,7 +79,7 @@ function createService(orderOverrides: Record<string, unknown> = {}) {
     actionLogs,
     order: currentOrder,
     prisma,
-    service: new OrderWorkflowService(
+    service: new OrderQueryService(
       prisma as unknown as PrismaService,
       tenantAccess as unknown as TenantAccessService,
     ),

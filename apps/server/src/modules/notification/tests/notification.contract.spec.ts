@@ -1,6 +1,6 @@
 import type { TestingModule } from '@nestjs/testing'
 import { Test } from '@nestjs/testing'
-import { NotificationController } from '@/modules/notification/notification.controller'
+import { NotificationController } from '@/api/admin/notification/admin-notification.controller'
 import { NotificationService } from '@/modules/notification/notification.service'
 
 describe('notificationController', () => {

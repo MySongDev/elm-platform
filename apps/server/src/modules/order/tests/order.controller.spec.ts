@@ -1,5 +1,5 @@
 import { rawResponse } from '@common/interceptors/transform.interceptor'
-import { OrderController } from '@/modules/order/order.controller'
+import { OrderController } from '@/api/customer/order/customer-order.controller'
 
 function createController() {
   const orderWorkflow = {
@@ -12,7 +12,7 @@ function createController() {
   } as any
 
   return {
-    controller: new OrderController(orderWorkflow),
+    controller: new OrderController(orderWorkflow, {} as any),
     orderWorkflow,
   }
 }

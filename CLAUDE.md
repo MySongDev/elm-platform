@@ -80,9 +80,15 @@ pnpm --filter @elm-platform/web-user run preview
 
 ### Backend service
 
-`apps/server/src/main.ts` bootstraps the Nest app, installs global exception filters, logging/response transform interceptors, `ValidationPipe`, CORS, global API prefix, and Swagger. `apps/server/src/app.module.ts` wires the global `ConfigModule`, `PrismaModule`, `RedisModule`, and business modules: `user`, `auth`, `admin`, and `elm`.
+`apps/server/src/main.ts` bootstraps the Nest app, installs global exception filters, logging/response transform interceptors, `ValidationPipe`, CORS, global API prefix, and Swagger. `apps/server/src/app.module.ts` wires the global `ConfigModule`, `PrismaModule`, `RedisModule`, and the HTTP assembly entry `ApiModule`.
 
-Prisma is configured in `apps/server/prisma/schema.prisma` for PostgreSQL. The schema currently models users, login logs, roles, menus, departments, operation logs, and system logs. Shared backend infrastructure lives under `src/common`, `src/config`, `src/prisma`, and `src/redis`; feature APIs live under `src/modules/*`.
+后端接口统一放在 `apps/server/src/api`：第一层按 `admin`、`customer`、`merchant`、`shared`、`callbacks`、`compatibility` 分类，端内按业务类别组织 Controller，HTTP DTO 位于 `api/<端>/<资源>/dto/`。业务 Service、框架无关的输入类型、规则和种子数据按领域放在 `src/modules/*`；业务模块只导出能力，不注册 Controller，也不得反向依赖接口模块（测试除外）。新增接口必须在相应的 `*-api.module.ts` 注册，目录本身不会增加 URL 前缀或权限。完整规范见 `docs/engineering/016-backend-api-domain-boundaries.md`。
+
+原 `AdminService` 已拆为角色、菜单、部门和监控业务；权限目录为静态常量，没有空转发 Service。订单列表/详情归 `OrderQueryService`，状态流转归 `OrderWorkflowService`，支付渠道与通知处理归 `PaymentService`，共同使用 `order-summary.mapper.ts`。旧 Elm 未鉴权的餐馆/食品写入接口单独放在 `api/compatibility`，不表示已获得管理端权限保护。移动或拆分 Controller 时保留现有 URL、Guard、角色/权限、状态码与响应 schema；更换类名还需保留 OpenAPI operationId。
+
+这里的 `modules` 是实用业务/应用层，不是严格纯 DDD domain。HTTP DTO 已按「端 → 资源」统一迁入接口层，业务 Service 使用自有 `*.inputs.ts` 输入类型；Elm 已拆为 media/upstream/catalog/location/legacy 五个业务模块，`ElmModule` 只负责聚合。后端静态依赖边界已在根 `eslint.config.mjs` 以 `error` 启用：生产 `modules → api`、`api → Prisma`、`common → modules/api` 禁止，覆盖常规相对路径、别名、类型导入和转导出；测试及两个已知 Elm 导入 CLI 豁免。类型与当前用户抽象、JWT/异常回退、数据库级租户兜底明确待定，未经用户确认不得顺带实施。具体判断、现状、检查命令与待定清单集中维护在 `docs/engineering/016-backend-api-domain-boundaries.md` 第9、10节。
+
+Prisma is configured in `apps/server/prisma/schema.prisma` for PostgreSQL. Shared backend infrastructure lives under `src/common`, `src/config`, `src/prisma`, and `src/redis`; health business logic lives under `src/health`.
 
 ### Admin web app
 

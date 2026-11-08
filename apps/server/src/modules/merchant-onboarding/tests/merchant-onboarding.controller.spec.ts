@@ -1,6 +1,6 @@
 import type { MerchantOnboardingService } from '@/modules/merchant-onboarding/merchant-onboarding.service'
+import { MerchantOnboardingController } from '@/api/admin/commerce/admin-merchant-application.controller'
 import { PERMISSIONS_KEY } from '@/modules/auth/decorators/permissions.decorator'
-import { MerchantOnboardingController } from '@/modules/merchant-onboarding/merchant-onboarding.controller'
 import 'reflect-metadata'
 
 function createController() {

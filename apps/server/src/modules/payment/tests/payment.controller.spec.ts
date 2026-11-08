@@ -1,5 +1,6 @@
 import { rawResponse } from '@common/interceptors/transform.interceptor'
-import { PaymentController } from '@/modules/payment/payment.controller'
+import { OrderController } from '@/api/customer/order/customer-order.controller'
+import { PaymentController } from '@/api/customer/payment/customer-payment.controller'
 
 function createController() {
   const paymentService = {
@@ -17,9 +18,6 @@ function createController() {
       orderNo: 'ELMALI202605241200000001',
       status: 'PENDING',
     }),
-    listOrders: jest.fn().mockResolvedValue({
-      orders: [],
-    }),
   } as any
 
   const orderWorkflow = {
@@ -29,8 +27,11 @@ function createController() {
     }),
   } as any
 
+  const orderQuery = { listOrders: jest.fn().mockResolvedValue({ orders: [] }) } as any
   return {
-    controller: new PaymentController(paymentService, orderWorkflow),
+    controller: new PaymentController(paymentService),
+    orderController: new OrderController(orderWorkflow, orderQuery),
+    orderQuery,
     paymentService,
     orderWorkflow,
   }
@@ -87,18 +88,18 @@ describe('paymentController', () => {
   })
 
   it('lists only the authenticated user payment orders as a raw awaited payload', async () => {
-    const { controller, paymentService } = createController()
+    const { orderController: controller, orderQuery } = createController()
 
     const result = await controller.listOrders(request, '20')
 
-    expect(paymentService.listOrders).toHaveBeenCalledWith('42', '20')
+    expect(orderQuery.listOrders).toHaveBeenCalledWith('42', '20')
     expect(result).toEqual(rawResponse({
       orders: [],
     }))
   })
 
   it('requests refund with only the authenticated customer id trusted by the workflow service', async () => {
-    const { controller, orderWorkflow } = createController()
+    const { orderController: controller, orderWorkflow } = createController()
 
     const result = await controller.requestRefund('ELMALI202605241200000001', {
       reason: '不想要了',

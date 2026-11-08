@@ -112,30 +112,6 @@ const tenantContext = {
 }
 
 describe('orderWorkflowService', () => {
-  it('returns admin order detail with available actions and action logs', async () => {
-    const { service, prisma } = createService()
-    prisma.orderActionLog.findMany.mockResolvedValueOnce([{
-      id: 1,
-      action: 'ACCEPT',
-    }])
-
-    const result = await service.getAdminOrderDetail('ELMDEMO202606020001')
-
-    expect(result.availableActions).toEqual(['ACCEPT'])
-    expect(result.customerAvailableActions).toEqual(['REQUEST_REFUND'])
-    expect(result.actionLogs).toEqual([{
-      id: 1,
-      action: 'ACCEPT',
-    }])
-  })
-
-  it('throws when order detail does not exist', async () => {
-    const { service, prisma } = createService()
-    prisma.paymentOrder.findUnique.mockResolvedValueOnce(null)
-
-    await expect(service.getAdminOrderDetail('missing')).rejects.toThrow(NotFoundException)
-  })
-
   it('accepts a paid awaiting order and writes an action log in the transaction', async () => {
     const { service, prisma } = createService()
 
@@ -165,32 +141,6 @@ describe('orderWorkflowService', () => {
       }),
     })
     expect(result.fulfillmentStatus).toBe('ACCEPTED')
-  })
-
-  it('filters admin order detail by tenant context', async () => {
-    const {
-      service,
-      prisma,
-      tenantAccess,
-    } = createService()
-
-    await service.getAdminOrderDetail('ELMDEMO202606020001', tenantContext)
-
-    expect(tenantAccess.assertCanRead).toHaveBeenCalled()
-    expect(prisma.orderActionLog.findMany).toHaveBeenCalledWith({
-      where: {
-        orderNo: 'ELMDEMO202606020001',
-        tenantId: 10,
-      },
-      orderBy: { createdAt: 'desc' },
-      take: 50,
-    })
-  })
-
-  it('hides admin order detail from other tenants', async () => {
-    const { service } = createService({ tenantId: 20 })
-
-    await expect(service.getAdminOrderDetail('ELMDEMO202606020001', tenantContext)).rejects.toThrow(NotFoundException)
   })
 
   it('filters admin fulfillment actions by tenant context', async () => {

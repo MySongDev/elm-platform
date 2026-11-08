@@ -80,9 +80,11 @@ pnpm --filter @elm-platform/web-user run preview
 
 ### 后端服务
 
-`apps/server/src/main.ts` 引导 Nest 应用，安装全局异常过滤器、日志/响应转换拦截器、`ValidationPipe`、CORS、全局 API 前缀和 Swagger。`apps/server/src/app.module.ts` 装配全局 `ConfigModule`、`PrismaModule`、`RedisModule` 及业务模块：`user`、`auth`、`admin`、`elm`。
+`apps/server/src/main.ts` 引导 Nest 应用，安装全局异常过滤器、日志/响应转换拦截器、`ValidationPipe`、CORS、全局 API 前缀和 Swagger。`apps/server/src/app.module.ts` 装配全局 `ConfigModule`、`PrismaModule`、`RedisModule` 及 HTTP 入口 `ApiModule`，再由各消费端 API 模块导入业务模块。
 
-Prisma 在 `apps/server/prisma/schema.prisma` 中配置为 PostgreSQL。当前 schema 建模了用户、登录日志、角色、菜单、部门、操作日志和系统日志。共享后端基础设施位于 `src/common`、`src/config`、`src/prisma`、`src/redis` 下；业务 API 位于 `src/modules/*` 下。
+HTTP 接口位于 `apps/server/src/api`，第一层按 `admin`、`customer`、`merchant`、`shared`、`callbacks`、`compatibility` 分类，端内按资源组织 Controller，HTTP DTO 位于 `api/<端>/<资源>/dto/`。业务/应用 Service、框架无关的输入类型、规则和种子数据位于 `src/modules/*`；业务模块导出能力，不注册 Controller，也不反向依赖接口层（接口测试除外）。这是实用业务分层，不代表严格纯 DDD domain；HTTP DTO 已统一迁入接口层，Elm 已拆为 media/upstream/catalog/location/legacy 五个业务模块；后端静态依赖边界已在根 `eslint.config.mjs` 以 `error` 约束 `modules → api`、`api → Prisma` 和 `common → modules/api`，测试及两个已知 Elm 导入 CLI 明确豁免。完整现状、后续建议及第2/5/6条待定项见 [后端接口分类与业务职责边界](docs/engineering/016-backend-api-domain-boundaries.md)。建议或待定项不得当作已实现能力，也不得未经用户确认顺带实施。
+
+Prisma 在 `apps/server/prisma/schema.prisma` 中配置为 PostgreSQL，具体数据模型以 schema 为准。共享后端基础设施位于 `src/common`、`src/config`、`src/prisma`、`src/redis` 下；健康检查业务位于 `src/health`，其 Controller 也由 `src/api` 注册。
 
 ### 管理端应用
 

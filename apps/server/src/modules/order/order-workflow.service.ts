@@ -1,38 +1,13 @@
 import type { TenantContext } from '../tenant/tenant.types'
 import type { OrderDraftInput } from './order-draft.factory'
-import type {
-  AdminOrderAction,
-  FulfillmentStatus,
-  OrderWorkflowOperator,
-  RefundStatus,
-} from './order.types'
-import {
-  BadRequestException,
-  ForbiddenException,
-  Injectable,
-  NotFoundException,
-  UnauthorizedException,
-} from '@nestjs/common'
+import type { AdminOrderAction, FulfillmentStatus, OrderWorkflowOperator, RefundStatus } from './order.types'
+import { BadRequestException, ForbiddenException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common'
 import { PrismaService } from '../../prisma/prisma.service'
 import { TenantAccessService } from '../tenant/tenant-access.service'
-import {
-  buildOrderDraft,
-  buildOrderSubject,
-  createOrderNo,
-  insertPendingOrder,
-  resolveTenantIdByShopId,
-  toPrice,
-} from './order-draft.factory'
-import {
-  assertAdminActionAllowed,
-  assertRefundRequestAllowed,
-  assertRefundReviewAllowed,
-  getAdminAvailableActions,
-  getCustomerAvailableActions,
-  getNextFulfillmentStatus,
-  normalizeFulfillmentStatus,
-  normalizeRefundStatus,
-} from './order-transition.policy'
+import { isOrderAllowed } from './order-access.policy'
+import { buildOrderDraft, buildOrderSubject, createOrderNo, insertPendingOrder, resolveTenantIdByShopId } from './order-draft.factory'
+import { toOrderSummary } from './order-summary.mapper'
+import { assertAdminActionAllowed, assertRefundRequestAllowed, assertRefundReviewAllowed, getNextFulfillmentStatus, normalizeFulfillmentStatus, normalizeRefundStatus } from './order-transition.policy'
 
 type PaymentOrderRecord = Record<string, any>
 
@@ -82,29 +57,7 @@ export class OrderWorkflowService {
       tenantId,
     })
 
-    return this.toOrderSummary(order)
-  }
-
-  getAdminAvailableActions(order: PaymentOrderRecord) {
-    return getAdminAvailableActions(order)
-  }
-
-  getCustomerAvailableActions(order: PaymentOrderRecord) {
-    return getCustomerAvailableActions(order)
-  }
-
-  async getAdminOrderDetail(orderNo: string, context?: TenantContext) {
-    const order = await this.findOrder(orderNo, context)
-    const actionLogs = await (this.prisma as any).orderActionLog.findMany({
-      where: this.buildOrderActionLogWhere(orderNo, context),
-      orderBy: { createdAt: 'desc' },
-      take: 50,
-    })
-
-    return {
-      ...this.toOrderSummary(order),
-      actionLogs,
-    }
+    return toOrderSummary(order)
   }
 
   async acceptOrder(orderNo: string, operator: OrderWorkflowOperator, context?: TenantContext) {
@@ -149,7 +102,7 @@ export class OrderWorkflowService {
         }),
       })
 
-      return this.toOrderSummary(updated)
+      return toOrderSummary(updated)
     })
   }
 
@@ -173,7 +126,7 @@ export class OrderWorkflowService {
         data: this.createLogData(order, updated, 'APPROVE_REFUND', operator, { remark }),
       })
 
-      return this.toOrderSummary(updated)
+      return toOrderSummary(updated)
     })
   }
 
@@ -198,7 +151,7 @@ export class OrderWorkflowService {
         data: this.createLogData(order, updated, 'REJECT_REFUND', operator, { reason }),
       })
 
-      return this.toOrderSummary(updated)
+      return toOrderSummary(updated)
     })
   }
 
@@ -227,54 +180,6 @@ export class OrderWorkflowService {
     return order
   }
 
-  toOrderSummary(order: PaymentOrderRecord) {
-    const cartItems = Array.isArray(order.cartItems) ? order.cartItems : []
-    const fulfillmentStatus = normalizeFulfillmentStatus(order)
-    const refundStatus = normalizeRefundStatus(order)
-
-    return {
-      id: order.id,
-      orderNo: order.orderNo,
-      userId: order.userId,
-      shopId: order.shopId,
-      shopName: order.shopName,
-      status: order.status,
-      tradeStatus: order.tradeStatus,
-      fulfillmentStatus,
-      refundStatus,
-      refundBaseFulfillmentStatus: order.refundBaseFulfillmentStatus || null,
-      refundReason: order.refundReason || null,
-      refundRejectReason: order.refundRejectReason || null,
-      payableAmount: toPrice(order.payableAmount),
-      goodsAmount: toPrice(order.goodsAmount),
-      deliveryFee: toPrice(order.deliveryFee),
-      cartItems,
-      totalQty: cartItems.reduce((sum: number, item: Record<string, any>) => sum + Number(item.qty || 0), 0),
-      paidAt: order.paidAt || null,
-      acceptedAt: order.acceptedAt || null,
-      preparingAt: order.preparingAt || null,
-      deliveringAt: order.deliveringAt || null,
-      completedAt: order.completedAt || null,
-      canceledAt: order.canceledAt || null,
-      refundRequestedAt: order.refundRequestedAt || null,
-      refundedAt: order.refundedAt || null,
-      refundRejectedAt: order.refundRejectedAt || null,
-      createdAt: order.createdAt,
-      updatedAt: order.updatedAt,
-      tradeNo: order.tradeNo || null,
-      availableActions: this.getAdminAvailableActions({
-        ...order,
-        fulfillmentStatus,
-        refundStatus,
-      }),
-      customerAvailableActions: this.getCustomerAvailableActions({
-        ...order,
-        fulfillmentStatus,
-        refundStatus,
-      }),
-    }
-  }
-
   private async applyFulfillmentAction(
     orderNo: string,
     action: AdminOrderAction,
@@ -300,13 +205,13 @@ export class OrderWorkflowService {
         data: this.createLogData(order, updated, action, operator),
       })
 
-      return this.toOrderSummary(updated)
+      return toOrderSummary(updated)
     })
   }
 
   private async findOrder(orderNo: string, context?: TenantContext) {
     const order = await (this.prisma as any).paymentOrder.findUnique({ where: { orderNo } })
-    if (!order || !this.isOrderAllowed(order, context))
+    if (!order || !isOrderAllowed(order, context, this.tenantAccess))
       throw new NotFoundException('订单不存在')
     return order as PaymentOrderRecord
   }
@@ -314,39 +219,6 @@ export class OrderWorkflowService {
   private assertCanWrite(context?: TenantContext) {
     if (context)
       this.tenantAccess.assertCanWrite(context)
-  }
-
-  private buildOrderActionLogWhere(orderNo: string, context?: TenantContext) {
-    if (!context || context.dataScope === 'ALL')
-      return { orderNo }
-
-    this.tenantAccess.assertCanRead(context)
-
-    if (!context.tenantId)
-      throw new ForbiddenException('当前账号未绑定租户')
-
-    return {
-      orderNo,
-      tenantId: context.tenantId,
-    }
-  }
-
-  private isOrderAllowed(order: PaymentOrderRecord, context?: TenantContext) {
-    if (!context || context.dataScope === 'ALL')
-      return true
-
-    this.tenantAccess.assertCanRead(context)
-
-    if (!context.tenantId)
-      throw new ForbiddenException('当前账号未绑定租户')
-
-    if (Number(order.tenantId) !== context.tenantId)
-      return false
-
-    if (context.dataScope === 'SHOP')
-      return Boolean(order.shopId && context.boundShopIds.includes(String(order.shopId)))
-
-    return true
   }
 
   private createLogData(

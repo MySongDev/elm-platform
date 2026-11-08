@@ -1,6 +1,5 @@
-import { BadRequestException, ForbiddenException, NotFoundException, UnauthorizedException } from '@nestjs/common'
+import { BadRequestException, NotFoundException, UnauthorizedException } from '@nestjs/common'
 import { PaymentService } from '@/modules/payment/payment.service'
-import { TenantAccessService } from '@/modules/tenant/tenant-access.service'
 
 function createOrder(overrides: Record<string, unknown> = {}) {
   return {
@@ -73,21 +72,13 @@ function createService() {
 
   const orderWorkflow = {
     syncPaymentStatus: jest.fn().mockImplementation(order => Promise.resolve(order)),
-    getAdminAvailableActions: jest.fn().mockReturnValue([]),
-    getCustomerAvailableActions: jest.fn().mockReturnValue([]),
-  } as any
-  const realTenantAccess = new TenantAccessService()
-  const tenantAccess = {
-    assertCanRead: jest.fn(context => realTenantAccess.assertCanRead(context)),
-    buildScopedWhere: jest.fn((context, query) => realTenantAccess.buildScopedWhere(context, query)),
   } as any
 
   return {
-    service: new PaymentService(prisma, alipay, orderWorkflow, tenantAccess),
+    service: new PaymentService(prisma, alipay, orderWorkflow),
     prisma,
     alipay,
     orderWorkflow,
-    tenantAccess,
     order,
   }
 }
@@ -210,121 +201,6 @@ describe('paymentService', () => {
         status: 'PAID',
       }),
     })
-  })
-
-  it('lists payment orders for admin with summary fields', async () => {
-    const { service, prisma } = createService()
-
-    const result = await service.listAdminOrders()
-
-    expect(prisma.paymentOrder.findMany).toHaveBeenCalledWith({
-      where: undefined,
-      orderBy: [{ paidAt: 'desc' }, { updatedAt: 'desc' }, { createdAt: 'desc' }],
-      take: 100,
-    })
-    expect(result).toEqual([
-      expect.objectContaining({
-        id: 1,
-        orderNo: 'ELMALI202605231234560001',
-        userId: '1',
-        shopName: '示例商家',
-        status: 'PENDING',
-        tradeStatus: 'WAIT_BUYER_PAY',
-        payableAmount: 29,
-        goodsAmount: 24,
-        deliveryFee: 5,
-        totalQty: 2,
-      }),
-    ])
-  })
-
-  it('filters admin payment orders by tenant context', async () => {
-    const {
-      service,
-      prisma,
-      tenantAccess,
-    } = createService()
-
-    await service.listAdminOrders(undefined, {
-      userId: 1,
-      username: 'tenant-admin',
-      tenantId: 10,
-      tenantCode: 'flower-cake',
-      tenantName: '鲜花蛋糕',
-      tenantStatus: 'ACTIVE',
-      dataScope: 'TENANT',
-      boundShopIds: [],
-      isPlatformAdmin: false,
-    })
-
-    expect(tenantAccess.assertCanRead).toHaveBeenCalled()
-    expect(prisma.paymentOrder.findMany).toHaveBeenCalledWith(expect.objectContaining({
-      where: { tenantId: 10 },
-    }))
-  })
-
-  it('rejects admin payment order filters for another tenant', async () => {
-    const { service, prisma } = createService()
-
-    await expect(service.listAdminOrders(undefined, {
-      userId: 1,
-      username: 'tenant-admin',
-      tenantId: 10,
-      tenantCode: 'flower-cake',
-      tenantName: '鲜花蛋糕',
-      tenantStatus: 'ACTIVE',
-      dataScope: 'TENANT',
-      boundShopIds: [],
-      isPlatformAdmin: false,
-    }, { tenantId: 20 })).rejects.toThrow(ForbiddenException)
-
-    expect(prisma.paymentOrder.findMany).not.toHaveBeenCalled()
-  })
-
-  it('filters admin payment orders by bound shops for shop scoped operators', async () => {
-    const { service, prisma } = createService()
-
-    await service.listAdminOrders(undefined, {
-      userId: 1,
-      username: 'shop-operator',
-      tenantId: 10,
-      tenantCode: 'flower-cake',
-      tenantName: '鲜花蛋糕',
-      tenantStatus: 'ACTIVE',
-      dataScope: 'SHOP',
-      boundShopIds: ['1'],
-      isPlatformAdmin: false,
-    })
-
-    expect(prisma.paymentOrder.findMany).toHaveBeenCalledWith(expect.objectContaining({
-      where: {
-        tenantId: 10,
-        shopId: { in: ['1'] },
-      },
-    }))
-  })
-
-  it('allows shop scoped operators to narrow admin orders to bound shops', async () => {
-    const { service, prisma } = createService()
-
-    await service.listAdminOrders(undefined, {
-      userId: 1,
-      username: 'shop-operator',
-      tenantId: 10,
-      tenantCode: 'flower-cake',
-      tenantName: '鲜花蛋糕',
-      tenantStatus: 'ACTIVE',
-      dataScope: 'SHOP',
-      boundShopIds: ['1'],
-      isPlatformAdmin: false,
-    }, { shopId: '1' })
-
-    expect(prisma.paymentOrder.findMany).toHaveBeenCalledWith(expect.objectContaining({
-      where: {
-        tenantId: 10,
-        shopId: '1',
-      },
-    }))
   })
 
   // 2026-09-30 商家数据本地化后重写：原实现按 shopId 去**内存 seed** 找 tenantCode，

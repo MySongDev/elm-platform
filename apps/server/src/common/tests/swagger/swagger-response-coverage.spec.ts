@@ -1,15 +1,21 @@
 import { Type } from '@nestjs/common'
 import { PATH_METADATA } from '@nestjs/common/constants'
-import { HealthController } from '@/health/health.controller'
-import { AdminController } from '@/modules/admin/admin.controller'
-import { AuthController } from '@/modules/auth/auth.controller'
-import { CustomerAuthController } from '@/modules/customer-auth/customer-auth.controller'
-import { MerchantOnboardingController } from '@/modules/merchant-onboarding/merchant-onboarding.controller'
-import { NotificationController } from '@/modules/notification/notification.controller'
-import { OrderController } from '@/modules/order/order.controller'
-import { PaymentController } from '@/modules/payment/payment.controller'
-import { TenantController } from '@/modules/tenant/tenant.controller'
-import { UserController } from '@/modules/user/user.controller'
+import { AuthController } from '@/api/admin/auth/admin-auth.controller'
+import { MerchantOnboardingController } from '@/api/admin/commerce/admin-merchant-application.controller'
+import { AdminLogController } from '@/api/admin/monitor/admin-log.controller'
+import { AdminOnlineUserController } from '@/api/admin/monitor/admin-online-user.controller'
+import { NotificationController } from '@/api/admin/notification/admin-notification.controller'
+import { AdminDeptController } from '@/api/admin/system/admin-dept.controller'
+import { AdminMenuController } from '@/api/admin/system/admin-menu.controller'
+import { AdminPermissionController } from '@/api/admin/system/admin-permission.controller'
+import { AdminRoleController } from '@/api/admin/system/admin-role.controller'
+import { UserController } from '@/api/admin/system/admin-user.controller'
+import { TenantController } from '@/api/admin/tenant/admin-tenant.controller'
+import { AlipayNotifyController } from '@/api/callbacks/alipay/alipay-notify.controller'
+import { CustomerAuthController } from '@/api/customer/auth/customer-auth.controller'
+import { OrderController } from '@/api/customer/order/customer-order.controller'
+import { PaymentController } from '@/api/customer/payment/customer-payment.controller'
+import { HealthController } from '@/api/shared/health/health.controller'
 
 const API_RESPONSE_METADATA = 'swagger/apiResponse'
 
@@ -132,115 +138,115 @@ const controllerEntries: ControllerEntry[] = [
     errors: [401, 500],
   },
   {
-    controller: AdminController,
+    controller: AdminPermissionController,
     method: 'getPagePermissions',
     success: 200,
     errors: [401, 403, 500],
   },
   {
-    controller: AdminController,
+    controller: AdminPermissionController,
     method: 'getButtonPermissions',
     success: 200,
     errors: [401, 403, 500],
   },
   {
-    controller: AdminController,
+    controller: AdminOnlineUserController,
     method: 'getOnlineUsers',
     success: 200,
     errors: [401, 403, 500],
   },
   {
-    controller: AdminController,
+    controller: AdminOnlineUserController,
     method: 'forceLogout',
     success: 201,
     errors: [400, 401, 403, 500],
   },
   {
-    controller: AdminController,
+    controller: AdminLogController,
     method: 'getLoginLogs',
     success: 200,
     errors: [401, 403, 500],
   },
   {
-    controller: AdminController,
+    controller: AdminLogController,
     method: 'getOperationLogs',
     success: 200,
     errors: [401, 403, 500],
   },
   {
-    controller: AdminController,
+    controller: AdminLogController,
     method: 'getSystemLogs',
     success: 200,
     errors: [401, 403, 500],
   },
   {
-    controller: AdminController,
+    controller: AdminRoleController,
     method: 'getRoles',
     success: 200,
     errors: [401, 403, 500],
   },
   {
-    controller: AdminController,
+    controller: AdminRoleController,
     method: 'createRole',
     success: 201,
     errors: [400, 401, 403, 500],
   },
   {
-    controller: AdminController,
+    controller: AdminRoleController,
     method: 'updateRole',
     success: 200,
     errors: [400, 401, 403, 404, 500],
   },
   {
-    controller: AdminController,
+    controller: AdminRoleController,
     method: 'deleteRole',
     success: 200,
     errors: [400, 401, 403, 500],
   },
   {
-    controller: AdminController,
+    controller: AdminMenuController,
     method: 'getMenus',
     success: 200,
     errors: [401, 403, 500],
   },
   {
-    controller: AdminController,
+    controller: AdminMenuController,
     method: 'createMenu',
     success: 201,
     errors: [400, 401, 403, 500],
   },
   {
-    controller: AdminController,
+    controller: AdminMenuController,
     method: 'updateMenu',
     success: 200,
     errors: [400, 401, 403, 404, 500],
   },
   {
-    controller: AdminController,
+    controller: AdminMenuController,
     method: 'deleteMenu',
     success: 200,
     errors: [400, 401, 403, 500],
   },
   {
-    controller: AdminController,
+    controller: AdminDeptController,
     method: 'getDepts',
     success: 200,
     errors: [401, 403, 500],
   },
   {
-    controller: AdminController,
+    controller: AdminDeptController,
     method: 'createDept',
     success: 201,
     errors: [400, 401, 403, 500],
   },
   {
-    controller: AdminController,
+    controller: AdminDeptController,
     method: 'updateDept',
     success: 200,
     errors: [400, 401, 403, 404, 500],
   },
   {
-    controller: AdminController,
+    controller: AdminDeptController,
     method: 'deleteDept',
     success: 200,
     errors: [400, 401, 403, 500],
@@ -390,19 +396,19 @@ const controllerEntries: ControllerEntry[] = [
     errors: [401, 404, 500],
   },
   {
-    controller: PaymentController,
+    controller: OrderController,
     method: 'requestRefund',
     success: 201,
     errors: [400, 401, 404, 409, 500],
   },
   {
-    controller: PaymentController,
+    controller: AlipayNotifyController,
     method: 'handleAlipayNotify',
     success: 201,
     errors: [500],
   },
   {
-    controller: PaymentController,
+    controller: OrderController,
     method: 'listOrders',
     success: 200,
     errors: [401, 500],
@@ -421,13 +427,19 @@ describe('swagger response coverage', () => {
       HealthController,
       AuthController,
       CustomerAuthController,
-      AdminController,
+      AdminPermissionController,
+      AdminRoleController,
+      AdminMenuController,
+      AdminDeptController,
+      AdminOnlineUserController,
+      AdminLogController,
       UserController,
       TenantController,
       MerchantOnboardingController,
       NotificationController,
       OrderController,
       PaymentController,
+      AlipayNotifyController,
     ]
 
     for (const controller of controllers) {
