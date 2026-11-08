@@ -23,7 +23,7 @@
     "prisma:studio": "prisma studio",
     "prisma:seed": "ts-node -r tsconfig-paths/register prisma/seed.ts",
     "elm:import": "ts-node -r tsconfig-paths/register src/modules/elm/scripts/import-upstream.ts",
-    "elm:import:images": "ts-node -r tsconfig-paths/register src/modules/elm/scripts/import-images.ts"
+    "elm:import:images": "ts-node -r tsconfig-paths/register src/modules/elm-media/scripts/import-images.ts"
   },
   "dependencies": {
     "@elm-platform/contracts": "workspace:*",

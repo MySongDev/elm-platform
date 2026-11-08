@@ -30,6 +30,21 @@ const sharedRules = {
   'vue/no-template-shadow': 'off',
 }
 
+// 测试需要直接构造 Controller/Prisma mock；这两个现有导入 CLI 是组合根，不属于请求业务链路。
+// 只排除已知脚本位置，不把整个 modules/**/scripts/** 变成不受约束的区域。
+const serverBoundaryIgnores = [
+  '**/*.spec.ts',
+  '**/*.test.ts',
+  '**/tests/**',
+  '**/__tests__/**',
+  'apps/server/src/modules/elm-media/scripts/import-images.ts',
+  'apps/server/src/modules/elm/scripts/import-upstream.ts',
+]
+
+// 同时匹配 @/ 别名和 ../ 等常规相对路径，不能只检查别名而漏掉后端实际使用的导入方式。
+// 这是静态 import/export 的路径约束，不解析完整依赖图或动态 require/import。
+const serverSourceImportPrefix = String.raw`^(?:@/|(?:\.{1,2}/)+)`
+
 export default antfu(
   {
     vue: true,
@@ -95,6 +110,45 @@ export default antfu(
       globals: {
         ...globals.jest,
       },
+    },
+  },
+  {
+    name: 'server-boundaries/modules',
+    files: ['apps/server/src/modules/**/*.ts'],
+    ignores: serverBoundaryIgnores,
+    rules: {
+      'no-restricted-imports': ['error', {
+        patterns: [{
+          regex: `${serverSourceImportPrefix}api(?:/|$)`,
+          message: '业务模块不得反向依赖 api；共享业务类型应留在 modules 或框架无关的 contracts 中。',
+        }],
+      }],
+    },
+  },
+  {
+    name: 'server-boundaries/api',
+    files: ['apps/server/src/api/**/*.ts'],
+    ignores: serverBoundaryIgnores,
+    rules: {
+      'no-restricted-imports': ['error', {
+        patterns: [{
+          regex: String.raw`^(?:@prisma(?:/|$)|prisma(?:/|$)|(?:@/|(?:\.{1,2}/)+)(?:prisma|generated/prisma)(?:/|$))`,
+          message: '接口层不得直接依赖 Prisma Service、模块或客户端（含类型导入）；数据库访问应通过业务模块导出的 Service。',
+        }],
+      }],
+    },
+  },
+  {
+    name: 'server-boundaries/common',
+    files: ['apps/server/src/common/**/*.ts'],
+    ignores: serverBoundaryIgnores,
+    rules: {
+      'no-restricted-imports': ['error', {
+        patterns: [{
+          regex: `${serverSourceImportPrefix}(?:modules|api)(?:/|$)`,
+          message: 'common 不得依赖具体业务模块或 api；公共基础设施不能反向绑定业务或接口实现。',
+        }],
+      }],
     },
   },
   // web-admin FSD import boundaries (shared < entities < features < widgets < pages < app).

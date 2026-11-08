@@ -12,9 +12,9 @@ import type { ConfigService } from '@nestjs/config'
 import { mkdir, mkdtemp, rm, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
-import { ElmImageProxyService } from '@/modules/elm/services/elm-image-proxy.service'
-import { ELM_IMAGE_MAX_BYTES, ElmImageStorageService } from '@/modules/elm/services/elm-image-storage.service'
-import { imageAssetKey } from '@/modules/elm/utils/elm-image'
+import { ElmImageProxyService } from '@/modules/elm-media/services/elm-image-proxy.service'
+import { ELM_IMAGE_MAX_BYTES, ElmImageStorageService } from '@/modules/elm-media/services/elm-image-storage.service'
+import { imageAssetKey } from '@/modules/elm-media/utils/elm-image'
 
 function configService(values: Record<string, unknown>): ConfigService {
   return { get: jest.fn((key: string) => values[key]) } as unknown as ConfigService

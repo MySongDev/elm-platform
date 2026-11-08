@@ -15,7 +15,7 @@ import {
   resolveContractPath,
   resolveDbImageRef,
   sniffImageMime,
-} from '@/modules/elm/utils/elm-image'
+} from '@/modules/elm-media/utils/elm-image'
 
 describe('elm image utils', () => {
   describe('normalizeImageTail', () => {

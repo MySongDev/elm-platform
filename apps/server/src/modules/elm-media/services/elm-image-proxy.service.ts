@@ -5,12 +5,12 @@ import {
   NotFoundException,
 } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
+import { resolveUpstreamUrl, UpstreamUrlError } from '../../elm/utils/upstream-url'
 import {
   CDN_UPSTREAM_ORIGIN,
   ElmImagePathError,
   resolveContractPath,
 } from '../utils/elm-image'
-import { resolveUpstreamUrl, UpstreamUrlError } from '../utils/upstream-url'
 import { ELM_IMAGE_MAX_BYTES, ElmImageStorageService } from './elm-image-storage.service'
 
 export interface ProxiedImage {
