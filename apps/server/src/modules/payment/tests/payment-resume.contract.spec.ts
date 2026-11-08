@@ -3,8 +3,8 @@ import 'reflect-metadata'
 import { plainToInstance } from 'class-transformer'
 import { validate } from 'class-validator'
 import { rawResponse } from '@common/interceptors/transform.interceptor'
-import { ResumeAlipayWapPaymentDto } from '@/modules/payment/dto/resume-alipay-wap-payment.dto'
-import { PaymentController } from '@/modules/payment/payment.controller'
+import { ResumeAlipayWapPaymentDto } from '@/api/customer/payment/dto/resume-alipay-wap-payment.dto'
+import { PaymentController } from '@/api/customer/payment/customer-payment.controller'
 import { PaymentService } from '@/modules/payment/payment.service'
 
 describe('payment resume API contract', () => {
@@ -27,8 +27,7 @@ describe('payment resume API contract', () => {
     const paymentService = {
       resumeAlipayWapPayment: jest.fn().mockResolvedValue(resumePayload),
     } as unknown as PaymentService
-    const orderWorkflow = {} as ConstructorParameters<typeof PaymentController>[1]
-    const controller = new PaymentController(paymentService, orderWorkflow)
+    const controller = new PaymentController(paymentService)
 
     const result = await controller.resumeAlipayWapPayment(
       {

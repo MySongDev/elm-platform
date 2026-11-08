@@ -1,4 +1,4 @@
-import type { SmsScene } from '../../sms/sms-provider'
+import type { SmsScene } from '../../../../modules/sms/sms-provider'
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger'
 import { IsIn, IsOptional, IsString, Matches, MinLength } from 'class-validator'
 

@@ -2,8 +2,8 @@
 import 'reflect-metadata'
 import { plainToInstance } from 'class-transformer'
 import { validate } from 'class-validator'
-import { CreateAlipayWapPaymentDto } from '@/modules/payment/dto/create-alipay-wap-payment.dto'
-import { ResumeAlipayWapPaymentDto } from '@/modules/payment/dto/resume-alipay-wap-payment.dto'
+import { CreateAlipayWapPaymentDto } from '@/api/customer/payment/dto/create-alipay-wap-payment.dto'
+import { ResumeAlipayWapPaymentDto } from '@/api/customer/payment/dto/resume-alipay-wap-payment.dto'
 
 describe('payment request DTOs', () => {
   it('does not require client-sent userId when creating an Alipay WAP payment', async () => {
