@@ -1,6 +1,6 @@
 import type { ConfigService } from '@nestjs/config'
 import { BadGatewayException, Logger } from '@nestjs/common'
-import { ElmUpstreamService } from '@/modules/elm/services/elm-upstream.service'
+import { ElmUpstreamService } from '@/modules/elm-upstream/services/elm-upstream.service'
 
 function createConfigService(values: Record<string, unknown>): ConfigService {
   return {

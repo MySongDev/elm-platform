@@ -3,6 +3,7 @@ import type { TenantContext } from '../../tenant/tenant.types'
 import type { FoodListQuery } from '../types/elm.types'
 import { Injectable, NotFoundException } from '@nestjs/common'
 import { PrismaService } from '../../../prisma/prisma.service'
+import { ElmUpstreamImportService } from '../../elm-upstream/services/elm-upstream-import.service'
 import { TenantAccessService } from '../../tenant/tenant-access.service'
 import {
   toFoodCategoryResponse,
@@ -11,7 +12,6 @@ import {
 import { toNumberValue, toStringValue } from '../utils/elm-query'
 import { toShopIdList } from '../utils/elm-scope'
 import { ElmRestaurantService } from './elm-restaurant.service'
-import { ElmUpstreamImportService } from './elm-upstream-import.service'
 
 /** 单页上限。 */
 const MAX_PAGE_SIZE = 200

@@ -38,7 +38,7 @@ const serverBoundaryIgnores = [
   '**/tests/**',
   '**/__tests__/**',
   'apps/server/src/modules/elm-media/scripts/import-images.ts',
-  'apps/server/src/modules/elm/scripts/import-upstream.ts',
+  'apps/server/src/modules/elm-upstream/scripts/import-upstream.ts',
 ]
 
 // 同时匹配 @/ 别名和 ../ 等常规相对路径，不能只检查别名而漏掉后端实际使用的导入方式。

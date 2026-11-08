@@ -5,7 +5,7 @@ import {
   NotFoundException,
 } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
-import { resolveUpstreamUrl, UpstreamUrlError } from '../../elm/utils/upstream-url'
+import { resolveUpstreamUrl, UpstreamUrlError } from '../../elm-upstream/utils/upstream-url'
 import {
   CDN_UPSTREAM_ORIGIN,
   ElmImagePathError,
