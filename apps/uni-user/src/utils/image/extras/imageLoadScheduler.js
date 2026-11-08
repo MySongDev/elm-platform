@@ -1,15 +1,10 @@
-// ⚠️ 与 apps/web-user/src/utils/image/imageLoadScheduler.js 同源，修改需同步两处。
-// 不抽共享包的原因见迁移方案议题 7。
-//
-// ★ 与 web-user 的差异：并发基础值从 @/config 取（web-user 从 config/imageLoading 取，同值 6）。
-//
-// 职责：纯并发控制，先来先出。2026-11-06 与 web-user 一起删掉了优先级排序、
-// 网络自适应并发（小程序端 navigator.connection 通常为 undefined，本来就不生效）
-// 和 get/setImageLoadMaxConcurrent（无调用方）。
+// 留档模块：2026-11-08 从 uni-user 的 SmartImage 主链路撤下，当前无调用方。
+// 原因：原生 lazy-load 等待可见期间不触发 load/error，不能提前占用这里的并发槽。
+// 重新启用的前提与步骤见 docs/engineering/014-uni-user-image-scheduler-extras.md。
+// web-user 仍在使用其独立副本；本留档模块不要求与 web-user 同步。
 
-import { IMAGE_LOAD_BASE_CONCURRENCY } from '@/config'
-
-const maxConcurrent = Math.max(1, IMAGE_LOAD_BASE_CONCURRENCY)
+// 保留旧并发值方便研究与复用，不再占用全局 config 的无调用方配置项。
+const maxConcurrent = 6
 let active = 0
 
 /** @type {Array<{ state: 'queued' | 'running' | 'settled' | 'cancelled', run: (release: () => void) => void }>} */

@@ -1,7 +1,7 @@
 # 012 - 图片懒加载：v-lazy 与 SmartImage
 
 > 适用：`apps/web-user`（主），`apps/uni-user`（同源副本，见第 7 节）
-> 最近更新：2026-11-06（精简后的现状，见提交 `437c03e`）
+> 最近更新：2026-11-08（uni-user 改为仅由原生 lazy-load 调度；web-user 的队列机制不变）
 
 ## 1. 一句话
 
@@ -122,21 +122,23 @@ SmartImage 的代码分三层，改的时候先找对层：
 
 ## 7. uni-user 的差异
 
-小程序没有能用于任意元素的 IntersectionObserver，所以 uni-user 的 SmartImage（`apps/uni-user/src/components/common/SmartImage/SmartImage.vue`）是退化版：
+uni-user 的 SmartImage（`apps/uni-user/src/components/common/SmartImage/SmartImage.vue`）仅使用原生 `<image lazy-load>` 调度，不使用 web-user 的浏览器 Observer 和 JS 并发队列。
 
-- 挂载后等 `loadDelay`（默认 150ms）就入队，**不判断是否可见**。真正的懒加载靠 `<image lazy-load>`。
-- 保留了 `eager` prop：跳过延迟立即入队。`pkg-shop/components/ShopHeader.vue` 用它加载店铺头图。
-- 没有 `rootMargin`，也没有 `v-lazy`。
-- 并发上限在 `src/config/index.ts` 里写死为 6（`wx.request` 并发上限 10，图片也占额度），不读环境变量。
+| 功能 | 实现位置 | 说明 |
+|---|---|---|
+| 原生懒加载 | `SmartImage.vue` 的 `:lazy-load="!eager"` | 普通图由小程序判断何时下载；不为离屏、隐藏的图预占 JS 名额 |
+| 延迟绑定地址 | `start()` | 默认等 150ms 绑定 src；这是错峰，不是「进入视口后停留」 |
+| 首屏立即加载 | `eager` prop + `start()` | 跳过延迟，并关闭原生 lazy-load；ShopHeader 已使用 |
+| 加载状态展示 | `settle()` + 模板 | load 收起骨架屏，error 显示失败占位；无地址时不创建 image |
+| 换源与卸载清理 | `clearPending()` | 仅撤销待绑定 src 的定时器，不声称取消原生已发出的请求 |
 
-⚠️ 这里有一个没验证过的风险：`<image lazy-load>` 只在图片接近屏幕时才真正下载，而名额要等 `load`/`error` 才归还。长列表里如果有超过 6 张图同时入队，排在前面却离屏幕较远的图会一直占着名额，可能让后面的图排很久。目前列表首屏的图都在可视范围内，没有观察到问题；改列表结构时留意一下。
+没有 `rootMargin`、`v-lazy`、JS 图片并发上限或队列优先级。
 
-**需要两端同步修改的文件：**
+**2026-11-08 修复的阻塞链**：旧版先入 JS 队列取得 6 个名额，再绑定 src 给原生 lazy-load。原生可能因离屏或隐藏不发请求，因而没有 load/error 释放名额；第 7 张及后续图片就没有 src。页面栈中上一页仍存活、shop 的评价区用 v-show 隐藏，都是可能留下等待可见图片的场景。旧 eager 只跳过延迟，既不绕过队列，也没有关闭 lazy-load。
 
-| web-user | uni-user |
-|---|---|
-| `src/utils/image/imageLoadScheduler.js` | `src/utils/image/imageLoadScheduler.js`（只有 import 来源不同） |
-| `src/components/common/SmartImage/SmartImage.vue` 的对外 props | `src/components/common/SmartImage/SmartImage.vue` |
+已用旧调度器复现「6 个不结算的任务阻止后续头图执行」，并用新开发编译产物验证「20 张未结算普通图不阻塞 eager 头图」。这验证的是 JS 调度机制，不等于微信原生网络/可见性验收。
+
+调度器留档在 `apps/uni-user/src/utils/image/extras/imageLoadScheduler.js`，启用指南见 [014](014-uni-user-image-scheduler-extras.md)。只限 uni-user 撤下；web-user 仍保留「先判断可见、再入队」机制，**不要同步撤下 web-user 队列，也不要因为同源约定把旧队列重新接到 uni-user**。
 
 ## 8. 改动后怎么验证
 
@@ -149,7 +151,9 @@ pnpm --filter @elm-platform/uni-user run type-check
 pnpm --filter @elm-platform/uni-user run build:mp-weixin
 ```
 
-手动验证「快速滑过不发请求」：Chrome DevTools → Network 勾选 Img，节流选 Slow 4G，在首页商家列表快速甩到底，只有停下来的那一屏应该出现请求。
+手动验证 web-user 的「快速滑过不发请求」：Chrome DevTools → Network 勾选 Img，节流选 Slow 4G，在首页商家列表快速甩到底，只有停下来的那一屏应该出现请求。
+
+uni-user 验收：连接本地后端时启动 `pnpm --filter @elm-platform/uni-user run dev:mp-weixin`，微信开发者工具导入 **`dist/dev/mp-weixin`**。完整重新编译后从首页进入 shop：头图立即请求，首屏菜品图加载；切到评价再切回，滚到后续分类，返回首页再进另一店，均不应全体停在骨架屏。原生懒加载的离屏预加载距离与「停留 150ms」不是同一语义，不套用 web-user 的人工判据。
 
 ## 9. 历史
 

@@ -489,7 +489,7 @@ PoC 页 `apps/uni-user/src/pages/poc-shop/poc-shop.vue`（已注册进 pages.jso
 | 4 | Skeleton / ShopListSkeleton | ✅ 迁移。③ 类模板属性 px→rpx 的 7 处手工转换在此 |
 | 5 | head.vue | ✅ 迁移。noBackPages 去掉死链 `/home`，换 tabBar 路径 |
 | 6 | BackTop | ✅ 重写为「纯展示+事件」：240 行 useBackTop.ts（重度 DOM）整体作废 |
-| 7 | SmartImage 三件套 | ✅ 按 D3 退化方案重写：`<image lazy-load>` + 并发调度；视口优先级废弃 |
+| 7 | SmartImage 三件套 | ✅ 初期按 D3 退化方案重写；2026-11-08 已撤下 JS 并发队列，只保留原生 lazy-load（见坑 27） |
 
 **组件层新发现的坑**（补充到「新发现的坑」清单）：
 
@@ -503,7 +503,8 @@ PoC 页 `apps/uni-user/src/pages/poc-shop/poc-shop.vue`（已注册进 pages.jso
     isIntersecting 边沿天然去重）。
 14. **`image` 组件无 alt / `new Image()` 不存在** → 调度器的 preloadImageUrl 删除
     （实测业务零调用，仅自身测试调用）。2026-11-06 web-user 也删了它，两端调度器
-    已统一为「并发上限 + 先进先出」，不再有优先级与网络自适应。
+    当时统一为「并发上限 + 先进先出」，不再有优先级与网络自适应；2026-11-08
+    uni-user 的副本已退出主链路并移到 extras，web-user 继续使用（见坑 27）。
 15. **easycom autoscan 只认 `components/组件名/组件名.vue`** → BaseState/StarRating/
     LocalLoading/BackTop/head 等嵌套或非同名路径**不会自动导入**，
     已在 pages.json 的 easycom.custom 补 3 条映射（其余靠显式 import）。
@@ -744,6 +745,21 @@ PoC 页 `apps/uni-user/src/pages/poc-shop/poc-shop.vue`（已注册进 pages.jso
     ⚠️ 另一条**容易误判**的：`id` 必须打在滚动容器的**直接子节点**上。本项目 `id` 落在
     `<scroll-view>` 内层的 `.food-category`（中间只隔 `wx:for` 模板层，不算额外节点），
     产物核对过是**正确**的 —— 排查「跳不动」时别先怀疑 id 位置。详见 `uniapp-migration-diffs.md` 第 10.3 节。
+
+27. **★ 原生 `<image lazy-load>` 不能与「赋 src 前占槽、load/error 后释放」的 JS 队列叠加**（2026-11-08）——
+    原生懒加载可能一直等图片可见，不发请求也就没有 load/error。旧队列只限制「任务数」，
+    无法区分「真正在下载」和「原生等待可见」；6 个等待任务就能让后来的首屏图片拿不到 src。
+    navigateTo 后旧页面可能还活着，v-show 隐藏的评价区也可能留有等待任务，影响能跨页面。
+
+    **已修**：uni-user 的 SmartImage 直接延迟绑定 src，由原生独立调度；eager 同时跳过延迟
+    并关闭 lazy-load（开发产物 `SmartImage.js:89` 为 `g: !__props.eager`）。无 src 时用 v-if
+    不创建 image，避开 hidden 与 display:block 的覆盖问题。旧调度器移到
+    `src/utils/image/extras/imageLoadScheduler.js`，已删除全局无调用方的并发常量。
+
+    **验证边界**：旧队列的 6 个不结算任务堵塞、新组件的 20 个不结算普通图不阻塞头图均已用
+    Node 验证；微信原生请求、可见性及真机展示仍需人工验收。不要把 JS 验证写成真机坐实。
+    **不要双修 web-user**：web-user 先判断可见再入队，其独立副本仍在使用。
+    重新启用前提见 `014-uni-user-image-scheduler-extras.md`，差异证据见速查表第 10.4 节。
 
 28. **分类懒加载/分页后必须重测滚动锚点，不能只依赖图片固定尺寸**（2026-11-08）——
     `pkg-shop/shop.vue:151-200` 批量缓存分类块与各类页尾位置；菜单追加后 nextTick 重测，

@@ -79,13 +79,6 @@ export const DEV_FALLBACK_LOCATION: {
   }
 })()
 
-/**
- * 图片并发基础值。
- * ⚠️ 微信小程序 wx.request 并发上限 10，图片请求也占额度 → 6 是安全值。
- * 与 web-user 的 IMAGE_LOAD_BASE_CONCURRENCY 默认值一致（它可被 env 覆盖，本端不需要）。
- */
-export const IMAGE_LOAD_BASE_CONCURRENCY = 6
-
 /** 占位图（后端代理不可用时的兜底） */
 export const DEFAULT_RESTAURANT_IMAGE = `${IMAGE_BASE_URL}187bcca1ec6114376.jpg`
 

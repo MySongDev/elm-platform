@@ -183,6 +183,23 @@
 
 ---
 
+## 10.4. 原生图片懒加载与 JS 并发队列叠加 → 无请求、骨架屏不退出
+
+**证据**：`apps/uni-user/src/utils/image/extras/imageLoadScheduler.js:13-29` 保留的旧队列在 run 前占名额，仅由 release 归还；旧 SmartImage 在 run 中绑定 src，在 load/error 中 release。已用旧调度器复现「6 个不触发事件的任务占槽，后续头图不执行」。修复后 `SmartImage.vue:66-86` 直接绑定 src，`:126` 将 lazy-load 绑定为 `!eager`；开发产物 `SmartImage.js:89` 为 `g: !__props.eager`，`SmartImage.wxml:1` 为 `lazy-load="{{g}}"`。JS 验证不等于已验收微信原生可见性/网络。
+
+| 项 | H5（本项目 web-user） | 小程序（旧 uni-user） | 修正 |
+|---|---|---|---|
+| 入 JS 队列时机 | Observer 判断可见、停留后入队 | 不判断可见，延迟后所有图入队 | uni-user 不使用 JS 图片队列，直接交给原生 lazy-load |
+| 绑定 src 与下载 | 普通 img 赋 src 后开始下载 | 原生 lazy-load 可能仍等可见，不发请求、无 load/error | 不为等待原生可见性的图片提前占并发槽 |
+| 全局堵塞 | 已发请求完成后能释放名额 | 6 张离屏/隐藏图占满后，后续图片连 src 都拿不到 | 原生调度与组件加载状态分离，无跨实例名额依赖 |
+| 首屏 eager | uni-user 特有 prop，不套用 H5 | 只跳过延迟，仍排队且 lazy-load 恒开启 | 跳过延迟 + `:lazy-load="!eager"` |
+
+**排查重点**：不仅检查当前页。navigateTo 后上一页实例仍可能存活，shop 的评价列表通过 v-show 隐藏，也可能持有等待可见的图片。此处说明的是可造成堵塞的代码路径，不是声称已观测到某一实例占槽。
+
+**留档**：旧队列已移到 `src/utils/image/extras/imageLoadScheduler.js`，仅供研究/未来重新设计，未接入生产产物。启用前提见 [014](014-uni-user-image-scheduler-extras.md)。重要约束见 007 坑 27。不要通过加大并发数、给 eager 加优先级或超时释放槽来掩盖调度职责冲突。
+
+---
+
 ## 10.5. 分类分页改变高度：固定图片尺寸不再足以保证滚动锚点有效
 
 **证据（2026-11-08）**：H5 `ProductList.vue:26-49` 观察分类页尾并按当前分类索引限制向上预取；小程序 `pkg-shop/shop.vue:151-200` 一次查询容器、分类块、页尾，分页后通过 watch + nextTick 重测，滚动路径只读缓存。H5 本地浏览器验收曾出现跳分类后上方占位块补载把目标挤下去，限制向上预取后目标对齐吸顶下沿；小程序仅完成源码检查、类型检查和微信构建，尚未真机验收。

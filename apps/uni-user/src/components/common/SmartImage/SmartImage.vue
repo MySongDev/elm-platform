@@ -5,18 +5,16 @@
  *
  * web-user 的机制：IntersectionObserver 判可视 + 停留时间 → 并发队列 → `<img>` 手动赋 src。
  *
- * 小程序端**没有可用于任意元素的 IntersectionObserver** → 退化路线：
- * - 懒加载交给 `<image lazy-load>`（小程序原生）
- * - 并发控制保留（imageLoadScheduler 端无关）
- * - loadDelay 退化为「挂载后延迟入队」，错开首屏请求峰
+ * 小程序端不使用浏览器的 IntersectionObserver，懒加载交给原生 `<image lazy-load>`。
+ * ⚠️ 不能再叠加「赋 src 前占并发名额，load/error 后释放」的 JS 队列：离屏或隐藏的
+ * image 可能不发请求，也就不归还名额；占满后连新页面的首屏图都拿不到 src。
+ * 2026-11-08 移除该队列依赖，调度器留档在 utils/image/extras，见工程指南 014。
  *
- * 2026-11-06 精简（与 web-user 同步）：删掉 priority、候选 origin 回退、load/error 事件。
- * 三者均无调用方：priority 只有 ShopItem 传了默认值，回退列表默认为空，事件无人监听。
- * eager 保留：pkg-shop/components/ShopHeader.vue 用它让店铺头图跳过延迟。
+ * loadDelay 只延迟绑定 src，错开首屏请求峰；eager 同时跳过延迟并关闭原生懒加载。
+ * pkg-shop/components/ShopHeader.vue 使用 eager，其他调用方继续由原生判断何时下载。
+ * 2026-11-06 已删除无调用方的 priority、候选 origin 回退和对外 load/error 事件。
  */
 import { onScopeDispose, shallowRef, watch } from 'vue'
-
-import { scheduleImageTask } from '@/utils/image/imageLoadScheduler'
 
 const props = defineProps({
   src: {
@@ -27,7 +25,7 @@ const props = defineProps({
     type: String,
     default: '',
   },
-  /** 跳过延迟，立即进队列（首屏关键图） */
+  /** 跳过延迟并关闭原生懒加载（首屏关键图） */
   eager: {
     type: Boolean,
     default: false,
@@ -50,49 +48,17 @@ const loaded = shallowRef(false)
 const failed = shallowRef(false)
 const currentSrc = shallowRef('')
 
-let imageTask = null
 let delayTimer = null
-// run() 与 load/error 回调之间传递的并发槽释放句柄。
-// ⚠️ 声明在 enqueue 之前：enqueue 的 run 闭包会写它（no-use-before-define）
-let pendingRelease = null
 
-// 撤掉延迟和排队中的任务；已赋 src 的那次加载也要归还名额，否则名额会一直被占着
+// 换源或卸载时只撤掉尚未绑定 src 的定时器，不声称能取消原生 image 已发出的请求。
 function clearPending() {
   if (delayTimer !== null) {
     clearTimeout(delayTimer)
     delayTimer = null
   }
-  imageTask?.cancel()
-  imageTask = null
-  pendingRelease?.()
-  pendingRelease = null
-}
-
-/**
- * 进并发队列。真正「加载」在小程序端是给 <image> 赋 src，
- * 由 image 组件自己发请求 —— 所以 run() 只负责赋值，release 在 load/error 回调里调。
- */
-function enqueue() {
-  if (loaded.value || failed.value || imageTask)
-    return
-
-  if (!props.src) {
-    failed.value = true
-    return
-  }
-
-  imageTask = scheduleImageTask({
-    run(release) {
-      currentSrc.value = props.src
-      pendingRelease = release
-    },
-  })
 }
 
 function settle(ok) {
-  pendingRelease?.()
-  pendingRelease = null
-  imageTask = null
   loaded.value = ok
   failed.value = !ok
 }
@@ -103,15 +69,20 @@ function start() {
   failed.value = false
   currentSrc.value = ''
 
-  if (props.eager) {
-    enqueue()
+  if (!props.src) {
+    failed.value = true
     return
   }
 
-  // 非 eager：延迟入队，错开首屏请求峰（对齐 web-user 的 loadDelay 语义）
+  if (props.eager) {
+    currentSrc.value = props.src
+    return
+  }
+
+  // 只推迟绑定地址；何时下载由原生 lazy-load 决定，不为等待可见的图片占 JS 名额。
   delayTimer = setTimeout(() => {
     delayTimer = null
-    enqueue()
+    currentSrc.value = props.src
   }, props.loadDelay)
 }
 
@@ -140,10 +111,10 @@ onScopeDispose(clearPending)
       aria-hidden="true"
     />
 
-    <!-- ⚠️ lazy-load：小程序原生懒加载，替代 web-user 的 IntersectionObserver 调度。
-         ⚠️ image 组件无 alt 属性（HTML 专属），无障碍语义用 aria-label -->
+    <!-- 没有地址时不创建 image，避免 v-show 在 mp 端转成 hidden 后被 display:block 覆盖。
+         image 组件无 alt 属性（HTML 专属），无障碍语义用 aria-label。 -->
     <image
-      v-show="!failed && currentSrc"
+      v-if="!failed && currentSrc"
       class="smart-img__img"
       :class="{
         'smart-img__img--progressive': progressive,
@@ -152,7 +123,7 @@ onScopeDispose(clearPending)
       :src="currentSrc"
       :aria-label="alt"
       mode="aspectFill"
-      lazy-load
+      :lazy-load="!eager"
       @load="settle(true)"
       @error="settle(false)"
     />
