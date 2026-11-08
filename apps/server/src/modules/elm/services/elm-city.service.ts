@@ -1,9 +1,9 @@
-import type { CityRecord } from '../types/elm.types'
+import type { CityRecord } from '../../elm-catalog/types/elm-catalog.types'
 import { Injectable, NotFoundException } from '@nestjs/common'
+import { parseGeoHash } from '../../../common/utils/query-values'
 import { PrismaService } from '../../../prisma/prisma.service'
-import { toCategoryEntryResponse } from '../assemblers/elm.assemblers'
-import { createRestaurantCategory } from '../factories/elm.factories'
-import { parseGeoHash } from '../utils/elm-query'
+import { toCategoryEntryResponse } from '../../elm-catalog/assemblers/elm.assemblers'
+import { createRestaurantCategory } from '../../elm-catalog/factories/elm.factories'
 import { ElmStoreService } from './elm-store.service'
 
 @Injectable()

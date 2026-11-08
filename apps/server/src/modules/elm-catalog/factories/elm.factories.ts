@@ -1,4 +1,4 @@
-import type { CityRecord } from '../types/elm.types'
+import type { CityRecord } from '../types/elm-catalog.types'
 
 /**
  * 剩余的工厂函数。

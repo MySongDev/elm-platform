@@ -1,12 +1,12 @@
 import type { Prisma } from '../../../generated/prisma/client'
 import type { TenantContext } from '../../tenant/tenant.types'
 import type { RequestCoords } from '../assemblers/elm.assemblers'
-import type { RestaurantListQuery } from '../types/elm.types'
+import type { RestaurantListQuery } from '../types/elm-catalog.types'
 import { Injectable, NotFoundException } from '@nestjs/common'
+import { toNumberValue, toStringValue } from '../../../common/utils/query-values'
 import { PrismaService } from '../../../prisma/prisma.service'
 import { TenantAccessService } from '../../tenant/tenant-access.service'
 import { toLocalRestaurantResponse, toRestaurantResponse } from '../assemblers/elm.assemblers'
-import { toNumberValue, toStringValue } from '../utils/elm-query'
 import { toShopIdList } from '../utils/elm-scope'
 
 /** 单页上限，避免公共接口被 limit 拉爆。 */

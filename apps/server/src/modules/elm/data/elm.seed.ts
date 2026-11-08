@@ -1,8 +1,8 @@
 import type {
   CityRecord,
   OrderRecord,
-} from '../types/elm.types'
-import { createCity, nowIso } from '../factories/elm.factories'
+} from '../../elm-catalog/types/elm-catalog.types'
+import { createCity, nowIso } from '../../elm-catalog/factories/elm.factories'
 
 /**
  * 内存 seed 数据 —— 2026-09-30 商家数据本地化后只保留**尚未入库**的两部分。

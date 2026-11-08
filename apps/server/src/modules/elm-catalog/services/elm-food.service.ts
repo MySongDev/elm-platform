@@ -1,7 +1,8 @@
 import type { Prisma } from '../../../generated/prisma/client'
 import type { TenantContext } from '../../tenant/tenant.types'
-import type { FoodListQuery } from '../types/elm.types'
+import type { FoodListQuery } from '../types/elm-catalog.types'
 import { Injectable, NotFoundException } from '@nestjs/common'
+import { toNumberValue, toStringValue } from '../../../common/utils/query-values'
 import { PrismaService } from '../../../prisma/prisma.service'
 import { ElmUpstreamImportService } from '../../elm-upstream/services/elm-upstream-import.service'
 import { TenantAccessService } from '../../tenant/tenant-access.service'
@@ -9,7 +10,6 @@ import {
   toFoodCategoryResponse,
   toFoodResponse,
 } from '../assemblers/elm.assemblers'
-import { toNumberValue, toStringValue } from '../utils/elm-query'
 import { toShopIdList } from '../utils/elm-scope'
 import { ElmRestaurantService } from './elm-restaurant.service'
 

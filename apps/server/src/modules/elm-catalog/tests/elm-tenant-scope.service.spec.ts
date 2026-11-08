@@ -1,8 +1,8 @@
 import type { TenantContext } from '@/modules/tenant/tenant.types'
 import type { PrismaService } from '@/prisma/prisma.service'
 import { ForbiddenException, NotFoundException } from '@nestjs/common'
-import { ElmFoodService } from '@/modules/elm/services/elm-food.service'
-import { ElmRestaurantService } from '@/modules/elm/services/elm-restaurant.service'
+import { ElmFoodService } from '@/modules/elm-catalog/services/elm-food.service'
+import { ElmRestaurantService } from '@/modules/elm-catalog/services/elm-restaurant.service'
 import { TenantAccessService } from '@/modules/tenant/tenant-access.service'
 
 /**

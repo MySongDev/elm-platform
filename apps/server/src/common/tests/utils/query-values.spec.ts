@@ -3,7 +3,7 @@ import {
   parseGeoHash,
   toNumberValue,
   toStringValue,
-} from '../../utils/elm-query'
+} from '@/common/utils/query-values'
 
 describe('elm-query utils', () => {
   describe('toStringValue', () => {

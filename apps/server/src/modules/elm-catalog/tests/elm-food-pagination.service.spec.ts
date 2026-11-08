@@ -1,11 +1,11 @@
 import type { Food } from '@/generated/prisma/client'
+import type { ElmRestaurantService } from '@/modules/elm-catalog/services/elm-restaurant.service'
 import type { ElmUpstreamImportService } from '@/modules/elm-upstream/services/elm-upstream-import.service'
-import type { ElmRestaurantService } from '@/modules/elm/services/elm-restaurant.service'
 import type { TenantAccessService } from '@/modules/tenant/tenant-access.service'
 import type { PrismaService } from '@/prisma/prisma.service'
 import { NotFoundException, ValidationPipe } from '@nestjs/common'
-import { CategoryFoodsQueryDto } from '@/modules/elm/dto/category-foods-query.dto'
-import { ElmFoodService } from '@/modules/elm/services/elm-food.service'
+import { CategoryFoodsQueryDto } from '@/api/customer/food/dto/category-foods-query.dto'
+import { ElmFoodService } from '@/modules/elm-catalog/services/elm-food.service'
 
 // AI_TEST_POLICY §2：分类归属、末页判断和非法分页参数属于本次异步分页的关键边界。
 function createService() {
