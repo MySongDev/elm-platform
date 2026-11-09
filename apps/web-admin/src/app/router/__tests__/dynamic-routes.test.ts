@@ -2,7 +2,7 @@ import type { Router, RouteRecordRaw } from 'vue-router'
 import type { BackendMenu } from '../permission'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { createMemoryHistory, createRouter } from 'vue-router'
-import { getDashboardOverview } from '@/features/dashboard/api/dashboard'
+import { getDashboardOverview } from '@/pages/dashboard/api/dashboard'
 import { registerDynamicRoutes, resetDynamicRoutes } from '../permission'
 
 vi.mock('@/locales', () => ({

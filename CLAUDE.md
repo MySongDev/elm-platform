@@ -92,9 +92,9 @@ Prisma is configured in `apps/server/prisma/schema.prisma` for PostgreSQL. Share
 
 ### Admin web app
 
-`apps/web-admin/src/main.ts` creates Pinia with persisted state, sets up the shared HTTP client, installs Vue Router, i18n, directives, Element Plus styles, SVG icons, and global styles. The app uses an FSD-like split: `app` for providers/router, `entities` for domain state, `features` for user actions, `pages` for route pages, `widgets` for composed UI, and `shared` for API/config/lib/styles/ui.
+`apps/web-admin/src/main.ts` creates Pinia with persisted state, sets up the shared HTTP client, installs Vue Router, i18n, directives, Element Plus styles, SVG icons, and global styles. The app uses an FSD-like split (收敛后): `app` for providers/router, `entities` for domain state, `pages` for route pages and their private business, `layouts` for admin-layout only, and `shared` for API/config/lib/styles/ui.
 
-Routing is centered in `src/app/router`. Static routes are registered up front; dynamic routes are built from backend menu data by `build-routes.ts`, adapted/normalized through `menu-adapter.ts` and `menu-schema.ts`, and registered/reset by `dynamic-routes.ts`. Component resolution is constrained through `component-map.ts`, so menu `component` keys must map to known page components.
+Routing is centered in `src/app/router`. Static routes are registered up front; dynamic routes are built from backend menu data by `build-routes.ts`, adapted/normalized through `menu-adapter.ts` and `menu-schema.ts`, and registered/reset by `dynamic-routes.ts`. Component resolution uses `import.meta.glob('/src/pages/**/index.vue')` in `app/router/permission.ts`, so menu `component` keys must match a page under `pages/`.
 
 HTTP access goes through `src/shared/api`: `createHttpClient` unwraps `{ code, data, message }` responses and centralizes token injection plus 401/403/error callbacks. `src/app/providers/http.ts` connects those callbacks to the auth store, router redirects, i18n messages, and Element Plus notifications.
 

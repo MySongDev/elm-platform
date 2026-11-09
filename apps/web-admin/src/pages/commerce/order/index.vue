@@ -1,14 +1,12 @@
 <script setup lang="ts">
 import { DataScopeHint } from '@/entities/session'
-import {
-  createOrderSearchFields,
-  OrderDetailDrawer,
-  OrderTable,
-  RefundRejectDialog,
-  useOrderManagement,
-} from '@/features/order-management'
 import AdminSearchForm from '@/shared/ui/AdminSearchForm/index.vue'
 import AdminTablePage from '@/shared/ui/AdminTablePage/index.vue'
+import { createOrderSearchFields } from './config/fields'
+import { useOrderManagement } from './model/useOrderManagement'
+import OrderDetailDrawer from './ui/OrderDetailDrawer.vue'
+import OrderTable from './ui/OrderTable.vue'
+import RefundRejectDialog from './ui/RefundRejectDialog.vue'
 
 defineOptions({ name: 'CommerceOrderView' })
 

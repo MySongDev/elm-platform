@@ -1,12 +1,10 @@
 <script setup lang="ts">
 import { defineAsyncComponent } from 'vue'
-import {
-  DashboardPendingWorkList,
-  DashboardShopRankingTable,
-  DashboardStatCardGrid,
-  useDashboardOverview,
-} from '@/features/dashboard'
 import { AdminStateView } from '@/shared/ui/state'
+import PendingWorkList from './components/PendingWorkList.vue'
+import ShopRankingTable from './components/ShopRankingTable.vue'
+import StatCardGrid from './components/StatCardGrid.vue'
+import { useDashboardOverview } from './model/useDashboardOverview'
 
 defineOptions({ name: 'DashboardView' })
 
@@ -14,10 +12,10 @@ defineOptions({ name: 'DashboardView' })
  * 订单趋势图依赖 echarts / vue-echarts，体积远大于其它 dashboard 区块。
  * 使用异步组件拆成独立 chunk：先渲染统计卡/待办/排行，再加载图表，
  * 降低进入 dashboard 时的主包阻塞。
- * 注意：必须直接 import 组件文件，避免经 features/dashboard barrel 同步卷入 echarts。
+ * 注意：必须直接 import 组件文件，避免同步卷入 echarts。
  */
 const DashboardOrderTrendChart = defineAsyncComponent({
-  loader: () => import('@/features/dashboard/components/OrderTrendChart.vue'),
+  loader: () => import('./components/OrderTrendChart.vue'),
   delay: 80,
 })
 
@@ -47,18 +45,18 @@ onMounted(() => {
       skeleton="card"
       @retry="fetchOverview"
     >
-      <DashboardStatCardGrid :stats="stats" />
+      <StatCardGrid :stats="stats" />
 
       <el-row :gutter="16" class="dashboard__main-row">
         <el-col :xs="24" :lg="16" class="dashboard__chart-col">
           <DashboardOrderTrendChart :data="orderTrend" />
         </el-col>
         <el-col :xs="24" :lg="8">
-          <DashboardPendingWorkList :items="pendingItems" />
+          <PendingWorkList :items="pendingItems" />
         </el-col>
       </el-row>
 
-      <DashboardShopRankingTable class="dashboard__ranking" :data="shopRanking" />
+      <ShopRankingTable class="dashboard__ranking" :data="shopRanking" />
     </AdminStateView>
   </div>
 </template>

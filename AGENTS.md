@@ -88,9 +88,9 @@ Prisma 在 `apps/server/prisma/schema.prisma` 中配置为 PostgreSQL，具体�
 
 ### 管理端应用
 
-`apps/web-admin/src/main.ts` 创建带持久化的 Pinia、配置共享 HTTP 客户端、安装 Vue Router、i18n、指令、Element Plus 样式、SVG 图标和全局样式。应用采用类 FSD 分层：`app` 提供 providers/router，`entities` 为领域状态，`features` 为用户操作，`pages` 为路由页面，`widgets` 为组合 UI，`shared` 为 API/config/lib/styles/ui。
+`apps/web-admin/src/main.ts` 创建带持久化的 Pinia、配置共享 HTTP 客户端、安装 Vue Router、i18n、指令、Element Plus 样式、SVG 图标和全局样式。应用采用类 FSD 分层：`app` 为应用装配，`entities` 为领域状态，`pages` 为路由页面级业务，`layouts` 为布局（仅 admin-layout），`shared` 为 API/config/lib/styles/ui。
 
-路由以 `src/app/router` 为中心。静态路由预先注册；动态路由由 `build-routes.ts` 基于后端菜单数据构建，经 `menu-adapter.ts` 与 `menu-schema.ts` 适配/规范化，由 `dynamic-routes.ts` 注册/重置。组件解析通过 `component-map.ts` 约束，因此菜单 `component` 键必须映射到已知页面组件。
+路由以 `src/app/router` 为中心。静态路由预先注册；动态路由由 `build-routes.ts` 基于后端菜单数据构建，经 `menu-adapter.ts` 与 `menu-schema.ts` 适配/规范化，由 `dynamic-routes.ts` 注册/重置。组件解析通过 `app/router/permission.ts` 中的 `import.meta.glob('/src/pages/**/index.vue')` 和 `resolveComponent` 约束，因此菜单 `component` 键必须映射到 `pages/` 下的页面入口。
 
 HTTP 访问经由 `src/shared/api`：`createHttpClient` 解包 `{ code, data, message }` 响应，并集中处理 token 注入及 401/403/错误回调。`src/app/providers/http.ts` 将这些回调连接到认证 store、路由重定向、i18n 消息和 Element Plus 通知。
 

@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import type { OnlineUserQuery } from './config/fields'
-import type { OnlineUser } from '@/entities/monitor'
+import type { OnlineUser } from './model/types'
 import { IconSwitchButton as IconEpSwitchButton } from '@iconify-prerendered/vue-ep'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { forceLogoutOnlineUser, getOnlineUsers } from '@/entities/monitor'
 import { ConfigDataTable } from '@/shared/config-crud'
 import { Permissions } from '@/shared/config/access'
 import { useReadonlyTable } from '@/shared/lib/useReadonlyTable'
 import AdminSearchForm from '@/shared/ui/AdminSearchForm/index.vue'
 import AdminTablePage from '@/shared/ui/AdminTablePage/index.vue'
+import { forceLogoutOnlineUser, getOnlineUsers } from './api'
 import {
   createOnlineUserSearchFields,
   createOnlineUserTableColumns,

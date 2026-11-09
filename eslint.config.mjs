@@ -151,93 +151,45 @@ export default antfu(
       }],
     },
   },
-  // web-admin FSD import boundaries (shared < entities < features < widgets < pages < app).
-  // Currently 'warn' only — reporting, not blocking. Promotion to 'error' is staged;
-  // see docs/architecture/import-boundaries.md. Use `pnpm lint:boundaries` for a focused report.
-  {
-    files: ['apps/web-admin/**/*.{js,ts,tsx,vue}'],
-    rules: {
-      'no-restricted-imports': ['warn', {
-        patterns: [
-          {
-            group: ['@/views/**'],
-            message: '页面业务请迁移到 features 目录，不要继续跨层引用 views。',
-          },
-          {
-            group: ['@/features/*/pages/**'],
-            message: '禁止直接引用其他 feature 的 page。',
-          },
-        ],
-      }],
-    },
-  },
+  // web-admin 收敛后的页面私有业务留在 pages；布局复用 shared/entities。
+  // 仅检查别名导入，不能替代相对路径跨页引用的人工核查；不影响上方后端边界。
   {
     files: ['apps/web-admin/src/shared/**/*.{js,ts,tsx,vue}'],
     rules: {
-      'no-restricted-imports': ['warn', {
-        patterns: [
-          {
-            group: [
-              '@/app/**',
-              '@/entities/**',
-              '@/features/**',
-              '@/pages/**',
-              '@/widgets/**',
-            ],
-            message: 'shared is the lowest web-admin layer and must not import upper layers.',
-          },
-        ],
+      'no-restricted-imports': ['error', {
+        patterns: [{
+          group: ['@/app/**', '@/entities/**', '@/pages/**', '@/layouts/**'],
+          message: 'shared 不得依赖应用装配、领域实体、页面或布局。',
+        }],
       }],
     },
   },
   {
     files: ['apps/web-admin/src/entities/**/*.{js,ts,tsx,vue}'],
     rules: {
-      'no-restricted-imports': ['warn', {
-        patterns: [
-          {
-            group: [
-              '@/app/**',
-              '@/features/**',
-              '@/pages/**',
-              '@/widgets/**',
-            ],
-            message: 'entities may depend on shared only, not on app/features/pages/widgets.',
-          },
-        ],
+      'no-restricted-imports': ['error', {
+        patterns: [{
+          group: ['@/app/**', '@/pages/**', '@/layouts/**'],
+          message: '共享 entity 不得依赖页面、布局或应用装配。',
+        }],
       }],
     },
   },
   {
-    files: ['apps/web-admin/src/features/**/*.{js,ts,tsx,vue}'],
+    files: ['apps/web-admin/src/pages/**/*.{js,ts,tsx,vue}'],
     rules: {
-      'no-restricted-imports': ['warn', {
-        patterns: [
-          {
-            group: [
-              '@/app/**',
-              '@/pages/**',
-              '@/widgets/**',
-            ],
-            message: 'features may depend on entities and shared, not on app/pages/widgets.',
-          },
-        ],
-      }],
-    },
-  },
-  {
-    files: ['apps/web-admin/src/widgets/**/*.{js,ts,tsx,vue}'],
-    rules: {
-      'no-restricted-imports': ['warn', {
-        patterns: [
-          {
-            group: [
-              '@/app/**',
-              '@/pages/**',
-            ],
-            message: 'widgets may depend on entities/features/shared, not on app/pages.',
-          },
-        ],
+      'no-restricted-imports': ['error', {
+        patterns: [{
+          group: [
+            '@/pages/**/model',
+            '@/pages/**/model/**',
+            '@/pages/**/config',
+            '@/pages/**/config/**',
+            '@/pages/**/ui',
+            '@/pages/**/ui/**',
+          ],
+          message: '页面内部请使用相对路径，不得通过别名引用其他页面的内部 model/config/ui。',
+        }],
       }],
     },
   },

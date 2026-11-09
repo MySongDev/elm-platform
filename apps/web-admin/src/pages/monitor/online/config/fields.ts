@@ -1,4 +1,4 @@
-import type { OnlineUser } from '@/entities/monitor'
+import type { OnlineUser } from '../model/types'
 import type { ConfigTableColumn, Translate } from '@/shared/config-crud'
 import type { AdminSearchField } from '@/shared/ui/AdminSearchForm/types'
 import { formatDateTime } from '@/shared/lib/format'

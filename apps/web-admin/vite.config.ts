@@ -55,7 +55,7 @@ export default defineConfig(({ command, mode }) => {
       }),
       Components({
         dts: 'src/typings/components.d.ts',
-        dirs: ['src/shared/ui', 'src/widgets'],
+        dirs: ['src/shared/ui', 'src/layouts/admin-layout'],
         resolvers: [ElementPlusResolver()],
       }),
       createElmSvgIconsPlugin('src/shared/icons/svg'),

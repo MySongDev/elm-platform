@@ -1,1 +1,0 @@
-export { TenantManagementPage } from './ui'
