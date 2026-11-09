@@ -190,6 +190,24 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
   }
 
   /**
+   * 仅在键不存在时设置值（SET NX），用于分布式锁
+   * @param key 键
+   * @param value 值
+   * @param ttl 过期时间（秒）
+   * @returns 设置成功返回 true，键已存在返回 false
+   */
+  async setIfAbsent(key: string, value: string, ttl: number): Promise<boolean> {
+    const result = await this.client.set(key, value, {
+      NX: true,
+      expiration: {
+        type: 'EX',
+        value: ttl,
+      },
+    })
+    return result === 'OK'
+  }
+
+  /**
    * 自增
    * @param key 键
    * @param increment 增量，默认为 1
