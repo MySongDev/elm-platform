@@ -1,16 +1,13 @@
-// ⚠️ 与 apps/web-user/src/utils/FormDraft.js 同源，修改需同步两处。
-// 不抽共享包的原因见迁移方案议题 7。
-//
-// ★ 与 web-user 的差异（方案 ⑥ 节）：web-user 在 :9,13,17 直接用 localStorage，
-// 小程序端会直接 ReferenceError。改走 platform/storage 封装。
-// 草稿语义（deep watch 自动存 / 过期清理 / onMounted 恢复）逐行一致。
+/** 小程序本地草稿；编辑可关闭保存/恢复，避免覆盖服务器详情。 */
 
 import { onMounted, watch } from 'vue'
 
 import { getStore, removeStore, setStore } from '@/platform/storage'
 
-export function useFormDraft(form, storageKey = 'form_draft', expireMinutes = 30) {
+export function useFormDraft(form, storageKey = 'form_draft', expireMinutes = 30, enabled = () => true) {
   function saveDraft() {
+    if (!enabled())
+      return
     const data = {
       value: form,
       expire: Date.now() + expireMinutes * 60 * 1000,
@@ -23,6 +20,9 @@ export function useFormDraft(form, storageKey = 'form_draft', expireMinutes = 30
   }
 
   function restoreDraft() {
+    // 编辑页用服务器详情，不能被新增草稿覆盖。
+    if (!enabled())
+      return false
     const saved = getStore(storageKey)
     if (!saved)
       return
@@ -31,6 +31,7 @@ export function useFormDraft(form, storageKey = 'form_draft', expireMinutes = 30
       const { value, expire } = saved
       if (Date.now() < expire) {
         Object.assign(form, value)
+        return true
       }
       else {
         clearDraft()

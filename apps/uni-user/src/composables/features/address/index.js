@@ -1,5 +1,4 @@
 export {
-  demoAddresses,
   getAddressTitle,
   getContactGender,
   getContactName,

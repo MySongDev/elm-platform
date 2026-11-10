@@ -1,45 +1,27 @@
-// ⚠️ 与 apps/web-user/src/services/api/api-address.js 同源，修改需同步两处。
-// 不抽共享包的原因见迁移方案议题 7。
-//
-// ★ 与 web-user 的差异：
-// 1. `http({ method: 'DELETE' })` → `del()`。uni.request 不支持 PATCH 但支持 DELETE，
-//    web-user 侧为了不走 axios 的 verb 简写而手写了 method 大小写，uni-user 侧
-//    http.js 已提供 del() 便捷函数，直接用
-// 2. 导入路径与 web-user 一致（相对目录结构相同），无额外平台分支
-
-import { del, get, post } from '../http/http'
-
+// 地址请求只走公共HTTP层；整表单更新用PUT，不给小程序强加PATCH。
+import { del, get, post, put } from '../http/http'
 import { userEndpoints } from './endpoints/user.endpoints'
 
-/** 获取地址列表（身份由请求头中的令牌决定） */
 export const getAddress = () => get(userEndpoints.addresses)
+export const getAddressDetail = id => get(userEndpoints.addressDetail(id))
+export const deleteAddress = id => del(userEndpoints.addressDetail(id))
+export const setDefaultAddress = id => post(userEndpoints.addressDefault(id))
 
-/** 删除地址 */
-export function deleteAddress(addressId) {
-  return del(userEndpoints.addressDetail(addressId))
-}
-
-/** 新增收货地址 */
-export function addAddress(params) {
-  const required = [
-    'address',
-    'addressDetail',
-    'name',
-    'phone',
-  ]
-  for (const field of required) {
-    if (params[field] === undefined || params[field] === '') {
+function buildPayload(params) {
+  for (const field of ['address', 'name', 'phone']) {
+    if (typeof params?.[field] !== 'string' || !params[field].trim())
       throw new Error(`参数错误: ${field} 为必填项`)
-    }
   }
-
-  const payload = {
+  return {
     tag: '家',
     tagType: 2,
     poiType: 0,
     sex: 1,
     ...params,
+    // 门牌选填，但后端必须收到字符串，不能把空值省略成缺字段。
+    addressDetail: params.addressDetail ?? '',
   }
-
-  return post(userEndpoints.addresses, payload)
 }
+
+export const addAddress = params => post(userEndpoints.addresses, buildPayload(params))
+export const updateAddress = (id, params) => put(userEndpoints.addressDetail(id), buildPayload(params))
