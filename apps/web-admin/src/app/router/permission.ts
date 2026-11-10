@@ -22,13 +22,6 @@ export interface BackendMenu {
   children?: BackendMenu[]
 }
 
-// 扩展 RouteMeta，包含 order 用于排序
-interface RouteMetaWithOrder extends RouteMeta {
-  order?: number
-  alwaysShow?: boolean
-  auths?: string[]
-}
-
 // 布局组件
 const Layout = () => import('@/layouts/index.vue')
 // 404 兜底
@@ -74,7 +67,7 @@ function buildRoute(menu: BackendMenu, parentPath = ''): RouteRecordRaw | null {
   // 给 Vue Router 用的 path：根级保留 /，子级去掉父路径前缀
   const routePath = parentPath ? fullPath.replace(`${norm(parentPath)}/`, '') : fullPath
 
-  const baseMeta: RouteMetaWithOrder = {
+  const baseMeta: RouteMeta = {
     title: menu.title,
     icon: menu.icon ?? undefined,
     auths: menu.permission ? [menu.permission] : undefined,
@@ -85,7 +78,7 @@ function buildRoute(menu: BackendMenu, parentPath = ''): RouteRecordRaw | null {
   const children = menu.children?.map(c => buildRoute(c, fullPath)).filter(Boolean) as RouteRecordRaw[] ?? []
 
   // 对子路由按 order 排序，确保 redirect 指向正确的首个子路由
-  children.sort((a, b) => ((a.meta as RouteMetaWithOrder)?.order ?? 99) - ((b.meta as RouteMetaWithOrder)?.order ?? 99))
+  children.sort((a, b) => (a.meta?.order ?? 99) - (b.meta?.order ?? 99))
 
   // 1) 目录类型：有子节点（过滤后仍有子节点）
   if (children.length > 0) {
@@ -137,7 +130,7 @@ export function buildRoutes(menus: BackendMenu[]): RouteRecordRaw[] {
   return menus
     .map(m => buildRoute(m))
     .filter((r): r is RouteRecordRaw => r !== null)
-    .sort((a, b) => ((a.meta as RouteMetaWithOrder)?.order ?? 99) - ((b.meta as RouteMetaWithOrder)?.order ?? 99))
+    .sort((a, b) => (a.meta?.order ?? 99) - (b.meta?.order ?? 99))
 }
 
 /** 注册动态路由（含清理旧路由） */
