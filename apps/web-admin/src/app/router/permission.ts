@@ -56,7 +56,13 @@ function resolveComponent(menu: BackendMenu, fullPath: string): RouteRecordRaw['
   return NotFound
 }
 
-/** 递归构建路由节点 */
+/**
+ * 递归构建路由节点
+ * @param menu 后端返回的一条菜单数据
+ * @param parentPath 父级菜单的完整路径，比如 /system/manage（不是只给 manage）。
+ *   最外层调用不传它，空字符串就代表「我是最外层」——只有最外层才套布局。
+ *   少给层级会害子菜单路径拼少一段，页面组件找不到，悄悄落到 404。
+ */
 function buildRoute(menu: BackendMenu, parentPath = ''): RouteRecordRaw | null {
   // 过滤禁用菜单
   if (menu.status !== 'ACTIVE')
