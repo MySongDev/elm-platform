@@ -126,6 +126,18 @@ Pinia store 位于 `src/stores/modules`，涵盖用户/会话、地址、定位�
 - 简单任务直接完成；依赖紧密的任务顺序执行，避免过度拆分。
 - 最后由主代理检查整体一致性并完成必要验证。
 
+## Git 操作
+
+完整的 agent git 行为规范见 [CONTRIBUTING.md §11](CONTRIBUTING.md)。要点：
+
+- 功能开发走分支、完成后合并回 `main`；错字/注释/单文件修复直接提 `main`。任务开始时问一次走哪条，未经同意不要 commit。
+- 合并用 `--no-ff` + `merge: 合并 <branch>（摘要）`，合并后删分支。
+- 禁止 `git reset --hard`、`git checkout -- .`、`git clean -fd`、`git add -A`、`git commit --no-verify`、`git push --force`，也不要静默 stash 或提交用户已有的未提交改动。
+- 一个 commit 只做一件事；`type(scope)` 英文、subject 中文；scope 按 §11.4 的目录映射选择。
+- 生成物（`packages/api-types/*`、Prisma Client、`*-auto-imports.d.ts`）与源码同 commit。
+- 默认只提交到本地；push、PR、merge、tag 都需用户明确指令。
+- commit message 中不得出现 `Co-Authored-By` 或任何 AI 署名。
+
 ## 写报告约定
 
 任何工程变更（重构、缺陷修复、新功能、配置、依赖升级）都必须在 `docs/reports/` 中留档，供后续 AI 会话和人类复查。此规则适用于在本仓库工作的所有 AI 工具。

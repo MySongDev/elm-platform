@@ -126,6 +126,12 @@ Before creating, changing, or deleting automated tests, read and follow the repo
 
 ## Git Conventions
 
+Follow [CONTRIBUTING.md §11](CONTRIBUTING.md) for the full agent git workflow. Key points:
+
+- Ask before committing: commit directly to `main`, or open a branch? Do not commit without an explicit answer.
+- Never run `git reset --hard`, `git checkout -- .`, `git clean -fd`, `git add -A`, `git commit --no-verify`, or `git push --force`; do not stash or commit pre-existing user changes.
+- One logical change per commit. `type(scope)` in English, subject in Chinese.
+- Push, PR, merge and tag all require explicit user instruction.
 - **禁止**在 commit message 中添加 `Co-Authored-By` 或任何 AI 署名行。不论使用哪个模型，commit 信息中都不得包含 AI 工具的归属信息。
 
 ## Configuration Notes
