@@ -1,46 +1,50 @@
 <script setup>
-/**
- * ⚠️ 与 apps/web-user/src/views/profile/info/setusername.vue 同源改造。
- * 整体替换占位页（Batch 3 profile 组）。
- *
- * 差异：
- * 1. `<button>` → `<view @click>`（小程序 button 自带原生样式，与 web 端
- *    `background: none` 的用法冲突；用 view 更贴合原文的「纯文字按钮」意图）
- * 2. `disabled` 属性小程序端 button 有原生渲染但 view 没有 —— 用
- *    `:class="{ fontopacity: !isValid }"` + `@click` 内部判 `isValid` 双重把关
- * 3. `$blue` / `$ff` SCSS 变量已随 vite 全局注入（见 vite.config.ts additionalData），
- *    直接可用，不需要额外 import
- * 4. px → rpx
- */
 import { computed, ref, watch } from 'vue'
 
+import { ROUTES } from '@/config/routes'
+import { showToast } from '@/platform/feedback'
+import { navigateBack, navigateTo } from '@/platform/navigation'
+import { updateCustomerNickname } from '@/services/api'
 import { useUserStore } from '@/stores/modules/store-user'
 
-const { updateUserName } = useUserStore()
-const username = ref('')
+const userStore = useUserStore()
+const username = ref(userStore.userInfo.nickname || '')
 const hasInput = ref(false)
+const isSubmitting = ref(false)
 
-// 是否合法
 const isValid = computed(() => {
-  const len = username.value.trim().length
+  // 与后端 Length 的字符计数对齐，避免一个 emoji 在页面被当成两个字符。
+  const len = Array.from(username.value.trim()).length
   return len >= 2 && len <= 24
 })
 
-// 是否显示错误
-const showError = computed(() => {
-  return hasInput.value && !isValid.value
-})
+const showError = computed(() => hasInput.value && !isValid.value)
 
-// 监听输入（只做状态标记）
 watch(username, () => {
   hasInput.value = true
 })
 
-function resetName() {
-  if (!isValid.value)
+/** 保存成功才回写完整资料；只调用本地 updateUserName 会在重新拉资料后恢复旧名。 */
+async function saveUsername() {
+  if (!isValid.value || isSubmitting.value)
     return
 
-  updateUserName(username.value)
+  isSubmitting.value = true
+  try {
+    const profile = await updateCustomerNickname(username.value.trim())
+    userStore.recordUserInfo(profile)
+    showToast('用户名修改成功')
+    if (getCurrentPages().length > 1)
+      navigateBack()
+    else
+      navigateTo(ROUTES.INFO, { replace: true })
+  }
+  catch {
+    // HTTP 层已统一提示错误；保留输入和原资料，方便用户重试。
+  }
+  finally {
+    isSubmitting.value = false
+  }
 }
 </script>
 
@@ -48,21 +52,21 @@ function resetName() {
   <view>
     <view class="setname">
       <view class="setname-top">
-        <input v-model="username" type="text" placeholder="输入用户名" :class="{ 'setname-input': showError }">
+        <input v-model="username" type="text" placeholder="输入用户名" :disabled="isSubmitting" :class="{ 'setname-input': showError }">
 
         <view>
           <text v-if="!hasInput" class="setname-hint">
-            用户名只能修改一次（2-24字符之间）
+            用户名长度为 2～24 个字符，可多次修改
           </text>
           <text v-else class="setname-hint" :class="{ unlikep: showError }">
-            用户名长度在2到24位之间
+            用户名长度须在 2～24 个字符之间
           </text>
         </view>
       </view>
 
       <view class="reset">
-        <view class="reset-btn" :class="{ fontopacity: !isValid }" @click="resetName">
-          确认修改
+        <view class="reset-btn" :class="{ fontopacity: !isValid || isSubmitting }" @click="saveUsername">
+          {{ isSubmitting ? '保存中...' : '确认修改' }}
         </view>
       </view>
     </view>
