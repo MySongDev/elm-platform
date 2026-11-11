@@ -7547,6 +7547,155 @@
         ]
       }
     },
+    "/api/customer-auth/profile/nickname": {
+      "put": {
+        "operationId": "CustomerAuthController_updateNickname",
+        "summary": "修改普通用户的用户名（昵称）",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateCustomerNicknameDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "请求成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "title": "ApiResponseOfCustomerProfileResponseDto",
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiResponseEnvelopeDto"
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/CustomerProfileResponseDto"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "请求参数错误",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiErrorResponseDto"
+                    },
+                    {
+                      "properties": {
+                        "code": {
+                          "example": 400
+                        },
+                        "message": {
+                          "example": "请求参数错误"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "未认证或认证已失效",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiErrorResponseDto"
+                    },
+                    {
+                      "properties": {
+                        "code": {
+                          "example": 401
+                        },
+                        "message": {
+                          "example": "未认证或认证已失效"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "无权访问该资源",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiErrorResponseDto"
+                    },
+                    {
+                      "properties": {
+                        "code": {
+                          "example": 403
+                        },
+                        "message": {
+                          "example": "无权访问该资源"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "服务器内部错误",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiErrorResponseDto"
+                    },
+                    {
+                      "properties": {
+                        "code": {
+                          "example": 500
+                        },
+                        "message": {
+                          "example": "服务器内部错误"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "消费者端－认证"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
     "/api/customer-addresses": {
       "get": {
         "operationId": "CustomerAddressController_list",
@@ -13053,6 +13202,21 @@
             "description": "刷新令牌"
           }
         }
+      },
+      "UpdateCustomerNicknameDto": {
+        "type": "object",
+        "properties": {
+          "nickname": {
+            "type": "string",
+            "description": "用户名（昵称），去除首尾空格后为 2～24 个字符",
+            "example": "外卖达人",
+            "minLength": 2,
+            "maxLength": 24
+          }
+        },
+        "required": [
+          "nickname"
+        ]
       },
       "CustomerAddressResponseDto": {
         "type": "object",

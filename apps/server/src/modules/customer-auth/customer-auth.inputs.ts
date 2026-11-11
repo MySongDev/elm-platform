@@ -8,6 +8,10 @@ export interface CustomerSmsLoginInput {
   smsCode: string
 }
 
+export interface CustomerNicknameUpdateInput {
+  nickname: string
+}
+
 export interface CustomerPasswordResetInput {
   phone: string
   smsCode: string

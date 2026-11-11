@@ -891,6 +891,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/customer-auth/profile/nickname": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** 修改普通用户的用户名（昵称） */
+        put: operations["CustomerAuthController_updateNickname"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/customer-addresses": {
         parameters: {
             query?: never;
@@ -3271,6 +3288,13 @@ export interface components {
         CustomerLogoutDto: {
             /** @description 刷新令牌 */
             refreshToken?: string;
+        };
+        UpdateCustomerNicknameDto: {
+            /**
+             * @description 用户名（昵称），去除首尾空格后为 2～24 个字符
+             * @example 外卖达人
+             */
+            nickname: string;
         };
         CustomerAddressResponseDto: {
             /**
@@ -8011,6 +8035,88 @@ export interface operations {
                         /** @example 401 */
                         code?: unknown;
                         /** @example 未认证或认证已失效 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 服务器内部错误 */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 500 */
+                        code?: unknown;
+                        /** @example 服务器内部错误 */
+                        message?: unknown;
+                    };
+                };
+            };
+        };
+    };
+    CustomerAuthController_updateNickname: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateCustomerNicknameDto"];
+            };
+        };
+        responses: {
+            /** @description 请求成功 */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResponseEnvelopeDto"] & {
+                        data: components["schemas"]["CustomerProfileResponseDto"];
+                    };
+                };
+            };
+            /** @description 请求参数错误 */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 400 */
+                        code?: unknown;
+                        /** @example 请求参数错误 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 未认证或认证已失效 */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 401 */
+                        code?: unknown;
+                        /** @example 未认证或认证已失效 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 无权访问该资源 */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 403 */
+                        code?: unknown;
+                        /** @example 无权访问该资源 */
                         message?: unknown;
                     };
                 };
