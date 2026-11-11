@@ -6,5 +6,6 @@ export const authEndpoints = {
   customerRefresh: '/customer-auth/refresh',
   customerLogout: '/customer-auth/logout',
   customerProfile: '/customer-auth/profile',
+  customerNickname: '/customer-auth/profile/nickname',
   customerAvatar: '/customer-avatar',
 }
