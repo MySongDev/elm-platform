@@ -12,8 +12,8 @@
 | 分类分页会话 | 两端 shop 下的 `composables/useCategoryFoods.js` | 每类独立 offset、错误与加载态；合并菜品、去重、隔离旧响应 |
 | 首屏加载 | 两端 `useShopPageData.js` | 详情与分类并行请求，首分类第一页完成后再挂载连续商品流 |
 | H5 按需触发 | `apps/web-user/src/views/shop/components/ShopMenu/ProductList.vue` | 观察分类页尾；可视区下方 160px 提前加载 |
-| 小程序按需触发 | `apps/uni-user/src/pkg-shop/shop.vue` | 批量查询页尾位置；滚动时用缓存判断可见性，分页后重测锚点 |
-| 分类切换与连续滚动 | 两端 shop 页、H5 `useMenuScroll.ts` | 点击未加载分类先取一页再定位；不向目标上方补载占位块，避免把目标挤下去 |
+| 小程序按需触发 | `apps/uni-user/src/pkg-shop/components/ShopMenu.vue` | 批量查询页尾位置；滚动时用缓存判断可见性，分页后重测锚点 |
+| 分类切换与连续滚动 | 小程序 `ShopMenu.vue`、H5 `useMenuScroll.ts` | 点击未加载分类先取一页再定位；不向目标上方补载占位块，避免把目标挤下去 |
 | 分类内错误重试 | 两端分类页尾 | 不清空旧菜品；按钮显式重试原 offset，不反复自动重试 |
 
 ## 1. 为什么不能只在前端隐藏菜品
@@ -99,6 +99,22 @@ GET /api/shopping/v2/menu/9196/foods?restaurant_id=1&offset=0&limit=20
 7. **错误分类不自动循环重试。** 可视区回调可能反复触发，必须等用户主动点重试。
 
 H5 使用 DOM `IntersectionObserver`；小程序使用 `uni.createSelectorQuery()` 与缓存，不直接照搬 DOM API。差异见 `uniapp-migration-diffs.md` §10.5。
+
+### 4.1. 小程序点菜区的组件边界（2026-11-11）
+
+`ShopMenu.vue` 收拢分类栏、商品流、分页页尾、滚动联动与对应样式；`shop.vue` 保留页面生命周期、店铺/购物车接入和结算。不是只把 JS 搬进另一个 composable。
+
+| 功能 | 实现位置 | 说明 |
+|---|---|---|
+| 分类高亮共享 | `ShopMenu.vue` 的 `activeCategoryId` 模型 | 使用 `v-model:active-category-id` 回填页面现有状态，不创建另一份分类状态 |
+| 分页任务 | 页面传入 `loadCategoryFoods` 函数 | 分类点击需要 await 首批菜品；普通通知事件拿不到父层任务的 Promise |
+| 首屏与追加后测量 | `ShopMenu.vue` 的 `onMounted`、菜单/active watch | 首批菜单可能在组件挂载前已完成，必须主动测一次；切回点菜和追加分页后重测 |
+| 查询归属 | `ShopMenu.vue` 的 `getCurrentInstance` 与 selector query | 查询范围跟商品节点一起迁入子组件，不再借用页面实例跨组件查找 |
+| 可视区预取 | `ShopMenu.vue` 的 `onMenuScroll` | 更新模型后，当前帧直接传入新索引；不能等父层 prop 回传才解除向上预取限制 |
+| 高度与 tab 隐藏 | `shop.vue` 的 `.menu-panel`、`.menu-panel__content` | 外框用 v-show 保留组件，宿主显式 height:100%；hidden 隐藏规则也留在外框 |
+| 销毁隔离 | `ShopMenu.vue` 的 `onScopeDispose` | 清定时器并使旧查询、旧分类点击失效；分类加载及 nextTick 后都检查是否仍有效 |
+
+微信构建产物已核对：页面 json 注册 `shop-menu`，分类/商品组件转由 `ShopMenu.json` 注册；页面 wxml 保留外框 hidden 与模型事件，wxss 保留宿主高度和隐藏规则。这只证明编译结果，不替代原生滚动验收。变更过程见 `docs/reports/uni-user/2026-11-11-商家点菜区组件拆分/engineering-report.md`（本地报告）。
 
 ## 5. 边界与验收
 
