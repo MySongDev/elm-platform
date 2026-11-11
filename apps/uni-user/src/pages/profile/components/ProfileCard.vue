@@ -4,17 +4,25 @@
  * 差异：router-link → view + navigateTo；img → image；getUploadUrl 走 platform/image；
  * px → rpx；① 类不转无（本文件 border 仅 border-radius 50%）。
  */
+import { computed, ref, watch } from 'vue'
+
 import { profileCardConfig } from '@/config/profileConfig'
 import { getUploadUrl } from '@/platform/image'
 import { navigateTo } from '@/platform/navigation'
 
-defineProps({
+const props = defineProps({
   isLoggedIn: Boolean,
   userName: String,
   userAvatar: String,
   profileLink: String,
   displayName: String,
   displayDesc: Object,
+})
+
+const avatarUrl = computed(() => getUploadUrl(props.userAvatar))
+const imageFailed = ref(false)
+watch(avatarUrl, () => {
+  imageFailed.value = false
 })
 
 function goProfile(link) {
@@ -30,11 +38,15 @@ function goProfile(link) {
       @click="goProfile(profileLink)"
     >
       <image
-        v-show="isLoggedIn"
+        v-if="isLoggedIn && avatarUrl && !imageFailed"
         class="profile-card_avatar"
-        :src="getUploadUrl(userAvatar)"
+        :src="avatarUrl"
         mode="aspectFill"
+        @error="imageFailed = true"
       />
+      <view v-else class="profile-card_avatar profile-card_avatar--default">
+        <SvgIcon icon-name="avatar-default" class="profile-card_default-icon" color="#fff" />
+      </view>
 
       <view class="profile-card_info">
         <text class="profile-card_name">
@@ -80,6 +92,17 @@ function goProfile(link) {
     width: 116rpx;
     height: 116rpx;
     border-radius: 50%;
+
+    &--default {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgb(255 255 255 / 20%);
+    }
+  }
+
+  &_default-icon {
+    font-size: 100rpx;
   }
 
   &_info {

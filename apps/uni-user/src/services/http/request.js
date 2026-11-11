@@ -309,6 +309,7 @@ export async function request(options = {}) {
       header: config.header,
       timeout: config.timeout ?? REQUEST_TIMEOUT,
       signal: config.signal,
+      upload: config.upload,
     }).promise
 
     _clearDedupe(config)

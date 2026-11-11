@@ -1,9 +1,8 @@
 // ⚠️ 与 apps/web-user/src/services/api/api-user.js 同源，修改需同步两处。
 // 不抽共享包的原因见迁移方案议题 7。
 //
-// ★ 与 web-user 的差异：uploadUserAvatar **未搬**。
-// web-user 用 `new FormData()` + axios 上传，小程序端没有 FormData，
-// 头像上传要走 uni.uploadFile（Batch 3 profile 页的工作，届时在此补接缝）。
+// 上传的区别只在传输层：web-user 传 FormData，这里传临时路径，由 platform/request
+// 调用 uni.uploadFile；两端都复用 HTTP 层的鉴权、401 刷新和错误提示。
 
 import { getRefreshToken } from '../http/auth-storage'
 import { get, post } from '../http/http'
@@ -17,6 +16,20 @@ export function getCustomerProfile() {
 
 /** 获取用户信息 */
 export const getUserInfo = getCustomerProfile
+
+/** 上传会同时保存后端用户资料；返回持久路径，不能用选图的临时路径更新 store。 */
+export function uploadUserAvatar(filePath) {
+  return post(authEndpoints.customerAvatar, undefined, {
+    upload: {
+      filePath,
+      name: 'file',
+    },
+    loadingText: '上传头像中...',
+  }).then((res) => {
+    const avatar = res?.data?.avatar
+    return typeof avatar === 'string' ? avatar.trim() : ''
+  })
+}
 
 export function signout() {
   return post(

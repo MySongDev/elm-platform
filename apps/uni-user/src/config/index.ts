@@ -82,8 +82,8 @@ export const DEV_FALLBACK_LOCATION: {
 /** 占位图（后端代理不可用时的兜底） */
 export const DEFAULT_RESTAURANT_IMAGE = `${IMAGE_BASE_URL}187bcca1ec6114376.jpg`
 
-/** 上传资源前缀，指向自己后端（main.ts 的 useStaticAssets），备案域名下可用 */
-export const UPLOAD_BASE_URL = `${API_BASE_URL.replace(/\/api\/?$/, '')}/uploads/`
+/** 后端 main.ts 把静态头像挂在 /api/uploads；去掉 API 前缀会让头像请求变成 404。 */
+export const UPLOAD_BASE_URL = `${API_BASE_URL.replace(/\/+$/, '')}/uploads/`
 
 /**
  * 拼接图片完整 URL。⚠️ 上游路径形态不一致，有的带前导斜杠有的不带，必须归一化。

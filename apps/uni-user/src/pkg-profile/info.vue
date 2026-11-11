@@ -14,6 +14,8 @@
  *    这里换成 uni-user 的分包路径常量）
  * 6. min-height:100vh / 100% 保留（uni-app 会编译成对应值，无需改）
  */
+import { onShow } from '@dcloudio/uni-app'
+import { storeToRefs } from 'pinia'
 import { computed } from 'vue'
 
 import { ROUTES } from '@/config/routes'
@@ -26,7 +28,13 @@ import AvatarUploader from './components/AvatarUploader.vue'
 import SettingItem from './components/SettingItem.vue'
 
 const userStore = useUserStore()
-const { userName, userAvatar } = userStore
+// 直接解构 store 会留下旧头像快照；上传更新 store 后，这里必须继续跟随它变化。
+const { userName, userAvatar } = storeToRefs(userStore)
+
+onShow(() => {
+  // 支持资料尚未载入时直接进入本页；请求频率仍由 store 的缓存有效期控制。
+  void userStore.getUserInfo()
+})
 
 const settingGroups = computed(() => [
   {
