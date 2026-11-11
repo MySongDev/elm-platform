@@ -20,7 +20,7 @@
 import { onLoad, onUnload } from '@dcloudio/uni-app'
 import { computed, ref } from 'vue'
 
-import { withQuery } from '@/config/routes'
+import { normalizeRedirectTarget, withQuery } from '@/config/routes'
 import { showToast } from '@/platform/feedback'
 import { navigateBack, navigateTo, ROUTES } from '@/platform/navigation'
 import { customerSmsLogin, sendCustomerSms } from '@/services/api/api-login'
@@ -38,10 +38,11 @@ const phone = computed(() => phoneRaw.value.replace(/\D/g, '').slice(0, 11))
 const isPhoneValid = computed(() => /^1\d{10}$/.test(phone.value))
 const formattedPhone = computed(() => phone.value.replace(/(\d{3})(\d{4})(\d{4})/, '$1 $2 $3'))
 
-// onLoad 取 phone/redirect（对齐 web-user 的 route.query）
+// onLoad 取 phone/redirect（对齐 web-user 的 route.query）；
+// redirect 在这里归一化，回传登录页时 withQuery 才不会二次编码。
 onLoad((options) => {
   phoneRaw.value = options?.phone || ''
-  redirect.value = options?.redirect || ''
+  redirect.value = normalizeRedirectTarget(options?.redirect)
   // 手机号非法 → 提示并返回（web-user 是 backToLogin，这里降级为返回，避免登录页循环）
   if (!isPhoneValid.value) {
     showToast('手机号无效，请返回重新登录')

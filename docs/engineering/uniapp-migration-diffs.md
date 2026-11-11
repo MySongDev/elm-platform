@@ -168,6 +168,22 @@
 
 ---
 
+## 10.3. `uni.addInterceptor` 的 `invoke` 必须返回 `false` 才叫「拦住」
+**证据**（当前安装的 `@dcloudio/uni-mp-weixin` 源码，不是推测）：
+- `dist/uni.api.esm.js:243-269` 的 `queue()`：遍历 hooks 时只要某个 `invoke` 返回 `false`，立即 `return { then(){}, catch(){} }`（空 thenable）。
+- `dist/uni.api.esm.js:316-324` 的 `invokeApi()`：只有 `res.then(options => api(...))` 里才会调用底层 API；拿到空 thenable 就**根本不调**。
+
+| 项 | H5（vue-router） | 小程序（uni.addInterceptor） | 后果 |
+|---|---|---|---|
+| 中止导航 | `beforeEach` 里 `next(false)` / 返回 false | `invoke` 返回 `false`；返回 `args` 表示放行 | 照 H5 习惯写成「自己在 guard 里跳转，然后 return args」→ **原跳转照样执行**，被拦下的目标页立刻盖掉刚压栈的登录页，`redirect` 形同虚设，而且不报错 |
+| 正确写法 | — | `return guard(url) ? args : false` | 登录页成为栈顶，`redirect` 参数保住 |
+
+**本项目**：`platform/navigation.ts` 的 `registerNavigationGuards()`。2026-11-11 修复前就是「总是 return args」。按上面两段源码推导，未登录点商家时：guard 先跳登录，随后被拦下的原 `navigateTo` 仍会执行，登录页被商家页盖掉；商家页需鉴权、请求 401，表现为「登录页一闪、停在无数据页」，且不报错。
+⚠️ 拦截器同样包住 `guard()` 内部自己发起的 `redirectTo`/`reLaunch`，所以登录页 URL 必须能通过 guard（`/pkg-auth/*` 不在 `REQUIRES_AUTH_PAGES`），否则会自己拦自己。
+**验证边界**：`invoke` 返回值已由 `platform/navigation.test.js` 锁定；本轮模拟器因 `appid=touristappid` 返回 `APPID_ERROR`，未做实机验收。
+
+---
+
 ## 10.3. `scroll-into-view` 同值不再触发（连点同一分类第二次失效）
 **证据**：`pkg-shop/shop.vue` 的 `onCategorySelect`；现象 = 第一次点分类能跳，连点第二次不动。
 

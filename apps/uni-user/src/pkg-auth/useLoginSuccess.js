@@ -1,5 +1,6 @@
-// ⚠️ 与 apps/web-user/src/views/login/useLoginSuccess.js 同源改造。
-// 修改需同步两处。
+// 由 apps/web-user/src/views/login/useLoginSuccess.js 改造而来。
+// ⚠️ 已不再与 web-user 同源：回跳收尾换成了小程序专用的 reLaunch/switchTab 分流，
+// 按 007「web-user 是生产资产、迁移期不动」的约定，两边有意分叉，不要求双修。
 //
 // ★ 与 web-user 的差异（vue-router 整体作废，迁移方案 ④ 节）：
 // 1. `useRoute`/`useRouter` → 小程序端没有 router；回跳目标从**当前页 onLoad options**
@@ -7,10 +8,9 @@
 //    useLoginSuccess 因此改成接收 options（由 login/SmsVerification 页 onLoad 解析后传入）
 // 2. `recordLoginSession` → uni-user store-user 里对应的是 `recordUserInfo`
 //    （同一语义：把响应里的令牌/资料落地为登录态，见 store-user.js 头部注释）
-// 3. `router.replace(redirect)` → platform/navigation 的 `navigateTo` +
-//    resolveLoginRedirect（自动处理 tabBar switchTab、非法回跳兜底 msite）
-import { resolveLoginRedirect } from '@/config/routes'
-import { navigateTo } from '@/platform/navigation'
+// 3. `router.replace(redirect)` → platform/navigation 的 `navigateAfterLogin`：
+//    它负责目标校验、tabBar/普通页分流，以及清掉登录/验证码中间页，返回键不会重见登录界面
+import { navigateAfterLogin } from '@/platform/navigation'
 import { useUserStore } from '@/stores/modules/store-user'
 
 /**
@@ -31,7 +31,7 @@ export function useLoginSuccess(params = {}) {
     const redirectTarget = typeof params.redirect === 'function'
       ? params.redirect()
       : params.redirect
-    navigateTo(resolveLoginRedirect(redirectTarget))
+    navigateAfterLogin(redirectTarget)
   }
 
   return { completeLogin }

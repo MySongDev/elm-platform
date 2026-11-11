@@ -14,6 +14,7 @@ import {
   AUTH_PAGES,
   isAuthPage,
   isTabBarPage,
+  parseQuery,
   requiresAuth,
   resolveLoginRedirect,
   ROUTES,
@@ -29,6 +30,14 @@ let isAuthenticated: AuthChecker = () => false
 export function setAuthChecker(checker: AuthChecker): void {
   isAuthenticated = checker
 }
+
+/**
+ * 登录跳转进行中的锁。
+ * 删掉它 → 同一个未授权瞬间里，401 处理器、拦截器 guard、页面 onShow 兜底会各发一次
+ * redirectToLogin，后发的用各自的当前路径覆盖 redirect，用户登录后回到错误页面。
+ * 跳转完成（success/fail）后释放，下一次过期仍能正常跳。
+ */
+let isRedirectingToLogin = false
 
 /**
  * 取当前页面路径（不含前导斜杠 → 补成绝对路径）。
@@ -68,14 +77,66 @@ export function getCurrentFullPath(): string {
  * 对齐 web-user `router/index.ts:70-73` 的 `{ path: '/login', query: { redirect: to.fullPath } }`。
  */
 export function redirectToLogin(redirect?: string): void {
-  const target = redirect || getCurrentFullPath() || ROUTES.MSITE
+  if (isRedirectingToLogin) {
+    return
+  }
+
+  // 已站在登录流程页上时（401 处理器触发、登录页自身请求失败等），
+  // 不能拿登录页路径当回跳目标——resolveLoginRedirect 会兜底成首页，原目标就此丢失。
+  const current = getCurrentFullPath()
+  if (isAuthPage(stripQuery(current))) {
+    return
+  }
+
+  const target = redirect || current || ROUTES.MSITE
+  const url = withQuery(ROUTES.LOGIN, { redirect: target })
+
+  isRedirectingToLogin = true
+  const releaseLock = () => {
+    isRedirectingToLogin = false
+  }
 
   uni.redirectTo({
-    url: withQuery(ROUTES.LOGIN, { redirect: target }),
+    url,
+    success: releaseLock,
     fail: (error) => {
       // redirectTo 失败（如页面栈已满）时退回 reLaunch，保证用户不会卡在原地
       console.error('[navigation] redirectToLogin failed, fallback to reLaunch:', error)
-      uni.reLaunch({ url: withQuery(ROUTES.LOGIN, { redirect: target }) })
+      uni.reLaunch({
+        url,
+        success: releaseLock,
+        fail: releaseLock,
+      })
+    },
+  })
+}
+
+/**
+ * 登录收尾统一入口（密码登录与短信登录共用）。
+ *
+ * 普通页用 reLaunch 清空整个栈：登录页、短信验证页都压在原页面上方，
+ * 用 navigateTo 会在返回键里残留一层验证码页，用户退回去会重见登录界面。
+ * 代价是原来被 redirectTo 替换掉的业务页不会重建，目标页作为新入口（栈深 1）。
+ * tabBar 页不能用 reLaunch 带参数，且 switchTab 本身就会关掉所有非 tabBar 页，直接用它。
+ */
+export function navigateAfterLogin(redirect?: unknown): void {
+  const target = resolveLoginRedirect(redirect)
+  const path = stripQuery(target)
+
+  if (isTabBarPage(path)) {
+    uni.switchTab({
+      url: path,
+      fail: () => reLaunchToTab(),
+    })
+    return
+  }
+
+  uni.reLaunch({
+    url: target,
+    fail: (error) => {
+      // 目标页不存在/参数致失败时不能停在已登录的登录页，回首页兜底
+      console.error('[navigation] navigateAfterLogin failed, fallback to msite:', error)
+      reLaunchToTab()
     },
   })
 }
@@ -91,8 +152,7 @@ export function guard(targetPath: string): boolean {
   // 已登录时访问登录相关页面 → 跳走（对齐 web-user router/index.ts:62）
   if (isAuthPage(path) && isAuthenticated()) {
     const query = parseRedirectFrom(targetPath)
-    const destination = resolveLoginRedirect(query.redirect)
-    navigateTo(destination, { replace: true })
+    navigateAfterLogin(query.redirect)
     return false
   }
 
@@ -104,14 +164,13 @@ export function guard(targetPath: string): boolean {
   return true
 }
 
-/** 从完整路径里取出 redirect 参数 */
+/** 从完整路径里取出 redirect 参数（复用项目内解析器，小程序端不依赖 URLSearchParams） */
 function parseRedirectFrom(fullPath: string): Record<string, string> {
   const cut = fullPath.indexOf('?')
   if (cut === -1) {
     return {}
   }
-  const params = new URLSearchParams(fullPath.slice(cut + 1))
-  return { redirect: params.get('redirect') ?? '' }
+  return { redirect: parseQuery(fullPath.slice(cut + 1)).redirect ?? '' }
 }
 
 export interface NavigateOptions {
@@ -215,9 +274,10 @@ export function registerNavigationGuards(): void {
     if (!args?.url) {
       return args
     }
-    // 返回 false 可中止跳转；这里改用 guard 内部主动 redirect，故总是返回 args
-    guard(args.url)
-    return args
+    // ⚠️ 必须返回 false 才算「中止」：拦截器链里返回 false 时框架直接返回空结果、不调底层 API。
+    // 之前这里总是 return args，guard 虽然自己跳了登录，但被拦下的原跳转仍会执行，
+    // 结果是登录页刚压栈就又被目标页盖掉，redirect 参数形同虚设。
+    return guard(args.url) ? args : false
   }
 
   // reLaunch 也要拦：404 页与支付结果页会用它回首页
@@ -235,18 +295,24 @@ export function registerNavigationGuards(): void {
  * ```
  *
  * ⚠️ 必须是 onShow 而非 onLoad：tabBar 页不销毁，二次进入只触发 onShow。
+ * ⚠️ 这里必须用页面栈里的完整路径而不是传入的 path：path 只是静态路由字符串，
+ *    shop 页的 shopid、地址页的 id 都在 query 里，只用 path 会把参数丢在登录页外面。
  */
 export function createAuthGuard(path: string): () => void {
   return () => {
-    if (requiresAuth(path) && !isAuthenticated()) {
-      redirectToLogin(path)
+    if (!requiresAuth(path) || isAuthenticated()) {
+      return
     }
+    const current = getCurrentFullPath()
+    // 栈顶路径与守卫页一致时才用完整路径；否则页面栈状态异常，退回静态路径更安全
+    redirectToLogin(stripQuery(current) === path && current ? current : path)
   }
 }
 
-/** 供调试/测试：重置注入的鉴权检查器 */
+/** 供调试/测试：重置注入的鉴权检查器与跳转锁 */
 export function __resetAuthChecker(): void {
   isAuthenticated = () => false
+  isRedirectingToLogin = false
 }
 
 export { AUTH_PAGES, ROUTES }
