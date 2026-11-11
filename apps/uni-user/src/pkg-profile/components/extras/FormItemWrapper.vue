@@ -1,12 +1,5 @@
 <script setup>
-/**
- * ⚠️ 与 apps/web-user/src/views/profile/address/add/components/FormItemWrapper.vue 同源改造。
- *
- * 差异：
- * 1. div/label → view/text（小程序无 label 元素，标签语义只靠视觉）
- * 2. `&nbsp;` 等 HTML 实体不可用（web-user 原文未用，无此项）
- * 3. px → rpx（×2）
- */
+/** 留档的插槽布局，当前 FormInput 已内联它；重新接入见 docs/engineering/018-uni-user-address-form-extras.md。 */
 defineProps({
   label: String,
   error: {

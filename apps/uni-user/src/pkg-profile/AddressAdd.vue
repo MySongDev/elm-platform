@@ -134,7 +134,15 @@ async function handleSubmit() {
       加载地址中...
     </view>
     <view v-else class="form">
-      <FormInput v-model="form.name" type="text" label="姓名" placeholder="输入姓名" name="name" :error="errors.name" @field-change="validateField('name')" @field-blur="validateField('name')" />
+      <FormInput
+        v-model="form.name"
+        label="姓名"
+        placeholder="输入姓名"
+        :maxlength="20"
+        :error="errors.name"
+        @input="validateField('name')"
+        @blur="validateField('name')"
+      />
       <view class="form-item">
         <text class="form-item_label">
           所在地区{{ isEdit ? '（选填，原地址未记录）' : '' }}
@@ -144,10 +152,47 @@ async function handleSubmit() {
           {{ errors.region }}
         </text>
       </view>
-      <FormInput v-model="form.detail" type="text" label="详细地址" placeholder="街道/小区/楼栋，如 桂平路180号33幢" name="detail" :error="errors.detail" @field-change="validateField('detail')" @field-blur="validateField('detail')" />
-      <FormInput v-model="form.door" type="text" label="门牌号" placeholder="如 A座101室" name="door" optional :error="errors.door" @field-change="validateField('door')" />
-      <FormInput v-model="form.phone" type="number" label="手机号" placeholder="手机号" :maxlength="11" name="phone" :error="errors.phone" @field-change="validateField('phone')" @field-blur="validateField('phone')" />
-      <FormInput v-model="form.phoneBk" type="number" label="备用电话" placeholder="选填" :maxlength="11" name="phoneBk" optional :error="errors.phoneBk" @field-blur="validateField('phoneBk')" />
+      <FormInput
+        v-model="form.detail"
+        label="详细地址"
+        placeholder="街道/小区/楼栋，如 桂平路180号33幢"
+        :maxlength="120"
+        :error="errors.detail"
+        @input="validateField('detail')"
+        @blur="validateField('detail')"
+      />
+
+      <FormInput
+        v-model="form.door"
+        label="门牌号"
+        placeholder="如 A座101室"
+        :maxlength="120"
+        optional
+        :error="errors.door"
+        @input="validateField('door')"
+      />
+
+      <FormInput
+        v-model="form.phone"
+        type="number"
+        label="手机号"
+        placeholder="手机号"
+        :maxlength="11"
+        :error="errors.phone"
+        @input="validateField('phone')"
+        @blur="validateField('phone')"
+      />
+
+      <FormInput
+        v-model="form.phoneBk"
+        type="number"
+        label="备用电话"
+        placeholder="选填"
+        :maxlength="11"
+        optional
+        :error="errors.phoneBk"
+        @blur="validateField('phoneBk')"
+      />
       <view class="form-item">
         <text class="form-item_label">
           标签（选填）

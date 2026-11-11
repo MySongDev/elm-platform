@@ -1,15 +1,7 @@
 <script setup>
-/**
- * ⚠️ 与 apps/web-user/src/views/profile/address/add/components/FormInput.vue 同源改造。
- *
- * 差异：
- * 1. input 元素用小程序原生写法，事件名不变，但取值字段不同
- * 2. 原 inputmode 属性小程序端没有，改 type 为 idcard 即可
- * 3. form 的 submit 语义小程序端不存在，由父页面按钮点击兜住
- * 4. px 改 rpx
- */
-import FormItemWrapper from './FormItemWrapper.vue'
+/** 地址页的输入表单项；只管输入与展示，校验规则和保存仍由页面负责。 */
 
+// 小程序编译器不支持 v-bind="$attrs"；新增输入属性要在这里声明，并在 input 上逐项绑定。
 defineOptions({ inheritAttrs: false })
 
 defineProps({
@@ -17,10 +9,9 @@ defineProps({
     type: String,
     default: '',
   },
-  type: String,
-  name: {
+  type: {
     type: String,
-    required: true,
+    default: 'text',
   },
   label: {
     type: String,
@@ -30,52 +21,91 @@ defineProps({
     type: String,
     default: '',
   },
-  maxlength: Number,
+  // 调用方不传长度时明确给 -1（不限制），不要把空值继续绑定到小程序 input。
+  maxlength: {
+    type: Number,
+    default: -1,
+  },
   optional: Boolean,
   error: {
     type: String,
     default: '',
   },
-  /** 只读（「所在地区」等由 AreaPicker 单独承担的字段不需要走 FormInput） */
-  readonly: {
-    type: Boolean,
-    default: false,
-  },
 })
 
-const emit = defineEmits(['update:modelValue', 'field-change', 'field-blur'])
+const emit = defineEmits(['update:modelValue', 'input', 'blur'])
 
+/** 先回填 v-model，再通知页面校验；两种事件都交付字符串，不暴露原生事件结构。 */
 function onInput(e) {
   const value = e.detail.value
   emit('update:modelValue', value)
-  emit('field-change', value)
+  emit('input', value)
 }
 
 function onBlur(e) {
-  emit('field-blur', e.detail.value)
+  emit('blur', e.detail.value)
 }
 </script>
 
 <template>
-  <FormItemWrapper :label="label" :error="error">
-    <input
-      :type="type"
-      :value="modelValue"
-      :placeholder="placeholder"
-      :maxlength="maxlength"
-      :disabled="readonly"
-      :data-field="name"
-      class="form-input"
-      @input="onInput"
-      @blur="onBlur"
-    >
-    <text v-if="optional" class="form-input_tag">
-      选填
+  <view class="form-item" :class="{ 'has-error': error }">
+    <text v-if="label" class="form-item_label">
+      {{ label }}
     </text>
-  </FormItemWrapper>
+    <view class="form-item_body">
+      <input
+        :type="type"
+        :value="modelValue"
+        :placeholder="placeholder"
+        :maxlength="maxlength"
+        class="form-input"
+        :class="{ 'form-input_optional': optional }"
+        @input="onInput"
+        @blur="onBlur"
+      >
+      <text v-if="optional" class="form-input_tag">
+        选填
+      </text>
+    </view>
+    <text v-if="error" class="form-item_error">
+      {{ error }}
+    </text>
+  </view>
 </template>
 
 <style lang="scss" scoped>
+.form-item {
+  padding: 24rpx 32rpx;
+  margin-bottom: 4rpx;
+  background: #fff;
+  border: 2rpx solid transparent;
+  transition: all 0.3s;
+
+  &_label {
+    display: block;
+    margin-bottom: 16rpx;
+    font-size: 28rpx;
+    color: #666;
+  }
+
+  &_body {
+    position: relative;
+  }
+
+  &_error {
+    display: block;
+    padding-left: 8rpx;
+    margin-top: 16rpx;
+    font-size: 24rpx;
+    color: #ff4d4f;
+  }
+
+  &.has-error {
+    background: #fff2f0;
+    border-color: #ff4d4f;
+  }
+}
+
 .form-input {
   box-sizing: border-box;
   width: 100%;
@@ -90,10 +120,15 @@ function onBlur(e) {
   &:focus {
     border-color: #1890ff;
   }
+
+  &_optional {
+    padding-right: 136rpx;
+  }
 }
 
-/* 小程序端组件默认 isolated，:deep 穿不进子组件内部节点（同 SvgIcon 的坑），
-   改在 FormItemWrapper 里用 has-error 直接给根 view 上色（宿主节点有 scope id） */
+.form-item.has-error .form-input {
+  border-color: #ff4d4f;
+}
 
 .form-input_tag {
   position: absolute;
@@ -102,6 +137,7 @@ function onBlur(e) {
   padding: 4rpx 16rpx;
   font-size: 24rpx;
   color: #999;
+  pointer-events: none;
   background: #f5f5f5;
   border-radius: 20rpx;
   transform: translateY(-50%);
