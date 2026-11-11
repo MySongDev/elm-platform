@@ -23,7 +23,7 @@ const hasInput = ref(false)
 // 是否合法
 const isValid = computed(() => {
   const len = username.value.trim().length
-  return len >= 5 && len <= 24
+  return len >= 2 && len <= 24
 })
 
 // 是否显示错误
@@ -52,10 +52,10 @@ function resetName() {
 
         <view>
           <text v-if="!hasInput" class="setname-hint">
-            用户名只能修改一次（5-24字符之间）
+            用户名只能修改一次（2-24字符之间）
           </text>
           <text v-else class="setname-hint" :class="{ unlikep: showError }">
-            用户名长度在5到24位之间
+            用户名长度在2到24位之间
           </text>
         </view>
       </view>
