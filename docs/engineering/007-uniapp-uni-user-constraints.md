@@ -770,6 +770,14 @@ PoC 页 `apps/uni-user/src/pages/poc-shop/poc-shop.vue`（已注册进 pages.jso
     微信原生滚动仍待开发者工具/真机，不把 H5 截图当小程序验收。
     详见 `015-menu-category-lazy-pagination.md` 与速查表 §10.5。
 
+29. **表单组件不能直接照搬 H5 的对象式 `v-bind` 透传**（2026-11-11）——
+    当前编译器 5.26 在 FormInput 的 input 上遇到 `v-bind="$attrs"`，微信构建直接报
+    `[vite:vue] v-bind="" is not supported.`；去掉对象式绑定、逐项绑定声明的参数后通过。
+    保持 `inheritAttrs: false`，需要新输入属性时显式声明并绑定，不让参数悄悄落到外层 view。
+    maxlength 也要给明确默认值：FormInput 默认 `-1`，地址页传 `20/120/120/11/11`。
+    **验证边界**：默认值及事件绑定已在产物核对，原生输入仍待开发者工具/真机验收；
+    不把 maxlength 空值可能变 0 的怀疑记成实测。详见速查表 §10.6 与 `018-uni-user-address-form-extras.md`。
+
 ---
 
 ## 十二、待办：uni-user HTTP 层的未接入策略（缓存 / 去重 / 重试）

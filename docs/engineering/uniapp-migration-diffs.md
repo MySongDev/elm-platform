@@ -215,6 +215,20 @@
 
 ---
 
+## 10.6. 表单输入属性要显式绑定，不照搬 H5 的对象式 `v-bind`
+
+**证据（2026-11-11）**：FormInput 加入 `v-bind="$attrs"` 后，`pnpm --filter @elm-platform/uni-user run build:mp-weixin` 报 `[vite:vue] v-bind="" is not supported.`；去掉对象式绑定后构建通过。最终 `pkg-profile/components/FormInput.vue:4-5` 保持显式参数边界，`:maxlength` 绑定位于第 60 行；`dist/build/mp-weixin/pkg-profile/components/FormInput.js:1` 保留默认 `-1`，`FormInput.json:3` 的 usingComponents 为空，不再依赖旧布局组件。
+
+| 场景 | H5 当前实现 | 小程序本次处理 | 验证范围 |
+|---|---|---|---|
+| 额外 input 属性 | web-user 的 FormInput 用 `v-bind="$attrs"` | 当前编译器不支持对象式 v-bind；参数必须声明并逐项绑定 | 对象式写法构建失败、显式写法构建通过，未承诺未来版本也不支持 |
+| 不传 maxlength | 旧同源组件只有 `maxlength: Number`，仍绑定到 input | 组件默认 `-1`，页面给出 `20/120/120/11/11` | 源码和编译产物已核对；空值是否按 0 处理及原生输入效果尚未人工实测 |
+| 标题与错误提示 | 独立 FormItemWrapper 包装 input | 地址页当前只有一种活跃输入控件，布局内联 | 编译产物为 view + input，无旧组件引用 |
+
+**勿误修**：不要把 DOM 中的属性省略规则直接套到小程序动态绑定上；也不要为方便透传添加未经使用的 focus/confirm-type 参数。当前原生输入事件从 `event.detail.value` 取值，组件先回填 v-model，再发送字符串 input 通知。留档接入与人工验收见 [018](018-uni-user-address-form-extras.md)，编译约束同步 007 坑 29。
+
+---
+
 ### 维护规则
 1. **遇到新坑 → 当场追加一行**（表格 + 证据行号），别事后补
 2. 重要坑（影响面广/易反复踩）同步到 `007-uniapp-uni-user-constraints.md`「新发现的坑」编号
