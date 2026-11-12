@@ -49,6 +49,20 @@ export default () => ({
     dailyLimit: Number.parseInt(process.env.SMS_DAILY_LIMIT || '10', 10),
   },
 
+  // 默认关闭，缺少商户凭证时不能走模拟成功分支。
+  wechatPay: {
+    enabled: process.env.WECHAT_PAY_ENABLED === 'true',
+    appId: process.env.WECHAT_APP_ID || '',
+    appSecret: process.env.WECHAT_APP_SECRET || '',
+    mchId: process.env.WECHAT_PAY_MCH_ID || '',
+    serialNo: process.env.WECHAT_PAY_SERIAL_NO || '',
+    privateKey: trimMultiline(process.env.WECHAT_PAY_PRIVATE_KEY),
+    publicKeyId: process.env.WECHAT_PAY_PUBLIC_KEY_ID || '',
+    publicKey: trimMultiline(process.env.WECHAT_PAY_PUBLIC_KEY),
+    apiV3Key: process.env.WECHAT_PAY_API_V3_KEY || '',
+    notifyUrl: process.env.WECHAT_PAY_NOTIFY_URL || '',
+  },
+
   alipay: {
     gateway: process.env.ALIPAY_GATEWAY || 'https://openapi-sandbox.dl.alipaydev.com/gateway.do',
     appId: process.env.ALIPAY_APP_ID || '',
