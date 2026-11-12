@@ -14,6 +14,7 @@ import {
   persistUserId,
   readAuthSession,
 } from '@/services/http/auth-storage'
+import { useCartStore } from '@/stores/modules/store-cart'
 
 // 用户信息在同一会话内的缓存有效期，避免每次进入页面都重复拉取
 const USER_INFO_TTL_MS = 5 * 60 * 1000
@@ -41,6 +42,9 @@ export const useUserStore = defineStore('user', () => {
   /** 将持久化快照应用为响应式状态，保证内存与本地存储同源 */
   const applySession = (session) => {
     userId.value = session.userId
+    // 换账号时必须丢掉上一个用户的结算快照：里面的 requestId/orderNo 属于别人，
+    // 继续用会沿用到别人的订单，或让新用户的确认付款扣错账户的车。
+    useCartStore().discardSnapshotsExcept(session.userId || '')
     customerToken.value = session.accessToken
     customerRefreshToken.value = session.refreshToken
     customerTokenExpiresAt.value = session.accessTokenExpiresAt

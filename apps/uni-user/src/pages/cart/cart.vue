@@ -21,6 +21,7 @@ import DefaultEmpty from '@/components/common/BaseState/common/DefaultEmpty.vue'
 import { ROUTES, withQuery } from '@/config/routes'
 import { showConfirm, showToast } from '@/platform/feedback'
 import { navigateTo, setNavigationBarTitle } from '@/platform/navigation'
+import { buildSingleShopSelection, describeCrossShopCheckout } from '@/utils/checkout-entry'
 import { savePaymentCheckoutDraft } from '@/utils/payment'
 
 import CartBottomBar from './components/CartBottomBar.vue'
@@ -69,12 +70,23 @@ function checkout() {
     return
   }
 
+  // 微信建单只按单一商家查价。跨商家合并结算会让后端在第一家店算钱、
+  // 其余店的商品变成免单或直接建单失败，所以在进支付页前就拦下来。
+  const selection = buildSingleShopSelection(checkoutItems.value)
+  if (!selection) {
+    const crossShop = describeCrossShopCheckout(checkoutItems.value)
+    showToast(crossShop
+      ? `共 ${crossShop.shopNames.length} 家商家，请分开结算`
+      : '购物车商品信息不完整，请重新选择')
+    return
+  }
+
   const checkoutProductIds = selectedProducts.value.map(product => product.id)
   markPendingCheckout(checkoutProductIds)
 
   savePaymentCheckoutDraft({
-    shopId: 'cart-checkout',
-    shopName: selectedCount.value > 1 ? '购物车合并结算' : checkoutItems.value[0]?.shopName || '购物车结算',
+    shopId: selection.shopId,
+    shopName: selection.shopName,
     deliveryFee: 0,
     totalQty: selectedQuantity.value,
     goodsAmount: Number(selectedTotal.value || 0),
@@ -85,6 +97,7 @@ function checkout() {
 
   navigateTo(withQuery(ROUTES.PAYMENT, {
     source: 'cart',
+    shopid: selection.shopId,
     amount: selectedTotal.value.toFixed(2),
   }))
 }

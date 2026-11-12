@@ -26,6 +26,8 @@ import { computed, ref, watch } from 'vue'
 
 import { getStore, setStore } from '@/platform/storage'
 import { createProductId, normalizeStore, productFromFood, toNumber, toText } from '@/utils/cart'
+import { discardSnapshotsOfOtherUsers, findPendingCheckoutSnapshot } from '@/utils/checkout-entry'
+import { bindCheckoutOrder as bindCheckoutOrderSnapshot, consumePaidCheckout as consumePaidCheckoutSnapshot, createCheckoutSnapshotState, registerCheckoutSnapshot } from '@/utils/checkout-snapshot'
 
 const CART_STORAGE_KEY = 'elm_cart_store_v3'
 const CART_CHECKOUT_SHOP_ID = 'cart-checkout'
@@ -38,12 +40,19 @@ function restoreCart() {
     return {
       stores: [],
       pendingCheckout: null,
+      checkoutSnapshots: createCheckoutSnapshotState(),
     }
   }
 
   return {
     stores: Array.isArray(cached.stores) ? cached.stores : [],
     pendingCheckout: cached.pendingCheckout ?? null,
+    // 与 stores 同一个 key 保存：分两个 key 写会在断电时出现「车扣了但快照没消费」的错位。
+    checkoutSnapshots: Array.isArray(cached.checkoutSnapshots?.snapshots)
+      ? {
+          snapshots: cached.checkoutSnapshots.snapshots,
+        }
+      : createCheckoutSnapshotState(),
   }
 }
 
@@ -52,6 +61,7 @@ const restored = restoreCart()
 export const useCartStore = defineStore('cart', () => {
   const stores = ref(restored.stores)
   const pendingCheckout = ref(restored.pendingCheckout)
+  const checkoutSnapshots = ref(restored.checkoutSnapshots)
   const pendingMeta = new Map()
 
   const products = computed(() => stores.value.flatMap(store => store.products))
@@ -308,13 +318,78 @@ export const useCartStore = defineStore('cart', () => {
     pendingCheckout.value = null
   }
 
+  /**
+   * 用后端确认的订单摘要登记这次结算的选择快照。
+   *
+   * 必须在**建单请求发出之前**调用并落盘：请求超时/断网时用户重试要带着同一个
+   * requestId，后端才能认出这是同一笔结算并回原单，而不是再建一张。
+   */
+  function registerCheckout(userId, requestId, shopId, cartItems) {
+    checkoutSnapshots.value = registerCheckoutSnapshot(checkoutSnapshots.value, {
+      userId: String(userId),
+      requestId,
+      shopId: String(shopId),
+      cartItems,
+    })
+  }
+
+  /** 建单响应到达后把 orderNo 绑到快照；同一单号只能属于一张快照，防止重复扣车。 */
+  function bindCheckoutOrder(userId, requestId, orderNo) {
+    checkoutSnapshots.value = bindCheckoutOrderSnapshot(checkoutSnapshots.value, {
+      userId: String(userId),
+      requestId,
+      orderNo: String(orderNo),
+    })
+  }
+
+  /** 当前用户在该商家下还没付的快照；没有就返回 null（不能「有草稿就永远复用」）。 */
+  function getPendingCheckout(userId, shopId) {
+    return findPendingCheckoutSnapshot(checkoutSnapshots.value, {
+      userId: String(userId),
+      shopId: String(shopId),
+    })
+  }
+
+  /**
+   * 订单确认 PAID 后，只扣这张快照买过的数量。
+   *
+   * 不能用整店/整行删除：用户付款期间可能又加了同样的商品，
+   * 按商品 id 整条删会把那些没付钱的数量一起抹掉。
+   * 走 checkout-snapshot 的纯函数，它会记消费标记，重复调用不会二次扣。
+   */
+  function consumePaidSnapshot(userId, order) {
+    const result = consumePaidCheckoutSnapshot(checkoutSnapshots.value, stores.value, {
+      userId: String(userId),
+      order: {
+        userId: String(userId),
+        orderNo: String(order.orderNo ?? ''),
+        shopId: String(order.shopId ?? ''),
+        status: String(order.status ?? ''),
+      },
+    })
+
+    if (!result.consumed)
+      return false
+
+    checkoutSnapshots.value = result.state
+    stores.value = result.stores
+    removeEmptyStores()
+    return true
+  }
+
+  /** 换账号时清掉别人的快照，避免新用户沿用到上一个用户的 requestId/订单号。 */
+  function discardSnapshotsExcept(userId) {
+    checkoutSnapshots.value = discardSnapshotsOfOtherUsers(checkoutSnapshots.value, String(userId))
+  }
+
   // ★ 手动持久化：deep watch 覆盖全部 12 个变更入口，零遗漏风险
   watch(
-    [stores, pendingCheckout],
+    [stores, pendingCheckout, checkoutSnapshots],
     () => {
       setStore(CART_STORAGE_KEY, {
         stores: stores.value,
         pendingCheckout: pendingCheckout.value,
+        checkoutSnapshots: checkoutSnapshots.value,
       })
     },
     { deep: true },
@@ -349,5 +424,11 @@ export const useCartStore = defineStore('cart', () => {
     removeSelected,
     markPendingCheckout,
     consumePaidCheckout,
+    checkoutSnapshots,
+    registerCheckout,
+    bindCheckoutOrder,
+    getPendingCheckout,
+    consumePaidSnapshot,
+    discardSnapshotsExcept,
   }
 })

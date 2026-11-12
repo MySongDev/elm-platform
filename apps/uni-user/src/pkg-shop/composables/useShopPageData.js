@@ -8,11 +8,15 @@
 import { onScopeDispose, ref, watch } from 'vue'
 
 import { getMenuCategories, getShopDetails } from '@/services/api/api-shop'
+import { useCartStore } from '@/stores/modules/store-cart'
+import { useUserStore } from '@/stores/modules/store-user'
 import { clearPaymentSuccessContext, getPaymentSuccessContext } from '@/utils/payment'
 import { useCategoryFoods } from './useCategoryFoods'
 
 export function useShopPageData(shopId, options = {}) {
   const { onPaidOrderConsumed } = options
+  const cartStore = useCartStore()
+  const userStore = useUserStore()
 
   const shopData = ref(null)
   const { foodMenuData, activeCategoryId, resetMenu, loadCategoryFoods } = useCategoryFoods(shopId)
@@ -22,11 +26,12 @@ export function useShopPageData(shopId, options = {}) {
   onScopeDispose(() => { loadRevision += 1 })
 
   /**
-   * 本店的订单已支付成功 → 清空本店购物车并消费掉成功上下文。
+   * 本店的订单已支付成功 → 只扣掉这张订单买过的数量，并消费掉成功上下文。
    *
    * 上下文由 PaymentResult.vue 在查到 PAID 时写入（shopId 取后端订单的真实商家 id）。
-   * ⚠️ 不能指望 PaymentResult 里的 cartStore.consumePaidCheckout 兜底：它只认
-   * cart 页合并结算的固定 id `cart-checkout`，对 shop 页直接结算是 no-op。
+   * ⚠️ 不再整店清空：付款期间用户可能又往这家店加了商品，
+   * 整店清空会把没付钱的那部分一起删掉。
+   * 精确扣减走 cart store 的 consumePaidSnapshot，它内部记消费标记，重复调用不会二次扣。
    */
   function consumePaidOrder() {
     const successContext = getPaymentSuccessContext()
@@ -39,7 +44,18 @@ export function useShopPageData(shopId, options = {}) {
       return
     }
 
-    onPaidOrderConsumed?.()
+    // consumePaidSnapshot 要求 status 是 PAID、userId 与快照一致，这里据实传入后端摘要。
+    const consumed = cartStore.consumePaidSnapshot(userStore.userId, {
+      orderNo: successContext.orderNo,
+      shopId: successContext.shopId,
+      status: 'PAID',
+    })
+
+    // 没有对应快照（老订单/直接结算未登记）时才回退到旧清车回调，
+    // 保证既有流程不会因为快照缺失而永远清不掉车。
+    if (!consumed)
+      onPaidOrderConsumed?.()
+
     clearPaymentSuccessContext()
   }
 

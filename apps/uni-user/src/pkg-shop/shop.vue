@@ -29,9 +29,11 @@
 import { onLoad, onShow } from '@dcloudio/uni-app'
 import { computed, getCurrentInstance, nextTick, onScopeDispose, ref, watch } from 'vue'
 
+import { useCheckoutEntry } from '@/composables/features/useCheckoutEntry'
 import { ROUTES, withQuery } from '@/config/routes'
 import { showToast } from '@/platform/feedback'
 import { createAuthGuard, navigateTo } from '@/platform/navigation'
+import { useUserStore } from '@/stores/modules/store-user'
 import { buildPaymentCartItems, savePaymentCheckoutDraft } from '@/utils/payment'
 
 import CartBar from './components/CartBar.vue'
@@ -43,6 +45,9 @@ import { useShopCart } from './composables/useShopCart'
 import { useShopPageData } from './composables/useShopPageData'
 
 const TABS = ['点菜', '评价']
+
+const userStore = useUserStore()
+const checkoutEntry = useCheckoutEntry()
 
 const shopId = ref('')
 const activeTab = ref(TABS[0])
@@ -287,15 +292,14 @@ async function onCategorySelect(id) {
   }, 500)
 }
 
-// ============ 结算 ============
-
+// ============ 结算 =====
 /**
  * 写支付草稿 → 跳 payment。草稿形状与 web-user ShopCartBar.checkout 一致，
  * payment.vue 只读草稿（shopId/shopName/deliveryFee/totalQty/goodsAmount/cartItems）。
  *
- * ⚠️ 不调 cartStore.markPendingCheckout：那是 cart 页「勾选部分商品合并结算」的机制，
- * 固定 shopId 为 `cart-checkout`；shop 页结算的是本店全部商品，支付成功后由
- * consumePaidOrder 按真实 shopId 整店清空，两条清理路径互不干扰。
+ * 本页只结算**本店**全部商品，天然满足后端单一商家查价。
+ * 结算前登记快照，把 requestId 落到持久化里：
+ * 建单响应丢失后用户重试会带同一个 ID，后端才能回原单而不是多建一张。
  */
 function onCheckout() {
   const shop = shopData.value
@@ -307,6 +311,17 @@ function onCheckout() {
     showToast('购物车商品信息不完整，请重新选购')
     return
   }
+
+  const serverItems = cartItems.map(item => ({
+    itemId: String(item.itemId),
+    skuId: String(item.skuId),
+    qty: item.qty,
+  }))
+  checkoutEntry.beginCheckout({
+    userId: userStore.userId,
+    shopId: shopId.value,
+    cartItems: serverItems,
+  })
 
   savePaymentCheckoutDraft({
     shopId: shopId.value,
