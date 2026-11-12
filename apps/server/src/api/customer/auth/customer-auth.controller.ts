@@ -1,11 +1,11 @@
-import { Body, Controller, Get, Post, Request, UseGuards } from '@nestjs/common'
+import { Body, Controller, Get, Post, Put, Request, UseGuards } from '@nestjs/common'
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger'
 import { ApiEmptyResponse, ApiErrorResponses, ApiSuccessResponse } from '../../../common/swagger/api-response.decorator'
 import { CustomerAuthService } from '../../../modules/customer-auth/customer-auth.service'
 import { CustomerAuthGuard } from '../../../modules/customer-auth/guards/customer-auth.guard'
 import { SmsService } from '../../../modules/sms/sms.service'
 import { CustomerProfileResponseDto, CustomerTokenResponseDto, SmsSendResponseDto } from './dto/customer-auth-response.dto'
-import { CustomerLogoutDto, CustomerPasswordLoginDto, CustomerRefreshTokenDto, CustomerSmsLoginDto, ResetPasswordDto, SendSmsDto } from './dto/customer-auth.dto'
+import { CustomerLogoutDto, CustomerPasswordLoginDto, CustomerRefreshTokenDto, CustomerSmsLoginDto, ResetPasswordDto, SendSmsDto, UpdateCustomerNicknameDto } from './dto/customer-auth.dto'
 
 @ApiTags('消费者端－认证')
 @Controller('customer-auth')
@@ -71,5 +71,16 @@ export class CustomerAuthController {
   @ApiErrorResponses(401, 500)
   getProfile(@Request() req: any) {
     return this.customerAuth.getProfile(req.user.id)
+  }
+
+  /** 小程序请求层不支持 PATCH；PUT 只替换昵称，不改手机号或其他资料。 */
+  @Put('profile/nickname')
+  @UseGuards(CustomerAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: '修改普通用户的用户名（昵称）' })
+  @ApiSuccessResponse(CustomerProfileResponseDto)
+  @ApiErrorResponses(400, 401, 403, 500)
+  updateNickname(@Request() req: any, @Body() dto: UpdateCustomerNicknameDto) {
+    return this.customerAuth.updateNickname(req.user.id, dto)
   }
 }

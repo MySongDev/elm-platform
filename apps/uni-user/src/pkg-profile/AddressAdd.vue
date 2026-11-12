@@ -1,104 +1,126 @@
 <script setup>
 /**
- * ⚠️ 与 apps/web-user/src/views/profile/address/add/AddressAdd.vue 同源改造。
- * 整体替换占位页（Batch 3 profile 组，@vant/area-data 是本分包必须单独分仓的原因）。
- *
- * 差异：
- * 1. 编辑模式：web-user 原文**只有「新增」逻辑**（读不到 query.id 也当新增处理，
- *    onLoad 里没有预填 query.id 对应地址），uni-user 保持同源行为 —— 编辑功能
- *    目前后端接口只有 `addAddress`，没有 `updateAddress`，编辑暂不支持，
- *    从 addressHome 点「编辑」进来实际仍是走新增表单（这是 web-user 侧的既有行为，
- *    不属于迁移引入的回归；若后续要真做编辑，需要后端补 PUT /customer-addresses/:id
- *    接口，另立任务）
- * 2. `van-popup` + `van-area` → 小程序端用自研 `AreaPicker`（原生 multiSelector
- *    picker 封装，见 components/AreaPicker.vue 头部说明）
- * 3. `useFormValidator.scrollToFirstError()` → 小程序端无 DOM，退化为返回首个出错
- *    字段名（见 composables/ui/useFormValidator.js 头部说明）；本页没有调用它
- * 4. `<form @submit.prevent>` → `view` + 提交按钮 `@click`（小程序无 form submit）
- * 5. `<transition name="fade">` 里的错误提示 → 直接用 `v-if`（小程序对 transition
- *    组件支持有限，动画非必需，去掉）
- * 6. `useFormDraft` 走 platform/storage（已在本仓收口，见 utils/FormDraft.js）
- * 7. 页面标题：`新增地址`（与 pages.json 的 navigationBarTitleText 一致）
- * 8. 编辑模式：web-user 原文**只有「新增」逻辑**（读不到 query.id 也当新增处理，
- *    onLoad 里没有预填 query.id 对应地址）；uni-user 保持同源行为。
- *    后端接口目前只有 `addAddress`，没有 `updateAddress`，「编辑」暂不支持，
- *    从 addressHome 点「编辑」进来实际仍走新增表单（web-user 侧的既有行为，
- *    不是迁移引入的回归；要真做编辑需后端补 PUT /customer-addresses/:id，另立任务）
+ * 新增与编辑共用表单。后端不存省市区，编辑不强迫用户重新选择未记录的地区。
+ * 编辑保留隐藏字段，也不读取或覆盖新增草稿。
  */
 import { onLoad } from '@dcloudio/uni-app'
 import { computed, reactive, ref } from 'vue'
-
 import { useFormValidator } from '@/composables/ui/useFormValidator'
-import { addAddress } from '@/services/api/api-address'
+import { getAddressDetail } from '@/services/api/api-address'
+import { useAddressStore } from '@/stores/modules/store-address'
 import { useLocationStore } from '@/stores/modules/store-locations'
 import { useFormDraft } from '@/utils/FormDraft'
-
 import { addressSchema } from './addressFormSchema'
 import AreaPicker from './components/AreaPicker.vue'
 import FormInput from './components/FormInput.vue'
-import SexSelector from './components/SexSelector.vue'
 
+const addressStore = useAddressStore()
 const locationStore = useLocationStore()
-
 const formError = ref('')
 const isLoading = ref(false)
-
+const initialLoading = ref(true)
+const pageReady = ref(false)
+const isEdit = ref(false)
+const addressId = ref(null)
+// 未显示的坐标、性别和标签类型不能在编辑时被默认值覆盖。
+const editingAddress = ref(null)
 const form = reactive({
   name: '',
-  community: '',
+  region: '',
   detail: '',
+  door: '',
   phone: '',
   phoneBk: '',
   sex: 1,
+  tag: '常用',
+  isDefault: false,
 })
-
-const { clearDraft } = useFormDraft(form, 'address_add_draft')
-
-const {
-  errors,
-  isValid,
-  validateField,
-  validateAll,
-} = useFormValidator(form, addressSchema)
-
+const schema = reactive({ ...addressSchema })
+const { clearDraft, restoreDraft } = useFormDraft(form, 'address_add_draft', 30, () => !isEdit.value && pageReady.value)
+const { errors, isValid, validateField, validateAll } = useFormValidator(form, schema)
 const canSubmit = computed(() =>
-  isValid.value && form.name && form.community && form.detail && form.phone,
+  pageReady.value && isValid.value && form.name.trim() && form.detail.trim() && form.phone
+  && (isEdit.value || form.region),
 )
+const tagOptions = ['常用', '家', '公司', '学校', '其他']
 
-onLoad((options) => {
-  // query.id 目前未使用（编辑模式暂不支持，见头部差异说明 1），
-  // 保留 onLoad 钩子以便将来接后端 updateAddress 时预填
-  console.log('[AddressAdd] onLoad', options)
+onLoad(async (options) => {
+  isEdit.value = options?.id !== undefined
+  uni.setNavigationBarTitle({ title: isEdit.value ? '编辑地址' : '新增地址' })
+  try {
+    if (isEdit.value) {
+      const id = Number(options.id)
+      if (!Number.isInteger(id) || id <= 0)
+        throw new Error('地址参数无效')
+      addressId.value = id
+      schema.region = []
+      const address = (await getAddressDetail(id)).data
+      if (!address)
+        throw new Error('地址详情加载失败')
+      editingAddress.value = address
+      Object.assign(form, {
+        name: address.name,
+        detail: address.address,
+        door: address.addressDetail || '',
+        phone: address.phone,
+        phoneBk: address.phoneBk || '',
+        sex: address.sex,
+        tag: address.tag,
+        isDefault: address.isDefault,
+      })
+      pageReady.value = true
+    }
+    else {
+      const loaded = await addressStore.loadAddresses()
+      if (!loaded)
+        throw new Error('地址列表加载失败，请返回重试')
+      pageReady.value = true
+      if (!restoreDraft())
+        form.isDefault = addressStore.AddressList.length === 0
+    }
+  }
+  catch (error) {
+    formError.value = error?.message || '加载失败，请返回重试'
+  }
+  finally {
+    initialLoading.value = false
+  }
 })
 
 function toApiPayload() {
   return {
-    sex: form.sex,
-    name: form.name,
-    address: form.community,
-    addressDetail: form.detail,
+    name: form.name.trim(),
+    address: form.detail.trim(),
+    addressDetail: form.door || '',
     phone: form.phone,
     phoneBk: form.phoneBk || undefined,
-    geohash: locationStore.geohash || undefined,
+    sex: form.sex,
+    tag: form.tag,
+    tagType: editingAddress.value?.tagType ?? 2,
+    poiType: editingAddress.value?.poiType ?? 0,
+    geohash: isEdit.value ? editingAddress.value.geohash : locationStore.geohash || '',
+    isDefault: form.isDefault,
   }
 }
 
 async function handleSubmit() {
+  // 页面还没加载完或已有请求时，不能再次保存；按钮变灰并不能挡住所有回调。
+  if (!pageReady.value || isLoading.value)
+    return
   if (!validateAll()) {
     formError.value = '请正确填写所有必填项'
     return
   }
-
   isLoading.value = true
   formError.value = ''
-
   try {
-    await addAddress(toApiPayload())
-    clearDraft()
+    await addressStore.saveAddress(addressId.value, toApiPayload())
+    if (!isEdit.value)
+      clearDraft()
     uni.navigateBack()
   }
   catch (error) {
-    formError.value = error?.message || '添加失败，请重试'
+    formError.value = error?.message || '保存失败，请重试'
   }
   finally {
     isLoading.value = false
@@ -108,40 +130,46 @@ async function handleSubmit() {
 
 <template>
   <view class="address-add">
-    <view class="form" @click="() => {}">
+    <view v-if="initialLoading" class="loading-state">
+      加载地址中...
+    </view>
+    <view v-else class="form">
       <FormInput
         v-model="form.name"
-        type="text"
         label="姓名"
         placeholder="输入姓名"
-        name="name"
+        :maxlength="20"
         :error="errors.name"
-        @field-change="validateField('name')"
-        @field-blur="validateField('name')"
+        @input="validateField('name')"
+        @blur="validateField('name')"
       />
-
-      <SexSelector
-        v-model="form.sex"
-        :error="errors.sex"
-        @field-change="validateField('sex')"
-      />
-
       <view class="form-item">
         <text class="form-item_label">
-          所在地区
+          所在地区{{ isEdit ? '（选填，原地址未记录）' : '' }}
         </text>
-        <AreaPicker v-model="form.detail" placeholder="所在地区" />
+        <AreaPicker v-model="form.region" placeholder="所在地区" />
+        <text v-if="errors.region" class="field-error">
+          {{ errors.region }}
+        </text>
       </view>
+      <FormInput
+        v-model="form.detail"
+        label="详细地址"
+        placeholder="街道/小区/楼栋，如 桂平路180号33幢"
+        :maxlength="120"
+        :error="errors.detail"
+        @input="validateField('detail')"
+        @blur="validateField('detail')"
+      />
 
       <FormInput
-        v-model="form.community"
-        type="text"
-        label="小区"
-        placeholder="小区"
-        name="community"
-        :error="errors.community"
-        @field-change="validateField('community')"
-        @field-blur="validateField('community')"
+        v-model="form.door"
+        label="门牌号"
+        placeholder="如 A座101室"
+        :maxlength="120"
+        optional
+        :error="errors.door"
+        @input="validateField('door')"
       />
 
       <FormInput
@@ -150,10 +178,9 @@ async function handleSubmit() {
         label="手机号"
         placeholder="手机号"
         :maxlength="11"
-        name="phone"
         :error="errors.phone"
-        @field-change="validateField('phone')"
-        @field-blur="validateField('phone')"
+        @input="validateField('phone')"
+        @blur="validateField('phone')"
       />
 
       <FormInput
@@ -162,23 +189,32 @@ async function handleSubmit() {
         label="备用电话"
         placeholder="选填"
         :maxlength="11"
-        name="phoneBk"
         optional
         :error="errors.phoneBk"
-        @field-blur="validateField('phoneBk')"
+        @blur="validateField('phoneBk')"
       />
-
+      <view class="form-item">
+        <text class="form-item_label">
+          标签（选填）
+        </text>
+        <view class="tag-group">
+          <view v-for="opt in tagOptions" :key="opt" class="tag-option" :class="{ active: form.tag === opt }" @click="form.tag = opt">
+            {{ opt }}
+          </view>
+        </view>
+      </view>
+      <view class="form-item default-row">
+        <text class="form-item_label">
+          设为默认地址
+        </text>
+        <switch class="default-switch" :checked="form.isDefault" color="#1890ff" @change="form.isDefault = $event.detail.value" />
+      </view>
       <view v-if="formError" class="form-error">
         {{ formError }}
       </view>
-
-      <view
-        class="submit-btn"
-        :class="{ 'submit-btn_disabled': !canSubmit || isLoading }"
-        @click="handleSubmit"
-      >
+      <button class="submit-btn" :class="{ 'submit-btn_disabled': !canSubmit || isLoading }" :disabled="!canSubmit || isLoading" @click="handleSubmit">
         {{ isLoading ? '提交中...' : '保存地址' }}
-      </view>
+      </button>
     </view>
   </view>
 </template>
@@ -191,6 +227,12 @@ async function handleSubmit() {
 
 .form {
   padding: 20rpx 0;
+}
+
+.loading-state {
+  padding: 48rpx;
+  color: #999;
+  text-align: center;
 }
 
 .form-error {
@@ -207,6 +249,7 @@ async function handleSubmit() {
   display: block;
   width: 95%;
   height: 96rpx;
+  padding: 0;
   margin: 48rpx auto 0;
   font-size: 32rpx;
   font-weight: 500;
@@ -215,11 +258,13 @@ async function handleSubmit() {
   text-align: center;
   background: #1890ff;
   border-radius: 16rpx;
-  transition: all 0.3s;
+
+  &::after {
+    border: 0;
+  }
 
   &:active {
     background: #096dd9;
-    transform: translateY(2rpx);
   }
 
   &_disabled {
@@ -228,7 +273,6 @@ async function handleSubmit() {
   }
 }
 
-/* 与 FormInput 的 label 视觉对齐（AreaPicker 没有内置 label，外面包一层） */
 .form-item {
   padding: 24rpx 32rpx;
   margin-bottom: 4rpx;
@@ -239,6 +283,45 @@ async function handleSubmit() {
     margin-bottom: 16rpx;
     font-size: 28rpx;
     color: #666;
+  }
+}
+
+.field-error {
+  display: block;
+  margin-top: 12rpx;
+  font-size: 24rpx;
+  color: #ff4d4f;
+}
+
+.default-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.default-row .form-item_label {
+  margin-bottom: 0;
+}
+
+.tag-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16rpx;
+}
+
+.tag-option {
+  padding: 8rpx 28rpx;
+  font-size: 26rpx;
+  color: #666;
+  background: #f8f9fa;
+  border: 2rpx solid #e9ecef;
+  border-radius: 28rpx;
+
+  &.active {
+    font-weight: 500;
+    color: #1890ff;
+    background: #e6f7ff;
+    border-color: #1890ff;
   }
 }
 </style>

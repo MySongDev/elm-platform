@@ -1,15 +1,5 @@
 <script setup>
-/**
- * ⚠️ 与 apps/web-user/src/views/profile/address/add/components/SexSelector.vue 同源改造。
- *
- * 差异：
- * 1. `<input type="radio">` 是纯视觉占位（label 包裹），小程序端删掉，直接用
- *    view + @click 触发选中 —— 语义等价（web-user 原文的 radio 只是给 CSS :checked
- *    选择器用的，无原生行为）
- * 2. CSS `animation: popIn` 关键帧小程序支持度存疑 → 简化为直接显示 ✓ 徽章
- *    （不带动画，功能等价）
- * 3. px → rpx
- */
+/** 留档的性别选择器，当前地址页不展示此字段；重新接入见 docs/engineering/018-uni-user-address-form-extras.md。 */
 import FormItemWrapper from './FormItemWrapper.vue'
 
 defineProps({

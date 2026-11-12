@@ -116,19 +116,52 @@ export function stripQuery(path: string): string {
 }
 
 /**
+ * 把页面 onLoad 收到的 redirect 归一化成可直接跳转的完整路径。
+ *
+ * 框架拼 `$page.fullPath` 时会对 options 再编码一次（uni.mp.esm.js:863 的
+ * `route + stringifyQuery(query)`，而 stringifyQuery 用的就是 encodeURIComponent），
+ * 所以正常情况下 options 已是解码值。这里仍用「以 / 开头」兜住未解码形态，且只解一层：
+ * 多解一次会把目标自身参数里的 %26 解成 &，参数被悄悄截断。
+ */
+export function normalizeRedirectTarget(redirect?: unknown): string {
+  const target = Array.isArray(redirect) ? redirect[0] : redirect
+
+  if (typeof target !== 'string' || !target) {
+    return ''
+  }
+  if (target.startsWith('/')) {
+    return target
+  }
+
+  try {
+    return decodeURIComponent(target)
+  }
+  catch {
+    return ''
+  }
+}
+
+/**
  * 解析登录成功后的跳转目标。
  *
  * ⚠️ **修正了方案 E 节列出的死链**：web-user 的 `router/index.ts:52` 默认回落 `/home`，
  * 而 home 页**不在迁移范围**（小程序端没有这个页面）→ 改回落 msite（tabBar 首页）。
+ *
+ * 只放行 `ROUTES` 里登记的项目页面：外部 URL、不存在的路径、登录相关页、404
+ * 都不能成为回跳目标，否则会停在空白页或形成登录页循环。
  */
 export function resolveLoginRedirect(redirect?: unknown): string {
-  const target = Array.isArray(redirect) ? redirect[0] : redirect
+  const target = normalizeRedirectTarget(redirect)
 
-  if (typeof target !== 'string' || !target) {
+  if (!target) {
     return ROUTES.MSITE
   }
-  // 不能回落到登录相关页面，否则会形成循环跳转
-  if (isAuthPage(target)) {
+
+  const path = stripQuery(target)
+  if (path === ROUTES.NOT_FOUND
+    || isAuthPage(path)
+    || !(Object.values(ROUTES) as string[]).includes(path)
+    || target.includes('#')) {
     return ROUTES.MSITE
   }
   return target

@@ -102,12 +102,13 @@ onReady(() => {
 })
 
 function toShop(item) {
+  const shopUrl = withQuery(ROUTES.SHOP, { shopid: item.id })
   if (!isAuthenticated.value) {
-    redirectToLogin()
+    // 带上目标商家，而不是无参跳登录——无参时回跳目标会变成首页，登录后回不到这家店
+    redirectToLogin(shopUrl)
     return
   }
-
-  navigateTo(withQuery(ROUTES.SHOP, { shopid: item.id }))
+  navigateTo(shopUrl)
 }
 
 // ========== 加载更多 ==========

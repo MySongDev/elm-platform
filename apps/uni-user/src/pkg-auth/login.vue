@@ -22,16 +22,17 @@
 import { onLoad } from '@dcloudio/uni-app'
 import { computed, ref } from 'vue'
 
-import { withQuery } from '@/config/routes'
+import { normalizeRedirectTarget, withQuery } from '@/config/routes'
 import { navigateBack, navigateTo, ROUTES } from '@/platform/navigation'
 
 import { customerPasswordLogin, sendCustomerSms } from '@/services/api/api-login'
 import { useLoginSuccess } from './useLoginSuccess'
 
-// 登录入口带过来的回跳目标（redirectToLogin / navigateTo 时拼进 url）
+// 登录入口带过来的回跳目标（redirectToLogin / navigateTo 时拼进 url）。
+// 在 onLoad 就读成规范路径，后面转交短信页时 withQuery 不会对已编码串二次编码。
 const redirect = ref('')
 onLoad((options) => {
-  redirect.value = options?.redirect || ''
+  redirect.value = normalizeRedirectTarget(options?.redirect)
 })
 
 const loginMode = ref('sms')

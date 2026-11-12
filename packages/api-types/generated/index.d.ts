@@ -891,6 +891,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/customer-auth/profile/nickname": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** 修改普通用户的用户名（昵称） */
+        put: operations["CustomerAuthController_updateNickname"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/customer-addresses": {
         parameters: {
             query?: never;
@@ -916,11 +933,31 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get?: never;
-        put?: never;
+        /** 获取当前用户的收货地址详情 */
+        get: operations["CustomerAddressController_detail"];
+        /** 全量更新收货地址 */
+        put: operations["CustomerAddressController_replace"];
         post?: never;
         /** 删除收货地址 */
         delete: operations["CustomerAddressController_remove"];
+        options?: never;
+        head?: never;
+        /** 更新收货地址 */
+        patch: operations["CustomerAddressController_update"];
+        trace?: never;
+    };
+    "/api/customer-addresses/{id}/default": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** 设为默认收货地址 */
+        post: operations["CustomerAddressController_setDefault"];
+        delete?: never;
         options?: never;
         head?: never;
         patch?: never;
@@ -3303,6 +3340,13 @@ export interface components {
             /** @description 刷新令牌 */
             refreshToken?: string;
         };
+        UpdateCustomerNicknameDto: {
+            /**
+             * @description 用户名（昵称），去除首尾空格后为 2～24 个字符
+             * @example 外卖达人
+             */
+            nickname: string;
+        };
         CustomerAddressResponseDto: {
             /**
              * @description 地址 ID
@@ -3364,6 +3408,11 @@ export interface components {
              * @example 0
              */
             poiType: number;
+            /**
+             * @description 是否默认地址
+             * @example false
+             */
+            isDefault: boolean;
         };
         CreateCustomerAddressDto: {
             /**
@@ -3420,6 +3469,72 @@ export interface components {
              * @example 0
              */
             poiType: number;
+            /**
+             * @description 是否默认地址
+             * @example false
+             */
+            isDefault?: boolean;
+        };
+        UpdateCustomerAddressDto: {
+            /**
+             * @description 收货人姓名
+             * @example 张三
+             */
+            name: string;
+            /**
+             * @description 联系电话
+             * @example 13800138000
+             */
+            phone: string;
+            /**
+             * @description 备用电话
+             * @example 13900139000
+             */
+            phoneBk?: string;
+            /**
+             * @description 地址
+             * @example 桂平路180号33幢
+             */
+            address: string;
+            /**
+             * @description 详细地址
+             * @example A座101室
+             */
+            addressDetail: string;
+            /**
+             * @description 经纬度，格式为“纬度,经度”
+             * @example 31.22967,121.4762
+             */
+            geohash?: string;
+            /**
+             * @description 性别：1 先生，2 女士
+             * @default 1
+             * @example 1
+             */
+            sex: number;
+            /**
+             * @description 地址标签
+             * @default 家
+             * @example 家
+             */
+            tag: string;
+            /**
+             * @description 标签类型
+             * @default 2
+             * @example 2
+             */
+            tagType: number;
+            /**
+             * @description 兴趣点类型
+             * @default 0
+             * @example 0
+             */
+            poiType: number;
+            /**
+             * @description 是否默认地址
+             * @example false
+             */
+            isDefault?: boolean;
         };
         CustomerAvatarResponseDto: {
             /**
@@ -8080,6 +8195,88 @@ export interface operations {
             };
         };
     };
+    CustomerAuthController_updateNickname: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateCustomerNicknameDto"];
+            };
+        };
+        responses: {
+            /** @description 请求成功 */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResponseEnvelopeDto"] & {
+                        data: components["schemas"]["CustomerProfileResponseDto"];
+                    };
+                };
+            };
+            /** @description 请求参数错误 */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 400 */
+                        code?: unknown;
+                        /** @example 请求参数错误 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 未认证或认证已失效 */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 401 */
+                        code?: unknown;
+                        /** @example 未认证或认证已失效 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 无权访问该资源 */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 403 */
+                        code?: unknown;
+                        /** @example 无权访问该资源 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 服务器内部错误 */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 500 */
+                        code?: unknown;
+                        /** @example 服务器内部错误 */
+                        message?: unknown;
+                    };
+                };
+            };
+        };
+    };
     CustomerAddressController_list: {
         parameters: {
             query?: never;
@@ -8198,6 +8395,170 @@ export interface operations {
             };
         };
     };
+    CustomerAddressController_detail: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description 请求成功 */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResponseEnvelopeDto"] & {
+                        data: components["schemas"]["CustomerAddressResponseDto"];
+                    };
+                };
+            };
+            /** @description 请求参数错误 */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 400 */
+                        code?: unknown;
+                        /** @example 请求参数错误 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 未认证或认证已失效 */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 401 */
+                        code?: unknown;
+                        /** @example 未认证或认证已失效 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 请求的资源不存在 */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 404 */
+                        code?: unknown;
+                        /** @example 请求的资源不存在 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 服务器内部错误 */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 500 */
+                        code?: unknown;
+                        /** @example 服务器内部错误 */
+                        message?: unknown;
+                    };
+                };
+            };
+        };
+    };
+    CustomerAddressController_replace: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateCustomerAddressDto"];
+            };
+        };
+        responses: {
+            /** @description 请求成功 */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResponseEnvelopeDto"] & {
+                        data: components["schemas"]["CustomerAddressResponseDto"];
+                    };
+                };
+            };
+            /** @description 请求参数错误 */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 400 */
+                        code?: unknown;
+                        /** @example 请求参数错误 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 未认证或认证已失效 */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 401 */
+                        code?: unknown;
+                        /** @example 未认证或认证已失效 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 请求的资源不存在 */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 404 */
+                        code?: unknown;
+                        /** @example 请求的资源不存在 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 服务器内部错误 */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 500 */
+                        code?: unknown;
+                        /** @example 服务器内部错误 */
+                        message?: unknown;
+                    };
+                };
+            };
+        };
+    };
     CustomerAddressController_remove: {
         parameters: {
             query?: never;
@@ -8216,6 +8577,170 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ApiResponseEnvelopeDto"];
+                };
+            };
+            /** @description 未认证或认证已失效 */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 401 */
+                        code?: unknown;
+                        /** @example 未认证或认证已失效 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 请求的资源不存在 */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 404 */
+                        code?: unknown;
+                        /** @example 请求的资源不存在 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 服务器内部错误 */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 500 */
+                        code?: unknown;
+                        /** @example 服务器内部错误 */
+                        message?: unknown;
+                    };
+                };
+            };
+        };
+    };
+    CustomerAddressController_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description 地址 ID */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateCustomerAddressDto"];
+            };
+        };
+        responses: {
+            /** @description 请求成功 */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResponseEnvelopeDto"] & {
+                        data: components["schemas"]["CustomerAddressResponseDto"];
+                    };
+                };
+            };
+            /** @description 请求参数错误 */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 400 */
+                        code?: unknown;
+                        /** @example 请求参数错误 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 未认证或认证已失效 */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 401 */
+                        code?: unknown;
+                        /** @example 未认证或认证已失效 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 请求的资源不存在 */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 404 */
+                        code?: unknown;
+                        /** @example 请求的资源不存在 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 服务器内部错误 */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 500 */
+                        code?: unknown;
+                        /** @example 服务器内部错误 */
+                        message?: unknown;
+                    };
+                };
+            };
+        };
+    };
+    CustomerAddressController_setDefault: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description 地址 ID */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description 请求成功 */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResponseEnvelopeDto"];
+                };
+            };
+            /** @description 请求参数错误 */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 400 */
+                        code?: unknown;
+                        /** @example 请求参数错误 */
+                        message?: unknown;
+                    };
                 };
             };
             /** @description 未认证或认证已失效 */

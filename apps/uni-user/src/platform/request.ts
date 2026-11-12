@@ -56,6 +56,11 @@ export interface TransportConfig {
   timeout?: number
   /** 保留 AbortController 语义，内部映射到 RequestTask.abort() */
   signal?: AbortSignal
+  /** 临时文件路径不能当 JSON 发；提供此项时由 uni.uploadFile 发送 multipart。 */
+  upload?: {
+    filePath: string
+    name: string
+  }
 }
 
 /** 请求被主动取消。替代 axios.CanceledError，policies 的取消判定改判这个类。 */
@@ -168,7 +173,7 @@ export interface TransportHandle<T = unknown> {
  * 用句柄形式而非直接返回 promise，是为了让调用方能持有 abort（对齐 axios 的 signal 用法）。
  */
 export function send<T = unknown>(config: TransportConfig): TransportHandle<T> {
-  let task: UniApp.RequestTask | null = null
+  let task: UniApp.RequestTask | UniApp.UploadTask | null = null
   let aborted = false
 
   // ⚠️ params 显式序列化拼进 URL，**不**依赖 wx.request 对 GET data 的隐式序列化：
@@ -181,53 +186,81 @@ export function send<T = unknown>(config: TransportConfig): TransportHandle<T> {
     : baseUrl
 
   const promise = new Promise<TransportResponse<T>>((resolve, reject) => {
-    task = uni.request({
-      url: finalUrl,
-      method: config.method || 'GET',
-      data: config.data as any,
-      header: config.header,
-      timeout: config.timeout ?? REQUEST_TIMEOUT,
-      // 拿到后端信封原文，不在传输层解包（解包是 policies 的职责）
-      dataType: 'json',
-      success: (res) => {
-        if (aborted) {
-          reject(new CanceledError())
-          return
-        }
-        const status = res.statusCode
-        // ⚠️ 小程序把 4xx/5xx 也走 success，必须自己判
-        if (status < 200 || status >= 300) {
-          reject(new TransportError({
-            message: `Request failed with status ${status}`,
-            status,
-            data: res.data,
-          }))
-          return
-        }
-        resolve({
-          status,
-          data: res.data as T,
-          header: (res.header || {}) as Record<string, string>,
-        })
-      },
-      fail: (err) => {
-        if (aborted) {
-          reject(new CanceledError())
-          return
-        }
-        const message = err?.errMsg || 'Network error'
-        // ⚠️ 超时在小程序端走 fail 回调，errMsg 形如 "request:fail timeout"。
-        // 必须单独标记 isTimeout：policies 的重试与提示文案都依赖它
-        // （对应 axios 的 ECONNABORTED）。若不区分，超时会按普通网络错误处理，
-        // 用户看到「网络异常」而非「请求超时」，且重试策略判定也会偏。
-        const isTimeout = /timeout|time out/i.test(message)
+    const acceptResponse = (status: number, data: unknown, header: Record<string, string> = {}) => {
+      if (aborted) {
+        reject(new CanceledError())
+        return
+      }
+      // request 和 uploadFile 都可能把 HTTP 失败交给 success；不检查就会漏掉 401 刷新。
+      if (status < 200 || status >= 300) {
+        const message = (data as { message?: unknown } | null)?.message
         reject(new TransportError({
-          message,
-          isNetworkError: !isTimeout,
-          isTimeout,
+          message: typeof message === 'string' ? message : `Request failed with status ${status}`,
+          status,
+          data,
         }))
-      },
-    }) as unknown as UniApp.RequestTask
+        return
+      }
+      resolve({
+        status,
+        data: data as T,
+        header,
+      })
+    }
+
+    const fail = (err: { errMsg?: string }) => {
+      if (aborted) {
+        reject(new CanceledError())
+        return
+      }
+      const message = err?.errMsg || 'Network error'
+      const isTimeout = /timeout|time out/i.test(message)
+      reject(new TransportError({
+        message,
+        isNetworkError: !isTimeout,
+        isTimeout,
+      }))
+    }
+
+    if (config.upload) {
+      task = uni.uploadFile({
+        url: finalUrl,
+        filePath: config.upload.filePath,
+        name: config.upload.name,
+        header: config.header,
+        timeout: config.timeout ?? REQUEST_TIMEOUT,
+        success: (res) => {
+          if (aborted) {
+            reject(new CanceledError())
+            return
+          }
+          // uploadFile 返回字符串；解析异常必须 reject，否则异步回调抛错后等待者一直不结束。
+          try {
+            acceptResponse(res.statusCode, JSON.parse(res.data))
+          }
+          catch {
+            reject(new TransportError({
+              message: '上传响应格式异常，请重试',
+              status: res.statusCode,
+              data: res.data,
+            }))
+          }
+        },
+        fail,
+      }) as unknown as UniApp.UploadTask
+    }
+    else {
+      task = uni.request({
+        url: finalUrl,
+        method: config.method || 'GET',
+        data: config.data as any,
+        header: config.header,
+        timeout: config.timeout ?? REQUEST_TIMEOUT,
+        dataType: 'json',
+        success: res => acceptResponse(res.statusCode, res.data, (res.header || {}) as Record<string, string>),
+        fail,
+      }) as unknown as UniApp.RequestTask
+    }
 
     // AbortController → RequestTask.abort()，保持与 axios signal 相同的取消语义
     if (config.signal) {

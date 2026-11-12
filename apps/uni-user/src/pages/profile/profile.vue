@@ -17,7 +17,7 @@ import { storeToRefs } from 'pinia'
 import { computed } from 'vue'
 
 import { PROFILE_ASSETS, profileCardConfig, THEME_MAP } from '@/config/profileConfig'
-import { ROUTES } from '@/config/routes'
+import { ROUTES, withQuery } from '@/config/routes'
 import { useUserStore } from '@/stores/modules/store-user'
 
 import ProfileCard from './components/ProfileCard.vue'
@@ -31,7 +31,10 @@ const { getUserInfo } = userStore
 const isLoggedIn = computed(() => isLogin.value)
 const userName = computed(() => userInfo.value.nickname || userInfo.value.phone || '')
 const userAvatar = computed(() => userInfo.value.avatar || '')
-const profileLink = computed(() => (isLoggedIn.value ? ROUTES.INFO : ROUTES.LOGIN))
+// 未登录点头像进登录页，把「我的」作为回跳目标：登录成功后回到这里而不是首页
+const profileLink = computed(() => (isLoggedIn.value
+  ? ROUTES.INFO
+  : withQuery(ROUTES.LOGIN, { redirect: ROUTES.PROFILE })))
 
 const displayName = computed(() => userName.value || profileCardConfig.guest.name)
 const displayDesc = computed(() => ({

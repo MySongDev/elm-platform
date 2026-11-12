@@ -74,4 +74,10 @@ export class CustomerAddressResponseDto {
     example: 0,
   })
   poiType: number
+
+  @ApiProperty({
+    description: '是否默认地址',
+    example: false,
+  })
+  isDefault: boolean
 }

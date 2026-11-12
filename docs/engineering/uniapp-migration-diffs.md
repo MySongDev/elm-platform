@@ -168,6 +168,22 @@
 
 ---
 
+## 10.3. `uni.addInterceptor` 的 `invoke` 必须返回 `false` 才叫「拦住」
+**证据**（当前安装的 `@dcloudio/uni-mp-weixin` 源码，不是推测）：
+- `dist/uni.api.esm.js:243-269` 的 `queue()`：遍历 hooks 时只要某个 `invoke` 返回 `false`，立即 `return { then(){}, catch(){} }`（空 thenable）。
+- `dist/uni.api.esm.js:316-324` 的 `invokeApi()`：只有 `res.then(options => api(...))` 里才会调用底层 API；拿到空 thenable 就**根本不调**。
+
+| 项 | H5（vue-router） | 小程序（uni.addInterceptor） | 后果 |
+|---|---|---|---|
+| 中止导航 | `beforeEach` 里 `next(false)` / 返回 false | `invoke` 返回 `false`；返回 `args` 表示放行 | 照 H5 习惯写成「自己在 guard 里跳转，然后 return args」→ **原跳转照样执行**，被拦下的目标页立刻盖掉刚压栈的登录页，`redirect` 形同虚设，而且不报错 |
+| 正确写法 | — | `return guard(url) ? args : false` | 登录页成为栈顶，`redirect` 参数保住 |
+
+**本项目**：`platform/navigation.ts` 的 `registerNavigationGuards()`。2026-11-11 修复前就是「总是 return args」。按上面两段源码推导，未登录点商家时：guard 先跳登录，随后被拦下的原 `navigateTo` 仍会执行，登录页被商家页盖掉；商家页需鉴权、请求 401，表现为「登录页一闪、停在无数据页」，且不报错。
+⚠️ 拦截器同样包住 `guard()` 内部自己发起的 `redirectTo`/`reLaunch`，所以登录页 URL 必须能通过 guard（`/pkg-auth/*` 不在 `REQUIRES_AUTH_PAGES`），否则会自己拦自己。
+**验证边界**：`invoke` 返回值已由 `platform/navigation.test.js` 锁定；本轮模拟器因 `appid=touristappid` 返回 `APPID_ERROR`，未做实机验收。
+
+---
+
 ## 10.3. `scroll-into-view` 同值不再触发（连点同一分类第二次失效）
 **证据**：`pkg-shop/shop.vue` 的 `onCategorySelect`；现象 = 第一次点分类能跳，连点第二次不动。
 
@@ -202,7 +218,7 @@
 
 ## 10.5. 分类分页改变高度：固定图片尺寸不再足以保证滚动锚点有效
 
-**证据（2026-11-08）**：H5 `ProductList.vue:26-49` 观察分类页尾并按当前分类索引限制向上预取；小程序 `pkg-shop/shop.vue:151-200` 一次查询容器、分类块、页尾，分页后通过 watch + nextTick 重测，滚动路径只读缓存。H5 本地浏览器验收曾出现跳分类后上方占位块补载把目标挤下去，限制向上预取后目标对齐吸顶下沿；小程序仅完成源码检查、类型检查和微信构建，尚未真机验收。
+**证据（2026-11-08；2026-11-11 更新组件位置）**：H5 `ProductList.vue:26-49` 观察分类页尾并按当前分类索引限制向上预取；小程序 `pkg-shop/components/ShopMenu.vue:87-141` 一次查询容器、分类块、页尾，分页后通过 watch + nextTick 重测，滚动路径复用缓存；这段代码原位于 `shop.vue:151-200`。H5 本地浏览器验收曾出现跳分类后上方占位块补载把目标挤下去，限制向上预取后目标对齐吸顶下沿；小程序仅完成源码检查、类型检查和微信构建，尚未真机验收。
 
 | 场景 | H5 | 小程序 | 本项目处理 |
 |---|---|---|---|
@@ -212,6 +228,20 @@
 | 页隐藏/销毁 | tab 卸载时断开 Observer | v-show 隐藏时量不到真实尺寸；查询回调异步返回 | 切回点菜再测；查询序号与 disposed 拒绝过期回调 |
 
 **勿误修**：不要每个 scroll 事件都发一次异步查节点，也不要以为固定图片宽高能覆盖分页追加。H5 可见内容边界含 50px 导航 + 42px tab，小程序 tab 在 scroll-view 外，两端不能共用同一个 92px 偏移。契约与验收步骤见 [015](015-menu-category-lazy-pagination.md)，重要约束同步 007 坑 28。
+
+---
+
+## 10.6. 表单输入属性要显式绑定，不照搬 H5 的对象式 `v-bind`
+
+**证据（2026-11-11）**：FormInput 加入 `v-bind="$attrs"` 后，`pnpm --filter @elm-platform/uni-user run build:mp-weixin` 报 `[vite:vue] v-bind="" is not supported.`；去掉对象式绑定后构建通过。最终 `pkg-profile/components/FormInput.vue:4-5` 保持显式参数边界，`:maxlength` 绑定位于第 60 行；`dist/build/mp-weixin/pkg-profile/components/FormInput.js:1` 保留默认 `-1`，`FormInput.json:3` 的 usingComponents 为空，不再依赖旧布局组件。
+
+| 场景 | H5 当前实现 | 小程序本次处理 | 验证范围 |
+|---|---|---|---|
+| 额外 input 属性 | web-user 的 FormInput 用 `v-bind="$attrs"` | 当前编译器不支持对象式 v-bind；参数必须声明并逐项绑定 | 对象式写法构建失败、显式写法构建通过，未承诺未来版本也不支持 |
+| 不传 maxlength | 旧同源组件只有 `maxlength: Number`，仍绑定到 input | 组件默认 `-1`，页面给出 `20/120/120/11/11` | 源码和编译产物已核对；空值是否按 0 处理及原生输入效果尚未人工实测 |
+| 标题与错误提示 | 独立 FormItemWrapper 包装 input | 地址页当前只有一种活跃输入控件，布局内联 | 编译产物为 view + input，无旧组件引用 |
+
+**勿误修**：不要把 DOM 中的属性省略规则直接套到小程序动态绑定上；也不要为方便透传添加未经使用的 focus/confirm-type 参数。当前原生输入事件从 `event.detail.value` 取值，组件先回填 v-model，再发送字符串 input 通知。留档接入与人工验收见 [018](018-uni-user-address-form-extras.md)，编译约束同步 007 坑 29。
 
 ---
 

@@ -117,6 +117,8 @@ Pinia stores live in `src/stores/modules` for user/session, addresses, locations
 - 默认采用教学型注释，**判据只有一条：删掉这条注释，未来改这里的人会不会做出错误决策？** 会则必留，不会则删。
 - **禁止编造机制**（浏览器 / Vue 内部 / 第三方库行为）。不确定就只写代码能证明的事实——错注释比没注释更有害。
 - 行内只写 WHY，不写代码翻译；只对函数头、状态变量、异步回调、兜底分支、注册/注销这五类位置加注释。
+- **说人话、要短**：用日常说法，两三行讲完，不堆术语缩写和机制名词。
+- **证据按后果类型给**：后果是静默的（不报错、行为悄悄变）或违反类型看不出的命名/时序契约时，才必须点名「谁会在什么情况下改错」；直接报错的、无坑的导电字段，不用硬凑后果。
 - 发现旧注释与实现不符时改代码，不要为了迁就旧注释保留错误实现。
 - **只对本次新增或修改的文件补注释，不做全仓普查。**
 
@@ -126,6 +128,12 @@ Before creating, changing, or deleting automated tests, read and follow the repo
 
 ## Git Conventions
 
+Follow [CONTRIBUTING.md §11](CONTRIBUTING.md) for the full agent git workflow. Key points:
+
+- Ask before committing: commit directly to `main`, or open a branch? Do not commit without an explicit answer.
+- Never run `git reset --hard`, `git checkout -- .`, `git clean -fd`, `git add -A`, `git commit --no-verify`, or `git push --force`; do not stash or commit pre-existing user changes.
+- One logical change per commit. `type(scope)` in English, subject in Chinese.
+- Push, PR, merge and tag all require explicit user instruction.
 - **禁止**在 commit message 中添加 `Co-Authored-By` 或任何 AI 署名行。不论使用哪个模型，commit 信息中都不得包含 AI 工具的归属信息。
 
 ## Configuration Notes

@@ -1,109 +1,101 @@
 <script setup>
-/**
- * ⚠️ 与 apps/web-user/src/views/profile/info/components/AvatarUploader.vue 同源改造。
- *
- * 差异：
- * 1. `<input type="file">` → 小程序没有 DOM 文件选择器，改用
- *    `uni.chooseImage({ sourceType: ['album', 'camera'] })` + `uni.uploadFile`
- * 2. `uploadUserAvatar(file)`（web-user 的 FormData + axios）→ `uni.uploadFile`
- *    （uni-user 侧 api-user.js 刻意未搬 uploadUserAvatar，注释里已预留此处为接缝，
- *    见该文件头部说明）。上传端点/鉴权头与后端约定一致（见 uploadAvatar 实现）
- * 3. 文件大小/类型限制保留（web-user 原文 2MB，小程序端 chooseImage 的压缩产物
- *    通常也远低于此，限制逻辑照抄）
- * 4. showAlert 走 platform/feedback（uni.showModal 封装，与 web-user 的 DOM 挂载
- *    AlterTip 等价）
- * 5. 头像展示仍走 getUploadUrl（platform/image 的 URL 收口层，含图片代理前缀）
- */
-import { ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 
-import { getUploadUrl } from '@/config'
-import { showAlert } from '@/platform/feedback'
+import { showAlert, showToast } from '@/platform/feedback'
+import { getUploadUrl } from '@/platform/image'
+import { uploadUserAvatar } from '@/services/api/api-user'
 import { useUserStore } from '@/stores/modules/store-user'
 
-defineProps({
+const props = defineProps({
   avatar: String,
 })
 
 const userStore = useUserStore()
-const isUploading = ref(false)
-
+// 从打开相册到上传结束都锁住；否则快速点击会打开多个选图流程，后返回的上传覆盖先前头像。
+const isBusy = ref(false)
+const imageFailed = ref(false)
+const avatarUrl = computed(() => getUploadUrl(props.avatar))
 const MAX_SIZE = 2 * 1024 * 1024
 
+watch(avatarUrl, () => {
+  // 旧文件失效不代表新头像也失效；上传返回新路径后允许重新加载图片。
+  imageFailed.value = false
+})
+
+/** 组件只负责选图和展示；接口地址、鉴权和上传失败提示都交给 HTTP 链路。 */
 async function handleUpload() {
-  // 选图：相册或拍照（小程序端没有文件选择器，chooseImage 是标准入口）
-  const chosen = await new Promise((resolve, reject) => {
-    uni.chooseImage({
-      count: 1,
-      sizeType: ['compressed'],
-      sourceType: ['album', 'camera'],
-      success: res => resolve(res.tempFiles?.[0]),
-      fail: reject,
-    })
-  }).catch(() => undefined)
-
-  if (!chosen)
+  if (isBusy.value)
     return
 
-  const { path: filePath, size: fileSize } = chosen
-  if (fileSize && fileSize > MAX_SIZE) {
-    showAlert('图片大小不能超过 2MB')
-    return
-  }
-
-  isUploading.value = true
+  isBusy.value = true
   try {
-    const avatar = await uploadAvatar(filePath)
-    if (avatar)
+    let chosen
+    try {
+      chosen = await new Promise((resolve, reject) => {
+        uni.chooseImage({
+          count: 1,
+          sizeType: ['compressed'],
+          sourceType: ['album', 'camera'],
+          success: resolve,
+          fail: reject,
+        })
+      })
+    }
+    catch (error) {
+      // 取消相册不算失败；权限或选图异常不能再静默吞掉，否则看起来像点击没反应。
+      if (!/cancel/i.test(error?.errMsg || '')) {
+        console.error('选择头像失败:', error)
+        await showAlert({ content: '无法选择图片，请检查相册或相机权限后重试' })
+      }
+      return
+    }
+
+    // H5 的 tempFiles 可能是 File，没有 path；上传路径应从跨端的 tempFilePaths 读取。
+    const filePath = Array.isArray(chosen.tempFilePaths) ? chosen.tempFilePaths[0] : chosen.tempFilePaths
+    const file = Array.isArray(chosen.tempFiles) ? chosen.tempFiles[0] : chosen.tempFiles
+    if (!filePath) {
+      await showAlert({ content: '未获取到图片，请重新选择' })
+      return
+    }
+    if (file?.size > MAX_SIZE) {
+      await showAlert({ content: '图片大小不能超过 2MB' })
+      return
+    }
+
+    try {
+      const avatar = await uploadUserAvatar(filePath)
+      if (!avatar) {
+        await showAlert({ content: '上传响应缺少头像地址，请重试' })
+        return
+      }
       userStore.updateAvatar(avatar)
-  }
-  catch {
-    showAlert('上传失败，请重试')
+      showToast('头像已更新')
+    }
+    catch {
+      // HTTP 层已经提示具体原因并处理 401；这里不再弹“上传失败”盖掉它，也不改旧头像。
+    }
   }
   finally {
-    isUploading.value = false
+    isBusy.value = false
   }
-}
-
-/**
- * 上传头像。端点与鉴权头对齐后端 `customer-auth` 的用户资料上传契约
- * （与 web-user 的 `uploadUserAvatar` 走同一个后端接口，只是传输层换成
- * uni.uploadFile —— axios 的 FormData 在小程序端没有等价物）。
- *
- * @returns 后端返回的头像路径（`data.avatar`），空路径表示上传失败
- */
-async function uploadAvatar(filePath) {
-  const { getAccessToken } = await import('@/services/http/auth-storage')
-  const token = getAccessToken()
-
-  const res = await new Promise((resolve, reject) => {
-    uni.uploadFile({
-      url: '/api/customer/avatar',
-      filePath,
-      name: 'file',
-      header: token ? { Authorization: `Bearer ${token}` } : {},
-      success: r => resolve(JSON.parse(r.data || '{}')),
-      fail: reject,
-    })
-  }).catch(() => undefined)
-
-  return res?.data?.avatar ?? res?.avatar ?? ''
 }
 </script>
 
 <template>
-  <view class="avatar-uploader" @click="handleUpload">
+  <view class="avatar-uploader" @tap="handleUpload">
     <text class="avatar-uploader_label">
       头像
     </text>
     <view class="avatar-uploader_right">
       <image
-        v-if="avatar"
-        :src="getUploadUrl(avatar)"
+        v-if="avatarUrl && !imageFailed"
+        :src="avatarUrl"
         mode="aspectFill"
         class="avatar-uploader_img"
+        @error="imageFailed = true"
       />
       <view v-else class="avatar-uploader_img avatar-uploader_img--default">
-        <SvgIcon icon-name="avatar-default" />
+        <SvgIcon icon-name="avatar-default" class="avatar-uploader_default-icon" />
       </view>
       <SvgIcon
         icon-name="arrow-right"
@@ -144,11 +136,16 @@ async function uploadAvatar(filePath) {
       display: flex;
       align-items: center;
       justify-content: center;
+      background: #f5f5f5;
     }
   }
 
-  /* ⚠️ 标签级 class + font-size（007 坑 17-20），原 wh(16px,16px) → 32rpx */
-  .avatar-uploader_arrow {
+  &_default-icon {
+    font-size: 72rpx;
+    color: #999;
+  }
+
+  &_arrow {
     font-size: 32rpx;
   }
 }

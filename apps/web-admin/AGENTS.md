@@ -149,3 +149,14 @@ pnpm --filter @elm-platform/web-admin run preview
 - 新权限点需同时登记:`shared/config/access.ts` 的 `Permissions` 常量 + 后端权限码
 - 页面加载/空/错误/无权限态统一使用 `shared/ui/state` 的 `AdminStateView`
 - 禁止新增与 `TabBar` 功能重复的标签栏实现(曾存在废弃的 `TabBarFromScratch`,已移除)
+
+## 设计决策记录(why 类细节)
+
+遇到「看起来不对称 / 反直觉」的细节,注释与答疑都要写清**为什么这样才成立**(逼出它的约束),不能一句话带过。这类属「设计理由 / 设计意图」(design rationale)问题,默认给完整推导:前提 → 各情形 → 为什么成立 → 改成对称或另一种判断会怎样坏。
+
+### 例:`entities/tab/model/store.ts` 的 closeLeftTabs / closeRightTabs 边界判断不对称
+
+- 前提:`home` tab 永远在首位且不可关(`isTabClosable` 里 `!isHomeTab`),故下标 0 一定是 home。
+- `closeLeftTabs` 用 `idx <= 0` 提前返回:目标是 home(idx=0)时左侧本就无物可关,`<= 0` 还顺带覆盖目标不存在(idx=-1)。**left 的「无物可关」与「目标是 home」重合,一个条件就够。**
+- `closeRightTabs` 用 `idx === -1`:目标是 home 时右侧仍可能有可关的普通 tab,「关闭 home 右侧」是合法操作;若照抄 `<= 0` 会把它误判为无效而直接 return。**right 的「无物可关」(目标是最后一位)由 `i <= idx` 自然处理,唯一无效情形只剩 `idx === -1`。**
+- 结论:不对称是两边边界结构本就不同,不是疏忽;对称写会误伤「关闭 home 右侧」。

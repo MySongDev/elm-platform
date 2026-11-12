@@ -148,6 +148,9 @@ model CustomerAddress {
   tag           String   @default("家")
   tagType       Int      @default(2) @map("tag_type")
   poiType       Int      @default(0) @map("poi_type")
+  // 客户行锁串行化写入；部分唯一索引在20261110010000迁移SQL中兜底。
+  // 不能改成@@unique([customerId])，那会误限制每名用户只能有一条地址。
+  isDefault     Boolean  @default(false) @map("is_default")
   createdAt     DateTime @default(now()) @map("created_at")
   updatedAt     DateTime @updatedAt @map("updated_at")
 

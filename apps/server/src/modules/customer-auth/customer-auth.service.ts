@@ -1,4 +1,4 @@
-import type { CustomerPasswordLoginInput, CustomerPasswordResetInput, CustomerSmsLoginInput } from './customer-auth.inputs'
+import type { CustomerNicknameUpdateInput, CustomerPasswordLoginInput, CustomerPasswordResetInput, CustomerSmsLoginInput } from './customer-auth.inputs'
 import { BadRequestException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import * as bcrypt from 'bcryptjs'
@@ -96,6 +96,21 @@ export class CustomerAuthService {
       throw new UnauthorizedException('用户不存在或已禁用')
     }
     return this.tokens.toProfile(user)
+  }
+
+  async updateNickname(userId: number, input: CustomerNicknameUpdateInput) {
+    await this.getProfile(userId)
+    const user = await this.prisma.customerUser.update({
+      where: { id: userId },
+      data: { nickname: input.nickname },
+    })
+    if (user.status !== 'ACTIVE') {
+      throw new UnauthorizedException('用户不存在或已禁用')
+    }
+    return this.tokens.toProfile({
+      ...user,
+      status: user.status,
+    })
   }
 
   async refresh(refreshToken: string) {

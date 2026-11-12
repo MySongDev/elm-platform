@@ -770,6 +770,27 @@ PoC 页 `apps/uni-user/src/pages/poc-shop/poc-shop.vue`（已注册进 pages.jso
     微信原生滚动仍待开发者工具/真机，不把 H5 截图当小程序验收。
     详见 `015-menu-category-lazy-pagination.md` 与速查表 §10.5。
 
+29. **表单组件不能直接照搬 H5 的对象式 `v-bind` 透传**（2026-11-11）——
+    当前编译器 5.26 在 FormInput 的 input 上遇到 `v-bind="$attrs"`，微信构建直接报
+    `[vite:vue] v-bind="" is not supported.`；去掉对象式绑定、逐项绑定声明的参数后通过。
+    保持 `inheritAttrs: false`，需要新输入属性时显式声明并绑定，不让参数悄悄落到外层 view。
+    maxlength 也要给明确默认值：FormInput 默认 `-1`，地址页传 `20/120/120/11/11`。
+    **验证边界**：默认值及事件绑定已在产物核对，原生输入仍待开发者工具/真机验收；
+    不把 maxlength 空值可能变 0 的怀疑记成实测。详见速查表 §10.6 与 `018-uni-user-address-form-extras.md`。
+
+30. **★ `uni.addInterceptor` 的 `invoke` 返回 `args` 不算拦截，必须返回 `false`**（2026-11-11 登录回跳时坐实）——
+    按 vue-router `beforeEach` 的习惯写成「guard 内部自己跳登录，然后 `return args`」，
+    结果是**原跳转照样执行**。证据在当前安装的 `@dcloudio/uni-mp-weixin` 源码：
+    `dist/uni.api.esm.js:243-269` 的 `queue()` 只有 `res === false` 时才返回空 thenable，
+    `:316-324` 的 `invokeApi()` 只在这个 thenable 的 `then` 里调用底层 API → 返回 `args` 等于没拦。
+
+    后果是静默的（按源码推导）：登录页刚压栈就会被目标页盖掉，`redirect` 参数从未生效，也没有报错。
+    正确写法 `return guard(url) ? args : false`。⚠️ 拦截器同样包住 guard 内部自己发起的
+    `redirectTo`/`reLaunch`，所以登录页路径必须能通过 guard（`/pkg-auth/*` 不在
+    `REQUIRES_AUTH_PAGES`），否则会自己拦自己。原理解析见速查表 §10.3。
+    **验证边界**：`invoke` 返回值已由 `platform/navigation.test.js` 锁定；开发者工具模拟器因项目
+    `appid=touristappid` 返回 `APPID_ERROR`，本轮未做实机验收。
+
 ---
 
 ## 十二、待办：uni-user HTTP 层的未接入策略（缓存 / 去重 / 重试）

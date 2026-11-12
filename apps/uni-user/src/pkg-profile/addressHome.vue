@@ -1,63 +1,90 @@
 <script setup>
-/**
- * ⚠️ 与 apps/web-user/src/views/profile/address/addressHome.vue 同源改造。
- * 整体替换占位页（Batch 3 profile 组）。
- *
- * 差异：
- * 1. `router.push('/profile/address/add')` → `navigateTo(ROUTES.ADDRESS_ADD)`；
- *    带 query 的编辑跳转 → `navigateTo(withQuery(ROUTES.ADDRESS_ADD, { id }))`
- *    （uni-app 的 navigateTo url 直接拼 `?id=` 即可，withQuery 收口处理拼接）
- * 2. `head-top` 组件在 uni-user 里实际文件是 `src/components/extras/head.vue`
- *    （easycom autoscan 只认 `components/HeadTop/HeadTop.vue` 这种同名结构，
- *    见 007 坑 15；2026-11-07 导航统一后已归档到 extras/，见 013）。本页已移除
- *    Head 自定义头部：pages.json 的
- *    navigationBarTitleText 承担原生导航栏标题；原 Head #edit slot 里的
- *    「新增地址」按钮改为页面底部悬浮胶囊按钮（.add-address-bar）。
- * 3. `loadAddresses()` 的调用时机：web-user 是 setup 顶层直接调（等价 onMounted），
- *    uni-app 里 onShow 更合适——本页在列表页/添加页间来回跳时，每次回到列表
- *    都应刷新（新增/编辑过地址）。改用 `onShow(loadAddresses)`。
- *    ⚠️ 本页是 tabBar 页的入口之一（从 profile → 账户信息 → 收货地址），
- *    非 tabBar 页，navigateTo 拦截器的鉴权兜底已经覆盖，不需要再写 onShow 鉴权。
- * 4. `van-icon name="edit"` → 小程序端没有 vant，改用文字按钮「编辑」（语义等价，
- *    视觉降级接受；后续若要保留图标可用 SvgIcon + 现成 iconfont 里查有没有 edit 图标）
- * 5. px → rpx
- */
 import { onShow } from '@dcloudio/uni-app'
 import { storeToRefs } from 'pinia'
-
+import { ref } from 'vue'
 import { useAddressDisplay } from '@/composables/features/address'
 import { ROUTES, withQuery } from '@/config/routes'
+import { showConfirm } from '@/platform/feedback'
 import { navigateTo } from '@/platform/navigation'
 import { useAddressStore } from '@/stores/modules/store-address'
 
 const addressStore = useAddressStore()
 const { AddressList } = storeToRefs(addressStore)
-const { loadAddresses } = addressStore
-const {
-  displayAddresses,
-  getAddressTitle,
-  getContactName,
-  getContactGender,
-  getContactPhone,
-} = useAddressDisplay(AddressList)
+const { loadAddresses, romeAddress, markDefault } = addressStore
+const { displayAddresses, getAddressTitle, getContactName, getContactGender, getContactPhone } = useAddressDisplay(AddressList)
+// 确认框和请求结束前，不允许叠加删除或默认操作。
+const busyId = ref(null)
+const operationError = ref('')
 
 function goAddAddress() {
-  navigateTo(ROUTES.ADDRESS_ADD)
+  if (busyId.value === null)
+    navigateTo(ROUTES.ADDRESS_ADD)
 }
-
 function goEditAddress(item) {
-  navigateTo(withQuery(ROUTES.ADDRESS_ADD, { id: String(item.id) }))
+  if (busyId.value === null)
+    navigateTo(withQuery(ROUTES.ADDRESS_ADD, { id: String(item.id) }))
+}
+async function handleDelete(item) {
+  if (busyId.value !== null)
+    return
+  busyId.value = item.id
+  operationError.value = ''
+  try {
+    const confirmed = await showConfirm({
+      title: '删除地址',
+      content: '确定删除该收货地址吗？',
+      confirmText: '删除',
+    })
+    if (confirmed && !await romeAddress(item.id))
+      operationError.value = '删除失败，地址已保留，请重试'
+  }
+  finally {
+    busyId.value = null
+  }
+}
+async function handleDefault(item) {
+  if (busyId.value !== null || item.isDefault)
+    return
+  busyId.value = item.id
+  operationError.value = ''
+  try {
+    await markDefault(item.id)
+  }
+  catch (error) {
+    operationError.value = error?.message || '设置默认失败，请重试'
+  }
+  finally {
+    busyId.value = null
+  }
 }
 
-// 列表页每次进入都刷新（新增/编辑地址后回来要看到最新数据）
-onShow(loadAddresses)
+// 共享action会记住第一次页面的回调包装；旧页销毁后就不再刷新。
+// 每次创建页面都给它一个新回调，不能直接传loadAddresses。
+onShow(() => loadAddresses())
 </script>
 
 <template>
   <view class="address-page">
-    <view class="address-list">
+    <view v-if="operationError" class="operation-error">
+      {{ operationError }}
+    </view>
+    <view v-if="!displayAddresses.length" class="empty-state">
+      <text>暂无收货地址</text>
+      <text class="empty-hint">
+        点击下方按钮新增地址
+      </text>
+    </view>
+    <view v-else class="address-list">
       <view v-for="item in displayAddresses" :key="item.id" class="address-item">
         <view class="address-info">
+          <view class="address-tags">
+            <text v-if="item.isDefault" class="default-badge">
+              默认
+            </text>
+            <text v-if="item.tag" class="address-info_tag">
+              {{ item.tag }}
+            </text>
+          </view>
           <text class="address-info_title">
             {{ getAddressTitle(item) }}
           </text>
@@ -67,12 +94,21 @@ onShow(loadAddresses)
             <text>{{ getContactPhone(item) }}</text>
           </view>
         </view>
-        <view class="edit-button" @click="goEditAddress(item)">
-          编辑
+        <view class="address-item_actions" :class="{ 'actions-busy': busyId !== null }">
+          <view class="action-line">
+            <view class="edit-button" @click="goEditAddress(item)">
+              编辑
+            </view>
+            <view class="delete-button" @click="handleDelete(item)">
+              删除
+            </view>
+          </view>
+          <view v-if="!item.isDefault" class="default-button" @click="handleDefault(item)">
+            设为默认
+          </view>
         </view>
       </view>
     </view>
-
     <view class="add-address-bar" @click="goAddAddress">
       + 新增地址
     </view>
@@ -88,8 +124,6 @@ onShow(loadAddresses)
 
 .address-list {
   padding: 28rpx 36rpx 0;
-
-  /* 底部给悬浮胶囊按钮留避让空间 */
   margin-bottom: 160rpx;
 }
 
@@ -104,6 +138,11 @@ onShow(loadAddresses)
   flex: 1;
   min-width: 0;
 
+  &_tag {
+    font-size: 24rpx;
+    color: #1890ff;
+  }
+
   &_title {
     @include text-ellipsis;
 
@@ -112,45 +151,91 @@ onShow(loadAddresses)
     font-size: 36rpx;
     font-weight: 500;
     line-height: 1.25;
-    color: #222;
   }
 
   &_meta {
     display: flex;
-    gap: 40rpx;
-    font-size: 28rpx;
+    gap: 24rpx;
+    font-size: 26rpx;
     line-height: 1.2;
     color: #999;
   }
 }
 
-.edit-button {
+.address-tags {
   display: flex;
+  gap: 12rpx;
   align-items: center;
-  justify-content: center;
-  width: 80rpx;
-  height: 80rpx;
+  margin-bottom: 12rpx;
+}
+
+.default-badge {
+  padding: 2rpx 8rpx;
+  font-size: 22rpx;
+  color: #1890ff;
+  background: #e6f7ff;
+  border-radius: 4rpx;
+}
+
+.address-item_actions {
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+  margin-left: 20rpx;
   font-size: 24rpx;
-  color: #888;
+}
+
+.action-line {
+  display: flex;
+  gap: 24rpx;
+}
+
+.edit-button {
+  color: #999;
+}
+
+.delete-button {
+  color: #ff4d4f;
+}
+
+.default-button {
+  color: #1890ff;
+}
+
+.actions-busy {
+  opacity: 0.5;
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  gap: 20rpx;
+  padding: 120rpx 32rpx;
+  color: #999;
+  text-align: center;
+}
+
+.empty-hint {
+  font-size: 26rpx;
+}
+
+.operation-error {
+  padding: 20rpx 32rpx;
+  font-size: 26rpx;
+  color: #ff4d4f;
 }
 
 .add-address-bar {
   position: fixed;
   right: 48rpx;
-  bottom: calc(48rpx + env(safe-area-inset-bottom, 0px));
+  bottom: 48rpx;
   left: 48rpx;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 88rpx;
-  background: $blue;
-  border-radius: 44rpx;
-  box-shadow: 0 8rpx 24rpx rgb(49 144 232 / 35%);
-
-  text {
-    font-size: 32rpx;
-    font-weight: 500;
-    color: #fff;
-  }
+  padding: 24rpx;
+  font-size: 28rpx;
+  color: #fff;
+  text-align: center;
+  background: #1890ff;
+  border-radius: 80rpx;
+  box-shadow: 0 4rpx 20rpx #1890ff40;
 }
 </style>
