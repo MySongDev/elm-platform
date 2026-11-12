@@ -21,7 +21,9 @@
  * ★ 微信流程的三个硬约束（都在下面的代码里落实）：
  * - 建单前先登记快照拿 requestId 并落盘，重试沿用同一个 ID，后端才回原单；
  * - 已有 orderNo 后再点支付只续付，绝不重复建单；
- * - 用户取消不提示为错误、也不清草稿——单已建好，回订单列表能续付。
+ * - 用户取消不提示为错误、也不清草稿——单已建好，回订单列表能续付；
+ * - 建单成功不等于付款成功：本页不写付款成功上下文，只把单号绑到快照。
+ *   否则用户取消后返回商家页，还没买的商品会被当成已付款扣掉。
  */
 import { onLoad, onShow } from '@dcloudio/uni-app'
 import { storeToRefs } from 'pinia'
@@ -32,18 +34,22 @@ import { withQuery } from '@/config/routes'
 import { showToast } from '@/platform/feedback'
 import { createAuthGuard, navigateTo, ROUTES } from '@/platform/navigation'
 import { requestPayment } from '@/platform/payment'
+import { useCartStore } from '@/stores/modules/store-cart'
 import { useUserStore } from '@/stores/modules/store-user'
 import { buildSingleShopSelection } from '@/utils/checkout-entry'
-import { clearPaymentCheckoutDraft, getPaymentCheckoutDraft, savePaymentSuccessContext } from '@/utils/payment'
+import { clearPaymentCheckoutDraft, getPaymentCheckoutDraft } from '@/utils/payment'
 import { checkPayableAmount } from '@/utils/payment-flow'
 
 const userStore = useUserStore()
+const cartStore = useCartStore()
 const { isLogin } = storeToRefs(userStore)
 const checkoutEntry = useCheckoutEntry()
 
 const isPaying = ref(false)
 // 本次已经建好的单号：非空后再次点支付只续付，不再建单。
 const createdOrderNo = ref('')
+// 本次建单绑定的 requestId，服务端确认 CLOSED 时用它结束旧快照。
+let checkoutRequestId = ''
 // 服务端权威应付额（元）。建单后若与页面估价不同，用它覆盖展示，让用户看到真实要付的钱。
 const payableAmountOverride = ref(0)
 // 本次发起支付前用户看到的金额，用于和服务端金额比对（不能用覆盖后的值自称一致）。
@@ -130,6 +136,7 @@ async function pay() {
       shopId: selection.shopId,
       cartItems: selection.cartItems,
     })
+    checkoutRequestId = requestId
 
     // 记下发起前的展示价：金额比对必须拿它去比，不能用已被覆盖后的 payableAmount。
     shownAmountBeforeRequest.value = payableAmount.value
@@ -144,11 +151,6 @@ async function pay() {
       onOrderCreated: (order) => {
         createdOrderNo.value = order.orderNo
         checkoutEntry.bindOrder(userStore.userId, requestId, order.orderNo)
-        savePaymentSuccessContext({
-          orderNo: order.orderNo,
-          shopId: selection.shopId,
-          pending: true,
-        })
       },
     })
 
@@ -190,13 +192,17 @@ async function launchExistingOrder(orderNo) {
  * 取消不提示为错误（用户自己的选择），也不清草稿——单已经建好了，回列表能续付。
  */
 function handlePaymentResult(result) {
+  // 已终结原单：未付款不能写成功上下文，否则返回商家页会把还没买的商品扣掉。
+  if (result?.outcome === 'closed') {
+    if (result.orderNo)
+      endClosedCheckout(result.orderNo)
+    showToast(result.message || '原订单已关闭，请重新下单')
+    return
+  }
+
   if (result?.orderNo && !createdOrderNo.value) {
     createdOrderNo.value = result.orderNo
-    savePaymentSuccessContext({
-      orderNo: result.orderNo,
-      shopId: draft.value?.shopId ?? '',
-      pending: true,
-    })
+    checkoutEntry.bindOrder(userStore.userId, checkoutRequestId, result.orderNo)
   }
 
   if (result?.outcome === 'canceled') {
@@ -221,7 +227,7 @@ function handlePaymentResult(result) {
   }
 
   if (result?.success && result.orderNo) {
-    clearPaymentCheckoutDraft()
+    // 已付款不删草稿：万一结果页查不到 PAID，返回这里仍能按原单续付而不是重新建单。
     navigateTo(withQuery(ROUTES.PAYMENT_RESULT, {
       orderNo: result.orderNo,
       shopId: draft.value?.shopId ?? '',
@@ -231,6 +237,20 @@ function handlePaymentResult(result) {
   }
 
   showToast(result?.message || '支付未完成，可在订单列表继续支付')
+}
+
+/** 结束后端确认关闭的订单：清掉只属于原单的草稿，下次支付用新 requestId 重新建单。 */
+function endClosedCheckout(orderNo) {
+  cartStore.closeCheckoutSnapshot(userStore.userId, {
+    orderNo,
+    shopId: draft.value?.shopId ?? '',
+    status: 'CLOSED',
+  })
+  if (orderNo === createdOrderNo.value) {
+    createdOrderNo.value = ''
+    payableAmountOverride.value = 0
+    clearPaymentCheckoutDraft()
+  }
 }
 
 /**

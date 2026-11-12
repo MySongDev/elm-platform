@@ -1,8 +1,11 @@
 import type { CartProduct, CartStore } from './cart'
 import type { CheckoutSnapshotInput, CheckoutSnapshotState, ConfirmedCheckoutOrder } from './checkout-snapshot'
 import { describe, expect, it } from 'vitest'
+import { findPendingCheckoutSnapshot } from './checkout-entry'
 import {
+  areCheckoutItemsEqual,
   bindCheckoutOrder,
+  closeCheckoutSnapshot,
   consumePaidCheckout,
   createCheckoutSnapshotState,
   MAX_CHECKOUT_ITEM_QTY,
@@ -397,6 +400,7 @@ describe('可信 PAID 摘要的精确购物车消费', () => {
     expect(result.consumed).toBe(true)
     expect(later.stores[0].products[0].quantity).toBe(2)
     expect(later.consumed).toBe(false)
+    expect(later.outcome).toBe('already-consumed')
   })
 
   it('购买店铺已删除时不扣其他店铺同商品', () => {
@@ -438,6 +442,7 @@ describe('可信 PAID 摘要的精确购物车消费', () => {
     const retryRegistration = registerCheckoutSnapshot(second.state, selection())
 
     expect(second.consumed).toBe(false)
+    expect(second.outcome).toBe('already-consumed')
     expect(second.stores[0].products[0].quantity).toBe(3)
     expect(retryRegistration.snapshots[0].consumed).toBe(true)
     expect(retryRegistration.snapshots[0].orderNo).toBe('order-a')
@@ -455,6 +460,7 @@ describe('可信 PAID 摘要的精确购物车消费', () => {
       state,
       stores,
       consumed: false,
+      outcome: 'rejected',
     })
   })
 
@@ -462,7 +468,7 @@ describe('可信 PAID 摘要的精确购物车消费', () => {
     { userId: 'user-b' },
     { orderNo: 'unknown-order' },
     { shopId: '2' },
-  ])('摘要身份或店铺与快照不匹配时不消费：%j', (changed) => {
+  ])('摘要身份或店铺与快照不匹配时不消费，并区分是否命中绑定：%j', (changed) => {
     const state = boundState()
     const stores = [store()]
     const result = consumePaidCheckout(state, stores, {
@@ -474,6 +480,7 @@ describe('可信 PAID 摘要的精确购物车消费', () => {
       state,
       stores,
       consumed: false,
+      outcome: changed.orderNo ? 'missing' : 'rejected',
     })
   })
 
@@ -489,6 +496,7 @@ describe('可信 PAID 摘要的精确购物车消费', () => {
       state,
       stores,
       consumed: false,
+      outcome: 'missing',
     })
   })
 
@@ -504,6 +512,7 @@ describe('可信 PAID 摘要的精确购物车消费', () => {
       state,
       stores,
       consumed: false,
+      outcome: 'rejected',
     })
   })
 
@@ -566,5 +575,73 @@ describe('可信 PAID 摘要的精确购物车消费', () => {
     expect(result.state).not.toBe(state)
     expect(result.state.snapshots[0].cartItems).not.toBe(state.snapshots[0].cartItems)
     expect(result.stores[0].products[0].quantity).toBe(3)
+  })
+})
+
+describe('关闭结算与重试比较', () => {
+  it('同一份乱序或拆分的选择视为相同，不需要换 requestId', () => {
+    expect(areCheckoutItemsEqual([
+      {
+        itemId: '20',
+        skuId: 'sku-b',
+        qty: 1,
+      },
+      {
+        itemId: '10',
+        skuId: 'sku-a',
+        qty: 1,
+      },
+      {
+        itemId: '10',
+        skuId: 'sku-a',
+        qty: 1,
+      },
+    ], [
+      {
+        itemId: '10',
+        skuId: 'sku-a',
+        qty: 2,
+      },
+      {
+        itemId: '20',
+        skuId: 'sku-b',
+        qty: 1,
+      },
+    ])).toBe(true)
+    expect(areCheckoutItemsEqual([{
+      itemId: '10',
+      skuId: 'sku-a',
+      qty: 1,
+    }], [{
+      itemId: '10',
+      skuId: 'sku-a',
+      qty: 2,
+    }])).toBe(false)
+  })
+
+  it('只依据后端 CLOSED 结束快照，不扣商品且不再参与待支付复用', () => {
+    const closed = closeCheckoutSnapshot(boundState(), paidOrder({ status: 'CLOSED' }))
+
+    expect(closed.snapshots[0].closed).toBe(true)
+    expect(closed.snapshots[0].consumed).toBe(false)
+    expect(findPendingCheckoutSnapshot(closed, {
+      userId: 'user-a',
+      shopId: '1',
+    })).toBeNull()
+    expect(closeCheckoutSnapshot(closed, paidOrder({ status: 'PENDING' })).snapshots[0].closed).toBe(true)
+  })
+
+  it('关闭不命中订单号或已消费快照时均不改写关闭标记', () => {
+    const untouched = closeCheckoutSnapshot(boundState(), paidOrder({
+      status: 'CLOSED',
+      orderNo: 'other',
+    }))
+    const consumed = consumePaidCheckout(boundState(), [store()], {
+      userId: 'user-a',
+      order: paidOrder(),
+    }).state
+
+    expect(untouched.snapshots[0].closed).toBeUndefined()
+    expect(closeCheckoutSnapshot(consumed, paidOrder({ status: 'CLOSED' })).snapshots[0].closed).toBeUndefined()
   })
 })

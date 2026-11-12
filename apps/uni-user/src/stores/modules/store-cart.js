@@ -27,7 +27,7 @@ import { computed, ref, watch } from 'vue'
 import { getStore, setStore } from '@/platform/storage'
 import { createProductId, normalizeStore, productFromFood, toNumber, toText } from '@/utils/cart'
 import { discardSnapshotsOfOtherUsers, findPendingCheckoutSnapshot } from '@/utils/checkout-entry'
-import { bindCheckoutOrder as bindCheckoutOrderSnapshot, consumePaidCheckout as consumePaidCheckoutSnapshot, createCheckoutSnapshotState, registerCheckoutSnapshot } from '@/utils/checkout-snapshot'
+import { bindCheckoutOrder as bindCheckoutOrderSnapshot, closeCheckoutSnapshot as closeOrderSnapshot, consumePaidCheckout as consumePaidCheckoutSnapshot, createCheckoutSnapshotState, registerCheckoutSnapshot } from '@/utils/checkout-snapshot'
 
 const CART_STORAGE_KEY = 'elm_cart_store_v3'
 const CART_CHECKOUT_SHOP_ID = 'cart-checkout'
@@ -368,13 +368,22 @@ export const useCartStore = defineStore('cart', () => {
       },
     })
 
-    if (!result.consumed)
-      return false
+    if (result.consumed) {
+      checkoutSnapshots.value = result.state
+      stores.value = result.stores
+      removeEmptyStores()
+    }
+    return result.outcome
+  }
 
-    checkoutSnapshots.value = result.state
-    stores.value = result.stores
-    removeEmptyStores()
-    return true
+  /** 关闭旧结算不删商品；下一次确认支付必须用新 requestId，不能复用已关闭单号。 */
+  function closeCheckoutSnapshot(userId, order) {
+    checkoutSnapshots.value = closeOrderSnapshot(checkoutSnapshots.value, {
+      userId: String(userId),
+      orderNo: String(order.orderNo ?? ''),
+      shopId: String(order.shopId ?? ''),
+      status: String(order.status ?? ''),
+    })
   }
 
   /** 换账号时清掉别人的快照，避免新用户沿用到上一个用户的 requestId/订单号。 */
@@ -429,6 +438,7 @@ export const useCartStore = defineStore('cart', () => {
     bindCheckoutOrder,
     getPendingCheckout,
     consumePaidSnapshot,
+    closeCheckoutSnapshot,
     discardSnapshotsExcept,
   }
 })

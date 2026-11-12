@@ -19,6 +19,8 @@ export interface CheckoutSnapshotInput {
 export interface CheckoutSnapshot extends CheckoutSnapshotInput {
   readonly orderNo?: string
   readonly consumed: boolean
+  // 关闭不等于买过：保留原绑定，但不能再拿这个请求 ID 结算，也不能扣车。
+  readonly closed?: boolean
 }
 
 export interface CheckoutSnapshotState {
@@ -44,10 +46,14 @@ export interface PaidCheckoutInput {
   readonly order: ConfirmedCheckoutOrder
 }
 
+export type PaidCheckoutOutcome = 'consumed' | 'already-consumed' | 'missing' | 'rejected'
+
 export interface PaidCheckoutResult {
   readonly state: CheckoutSnapshotState
   readonly stores: CartStore[]
   readonly consumed: boolean
+  // 调用方只能在 missing 时考虑旧流程；already-consumed 再清车会删掉后来新增的商品。
+  readonly outcome: PaidCheckoutOutcome
 }
 
 function requireIdentity(value: string, field: string): void {
@@ -98,6 +104,11 @@ function normalizeSelection(cartItems: readonly CheckoutItemSelection[]): Checko
     const rightKey = itemKey(right)
     return leftKey < rightKey ? -1 : leftKey > rightKey ? 1 : 0
   })
+}
+
+/** 请求重试与快照登记必须共用归并/排序规则，否则同一份乱序选择会悄悄换 requestId。 */
+export function areCheckoutItemsEqual(left: readonly CheckoutItemSelection[], right: readonly CheckoutItemSelection[]): boolean {
+  return JSON.stringify(normalizeSelection(left)) === JSON.stringify(normalizeSelection(right))
 }
 
 function sameSelection(snapshot: CheckoutSnapshot, input: CheckoutSnapshotInput): boolean {
@@ -196,6 +207,30 @@ export function bindCheckoutOrder(
   }
 }
 
+/** 只结束后端确认 CLOSED 的快照；保留订单绑定供历史查询，关闭本身不消费商品。 */
+export function closeCheckoutSnapshot(state: CheckoutSnapshotState, order: ConfirmedCheckoutOrder): CheckoutSnapshotState {
+  requireIdentity(order.userId, 'userId')
+  requireIdentity(order.orderNo, 'orderNo')
+  requireCatalogId(order.shopId, 'shopId')
+  if (order.status !== 'CLOSED')
+    return cloneState(state)
+
+  return {
+    snapshots: state.snapshots.map((snapshot) => {
+      const matchesOrder = snapshot.userId === order.userId
+        && snapshot.orderNo === order.orderNo
+        && snapshot.shopId === order.shopId
+        && !snapshot.consumed
+      return matchesOrder
+        ? {
+            ...cloneSnapshot(snapshot),
+            closed: true,
+          }
+        : cloneSnapshot(snapshot)
+    }),
+  }
+}
+
 /**
  * 只接后端已确认的摘要，不能把收银台回调直接当 PAID；本函数不验证网络来源。
  * 仅比较现存商品与 SKU 数量，付款期间删掉再重加同 SKU 无法识别为新一代商品。
@@ -215,6 +250,7 @@ export function consumePaidCheckout(
     state: nextState,
     stores: nextStores,
     consumed: false,
+    outcome: 'rejected',
   }
   const order = input.order
   if (typeof input.userId !== 'string' || !input.userId
@@ -228,8 +264,20 @@ export function consumePaidCheckout(
     snapshot.userId === input.userId && snapshot.orderNo === order.orderNo,
   )
   const snapshot = state.snapshots[index]
-  if (!snapshot || snapshot.consumed || snapshot.shopId !== order.shopId)
+  if (!snapshot) {
+    return {
+      ...unchanged,
+      outcome: 'missing',
+    }
+  }
+  if (snapshot.shopId !== order.shopId)
     return unchanged
+  if (snapshot.consumed) {
+    return {
+      ...unchanged,
+      outcome: 'already-consumed',
+    }
+  }
 
   // 多条车记录即使意外拥有相同商品键，也只能共享这一份扣减额度，不能每条各扣一次。
   const remaining = new Map(snapshot.cartItems.map(item => [itemKey(item), item.qty]))
@@ -276,5 +324,6 @@ export function consumePaidCheckout(
     },
     stores: consumedStores,
     consumed: true,
+    outcome: 'consumed',
   }
 }

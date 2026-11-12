@@ -90,16 +90,21 @@ async function fetchStatus(refresh = true) {
         orderNo: result.orderNo,
         shopId: result.shopId,
         paidAt: result.paidAt || Date.now(),
+        status: result.status,
+        userId: String(userStore.userId),
+        paymentChannel: result.paymentChannel,
       })
-      // 先走快照精确扣减（只扣这张订单买过的数量）；
-      // 没有对应快照时（老流程/未登记）再回退旧的按店清车，避免车永远清不掉。
-      const consumedBySnapshot = cartStore.consumePaidSnapshot(userStore.userId, {
+      // 返回商家页会再次处理成功上下文；已消费快照不能再触发旧清车兜底。
+      const outcome = cartStore.consumePaidSnapshot(userStore.userId, {
         orderNo: result.orderNo,
         shopId: result.shopId,
         status: result.status,
       })
-      if (!consumedBySnapshot)
+      if (outcome === 'missing' && result.paymentChannel !== 'WECHAT')
         cartStore.consumePaidCheckout(result.shopId)
+    }
+    else if (action === 'closed' && result?.status === 'CLOSED') {
+      cartStore.closeCheckoutSnapshot(userStore.userId, result)
     }
 
     pollAttempts += 1

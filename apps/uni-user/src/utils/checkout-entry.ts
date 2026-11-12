@@ -126,7 +126,8 @@ export function findPendingCheckoutSnapshot(
   const candidates = state.snapshots.filter(snapshot =>
     snapshot.userId === input.userId
     && snapshot.shopId === input.shopId
-    && !snapshot.consumed,
+    && !snapshot.consumed
+    && !snapshot.closed,
   )
 
   return candidates.length > 0 ? candidates.at(-1) : null

@@ -44,16 +44,21 @@ export function useShopPageData(shopId, options = {}) {
       return
     }
 
-    // consumePaidSnapshot 要求 status 是 PAID、userId 与快照一致，这里据实传入后端摘要。
-    const consumed = cartStore.consumePaidSnapshot(userStore.userId, {
+    // 旧版本会把 pending 也存进成功上下文；不能给它补 PAID 后扣掉尚未付款的商品。
+    if (successContext.pending || successContext.status !== 'PAID'
+      || String(successContext.userId) !== String(userStore.userId)) {
+      clearPaymentSuccessContext()
+      return
+    }
+
+    const outcome = cartStore.consumePaidSnapshot(userStore.userId, {
       orderNo: successContext.orderNo,
       shopId: successContext.shopId,
-      status: 'PAID',
+      status: successContext.status,
     })
 
-    // 没有对应快照（老订单/直接结算未登记）时才回退到旧清车回调，
-    // 保证既有流程不会因为快照缺失而永远清不掉车。
-    if (!consumed)
+    // 已消费是正常重入，不是快照丢失。微信单无快照也不能整店清空，免得删掉新加的商品。
+    if (outcome === 'missing' && successContext.paymentChannel !== 'WECHAT')
       onPaidOrderConsumed?.()
 
     clearPaymentSuccessContext()

@@ -82,8 +82,7 @@ watch(
  * payment.vue 只读草稿（shopId/shopName/deliveryFee/totalQty/goodsAmount/cartItems）。
  *
  * 本页只结算本店全部商品，天然满足后端单一商家查价。
- * 不走 cart 页的 markPendingCheckout：它处理的是固定 cart-checkout 下的勾选项，
- * 本页支付成功后由 consumePaidOrder 按真实 shopId 整店清空，两条清理路径互不干扰。
+ * 本页与 cart 页都用订单快照精确扣减；只有旧非微信流程无快照时才保留原清车兜底。
  * 结算前先登记快照，把 requestId 落到持久化里：
  * 建单响应丢失后用户重试会带同一个 ID，后端才能回原单而不是多建一张。
  */
