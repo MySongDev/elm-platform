@@ -7,6 +7,7 @@
 ## 1. 当前状态与唯一下一步
 
 - 分支：`feat/uni-user-wechat-pay`；HEAD 仍为 `e5a5cb8c63e6f0d0e32e6faf5baffc7f66b0a7a8`。
+- **2026-11-13 审查后修复**：通知失败应答改为 HTTP 500；建单不再写付款成功上下文；重试比较与快照归一化统一；已消费快照不再触发整店清车；微信 CLOSED 结束本地订单与旧结算。后端 50 suites / 799 tests；前端 7 files / 114 tests。
 - **S0–S6 全部完成，代码层验收结束。** 后端 49 suites / 794 tests；前端 108 tests + type-check + mp-weixin 构建；S6 修掉 1 处跨事务缺陷，并交付启用指南 `docs/engineering/019-wechat-pay-enablement.md`。
 - **四层状态必须分开看**：代码验收 ✅ / 数据库验证 ❌ / 微信运行时验证 ❌ / 真实支付上线 ❌。**不能声称「用户可以付款」。**
 - 用户授权了三个代理并行第一波。B 正常交付；A/C 在后续收尾遇到 API 限流，主会话接手修复并完成真实验证。不要重复启动第一波或重做调查。
@@ -36,7 +37,7 @@
 | 微信业务层（S2） | `apps/server/src/modules/payment/wechat/wechat-payment.service.ts` | createOrder 可信建单+幂等、createPaymentParams 预支付参数；不做到账确认 |
 | 微信接口（S2） | `apps/server/src/api/customer/payment/wechat-payment.controller.ts` | `POST payments/wechat/create`(201)、`POST payments/wechat/resume`(200)，均需 CustomerAuthGuard |
 | 微信 DTO（S2） | `apps/server/src/api/customer/payment/dto/create-wechat-payment.dto.ts` | 建单 DTO 只收 itemId/skuId/qty，**没有价格字段** |
-| 微信通知（S3） | `apps/server/src/api/callbacks/wechat/wechat-notify.controller.ts` | `POST payments/wechat/notify`，无 JWT，永远回 200 + `{code}`，不进 OpenAPI |
+| 微信通知（S3） | `apps/server/src/api/callbacks/wechat/wechat-notify.controller.ts` | `POST payments/wechat/notify`，无 JWT，成功回 HTTP 200 + `{code:"SUCCESS"}`，失败回 HTTP 500 + `FAIL`，不进 OpenAPI |
 | 微信查单（S3） | `apps/server/src/api/customer/payment/wechat-payment.controller.ts` 的 `getStatus` | `GET payments/wechat/status/:orderNo`，`refresh=0` 只回本地快照 |
 | 到账结算（S3） | `wechat-payment.service.ts` 的 `handleNotification` / `refreshOrderStatus` / `settlePaidTransaction` | 通知与查单共用一个写入口 |
 | 结算入口纯函数（S4） | `apps/uni-user/src/utils/checkout-entry.ts` | createCheckoutRequestId、buildSingleShopSelection（跨商家返回 null）、describeCrossShopCheckout、findPendingCheckoutSnapshot、discardSnapshotsOfOtherUsers |
@@ -131,7 +132,7 @@
 | 新增到账测试 | 覆盖：金额一致才入账、验签失败不碰库、金额不符拒绝、商户号不符拒绝、重复通知不重复入账、已关闭单收到成功通知回失败、查单未支付只记 tradeStatus、查单成功走同一入口、查单 null 不改状态、refresh=0 不访问微信、他人订单拒绝 |
 | S3 文件 ESLint | 0 error；23 条既有 `no-explicit-any` warning |
 | `pnpm api:generate` | 成功；新增 `/api/payments/wechat/status/{orderNo}`，notify 按设计不进契约 |
-| 真实 HTTP 冒烟（起 `dist/main.js`） | 无签名/空体通知均回 **HTTP 200 + `{code:"FAIL"}`**，没被全局过滤器包成 500；未登录查单/建单均 401。测完已关闭该临时进程 |
+| 真实 HTTP 冒烟（起 `dist/main.js`） | 无签名/空体通知当时回 **HTTP 200 + `{code:"FAIL"}`**（2026-11-13 审查认定与微信 API v3 应答规则不符，已改为失败回 500）；未登录查单/建单均 401。测完已关闭该临时进程 |
 
 测试暴露并修正了一处实现错误：金额校验原本放在状态判断之前，导致未支付查单（微信可能不返 amount）被误判为「金额不符」而报错。已改为只在准备入账（SUCCESS）时比对金额。
 

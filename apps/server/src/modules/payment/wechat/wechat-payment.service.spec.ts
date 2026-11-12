@@ -417,14 +417,84 @@ describe('wechatPaymentService 到账结算', () => {
       orderNo: 'ELMALI202611120001',
     })
 
-    expect(prisma.paymentOrder.updateMany).not.toHaveBeenCalled()
-    expect(prisma.paymentOrder.update).toHaveBeenCalledWith({
-      where: { orderNo: 'ELMALI202611120001' },
+    expect(prisma.paymentOrder.updateMany).toHaveBeenCalledTimes(1)
+    expect(prisma.paymentOrder.updateMany).toHaveBeenCalledWith({
+      where: {
+        orderNo: 'ELMALI202611120001',
+        status: 'PENDING',
+      },
       data: {
         tradeStatus: 'NOTPAY',
         queryPayload: expect.any(Object),
       },
     })
+  })
+
+  it('微信确认关闭：条件更新本地关闭并结束待支付履约，不再允许续付', async () => {
+    const { service, prisma, wechat } = createService()
+    wechat.queryTrade.mockResolvedValue({
+      appid: 'wx-app',
+      mchid: 'mch-1',
+      out_trade_no: 'ELMALI202611120001',
+      trade_state: 'CLOSED',
+    })
+
+    const result = await service.refreshOrderStatus({
+      userId: '1',
+      orderNo: 'ELMALI202611120001',
+    })
+
+    expect(result.status).toBe('CLOSED')
+    expect(prisma.paymentOrder.updateMany).toHaveBeenNthCalledWith(1, {
+      where: {
+        orderNo: 'ELMALI202611120001',
+        status: 'PENDING',
+      },
+      data: expect.objectContaining({
+        status: 'CLOSED',
+        tradeStatus: 'CLOSED',
+      }),
+    })
+    expect(prisma.paymentOrder.updateMany).toHaveBeenNthCalledWith(2, {
+      where: {
+        orderNo: 'ELMALI202611120001',
+        fulfillmentStatus: 'PENDING_PAYMENT',
+      },
+      data: expect.objectContaining({ fulfillmentStatus: 'CANCELED' }),
+    })
+    await expect(service.createPaymentParams({
+      userId: '1',
+      orderNo: 'ELMALI202611120001',
+      code: 'wx-code',
+    })).rejects.toThrow(BadRequestException)
+    expect(wechat.createJsapiPayment).not.toHaveBeenCalled()
+  })
+
+  it('迟到的 CLOSED 查询不能覆盖已入账订单', async () => {
+    const { service, prisma, wechat } = createService(createOrderRecord({
+      status: 'PAID',
+      tradeStatus: 'SUCCESS',
+    }))
+    prisma.paymentOrder.updateMany.mockResolvedValue({ count: 0 })
+    prisma.paymentOrder.findUnique.mockResolvedValue(createOrderRecord({
+      status: 'PAID',
+      tradeStatus: 'SUCCESS',
+    }))
+    wechat.queryTrade.mockResolvedValue({
+      appid: 'wx-app',
+      mchid: 'mch-1',
+      out_trade_no: 'ELMALI202611120001',
+      trade_state: 'CLOSED',
+    })
+
+    const result = await service.refreshOrderStatus({
+      userId: '1',
+      orderNo: 'ELMALI202611120001',
+    })
+
+    expect(result.status).toBe('PAID')
+    expect(result.tradeStatus).toBe('SUCCESS')
+    expect(prisma.paymentOrder.update).not.toHaveBeenCalled()
   })
 
   it('主动查单成功：与通知走同一条入账路径', async () => {

@@ -11,7 +11,7 @@
  * - 微信小程序里没有 window.location，且支付宝网页在微信里打不开。
  */
 
-import { createAlipayWapPayment, createWechatOrder } from '@/services/api/api-payment'
+import { createAlipayWapPayment, createWechatOrder, getWechatPaymentStatus } from '@/services/api/api-payment'
 import { checkPayableAmount } from '@/utils/payment-flow'
 import { launchWechatPaymentForOrder } from './wechat-payment'
 
@@ -42,7 +42,7 @@ export interface WechatCreatedOrder {
   status?: string
 }
 
-export type PaymentOutcome = 'paid-pending' | 'canceled' | 'failed'
+export type PaymentOutcome = 'paid-pending' | 'canceled' | 'failed' | 'closed'
 
 export interface PaymentResult {
   success: boolean
@@ -65,6 +65,11 @@ export async function requestPayment(req: PaymentRequest): Promise<PaymentResult
   try {
     // 续付：订单已建好，只重新拉收银台，绝不重复建单。
     if (req.orderNo) {
+      // 先识别本地已终结原单；首次尚未预支付时不能依赖微信的 ORDER_NOT_EXIST 错误应答。
+      const order = await getWechatPaymentStatus(req.orderNo, false)
+      const terminal = resolveTerminalWechatOrder(order)
+      if (terminal)
+        return terminal
       const launch = await launchWechatPaymentForOrder(req.orderNo)
       return toWechatResult(req.orderNo, launch)
     }
@@ -101,6 +106,10 @@ export async function requestPayment(req: PaymentRequest): Promise<PaymentResult
       payableAmount: Number(order.payableAmount),
       status: order.status,
     })
+
+    const terminal = resolveTerminalWechatOrder(order)
+    if (terminal)
+      return terminal
 
     // 服务端按当前菜单重新算过价，和页面展示不一致时必须先停下来确认。
     if (req.shownAmount !== undefined) {
@@ -172,6 +181,27 @@ export async function requestPayment(req: PaymentRequest): Promise<PaymentResult
     }
   }
   // #endif
+}
+
+/** 重试找回的单可能已终结；PAID 交结果页确认，CLOSED 必须结束旧请求，均不再拉收银台。 */
+function resolveTerminalWechatOrder(order: WechatCreatedOrder): PaymentResult | null {
+  if (order.status === 'CLOSED') {
+    return {
+      success: false,
+      orderNo: order.orderNo,
+      outcome: 'closed',
+      message: '原订单已关闭，请重新确认下单',
+    }
+  }
+  if (order.status === 'PAID') {
+    return {
+      success: true,
+      orderNo: order.orderNo,
+      outcome: 'paid-pending',
+      payableAmount: Number(order.payableAmount),
+    }
+  }
+  return null
 }
 
 /** 收银台结果 → 统一返回。取消单独标出来，避免被当成错误弹提示或触发重试。 */

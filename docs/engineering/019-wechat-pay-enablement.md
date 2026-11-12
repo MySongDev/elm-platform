@@ -12,7 +12,7 @@
 | 可信建单 | `apps/server/src/modules/payment/wechat/wechat-payment.service.ts` 的 `createOrder` | 只收「买什么买几份」，金额由服务端查库得出；客户端价格字段会被 400 拒绝 |
 | 建单幂等 | 同上 + `payment_orders.checkout_request_key` 唯一约束 | 同键同选择回原单、同键不同选择 409、并发冲突回读原单 |
 | 预支付参数 | 同上 `createPaymentParams` | 首次支付与续付共用；已 PAID 拒绝 |
-| 到账通知 | `apps/server/src/api/callbacks/wechat/wechat-notify.controller.ts` | 验签→解密→金额核对→事务内条件更新写 PAID |
+| 到账通知 | `apps/server/src/api/callbacks/wechat/wechat-notify.controller.ts` | 验签→解密→金额核对→事务内条件更新写 PAID；成功回 200，失败回 HTTP 500 让微信重推 |
 | 主动查单 | 同上 `refreshOrderStatus` + `GET /api/payments/wechat/status/:orderNo` | 与通知共用同一结算入口 |
 | 协议层 | `apps/server/src/modules/payment/wechat/wechat-pay.service.ts` | 签名、验签、AES-GCM 解密、查单；不碰数据库 |
 | 小程序付款 | `apps/uni-user/src/platform/wechat-payment.ts` | code → 后端参数 → `uni.requestPayment` |
@@ -83,8 +83,9 @@ apps/server/prisma/migrations/20261112000000_add_wechat_payment_channel/
 | 下单报 `APPID_MCHID_NOT_MATCH` | 商户号与 AppID 未绑定，见第 4 节第 2 条 |
 | 下单报签名错误 | 私钥与 `WECHAT_PAY_SERIAL_NO` 不是同一份证书 |
 | 通知一直收不到，订单停在待支付 | 回调地址不可公网访问；或验签失败（看后端日志 `微信支付通知处理未通过`）。**此时可用 `GET /api/payments/wechat/status/:orderNo?refresh=1` 主动查单补救** |
-| 通知持续重推 | 后端返回了非 200 或格式不对。本项目固定回 `200 + {code}`，出现重推优先看公钥是否配错 |
+| 通知持续重推 | 处理失败时后端会回 HTTP 500 + `{code:"FAIL"}`，这是微信重推的依据。先看日志里的「处理未通过」原因；反复验签失败优先检查公钥与公钥 ID 是否配错 |
 | 用户付了钱但订单没变 | 调主动查单接口。若返回金额不一致，说明订单金额被改过，需人工核对商户平台流水 |
+| 订单显示「已关闭」但仍想付款 | 微信查单确认 `CLOSED` 后本地订单会同步关闭，旧结算不能续付；请重新下单生成新订单 |
 
 ### 5.1 主动查单是唯一的人工补救手段
 
@@ -125,7 +126,7 @@ apps/server/prisma/migrations/20261112000000_add_wechat_payment_channel/
 
 | 层级 | 状态 |
 |---|---|
-| 代码验收 | ✅ 后端 49 suites / 794 tests；前端 108 tests + type-check + mp-weixin 构建 |
+| 代码验收 | ✅ 后端 50 suites / 799 tests；前端 114 tests + type-check + mp-weixin 构建 |
 | 数据库验证 | ❌ 迁移未执行 |
 | 微信运行时验证 | ❌ 无凭证，微信开发者工具连接失败 |
 | 真实支付 / 上线 | ❌ 未授权、未执行 |

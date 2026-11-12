@@ -156,12 +156,8 @@ export class WechatPaymentService {
   }
 
   /**
-   * 微信通知入口。返回 `true` 表示可以回 SUCCESS 让微信停止重推。
-   *
-   * 这里自己兜住所有异常而不是抛给全局过滤器：微信只认 HTTP 200 + `{code:"SUCCESS"}`，
-   * 而全局异常过滤器吐的是 `{code: 状态码, message}`，两者 code 字段类型都不一样。
-   * 抛出去会被包成微信读不懂的失败体，同一笔通知会被无限重推。
-   * 返回 false 时 Controller 回失败体，让微信重推——只有「暂时处理不了」才该这样。
+   * 只有成功处理才通知 Controller 回 200；失败回 500，让微信重推而不是丢账。
+   * 这里返回处理结果，不让全局异常过滤器把微信失败体改成项目通用信封。
    */
   async handleNotification(headers: Record<string, string | string[] | undefined>, rawBody: Buffer) {
     let transaction: WechatTransaction
@@ -234,17 +230,50 @@ export class WechatPaymentService {
     if (order.paymentChannel !== 'WECHAT')
       throw new BadRequestException('该订单不是微信支付订单')
 
+    if (transaction.trade_state === 'CLOSED') {
+      await (this.prisma as any).$transaction(async (tx: any) => {
+        // 查单回来时通知可能已先入账；只有仍待支付的订单能关闭，不能覆盖 PAID/SUCCESS。
+        const updated = await tx.paymentOrder.updateMany({
+          where: {
+            orderNo: order.orderNo,
+            status: 'PENDING',
+          },
+          data: {
+            status: 'CLOSED',
+            tradeStatus: 'CLOSED',
+            queryPayload: transaction,
+          },
+        })
+        if (updated.count === 0)
+          return
+
+        await tx.paymentOrder.updateMany({
+          where: {
+            orderNo: order.orderNo,
+            fulfillmentStatus: 'PENDING_PAYMENT',
+          },
+          data: {
+            fulfillmentStatus: 'CANCELED',
+            canceledAt: new Date(),
+          },
+        })
+      })
+      return this.findOrder(order.orderNo)
+    }
+
     if (transaction.trade_state !== 'SUCCESS') {
-      // 只有查单会走到这里（通知里非 SUCCESS 已被协议层拒绝）。
-      // 未支付/已关闭等状态不改本地 order.status，避免把用户还在付的单提前判死。
-      // 也没必要比金额：微信对未支付交易可能根本不返回 amount，拿缺失值当不符会误判。
-      return (this.prisma as any).paymentOrder.update({
-        where: { orderNo: order.orderNo },
+      // 未支付查询可以缺少金额；迟到的 NOTPAY 也不能盖掉已入账订单的 SUCCESS。
+      await (this.prisma as any).paymentOrder.updateMany({
+        where: {
+          orderNo: order.orderNo,
+          status: 'PENDING',
+        },
         data: {
           tradeStatus: transaction.trade_state,
           queryPayload: transaction,
         },
       })
+      return this.findOrder(order.orderNo)
     }
 
     // 金额只在真要入账时比对：这里是「标 PAID 且准备发货」的唯一关口。

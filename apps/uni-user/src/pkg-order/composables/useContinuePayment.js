@@ -18,6 +18,8 @@ import { showToast } from '@/platform/feedback'
 import { navigateTo, ROUTES } from '@/platform/navigation'
 import { requestPayment } from '@/platform/payment'
 import { getPaymentStatusByChannel } from '@/services/api/api-payment'
+import { useCartStore } from '@/stores/modules/store-cart'
+import { useUserStore } from '@/stores/modules/store-user'
 
 export function useContinuePayment({
   isLoggedIn,
@@ -25,6 +27,8 @@ export function useContinuePayment({
   goLogin,
 }) {
   const continuingOrderNo = shallowRef('')
+  const cartStore = useCartStore()
+  const userStore = useUserStore()
 
   async function refreshOrders() {
     await fetchOrders?.()
@@ -52,6 +56,12 @@ export function useContinuePayment({
       }
 
       if (latest?.status === 'CLOSED') {
+        // 不结束旧快照的话，回到结算页会复用已关闭单的 requestId 又被后端判 409。
+        cartStore.closeCheckoutSnapshot(userStore.userId, {
+          orderNo: order.orderNo,
+          shopId: latest.shopId || order.shopId,
+          status: latest.status,
+        })
         showToast('订单已关闭，请重新下单')
         await refreshOrders()
         return
@@ -62,6 +72,8 @@ export function useContinuePayment({
         await refreshOrders()
         return
       }
+
+      // 已有微信预支付单时，微信可对同单号重复下单，继续走原单续付。
 
       // 续付：只对已建订单重新拉起收银台，不重复建单。
       if (String(order.paymentChannel) !== 'WECHAT') {
@@ -86,6 +98,15 @@ export function useContinuePayment({
           shopId: order.shopId,
           paymentChannel: 'WECHAT',
         }))
+      }
+      else if (result.outcome === 'closed') {
+        cartStore.closeCheckoutSnapshot(userStore.userId, {
+          orderNo: order.orderNo,
+          shopId: order.shopId,
+          status: 'CLOSED',
+        })
+        showToast(result.message || '订单已关闭，请重新下单')
+        await refreshOrders()
       }
       else if (result.outcome === 'canceled') {
         showToast('已取消支付')
