@@ -12,6 +12,7 @@ import { ElmFoodPublicController } from './food/elm-food-public.controller'
 import { ElmLocationController } from './location/elm-location.controller'
 import { OrderController } from './order/customer-order.controller'
 import { PaymentController } from './payment/customer-payment.controller'
+import { WechatPaymentController } from './payment/wechat-payment.controller'
 import { CustomerAvatarController } from './profile/customer-avatar.controller'
 import { CustomerRatingController } from './rating/customer-rating.controller'
 import { ElmRestaurantPublicController } from './restaurant/elm-restaurant-public.controller'
@@ -26,6 +27,7 @@ import { ElmRestaurantPublicController } from './restaurant/elm-restaurant-publi
     ElmLocationController,
     OrderController,
     PaymentController,
+    WechatPaymentController,
     ElmRestaurantPublicController,
     ElmFoodPublicController,
     CustomerRatingController,
