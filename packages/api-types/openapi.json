@@ -8842,6 +8842,380 @@
         ]
       }
     },
+    "/api/payments/wechat/create": {
+      "post": {
+        "operationId": "WechatPaymentController_createOrder",
+        "summary": "创建微信支付订单（服务端查价 + 请求幂等）",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateWechatOrderDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "请求成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaymentOrderSummaryResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "请求参数错误",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiErrorResponseDto"
+                    },
+                    {
+                      "properties": {
+                        "code": {
+                          "example": 400
+                        },
+                        "message": {
+                          "example": "请求参数错误"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "未认证或认证已失效",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiErrorResponseDto"
+                    },
+                    {
+                      "properties": {
+                        "code": {
+                          "example": 401
+                        },
+                        "message": {
+                          "example": "未认证或认证已失效"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "资源状态冲突",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiErrorResponseDto"
+                    },
+                    {
+                      "properties": {
+                        "code": {
+                          "example": 409
+                        },
+                        "message": {
+                          "example": "资源状态冲突"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "服务器内部错误",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiErrorResponseDto"
+                    },
+                    {
+                      "properties": {
+                        "code": {
+                          "example": 500
+                        },
+                        "message": {
+                          "example": "服务器内部错误"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "消费者端－支付"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/api/payments/wechat/resume": {
+      "post": {
+        "operationId": "WechatPaymentController_resumePayment",
+        "summary": "为已建订单生成微信预支付参数（首次支付与续付共用）",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResumeWechatPaymentDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "请求成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WechatPaymentResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "请求参数错误",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiErrorResponseDto"
+                    },
+                    {
+                      "properties": {
+                        "code": {
+                          "example": 400
+                        },
+                        "message": {
+                          "example": "请求参数错误"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "未认证或认证已失效",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiErrorResponseDto"
+                    },
+                    {
+                      "properties": {
+                        "code": {
+                          "example": 401
+                        },
+                        "message": {
+                          "example": "未认证或认证已失效"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "请求的资源不存在",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiErrorResponseDto"
+                    },
+                    {
+                      "properties": {
+                        "code": {
+                          "example": 404
+                        },
+                        "message": {
+                          "example": "请求的资源不存在"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "服务器内部错误",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiErrorResponseDto"
+                    },
+                    {
+                      "properties": {
+                        "code": {
+                          "example": 500
+                        },
+                        "message": {
+                          "example": "服务器内部错误"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "消费者端－支付"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/api/payments/wechat/status/{orderNo}": {
+      "get": {
+        "operationId": "WechatPaymentController_getStatus",
+        "summary": "查询微信订单支付状态（可主动查单刷新）",
+        "parameters": [
+          {
+            "name": "orderNo",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "请求成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaymentOrderSummaryResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "未认证或认证已失效",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiErrorResponseDto"
+                    },
+                    {
+                      "properties": {
+                        "code": {
+                          "example": 401
+                        },
+                        "message": {
+                          "example": "未认证或认证已失效"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "请求的资源不存在",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiErrorResponseDto"
+                    },
+                    {
+                      "properties": {
+                        "code": {
+                          "example": 404
+                        },
+                        "message": {
+                          "example": "请求的资源不存在"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "服务器内部错误",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiErrorResponseDto"
+                    },
+                    {
+                      "properties": {
+                        "code": {
+                          "example": 500
+                        },
+                        "message": {
+                          "example": "服务器内部错误"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "消费者端－支付"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
     "/api/shopping/restaurants": {
       "get": {
         "operationId": "ElmRestaurantPublicController_getRestaurants",
@@ -12695,9 +13069,15 @@
             "description": "订单状态：PENDING 待支付, PAID 已支付, CLOSED 已关闭",
             "example": "PENDING"
           },
+          "paymentChannel": {
+            "type": "string",
+            "description": "支付渠道：WECHAT 微信（新订单），ALIPAY 支付宝（历史），null 为旧渠道无关单",
+            "example": "WECHAT",
+            "nullable": true
+          },
           "tradeStatus": {
             "type": "string",
-            "description": "支付宝交易状态",
+            "description": "渠道侧交易状态枚举（各渠道取值不同，如支付宝 WAIT_BUYER_PAY；微信侧由 S3 到账更新写入）",
             "example": "WAIT_BUYER_PAY"
           },
           "fulfillmentStatus": {
@@ -12818,7 +13198,7 @@
           },
           "tradeNo": {
             "type": "string",
-            "description": "支付宝交易号",
+            "description": "渠道侧交易号（支付成功后由对应渠道回调/查单写入）",
             "nullable": true
           },
           "availableActions": {
@@ -12843,6 +13223,7 @@
           "shopId",
           "shopName",
           "status",
+          "paymentChannel",
           "tradeStatus",
           "fulfillmentStatus",
           "refundStatus",
@@ -13041,6 +13422,142 @@
         },
         "required": [
           "orderNo"
+        ]
+      },
+      "WechatCheckoutItemDto": {
+        "type": "object",
+        "properties": {
+          "itemId": {
+            "type": "string",
+            "description": "商品项 ID（本地目录正整数）",
+            "example": "11"
+          },
+          "skuId": {
+            "type": "string",
+            "description": "SKU ID（对应数据库 specfoods 的真实身份）",
+            "example": "111"
+          },
+          "qty": {
+            "type": "number",
+            "description": "数量，1–99",
+            "example": 2
+          }
+        },
+        "required": [
+          "itemId",
+          "skuId",
+          "qty"
+        ]
+      },
+      "CreateWechatOrderDto": {
+        "type": "object",
+        "properties": {
+          "requestId": {
+            "type": "string",
+            "description": "客户端生成的结算请求 ID，用于重试幂等；同一 ID + 同一选择返回原单",
+            "example": "req-2026-11-12-0001"
+          },
+          "shopId": {
+            "type": "string",
+            "description": "店铺 ID（本地目录正整数）",
+            "example": "1"
+          },
+          "cartItems": {
+            "description": "购物车商品选择；单商家、每 SKU 与整单数量均 ≤99",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/WechatCheckoutItemDto"
+            }
+          }
+        },
+        "required": [
+          "requestId",
+          "shopId",
+          "cartItems"
+        ]
+      },
+      "WechatPaymentParamsDto": {
+        "type": "object",
+        "properties": {
+          "timeStamp": {
+            "type": "string",
+            "description": "时间戳（秒级字符串）",
+            "example": "1794441600"
+          },
+          "nonceStr": {
+            "type": "string",
+            "description": "随机字符串",
+            "example": "a1b2c3d4e5f6"
+          },
+          "package": {
+            "type": "string",
+            "description": "prepay_id=xxx",
+            "example": "prepay_id=wx1234567890"
+          },
+          "signType": {
+            "type": "string",
+            "description": "签名类型，固定 RSA",
+            "example": "RSA"
+          },
+          "paySign": {
+            "type": "string",
+            "description": "RSA 签名值",
+            "example": "SU1H1..."
+          }
+        },
+        "required": [
+          "timeStamp",
+          "nonceStr",
+          "package",
+          "signType",
+          "paySign"
+        ]
+      },
+      "WechatPaymentResponseDto": {
+        "type": "object",
+        "properties": {
+          "orderNo": {
+            "type": "string",
+            "description": "订单号",
+            "example": "ELMALI202611120001"
+          },
+          "payableAmount": {
+            "type": "number",
+            "description": "应付金额（元）",
+            "example": 29
+          },
+          "paymentParams": {
+            "description": "微信调起支付参数",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/WechatPaymentParamsDto"
+              }
+            ]
+          }
+        },
+        "required": [
+          "orderNo",
+          "payableAmount",
+          "paymentParams"
+        ]
+      },
+      "ResumeWechatPaymentDto": {
+        "type": "object",
+        "properties": {
+          "orderNo": {
+            "type": "string",
+            "description": "已建订单号",
+            "example": "ELMALI202611120001"
+          },
+          "code": {
+            "type": "string",
+            "description": "uni.login 拿到的一次性 code，仅用于服务端换 openid，不保存",
+            "example": "081AbCd000xyz"
+          }
+        },
+        "required": [
+          "orderNo",
+          "code"
         ]
       },
       "HealthDependencyResponseDto": {
