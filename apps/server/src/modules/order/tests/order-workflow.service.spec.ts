@@ -221,6 +221,21 @@ describe('orderWorkflowService', () => {
     expect(result.fulfillmentStatus).toBe('CANCELED')
   })
 
+  it('rejects approving refund on a WeChat order so a paid order is never marked refunded without moving money', async () => {
+    const { service, prisma } = createService({
+      fulfillmentStatus: 'PREPARING',
+      refundStatus: 'REQUESTED',
+      paymentChannel: 'WECHAT',
+    })
+
+    await expect(service.approveRefund('ELMDEMO202606020001', adminOperator, '同意退款'))
+      .rejects
+      .toThrow(BadRequestException)
+
+    // 关键：钱没动，也不能把订单写成 APPROVED / CANCELED
+    expect(prisma.paymentOrder.update).not.toHaveBeenCalled()
+  })
+
   it('hides refund review actions from other tenants', async () => {
     const { service } = createService({
       tenantId: 20,

@@ -111,6 +111,13 @@ export class OrderWorkflowService {
     this.assertCanWrite(context)
     assertRefundReviewAllowed(order)
 
+    // 微信订单的资金退款还没接：approveRefund 只会把状态写成 APPROVED/refundedAt，
+    // 并不会真的退回钱。放行它会让「已退款」落库而钱没动，属资金误标，
+    // 所以只拦新微信渠道；旧支付宝/历史 null 单保持既有行为。
+    if (order.paymentChannel === 'WECHAT') {
+      throw new BadRequestException('微信订单的资金退款尚未接入，暂不能标记为已退款')
+    }
+
     return (this.prisma as any).$transaction(async (tx: any) => {
       const updated = await tx.paymentOrder.update({
         where: { orderNo },

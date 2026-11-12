@@ -20,6 +20,7 @@ export function toOrderSummary(order: PaymentOrderRecord) {
     shopName: order.shopName,
     status: order.status,
     tradeStatus: order.tradeStatus,
+    paymentChannel: order.paymentChannel || null,
     fulfillmentStatus,
     refundStatus,
     refundBaseFulfillmentStatus: order.refundBaseFulfillmentStatus || null,
