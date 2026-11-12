@@ -78,7 +78,15 @@ export class PaymentOrderSummaryResponseDto {
   status: string
 
   @ApiProperty({
-    description: '支付宝交易状态',
+    description: '支付渠道：WECHAT 微信（新订单），ALIPAY 支付宝（历史），null 为旧渠道无关单',
+    example: 'WECHAT',
+    nullable: true,
+    type: String,
+  })
+  paymentChannel: string | null
+
+  @ApiProperty({
+    description: '渠道侧交易状态枚举（各渠道取值不同，如支付宝 WAIT_BUYER_PAY；微信侧由 S3 到账更新写入）',
     example: 'WAIT_BUYER_PAY',
   })
   tradeStatus: string
@@ -222,7 +230,7 @@ export class PaymentOrderSummaryResponseDto {
   updatedAt: Date
 
   @ApiProperty({
-    description: '支付宝交易号',
+    description: '渠道侧交易号（支付成功后由对应渠道回调/查单写入）',
     nullable: true,
     type: String,
   })

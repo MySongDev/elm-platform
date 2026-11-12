@@ -1151,6 +1151,57 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/payments/wechat/create": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** 创建微信支付订单（服务端查价 + 请求幂等） */
+        post: operations["WechatPaymentController_createOrder"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/payments/wechat/resume": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** 为已建订单生成微信预支付参数（首次支付与续付共用） */
+        post: operations["WechatPaymentController_resumePayment"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/payments/wechat/status/{orderNo}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 查询微信订单支付状态（可主动查单刷新） */
+        get: operations["WechatPaymentController_getStatus"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/shopping/restaurants": {
         parameters: {
             query?: never;
@@ -3556,7 +3607,12 @@ export interface components {
              */
             status: string;
             /**
-             * @description 支付宝交易状态
+             * @description 支付渠道：WECHAT 微信（新订单），ALIPAY 支付宝（历史），null 为旧渠道无关单
+             * @example WECHAT
+             */
+            paymentChannel: string | null;
+            /**
+             * @description 渠道侧交易状态枚举（各渠道取值不同，如支付宝 WAIT_BUYER_PAY；微信侧由 S3 到账更新写入）
              * @example WAIT_BUYER_PAY
              */
             tradeStatus: string;
@@ -3653,7 +3709,7 @@ export interface components {
              * @description 更新时间
              */
             updatedAt: string;
-            /** @description 支付宝交易号 */
+            /** @description 渠道侧交易号（支付成功后由对应渠道回调/查单写入） */
             tradeNo: string | null;
             /** @description 管理员可用操作 */
             availableActions: string[];
@@ -3773,6 +3829,90 @@ export interface components {
              * @example ELMALI202605241200000001
              */
             orderNo: string;
+        };
+        WechatCheckoutItemDto: {
+            /**
+             * @description 商品项 ID（本地目录正整数）
+             * @example 11
+             */
+            itemId: string;
+            /**
+             * @description SKU ID（对应数据库 specfoods 的真实身份）
+             * @example 111
+             */
+            skuId: string;
+            /**
+             * @description 数量，1–99
+             * @example 2
+             */
+            qty: number;
+        };
+        CreateWechatOrderDto: {
+            /**
+             * @description 客户端生成的结算请求 ID，用于重试幂等；同一 ID + 同一选择返回原单
+             * @example req-2026-11-12-0001
+             */
+            requestId: string;
+            /**
+             * @description 店铺 ID（本地目录正整数）
+             * @example 1
+             */
+            shopId: string;
+            /** @description 购物车商品选择；单商家、每 SKU 与整单数量均 ≤99 */
+            cartItems: components["schemas"]["WechatCheckoutItemDto"][];
+        };
+        WechatPaymentParamsDto: {
+            /**
+             * @description 时间戳（秒级字符串）
+             * @example 1794441600
+             */
+            timeStamp: string;
+            /**
+             * @description 随机字符串
+             * @example a1b2c3d4e5f6
+             */
+            nonceStr: string;
+            /**
+             * @description prepay_id=xxx
+             * @example prepay_id=wx1234567890
+             */
+            package: string;
+            /**
+             * @description 签名类型，固定 RSA
+             * @example RSA
+             */
+            signType: string;
+            /**
+             * @description RSA 签名值
+             * @example SU1H1...
+             */
+            paySign: string;
+        };
+        WechatPaymentResponseDto: {
+            /**
+             * @description 订单号
+             * @example ELMALI202611120001
+             */
+            orderNo: string;
+            /**
+             * @description 应付金额（元）
+             * @example 29
+             */
+            payableAmount: number;
+            /** @description 微信调起支付参数 */
+            paymentParams: components["schemas"]["WechatPaymentParamsDto"];
+        };
+        ResumeWechatPaymentDto: {
+            /**
+             * @description 已建订单号
+             * @example ELMALI202611120001
+             */
+            orderNo: string;
+            /**
+             * @description uni.login 拿到的一次性 code，仅用于服务端换 openid，不保存
+             * @example 081AbCd000xyz
+             */
+            code: string;
         };
         HealthDependencyResponseDto: {
             /**
@@ -9174,6 +9314,230 @@ export interface operations {
             query: {
                 refresh: string;
             };
+            header?: never;
+            path: {
+                orderNo: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description 请求成功 */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaymentOrderSummaryResponseDto"];
+                };
+            };
+            /** @description 未认证或认证已失效 */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 401 */
+                        code?: unknown;
+                        /** @example 未认证或认证已失效 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 请求的资源不存在 */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 404 */
+                        code?: unknown;
+                        /** @example 请求的资源不存在 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 服务器内部错误 */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 500 */
+                        code?: unknown;
+                        /** @example 服务器内部错误 */
+                        message?: unknown;
+                    };
+                };
+            };
+        };
+    };
+    WechatPaymentController_createOrder: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateWechatOrderDto"];
+            };
+        };
+        responses: {
+            /** @description 请求成功 */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaymentOrderSummaryResponseDto"];
+                };
+            };
+            /** @description 请求参数错误 */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 400 */
+                        code?: unknown;
+                        /** @example 请求参数错误 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 未认证或认证已失效 */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 401 */
+                        code?: unknown;
+                        /** @example 未认证或认证已失效 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 资源状态冲突 */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 409 */
+                        code?: unknown;
+                        /** @example 资源状态冲突 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 服务器内部错误 */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 500 */
+                        code?: unknown;
+                        /** @example 服务器内部错误 */
+                        message?: unknown;
+                    };
+                };
+            };
+        };
+    };
+    WechatPaymentController_resumePayment: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ResumeWechatPaymentDto"];
+            };
+        };
+        responses: {
+            /** @description 请求成功 */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WechatPaymentResponseDto"];
+                };
+            };
+            /** @description 请求参数错误 */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 400 */
+                        code?: unknown;
+                        /** @example 请求参数错误 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 未认证或认证已失效 */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 401 */
+                        code?: unknown;
+                        /** @example 未认证或认证已失效 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 请求的资源不存在 */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 404 */
+                        code?: unknown;
+                        /** @example 请求的资源不存在 */
+                        message?: unknown;
+                    };
+                };
+            };
+            /** @description 服务器内部错误 */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorResponseDto"] & {
+                        /** @example 500 */
+                        code?: unknown;
+                        /** @example 服务器内部错误 */
+                        message?: unknown;
+                    };
+                };
+            };
+        };
+    };
+    WechatPaymentController_getStatus: {
+        parameters: {
+            query?: never;
             header?: never;
             path: {
                 orderNo: string;

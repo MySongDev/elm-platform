@@ -168,6 +168,10 @@ model PaymentOrder {
   shopName                    String
   status                      String    @default("PENDING")
   tradeStatus                 String    @default("WAIT_BUYER_PAY")
+  /// null 保留旧订单的支付宝行为；新微信订单必须显式标记，不能跨渠道续付。
+  paymentChannel              String?   @map("payment_channel")
+  /// 下单人 ID + 客户端请求 ID，唯一约束覆盖建单成功但响应丢失的重试。
+  checkoutRequestKey          String?   @unique @map("checkout_request_key")
   fulfillmentStatus           String    @default("PENDING_PAYMENT") @map("fulfillment_status")
   refundStatus                String    @default("NONE") @map("refund_status")
   refundBaseFulfillmentStatus String?   @map("refund_base_fulfillment_status")

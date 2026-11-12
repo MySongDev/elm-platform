@@ -12,7 +12,8 @@ import { UPLOAD_DIR, UPLOAD_PUBLIC_PREFIX } from './modules/storage/local-disk.s
 import { PrismaService } from './prisma/prisma.service'
 
 async function bootstrap() {
-  const app = await NestFactory.create<NestExpressApplication>(AppModule)
+  // 微信通知按原始字节验签，保留 rawBody，不能用解析后的 JSON 重组签名原文。
+  const app = await NestFactory.create<NestExpressApplication>(AppModule, { rawBody: true })
   const configService = app.get(ConfigService)
 
   // 全局前缀（控制器路由用）。注意：useStaticAssets 是 Express 层中间件，

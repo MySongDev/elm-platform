@@ -143,11 +143,48 @@ export function requestOrderRefund({ orderNo, reason }) {
   return paymentPost(paymentEndpoints.requestRefund(orderNo), { reason })
 }
 
-/** 查支付状态。与渠道无关（后端按 orderNo 查），小程序端可正常调用 */
+/** 查支付宝支付状态。⚠️ 只用于支付宝订单：微信订单走 getWechatPaymentStatus。 */
 export function getAlipayPaymentStatus(orderNo, refresh = true) {
   return paymentGet(paymentEndpoints.alipayStatus(orderNo), {
     refresh: refresh ? 1 : 0,
   })
+}
+
+/**
+ * 微信可信建单：只报要买什么，报多少钱由服务端查价决定。
+ *
+ * `requestId` 由调用方在上报前持久化，同一份选择重试必须沿用同一个 ID——
+ * 后端靠它认出「这是同一笔结算」并回原单，换新 ID 就会真的多建一张订单。
+ */
+export function createWechatOrder(payload) {
+  return paymentPost(paymentEndpoints.createWechatOrder, payload)
+}
+
+/** 取微信预支付参数。首次支付与续付共用；已 PAID 的订单会被后端拒绝。 */
+export function resumeWechatPayment(payload) {
+  return paymentPost(paymentEndpoints.resumeWechat, payload)
+}
+
+/**
+ * 查微信订单状态。`refresh=false` 只回服务端快照，不访问微信（用于页面轮询控频）。
+ * 订单摘要结构与其他渠道一致。
+ */
+export function getWechatPaymentStatus(orderNo, refresh = true) {
+  return paymentGet(paymentEndpoints.wechatStatus(orderNo), {
+    refresh: refresh ? 1 : 0,
+  })
+}
+
+/**
+ * 按订单渠道选查单接口。
+ *
+ * 不能所有单都查支付宝：支付宝侧没有微信订单，会一直回「未支付」，
+ * 用户付完钱在结果页永远等不到 PAID。
+ */
+export function getPaymentStatusByChannel(orderNo, paymentChannel, refresh = true) {
+  return String(paymentChannel) === 'WECHAT'
+    ? getWechatPaymentStatus(orderNo, refresh)
+    : getAlipayPaymentStatus(orderNo, refresh)
 }
 
 /** 订单列表。与渠道无关，小程序端 order 页的数据来源 */

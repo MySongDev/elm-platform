@@ -332,4 +332,50 @@ describe('paymentService', () => {
       userId: '1',
     })).rejects.toThrow(BadRequestException)
   })
+
+  describe('微信渠道隔离：支付宝路径不得改写 WECHAT 订单', () => {
+    it('getAlipayPaymentStatus(refresh) 对 WECHAT 订单只回本地摘要，不调支付宝查单、不改数据库', async () => {
+      const { service, prisma, alipay } = createService()
+      prisma.paymentOrder.findUnique.mockResolvedValue(createOrder({ paymentChannel: 'WECHAT' }))
+
+      const result = await service.getAlipayPaymentStatus('ELMALI202605231234560001', true)
+
+      expect(alipay.queryTrade).not.toHaveBeenCalled()
+      expect(prisma.paymentOrder.update).not.toHaveBeenCalled()
+      expect(result.status).toBe('PENDING')
+    })
+
+    it('resumeAlipayWapPayment 对 WECHAT 订单直接拒绝，不生成支付宝链接', async () => {
+      const { service, prisma, alipay } = createService()
+      prisma.paymentOrder.findUnique.mockResolvedValue(createOrder({
+        paymentChannel: 'WECHAT',
+        status: 'PENDING',
+      }))
+
+      await expect(service.resumeAlipayWapPayment({
+        orderNo: 'ELMALI202605231234560001',
+        userId: '1',
+      })).rejects.toThrow('微信支付')
+
+      expect(alipay.createWapPayUrl).not.toHaveBeenCalled()
+      expect(prisma.paymentOrder.update).not.toHaveBeenCalled()
+    })
+
+    it('handleAlipayNotify 对 WECHAT 订单返回 false 且不写库，即便验签通过', async () => {
+      const { service, prisma } = createService()
+      prisma.paymentOrder.findUnique.mockResolvedValue(createOrder({ paymentChannel: 'WECHAT' }))
+      // 故意让验签通过，证明拦截发生在渠道判断而非验签
+      const result = await service.handleAlipayNotify({
+        app_id: 'app-id',
+        seller_id: 'seller-id',
+        out_trade_no: 'ELMALI202605231234560001',
+        trade_no: '2026052322001400000500000001',
+        trade_status: 'TRADE_SUCCESS',
+        total_amount: '29.00',
+      })
+
+      expect(result).toBe(false)
+      expect(prisma.paymentOrder.update).not.toHaveBeenCalled()
+    })
+  })
 })

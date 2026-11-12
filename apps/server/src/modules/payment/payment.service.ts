@@ -94,7 +94,10 @@ export class PaymentService {
     const order = await this.findOrder(orderNo)
     this.ensureOrderOwner(order, userId)
 
-    if (refresh && this.alipay.hasConfig()) {
+    // 微信订单不走支付宝查单：跨渠道刷新会用支付宝侧不存在/不符的状态覆盖微信订单行。
+    // 未配置渠道隔离前，这里只回本地摘要，不动数据库。
+    const refreshAllowed = order.paymentChannel !== 'WECHAT'
+    if (refresh && refreshAllowed && this.alipay.hasConfig()) {
       const trade = await this.alipay.queryTrade(orderNo)
       const tradeStatus = String(trade?.trade_status || order.tradeStatus)
       const updatedOrder = await (this.prisma as any).paymentOrder.update({
@@ -118,6 +121,12 @@ export class PaymentService {
   async resumeAlipayWapPayment(payload: AlipayWapResumePayload) {
     let order = await this.findOrder(payload.orderNo)
     this.ensureOrderOwner(order, payload.userId)
+
+    // 微信订单不能用支付宝 WAP 续付：跳过去生成的是支付宝收银台链接，
+    // 与微信渠道不符，会静默把微信订单带错渠道。
+    if (order.paymentChannel === 'WECHAT') {
+      throw new BadRequestException('该订单为微信支付，请在小程序内继续支付')
+    }
 
     if (this.alipay.hasConfig()) {
       try {
@@ -152,6 +161,11 @@ export class PaymentService {
 
     const orderNo = String(payload.out_trade_no || '')
     const order = await this.findOrder(orderNo)
+
+    // 支付宝回调只作用于支付宝订单。微信订单有独立的微信通知通道（S3），
+    // 若这里也写它，支付宝噪声数据会污染微信订单的 tradeStatus/tradeNo。
+    if (order.paymentChannel === 'WECHAT')
+      return false
 
     if (String(payload.app_id || '') !== this.alipay.getAppId())
       return false

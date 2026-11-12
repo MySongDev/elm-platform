@@ -9,6 +9,11 @@ export const paymentEndpoints = {
   createAlipayWap: '/payments/alipay/wap/create',
   resumeAlipayWap: '/payments/alipay/wap/resume',
   alipayStatus: orderNo => `/payments/alipay/status/${orderNo}`,
+  // 微信小程序支付。与支付宝不同，先建单再单独取预支付参数：
+  // 建单幂等（requestId），续付时只走 resume 拿参数，不会重复建单。
+  createWechatOrder: '/payments/wechat/create',
+  resumeWechat: '/payments/wechat/resume',
+  wechatStatus: orderNo => `/payments/wechat/status/${orderNo}`,
   requestRefund: orderNo => `/orders/${orderNo}/refund/request`,
   orders: '/orders',
 }

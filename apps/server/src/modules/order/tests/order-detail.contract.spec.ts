@@ -128,6 +128,7 @@ describe('admin order detail API contract', () => {
       shopName: 'Demo Shop',
       status: 'PAID',
       tradeStatus: 'TRADE_SUCCESS',
+      paymentChannel: null,
       fulfillmentStatus: 'AWAITING_ACCEPTANCE',
       refundStatus: 'NONE',
       refundBaseFulfillmentStatus: null,

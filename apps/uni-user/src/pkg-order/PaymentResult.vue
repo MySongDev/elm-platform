@@ -19,7 +19,7 @@
  *    utils/payment 与 store-cart（uni-user 侧已有同名实现）
  * 5. px → rpx
  */
-import { onLoad, onShow, onUnload } from '@dcloudio/uni-app'
+import { onHide, onLoad, onShow, onUnload } from '@dcloudio/uni-app'
 import { ref } from 'vue'
 
 import { withQuery } from '@/config/routes'
@@ -30,23 +30,33 @@ import {
   reLaunchToTab,
   ROUTES,
 } from '@/platform/navigation'
-import { getAlipayPaymentStatus } from '@/services/api/api-payment'
+import { getPaymentStatusByChannel } from '@/services/api/api-payment'
 import { useCartStore } from '@/stores/modules/store-cart'
+import { useUserStore } from '@/stores/modules/store-user'
 
 import { savePaymentSuccessContext } from '@/utils/payment'
+import { decideSettlementAction, shouldContinuePolling } from '@/utils/payment-flow'
 
 const cartStore = useCartStore()
+const userStore = useUserStore()
 
 const loading = ref(true)
 const order = ref(null)
 let timer = null
 let orderNo = ''
+// 页面上报的渠道（结果页入口可能没带，首查拿到摘要后补上）。
+let channelHint = ''
+// 每次页面显示/隐藏递增，用来丢弃离开页面后才回来的迟到响应。
+let activeRevision = 0
+let pageActive = true
+let pollAttempts = 0
 
 onShow(createAuthGuard('/pkg-order/PaymentResult'))
 
 // 取 query（orderNo / shopId / pending），对齐 web-user 的 route.query
 onLoad((options) => {
   orderNo = options?.orderNo || ''
+  channelHint = options?.paymentChannel || ''
   // 立即用 onLoad 的参数跑一次首查
   fetchStatus(options?.pending !== '0')
 })
@@ -60,27 +70,61 @@ async function fetchStatus(refresh = true) {
     timer = null
   }
 
+  const revision = activeRevision
   try {
-    const result = await getAlipayPaymentStatus(orderNo, refresh)
-    order.value = result
+    // 按渠道查：微信单查支付宝永远回「未支付」，用户会看到假 PENDING。
+    // 首查时还不确定渠道，先按提示走，拿到摘要后用它自己的 paymentChannel。
+    const channel = channelHint || order.value?.paymentChannel || ''
+    const result = await getPaymentStatusByChannel(orderNo, channel, refresh)
+    // 迟到的响应：页面已离开或已开始新一轮查询，丢弃，别改当前状态。
+    if (revision !== activeRevision || !pageActive)
+      return
 
-    if (result.status === 'PAID') {
+    order.value = result
+    channelHint = result?.paymentChannel || channelHint
+
+    const action = decideSettlementAction(result)
+
+    if (action === 'paid') {
       savePaymentSuccessContext({
         orderNo: result.orderNo,
         shopId: result.shopId,
         paidAt: result.paidAt || Date.now(),
       })
-      cartStore.consumePaidCheckout(result.shopId)
+      // 先走快照精确扣减（只扣这张订单买过的数量）；
+      // 没有对应快照时（老流程/未登记）再回退旧的按店清车，避免车永远清不掉。
+      const consumedBySnapshot = cartStore.consumePaidSnapshot(userStore.userId, {
+        orderNo: result.orderNo,
+        shopId: result.shopId,
+        status: result.status,
+      })
+      if (!consumedBySnapshot)
+        cartStore.consumePaidCheckout(result.shopId)
     }
 
-    if (result.status === 'PENDING')
+    pollAttempts += 1
+    if (action === 'needs-resubmit') {
+      // 非微信渠道的 PENDING 在这端没法付款，一直轮询只会等一个不会来的结果。
+      showToast('该订单需回商家页重新结算')
+      return
+    }
+
+    if (action === 'keep-polling'
+      && shouldContinuePolling({
+        attempts: pollAttempts,
+        active: pageActive,
+      })) {
       timer = setTimeout(fetchStatus, 2500, true)
+    }
   }
   catch (error) {
-    showToast(error?.message || '查询支付结果失败')
+    // 查询失败保留页面上已有的恢复信息：不弹错就清空，用户还能点「查看订单」回来重试。
+    if (revision === activeRevision && pageActive)
+      showToast(error?.message || '查询支付结果失败')
   }
   finally {
-    loading.value = false
+    if (revision === activeRevision)
+      loading.value = false
   }
 }
 
@@ -107,7 +151,28 @@ function backToNextPage() {
   reLaunchToTab(ROUTES.MSITE)
 }
 
+// 页面隐藏/卸载都要停轮询：切走后继续打接口，回来的迟到响应还会改已离开的页面状态。
+onHide(() => {
+  pageActive = false
+  activeRevision += 1
+  if (timer)
+    clearTimeout(timer)
+  timer = null
+})
+
+onShow(() => {
+  if (!pageActive) {
+    pageActive = true
+    activeRevision += 1
+    // 回到页面时恢复查询（轮询可能是在后台被停掉的）。
+    if (!timer && orderNo && order.value?.status !== 'PAID')
+      fetchStatus(true)
+  }
+})
+
 onUnload(() => {
+  pageActive = false
+  activeRevision += 1
   if (timer)
     clearTimeout(timer)
   timer = null
@@ -125,7 +190,7 @@ onUnload(() => {
           正在确认支付结果
         </view>
         <view class="result-desc">
-          请稍候，我们正在和支付宝同步订单状态。
+          请稍候，我们正在同步订单状态。
         </view>
       </template>
 

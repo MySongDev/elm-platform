@@ -62,6 +62,8 @@ export interface InsertPendingOrderParams {
   orderNo: string
   subject: string
   tenantId: number | null
+  paymentChannel?: 'ALIPAY' | 'WECHAT'
+  checkoutRequestKey?: string
 }
 
 interface PendingOrderInitialState {
@@ -197,6 +199,8 @@ export async function insertPendingOrder(prisma: PrismaService, params: InsertPe
     orderNo,
     subject,
     tenantId,
+    paymentChannel,
+    checkoutRequestKey,
   } = params
 
   return (prisma as any).paymentOrder.create({
@@ -215,6 +219,10 @@ export async function insertPendingOrder(prisma: PrismaService, params: InsertPe
       tenantId,
       tradeStatus: INITIAL_ALIPAY_TRADE_STATUS,
       userId: draft.userId,
+      // 显式写 null 而非省略：让旧入口落库行与 schema 列可空语义一致，
+      // 也避免有人误以为「没传 = 沿用默认」。两列都是可空。
+      paymentChannel: paymentChannel ?? null,
+      checkoutRequestKey: checkoutRequestKey ?? null,
     },
   })
 }
