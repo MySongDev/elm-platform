@@ -7,53 +7,82 @@
  * 1. `useRoute`（`route.query.shopName`）→ `onLoad(options)` 取 query
  * 2. **发起支付**：web-user 用 `createAlipayWapPayment` + `window.location.href = payUrl`
  *    （支付宝 H5 收银台整页跳转），小程序端没有 window.location，且支付宝 WAP 在
- *    微信小程序里打不开。改走 platform/payment 的 `requestPayment`（渠道无关 L2 接缝）——
- *    小程序端当前返回「当前端暂不支持支付」的留桩（建单已在后端独立完成，
- *    将来接微信支付时调用方零改动）。详见 platform/payment.ts 头部说明。
+ *    微信小程序里打不开。改走 platform/payment 的 `requestPayment`（渠道无关 L2 接缝），
+ *    小程序端内部走微信：可信建单 → 金额核对 → `uni.requestPayment`。
  * 3. `showAlert`（AlterTip DOM）→ platform/feedback showToast
  * 4. 导航统一走原生导航栏（2026-11-07）：原蓝色 head-top（`Head` 组件，
  *    与原生栏双头）已移除，页面标题由 pages.json 的 navigationBarTitleText 承担，
  *    返回按钮用微信原生 ←。`Head` 组件无引用方后按死代码留档策略处理。
  * 5. 支付成功后 web-user 跳转 payUrl 会离开 App 到支付宝收银台；
- *    小程序端 requestPayment 返回 success 后跳 PaymentResult 页查询结果
- *    （对齐 PaymentResult 的 PENDING 轮询逻辑）。当前留桩永远 success=false，
- *    所以实际只走到「暂不支持支付」的提示分支。
+ *    小程序端收银台走完后跳 PaymentResult 查单，**查到 PAID 才算付款成功**。
+ *    收银台返回成功只代表用户在弹窗里点了确认，不能据此清车。
  * 6. px → rpx
+ *
+ * ★ 微信流程的三个硬约束（都在下面的代码里落实）：
+ * - 建单前先登记快照拿 requestId 并落盘，重试沿用同一个 ID，后端才回原单；
+ * - 已有 orderNo 后再点支付只续付，绝不重复建单；
+ * - 用户取消不提示为错误、也不清草稿——单已建好，回订单列表能续付。
  */
 import { onLoad, onShow } from '@dcloudio/uni-app'
 import { storeToRefs } from 'pinia'
 import { computed, ref } from 'vue'
 
+import { useCheckoutEntry } from '@/composables/features/useCheckoutEntry'
 import { withQuery } from '@/config/routes'
 import { showToast } from '@/platform/feedback'
 import { createAuthGuard, navigateTo, ROUTES } from '@/platform/navigation'
 import { requestPayment } from '@/platform/payment'
 import { useUserStore } from '@/stores/modules/store-user'
-import { clearPaymentCheckoutDraft, getPaymentCheckoutDraft } from '@/utils/payment'
+import { buildSingleShopSelection } from '@/utils/checkout-entry'
+import { clearPaymentCheckoutDraft, getPaymentCheckoutDraft, savePaymentSuccessContext } from '@/utils/payment'
+import { checkPayableAmount } from '@/utils/payment-flow'
 
 const userStore = useUserStore()
 const { isLogin } = storeToRefs(userStore)
+const checkoutEntry = useCheckoutEntry()
 
 const isPaying = ref(false)
-const selectedMethod = ref('alipay')
+// 本次已经建好的单号：非空后再次点支付只续付，不再建单。
+const createdOrderNo = ref('')
+// 服务端权威应付额（元）。建单后若与页面估价不同，用它覆盖展示，让用户看到真实要付的钱。
+const payableAmountOverride = ref(0)
+// 本次发起支付前用户看到的金额，用于和服务端金额比对（不能用覆盖后的值自称一致）。
+const shownAmountBeforeRequest = ref(0)
+const selectedMethod = ref('wechat')
 const draft = ref(getPaymentCheckoutDraft())
 // query.shopName 兜底（onLoad 传入）
 const shopNameFromQuery = ref('')
 
+// 支付渠道由运行端决定，不是用户可选项：小程序只能走微信原生支付，
+// H5 只能跳支付宝。给一个「可选」的假选项会让用户以为能换渠道。
 const paymentMethods = [
+  // #ifdef MP-WEIXIN
+  {
+    key: 'wechat',
+    name: '微信支付',
+    desc: '使用微信支付完成付款',
+    icon: '微',
+  },
+  // #endif
+  // #ifndef MP-WEIXIN
   {
     key: 'alipay',
     name: '支付宝支付',
     desc: '跳转支付宝收银台完成付款',
     icon: '支',
   },
+  // #endif
 ]
 
 const shopName = computed(() => draft.value?.shopName || shopNameFromQuery.value || '当前商家')
 const goodsAmount = computed(() => Number(draft.value?.goodsAmount || 0))
 const deliveryFee = computed(() => Number(draft.value?.deliveryFee || 0))
 const totalQty = computed(() => Number(draft.value?.totalQty || 0))
-const payableAmount = computed(() => goodsAmount.value + deliveryFee.value)
+const payableAmount = computed(() =>
+  payableAmountOverride.value > 0
+    ? payableAmountOverride.value
+    : goodsAmount.value + deliveryFee.value,
+)
 const cartItems = computed(() => draft.value?.cartItems || [])
 const canSubmit = computed(() => cartItems.value.length > 0 && payableAmount.value > 0)
 const hasDraft = computed(() => Boolean(draft.value?.shopId && cartItems.value.length))
@@ -61,6 +90,10 @@ const hasDraft = computed(() => Boolean(draft.value?.shopId && cartItems.value.l
 onShow(createAuthGuard('/pkg-order/payment'))
 
 async function pay() {
+  // 处理中直接忽略重复点击，不弹「订单不完整」这种误导提示。
+  if (isPaying.value)
+    return
+
   if (!isLogin.value) {
     showToast('请登录后再支付')
     return
@@ -71,27 +104,55 @@ async function pay() {
     return
   }
 
+  // 已经有单号（上次建单成功但没付完）：只续付，绝不重复建单。
+  if (createdOrderNo.value) {
+    await launchExistingOrder(createdOrderNo.value)
+    return
+  }
+
+  const selection = buildSingleShopSelection(cartItems.value.map(item => ({
+    shopId: item.shopId ?? draft.value?.shopId,
+    shopName: item.shopName ?? draft.value?.shopName,
+    itemId: item.itemId,
+    skuId: item.skuId,
+    qty: item.qty,
+  })))
+  if (!selection) {
+    showToast('结算商品信息不完整，请返回重新选择')
+    return
+  }
+
   try {
     isPaying.value = true
-    const result = await requestPayment({
-      shopId: draft.value.shopId,
-      shopName: draft.value.shopName,
-      deliveryFee: draft.value.deliveryFee,
-      cartItems: draft.value.cartItems,
+    // 先登记快照拿 requestId 并落盘：建单响应丢失后重试要带同一个 ID，后端才回原单。
+    const requestId = checkoutEntry.beginCheckout({
+      userId: userStore.userId,
+      shopId: selection.shopId,
+      cartItems: selection.cartItems,
     })
 
-    if (result.success && result.orderNo) {
-      // H5/App 端真正支付成功会拿到 orderNo（小程序端当前留桩永远 false）
-      clearPaymentCheckoutDraft()
-      navigateTo(withQuery(ROUTES.PAYMENT_RESULT, {
-        orderNo: result.orderNo,
-        shopId: draft.value.shopId,
-      }))
-      return
-    }
+    // 记下发起前的展示价：金额比对必须拿它去比，不能用已被覆盖后的 payableAmount。
+    shownAmountBeforeRequest.value = payableAmount.value
 
-    // 小程序端当前分支：留桩「暂不支持支付」
-    showToast(result.message || '发起支付失败，请稍后再试')
+    const result = await requestPayment({
+      requestId,
+      shopId: selection.shopId,
+      shopName: selection.shopName,
+      deliveryFee: draft.value.deliveryFee,
+      cartItems: draft.value.cartItems,
+      shownAmount: payableAmount.value,
+      onOrderCreated: (order) => {
+        createdOrderNo.value = order.orderNo
+        checkoutEntry.bindOrder(userStore.userId, requestId, order.orderNo)
+        savePaymentSuccessContext({
+          orderNo: order.orderNo,
+          shopId: selection.shopId,
+          pending: true,
+        })
+      },
+    })
+
+    handlePaymentResult(result)
   }
   catch (error) {
     showToast(error?.message || '发起支付失败，请稍后再试')
@@ -99,6 +160,87 @@ async function pay() {
   finally {
     isPaying.value = false
   }
+}
+
+/** 已有订单号时续付：不建单，只重新拉起收银台。 */
+async function launchExistingOrder(orderNo) {
+  try {
+    isPaying.value = true
+    const result = await requestPayment({
+      orderNo,
+      shopId: draft.value?.shopId ?? '',
+      shopName: draft.value?.shopName ?? '',
+      deliveryFee: 0,
+      cartItems: [],
+    })
+    handlePaymentResult(result)
+  }
+  catch (error) {
+    showToast(error?.message || '继续支付失败，请稍后再试')
+  }
+  finally {
+    isPaying.value = false
+  }
+}
+
+/**
+ * 收银台结果 → 下一步。
+ *
+ * ⚠️ 只有「收银台走完」才去结果页查单；查到 PAID 才算付款成功。
+ * 取消不提示为错误（用户自己的选择），也不清草稿——单已经建好了，回列表能续付。
+ */
+function handlePaymentResult(result) {
+  if (result?.orderNo && !createdOrderNo.value) {
+    createdOrderNo.value = result.orderNo
+    savePaymentSuccessContext({
+      orderNo: result.orderNo,
+      shopId: draft.value?.shopId ?? '',
+      pending: true,
+    })
+  }
+
+  if (result?.outcome === 'canceled') {
+    showToast('已取消支付')
+    return
+  }
+
+  // 金额被服务端改过：刷新展示让用户看清楚再决定，不直接按新价扣钱。
+  if (result?.payableAmount !== undefined && result.outcome === undefined && !result.success) {
+    const check = checkPayableAmount({
+      shownAmount: shownAmountBeforeRequest.value,
+      serverAmount: result.payableAmount,
+    })
+    if (check === 'mismatch') {
+      // 必须清掉单号：否则下次点击直接走「只续付」，用户还没确认新价格就被扣款。
+      // 再点时会带同一个 requestId 重新建单，后端回原单，不会多建一张。
+      createdOrderNo.value = ''
+      refreshDraftAmount(result.payableAmount)
+      showToast(result.message || '价格已更新，请确认后重新支付')
+      return
+    }
+  }
+
+  if (result?.success && result.orderNo) {
+    clearPaymentCheckoutDraft()
+    navigateTo(withQuery(ROUTES.PAYMENT_RESULT, {
+      orderNo: result.orderNo,
+      shopId: draft.value?.shopId ?? '',
+      paymentChannel: 'WECHAT',
+    }))
+    return
+  }
+
+  showToast(result?.message || '支付未完成，可在订单列表继续支付')
+}
+
+/**
+ * 用服务端权威金额刷新页面展示，避免继续按旧估价发起支付。
+ *
+ * 服务端返回的是**应付总额**，不是商品金额，所以记到 payableAmountOverride 上，
+ * 不再拆回 goodsAmount/deliveryFee——拆错了会让页面显示一个新的错误总价。
+ */
+function refreshDraftAmount(serverAmount) {
+  payableAmountOverride.value = Number(serverAmount)
 }
 
 // query.shopName 兜底（onLoad 传入，对齐 web-user 的 route.query.shopName）

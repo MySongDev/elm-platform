@@ -1,22 +1,19 @@
 /**
  * 平台适配收口层 —— 支付（议题 6 决策 1 的 L2 接缝）
  *
- * ★ 渠道无关入口。业务代码只调 requestPayment()，不碰任何渠道细节。
+ * ★ 渠道无关入口。业务代码只调 requestPayment()，不碰渠道细节。
  * 内部按端分支：
- * - 小程序端：**返回「当前端暂不支持支付」**（留桩）。
- *   ⚠️ 不是「改个跳转方式」就能支持 —— 微信小程序支付是完全不同的协议：
- *   后端签名 → uni.requestPayment({ timeStamp, nonceStr, package, signType, paySign })
- *   五参数 → 微信原生弹窗 → 同步回调。且需要**商户号资质**，契约细节
- *   （如 prepay_id 格式）取决于实际申请下来的配置，现在定可能白定（方案议题 6）。
- * - H5/App 端：保留现有支付宝 WAP 逻辑（createAlipayWapPayment → 跳转 payUrl）。
- *   ⚠️ 当前只做小程序端，H5 分支留 TODO（第二批启用 uni-h5 时接）。
+ * - 小程序端：微信支付。先由后端可信建单（服务端查价），再拉起微信原生收银台。
+ * - H5/App 端：保留既有支付宝 WAP 逻辑（createAlipayWapPayment → 跳转 payUrl）。
  *
- * 将来后端加微信支付通道后，**只需在本文件补一个分支**，调用方零改动。
- * 这就是 L2（而非 L1 最浅桩）的价值：L1 把「端无关的接口抽象」也省了，
- * 将来接微信支付时还要再动一次 api-payment.js。
+ * 两条渠道的机制完全不同，不能互相代替：
+ * - 支付宝 WAP 靠整页跳转到网页收银台，只在 H5/App 成立；
+ * - 微信小程序里没有 window.location，且支付宝网页在微信里打不开。
  */
 
-import { createAlipayWapPayment } from '@/services/api/api-payment'
+import { createAlipayWapPayment, createWechatOrder } from '@/services/api/api-payment'
+import { checkPayableAmount } from '@/utils/payment-flow'
+import { launchWechatPaymentForOrder } from './wechat-payment'
 
 export interface PaymentRequest {
   /** 已建单则传（继续支付场景）；新支付则传建单所需数据 */
@@ -31,30 +28,112 @@ export interface PaymentRequest {
     qty: number
     unitPrice: number
   }>
+  /** 已有未消费的结算快照时传，保证重试沿用同一个请求键 */
+  requestId?: string
+  /** 支付页上展示给用户的金额（元），用于和服务端权威金额比对 */
+  shownAmount?: number
+  /** 建单成功后回调，调用方据此把 orderNo 绑到快照并保存服务端摘要 */
+  onOrderCreated?: (order: WechatCreatedOrder) => void
 }
+
+export interface WechatCreatedOrder {
+  orderNo: string
+  payableAmount?: number
+  status?: string
+}
+
+export type PaymentOutcome = 'paid-pending' | 'canceled' | 'failed'
 
 export interface PaymentResult {
   success: boolean
   orderNo: string
+  /** 收银台走完了但还没确认到账；调用方应跳结果页查单 */
+  outcome?: PaymentOutcome
+  /** 服务端权威金额（元），UI 应以此展示 */
+  payableAmount?: number
   message?: string
 }
 
 /**
  * 发起支付。
  *
- * ⚠️ 小程序端当前**永远返回 success: false**（留桩），但**建单已在后端独立完成**
- * （Batch 1 第 11 项拆出的独立建单端点）→ order 页能产生 PENDING 订单、
- * 能用真实数据验收，只是「完成支付」这一步不支持。
- * 这个预期必须清楚：不是「下单也做不到」，是「下单可以、付款不行」。
+ * 小程序端流程：可信建单 → 金额核对 → 拉起收银台 → 返回「待确认」让结果页查单。
+ * ⚠️ 返回 success 只代表收银台正常走完，**不报到账**：只有结果页查单拿到 PAID 才算付款成功。
  */
 export async function requestPayment(req: PaymentRequest): Promise<PaymentResult> {
   // #ifdef MP-WEIXIN
-  // 小程序端：留桩。将来接微信支付时在这里调后端 wechat/create → uni.requestPayment
-  void req
-  return {
-    success: false,
-    orderNo: req.orderNo ?? '',
-    message: '当前端暂不支持支付',
+  try {
+    // 续付：订单已建好，只重新拉收银台，绝不重复建单。
+    if (req.orderNo) {
+      const launch = await launchWechatPaymentForOrder(req.orderNo)
+      return toWechatResult(req.orderNo, launch)
+    }
+
+    const requestId = String(req.requestId ?? '')
+    if (!requestId) {
+      return {
+        success: false,
+        orderNo: '',
+        message: '结算已失效，请返回重新结算',
+      }
+    }
+
+    const order = await createWechatOrder({
+      requestId,
+      shopId: String(req.shopId),
+      cartItems: req.cartItems.map(item => ({
+        itemId: String(item.itemId),
+        skuId: String(item.skuId),
+        qty: item.qty,
+      })),
+    })
+    if (!order?.orderNo) {
+      return {
+        success: false,
+        orderNo: '',
+        message: '建单失败，请稍后重试',
+      }
+    }
+
+    // 建单先把单号交给调用方落盘：即使下一步失败，用户也能回订单列表续付。
+    req.onOrderCreated?.({
+      orderNo: order.orderNo,
+      payableAmount: Number(order.payableAmount),
+      status: order.status,
+    })
+
+    // 服务端按当前菜单重新算过价，和页面展示不一致时必须先停下来确认。
+    if (req.shownAmount !== undefined) {
+      const check = checkPayableAmount({
+        shownAmount: req.shownAmount,
+        serverAmount: Number(order.payableAmount),
+      })
+      if (check === 'mismatch') {
+        return {
+          success: false,
+          orderNo: order.orderNo,
+          payableAmount: Number(order.payableAmount),
+          message: '价格已更新，请确认后重新支付',
+        }
+      }
+      if (check === 'invalid') {
+        return {
+          success: false,
+          orderNo: order.orderNo,
+          message: '订单金额异常，请联系客服',
+        }
+      }
+    }
+
+    const launch = await launchWechatPaymentForOrder(order.orderNo)
+    return toWechatResult(order.orderNo, launch, Number(order.payableAmount))
+  }
+  catch (error) {
+    return {
+      success: false,
+      orderNo: req.orderNo ?? '',
+      message: error instanceof Error ? error.message : '发起支付失败',
+    }
   }
   // #endif
 
@@ -95,28 +174,39 @@ export async function requestPayment(req: PaymentRequest): Promise<PaymentResult
   // #endif
 }
 
-/**
- * 微信登录 code 接缝（预留，本次不实现）。
- *
- * ⚠️ 全库 grep code2session/jscode2session/openid/wechat 零命中 ——
- * 后端**没有**微信小程序登录通道。短信登录链路是完整的
- * （customer-auth 的 login/sms + SmsVerification.vue），可以撑着用，
- * 微信一键登录不再是阻塞项（议题 6 修正 2）。
- *
- * 将来实现：uni.login() 拿 code → 后端 POST /customer-auth/login/wechat
- * （code2session 换 openid → 建/取用户 → 发令牌）。
- */
-export function getWxLoginCode(): Promise<string | null> {
-  return new Promise((resolve) => {
-    // #ifdef MP-WEIXIN
-    uni.login({
-      provider: 'weixin',
-      success: result => resolve(result.code || null),
-      fail: () => resolve(null),
-    })
-    // #endif
-    // #ifndef MP-WEIXIN
-    resolve(null)
-    // #endif
-  })
+/** 收银台结果 → 统一返回。取消单独标出来，避免被当成错误弹提示或触发重试。 */
+function toWechatResult(
+  orderNo: string,
+  launch: {
+    launched: boolean
+    canceled: boolean
+    message?: string
+  },
+  payableAmount?: number,
+): PaymentResult {
+  if (launch.launched) {
+    return {
+      success: true,
+      orderNo,
+      outcome: 'paid-pending',
+      payableAmount,
+    }
+  }
+
+  if (launch.canceled) {
+    return {
+      success: false,
+      orderNo,
+      outcome: 'canceled',
+      payableAmount,
+    }
+  }
+
+  return {
+    success: false,
+    orderNo,
+    outcome: 'failed',
+    payableAmount,
+    message: launch.message || '支付未完成',
+  }
 }

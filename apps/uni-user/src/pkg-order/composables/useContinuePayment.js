@@ -13,9 +13,11 @@
 // 3. `showAlert`（AlterTip 命令式 DOM）→ platform/feedback 的 showToast
 import { readonly, shallowRef, toValue } from 'vue'
 
+import { withQuery } from '@/config/routes'
 import { showToast } from '@/platform/feedback'
+import { navigateTo, ROUTES } from '@/platform/navigation'
 import { requestPayment } from '@/platform/payment'
-import { getAlipayPaymentStatus } from '@/services/api/api-payment'
+import { getPaymentStatusByChannel } from '@/services/api/api-payment'
 
 export function useContinuePayment({
   isLoggedIn,
@@ -40,7 +42,8 @@ export function useContinuePayment({
     continuingOrderNo.value = order.orderNo
 
     try {
-      const latest = await getAlipayPaymentStatus(order.orderNo, true)
+      // 按订单渠道查单：微信单查支付宝只会一直回「未支付」。
+      const latest = await getPaymentStatusByChannel(order.orderNo, order.paymentChannel, true)
 
       if (latest?.status === 'PAID') {
         showToast('订单已支付')
@@ -60,14 +63,36 @@ export function useContinuePayment({
         return
       }
 
-      // 小程序端走渠道无关的续付接缝（当前留桩返回「暂不支持」，
-      // 将来接微信支付时在此处真正拉起支付）
-      const result = await requestPayment({ orderNo: order.orderNo })
-
-      if (result.success)
+      // 续付：只对已建订单重新拉起收银台，不重复建单。
+      if (String(order.paymentChannel) !== 'WECHAT') {
+        // 非微信渠道的旧订单在小程序端没法付款（支付宝 WAP 打不开），只能引导重新结算。
+        showToast('该订单需重新结算，请回商家页重新下单')
         await refreshOrders()
-      else
+        return
+      }
+
+      const result = await requestPayment({
+        orderNo: order.orderNo,
+        shopId: '',
+        shopName: '',
+        deliveryFee: 0,
+        cartItems: [],
+      })
+
+      if (result.success) {
+        // 收银台走完不等于到账，交给结果页查单确认。
+        navigateTo(withQuery(ROUTES.PAYMENT_RESULT, {
+          orderNo: order.orderNo,
+          shopId: order.shopId,
+          paymentChannel: 'WECHAT',
+        }))
+      }
+      else if (result.outcome === 'canceled') {
+        showToast('已取消支付')
+      }
+      else {
         showToast(result.message || '继续支付失败，请稍后再试')
+      }
     }
     catch (err) {
       showToast(err?.message || '继续支付失败，请稍后再试')
