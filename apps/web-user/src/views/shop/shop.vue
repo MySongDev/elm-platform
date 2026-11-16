@@ -15,7 +15,17 @@ import { useShopCart } from './composables/useShopCart'
 import { useShopPageData } from './composables/useShopPageData'
 import { useTabSwitch } from './composables/useTabSwitch'
 
-const TABS = ['商品', '评价']
+// id 当状态键，label 只负责显示；以后改文案不必碰 v-if 分支。
+const TABS = [
+  {
+    id: 'menu',
+    label: '商品',
+  },
+  {
+    id: 'review',
+    label: '评价',
+  },
+]
 
 const route = useRoute()
 const shopId = computed(() => {
@@ -52,8 +62,7 @@ const {
 })
 
 const { activeTab, switchTab } = useTabSwitch({
-  tabs: TABS,
-  initialTab: TABS[0],
+  initialTab: TABS[0].id,
   scrollRef: outerRef,
 })
 
@@ -123,14 +132,14 @@ watch(
         <ShopHeader ref="shopHeaderRef" :shop="shopData" />
 
         <nav class="sticky-nav">
-          <div v-for="tab in TABS" :key="tab" class="tab-item" :class="{ active: activeTab === tab }"
-            @click="switchTab(tab)">
-{{ tab }}
+          <div v-for="tab in TABS" :key="tab.id" class="tab-item" :class="{ active: activeTab === tab.id }"
+            @click="switchTab(tab.id)">
+{{ tab.label }}
 </div>
         </nav>
 
         <div class="content-area">
-          <template v-if="activeTab === '商品'">
+          <template v-if="activeTab === 'menu'">
             <CategoryMenu
               :active-id="activeCategoryId"
               :categories="foodMenuData"
@@ -150,7 +159,7 @@ watch(
             />
           </template>
 
-          <template v-else-if="activeTab === '评价'">
+          <template v-else-if="activeTab === 'review'">
             <ShopReview :shop-id="shopId" class="review-content" />
           </template>
         </div>

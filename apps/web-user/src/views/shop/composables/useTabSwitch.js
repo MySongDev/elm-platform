@@ -1,7 +1,7 @@
 import { isRef, ref } from 'vue'
 
 export function useTabSwitch(options) {
-  const { tabs, initialTab = tabs[0], scrollRef } = options
+  const { initialTab, scrollRef } = options
 
   // 传错容器不会当场报错，而是切回页签时位置悄悄回到顶部，所以在这里一次性拦住。
   if (!isRef(scrollRef))
@@ -11,7 +11,7 @@ export function useTabSwitch(options) {
   const scrollPositions = new Map()
 
   function switchTab(tab) {
-    if (!tabs.includes(tab) || activeTab.value === tab)
+    if (activeTab.value === tab)
       return
 
     scrollPositions.set(activeTab.value, scrollRef.value.scrollTop)
