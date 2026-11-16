@@ -82,7 +82,10 @@ async function handleUpload() {
 </script>
 
 <template>
-  <view class="avatar-uploader" @tap="handleUpload">
+  <view
+    class="avatar-uploader"
+    @tap="handleUpload"
+  >
     <text class="avatar-uploader_label">
       头像
     </text>
@@ -94,8 +97,14 @@ async function handleUpload() {
         class="avatar-uploader_img"
         @error="imageFailed = true"
       />
-      <view v-else class="avatar-uploader_img avatar-uploader_img--default">
-        <SvgIcon icon-name="avatar-default" class="avatar-uploader_default-icon" />
+      <view
+        v-else
+        class="avatar-uploader_img avatar-uploader_img--default"
+      >
+        <SvgIcon
+          icon-name="avatar-default"
+          class="avatar-uploader_default-icon"
+        />
       </view>
       <SvgIcon
         icon-name="arrow-right"

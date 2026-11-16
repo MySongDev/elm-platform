@@ -48,7 +48,11 @@ async function handleForceLogout(row: OnlineUser) {
 </script>
 
 <template>
-  <AdminTablePage :title="t('monitor.online.title')" :loading="loading" @refresh="fetchRows">
+  <AdminTablePage
+    :title="t('monitor.online.title')"
+    :loading="loading"
+    @refresh="fetchRows"
+  >
     <template #search>
       <AdminSearchForm
         v-model:model="query"
@@ -58,8 +62,16 @@ async function handleForceLogout(row: OnlineUser) {
       />
     </template>
 
-    <ConfigDataTable :loading="loading" :data="filteredData" :columns="columns">
-      <el-table-column :label="t('crud.actions')" width="120" fixed="right">
+    <ConfigDataTable
+      :loading="loading"
+      :data="filteredData"
+      :columns="columns"
+    >
+      <el-table-column
+        :label="t('crud.actions')"
+        width="120"
+        fixed="right"
+      >
         <template #default="{ row }">
           <el-button
             v-auth="Permissions.MONITOR_ONLINE_FORCE_LOGOUT"

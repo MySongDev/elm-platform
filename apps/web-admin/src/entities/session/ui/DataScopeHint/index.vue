@@ -29,7 +29,10 @@ const hint = computed(() => {
 </script>
 
 <template>
-  <div v-if="hint" class="data-scope-hint">
+  <div
+    v-if="hint"
+    class="data-scope-hint"
+  >
     <el-icon class="data-scope-hint__icon">
       <i-ep-info-filled />
     </el-icon>

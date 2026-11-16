@@ -43,7 +43,11 @@ const linkProps = computed(() => {
 </script>
 
 <template>
-  <component :is="isExternalLink ? 'a' : 'router-link'" class="sidebar-link" v-bind="linkProps">
+  <component
+    :is="isExternalLink ? 'a' : 'router-link'"
+    class="sidebar-link"
+    v-bind="linkProps"
+  >
     <slot />
   </component>
 </template>

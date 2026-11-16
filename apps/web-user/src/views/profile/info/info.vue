@@ -80,21 +80,35 @@ async function handleLogout() {
       <AvatarUploader :avatar="userAvatar" />
 
       <!-- 基本信息 -->
-      <SettingItem v-for="item in settingGroups[0].items" :key="item.label" v-bind="item" />
+      <SettingItem
+        v-for="item in settingGroups[0].items"
+        :key="item.label"
+        v-bind="item"
+      />
     </div>
 
     <!-- 动态分组 -->
-    <template v-for="group in settingGroups.slice(1)" :key="group.title">
+    <template
+      v-for="group in settingGroups.slice(1)"
+      :key="group.title"
+    >
       <div class="section-title">
         {{ group.title }}
       </div>
       <div class="settings-section">
-        <SettingItem v-for="item in group.items" :key="item.label" v-bind="item" />
+        <SettingItem
+          v-for="item in group.items"
+          :key="item.label"
+          v-bind="item"
+        />
       </div>
     </template>
 
     <!-- 退出登录 -->
-    <button class="logout-btn" @click="handleLogout">
+    <button
+      class="logout-btn"
+      @click="handleLogout"
+    >
       退出登录
     </button>
   </div>

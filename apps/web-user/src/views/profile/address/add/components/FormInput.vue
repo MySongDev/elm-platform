@@ -43,7 +43,10 @@ function onBlur(e) {
 </script>
 
 <template>
-  <FormItemWrapper :label="label" :error="error">
+  <FormItemWrapper
+    :label="label"
+    :error="error"
+  >
     <input
       :type="type"
       :value="modelValue"
@@ -56,7 +59,10 @@ function onBlur(e) {
       @input="onInput"
       @blur="onBlur"
     >
-    <span v-if="optional" class="form-input_tag">选填</span>
+    <span
+      v-if="optional"
+      class="form-input_tag"
+    >选填</span>
   </FormItemWrapper>
 </template>
 

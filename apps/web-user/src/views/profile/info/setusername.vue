@@ -35,20 +35,32 @@ function resetName() {
   <div>
     <section class="setname">
       <section class="setname-top">
-        <input v-model="username" type="text" placeholder="输入用户名" :class="{ 'setname-input': showError }">
+        <input
+          v-model="username"
+          type="text"
+          placeholder="输入用户名"
+          :class="{ 'setname-input': showError }"
+        >
 
         <div>
           <p v-if="!hasInput">
             用户名只能修改一次（5-24字符之间）
           </p>
-          <p v-else :class="{ unlikep: showError }">
+          <p
+            v-else
+            :class="{ unlikep: showError }"
+          >
             用户名长度在5到24位之间
           </p>
         </div>
       </section>
 
       <section class="reset">
-        <button :class="{ fontopacity: !isValid }" :disabled="!isValid" @click="resetName">
+        <button
+          :class="{ fontopacity: !isValid }"
+          :disabled="!isValid"
+          @click="resetName"
+        >
           确认修改
         </button>
       </section>

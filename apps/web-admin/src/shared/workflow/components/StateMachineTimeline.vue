@@ -51,7 +51,10 @@ function displayTime(value: string | Date | undefined) {
 </script>
 
 <template>
-  <el-timeline v-if="entries.length" class="state-machine-timeline">
+  <el-timeline
+    v-if="entries.length"
+    class="state-machine-timeline"
+  >
     <el-timeline-item
       v-for="(entry, index) in entries"
       :key="entry.id || index"
@@ -62,22 +65,35 @@ function displayTime(value: string | Date | undefined) {
       <div class="timeline-content">
         <span class="timeline-event">{{ getEventLabel(entry) }}</span>
 
-        <span v-if="showTransition && (entry.fromStatus || entry.toStatus)" class="timeline-transition">
+        <span
+          v-if="showTransition && (entry.fromStatus || entry.toStatus)"
+          class="timeline-transition"
+        >
           {{ getStatusLabel(entry.fromStatus) }} → {{ getStatusLabel(entry.toStatus) }}
         </span>
 
-        <span v-if="entry.actorName" class="timeline-actor">
+        <span
+          v-if="entry.actorName"
+          class="timeline-actor"
+        >
           {{ entry.actorName }}
         </span>
 
-        <span v-if="entry.reason || entry.remark" class="timeline-reason">
+        <span
+          v-if="entry.reason || entry.remark"
+          class="timeline-reason"
+        >
           {{ entry.reason || entry.remark }}
         </span>
       </div>
     </el-timeline-item>
   </el-timeline>
 
-  <el-empty v-else description="暂无记录" :image-size="60" />
+  <el-empty
+    v-else
+    description="暂无记录"
+    :image-size="60"
+  />
 </template>
 
 <style scoped>

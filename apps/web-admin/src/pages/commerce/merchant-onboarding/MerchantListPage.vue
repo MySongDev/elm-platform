@@ -162,12 +162,23 @@ onMounted(fetchList)
         border
         style="width:100%"
       >
-        <template v-for="col in tableColumns" :key="col.prop || col.label">
+        <template
+          v-for="col in tableColumns"
+          :key="col.prop || col.label"
+        >
           <el-table-column v-bind="col" />
         </template>
-        <el-table-column label="操作" fixed="right" min-width="180">
+        <el-table-column
+          label="操作"
+          fixed="right"
+          min-width="180"
+        >
           <template #default="scope">
-            <el-button size="small" link @click="handleView(scope.row as MerchantApplication)">
+            <el-button
+              size="small"
+              link
+              @click="handleView(scope.row as MerchantApplication)"
+            >
               查看
             </el-button>
             <el-button

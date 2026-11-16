@@ -86,7 +86,10 @@ function onScrollToLower() {
     :lower-threshold="80"
     @scrolltolower="onScrollToLower"
   >
-    <view v-if="filters.length" class="filter-bar">
+    <view
+      v-if="filters.length"
+      class="filter-bar"
+    >
       <view
         v-for="item in filters"
         :key="item.name"
@@ -99,7 +102,11 @@ function onScrollToLower() {
       </view>
     </view>
 
-    <view v-for="(review, index) in filteredReviews" :key="index" class="review-item">
+    <view
+      v-for="(review, index) in filteredReviews"
+      :key="index"
+      class="review-item"
+    >
       <view class="review-item__user">
         <SmartImage
           class="review-item__avatar"
@@ -126,20 +133,32 @@ function onScrollToLower() {
         {{ review.rating_text || '该用户没有填写内容' }}
       </text>
 
-      <view v-if="review.item_ratings?.length" class="review-item__foods">
+      <view
+        v-if="review.item_ratings?.length"
+        class="review-item__foods"
+      >
         <text class="review-item__food-tag">
           好评商品：{{ foodNames(review) }}
         </text>
       </view>
 
-      <text v-if="review.time_spent_desc" class="review-item__delivery">
+      <text
+        v-if="review.time_spent_desc"
+        class="review-item__delivery"
+      >
         {{ review.time_spent_desc }}
       </text>
     </view>
 
-    <BaseState v-if="!filteredReviews.length" :state="loading ? 'loading' : 'empty'" />
+    <BaseState
+      v-if="!filteredReviews.length"
+      :state="loading ? 'loading' : 'empty'"
+    />
 
-    <view v-if="filteredReviews.length" class="review-foot">
+    <view
+      v-if="filteredReviews.length"
+      class="review-foot"
+    >
       <text v-if="loading">
         加载中…
       </text>

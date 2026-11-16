@@ -3,46 +3,111 @@ import SkeletonBlock from '@/components/common/Skeleton/SkeletonBlock.vue'
 </script>
 
 <template>
-  <div class="shop-page-skeleton" aria-hidden="true">
+  <div
+    class="shop-page-skeleton"
+    aria-hidden="true"
+  >
     <section class="shop-skeleton-header">
       <div class="shop-skeleton-nav">
-        <SkeletonBlock width="32px" height="32px" circle />
-        <SkeletonBlock width="32px" height="32px" circle />
+        <SkeletonBlock
+          width="32px"
+          height="32px"
+          circle
+        />
+        <SkeletonBlock
+          width="32px"
+          height="32px"
+          circle
+        />
       </div>
       <div class="shop-skeleton-hero">
-        <SkeletonBlock width="72px" height="72px" radius="8px" />
+        <SkeletonBlock
+          width="72px"
+          height="72px"
+          radius="8px"
+        />
         <div class="shop-skeleton-info">
-          <SkeletonBlock width="58%" height="22px" />
-          <SkeletonBlock width="76%" height="14px" />
-          <SkeletonBlock width="48%" height="14px" />
+          <SkeletonBlock
+            width="58%"
+            height="22px"
+          />
+          <SkeletonBlock
+            width="76%"
+            height="14px"
+          />
+          <SkeletonBlock
+            width="48%"
+            height="14px"
+          />
         </div>
       </div>
       <div class="shop-skeleton-coupon">
-        <SkeletonBlock width="64%" height="18px" />
-        <SkeletonBlock width="54px" height="18px" />
+        <SkeletonBlock
+          width="64%"
+          height="18px"
+        />
+        <SkeletonBlock
+          width="54px"
+          height="18px"
+        />
       </div>
     </section>
 
     <nav class="shop-skeleton-tabs">
-      <SkeletonBlock width="48px" height="18px" />
-      <SkeletonBlock width="48px" height="18px" />
+      <SkeletonBlock
+        width="48px"
+        height="18px"
+      />
+      <SkeletonBlock
+        width="48px"
+        height="18px"
+      />
     </nav>
 
     <section class="shop-skeleton-content">
       <aside class="shop-skeleton-side">
-        <SkeletonBlock v-for="index in 8" :key="index" width="58px" height="18px" />
+        <SkeletonBlock
+          v-for="index in 8"
+          :key="index"
+          width="58px"
+          height="18px"
+        />
       </aside>
 
       <main class="shop-skeleton-main">
-        <div v-for="index in 6" :key="index" class="shop-skeleton-food">
-          <SkeletonBlock width="72px" height="72px" radius="8px" />
+        <div
+          v-for="index in 6"
+          :key="index"
+          class="shop-skeleton-food"
+        >
+          <SkeletonBlock
+            width="72px"
+            height="72px"
+            radius="8px"
+          />
           <div class="shop-skeleton-food__body">
-            <SkeletonBlock width="62%" height="18px" />
-            <SkeletonBlock width="88%" height="13px" />
-            <SkeletonBlock width="48%" height="13px" />
+            <SkeletonBlock
+              width="62%"
+              height="18px"
+            />
+            <SkeletonBlock
+              width="88%"
+              height="13px"
+            />
+            <SkeletonBlock
+              width="48%"
+              height="13px"
+            />
             <div class="shop-skeleton-food__footer">
-              <SkeletonBlock width="52px" height="18px" />
-              <SkeletonBlock width="28px" height="28px" circle />
+              <SkeletonBlock
+                width="52px"
+                height="18px"
+              />
+              <SkeletonBlock
+                width="28px"
+                height="28px"
+                circle
+              />
             </div>
           </div>
         </div>

@@ -27,7 +27,10 @@ function go() {
 </script>
 
 <template>
-  <view class="setting-item" @click="go">
+  <view
+    class="setting-item"
+    @click="go"
+  >
     <view class="setting-item_left">
       <SvgIcon
         v-if="icon"
@@ -40,7 +43,10 @@ function go() {
       </text>
     </view>
     <view class="setting-item_right">
-      <text v-if="value" class="setting-item_value">
+      <text
+        v-if="value"
+        class="setting-item_value"
+      >
         {{ value }}
       </text>
       <slot />

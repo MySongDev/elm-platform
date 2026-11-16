@@ -25,8 +25,16 @@ function asOrderItem(row: unknown) {
 </script>
 
 <template>
-  <ConfigDataTable :loading="loading" :data="data" :columns="columns">
-    <el-table-column :label="t('user.actions')" fixed="right" min-width="220">
+  <ConfigDataTable
+    :loading="loading"
+    :data="data"
+    :columns="columns"
+  >
+    <el-table-column
+      :label="t('user.actions')"
+      fixed="right"
+      min-width="220"
+    >
       <template #default="{ row }">
         <OrderActionColumn
           :row="asOrderItem(row)"

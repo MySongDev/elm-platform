@@ -73,27 +73,40 @@ const showHeaderLocation = computed(() => {
 </script>
 
 <template>
-  <header id="head_top" :class="`head-top--${theme}`">
+  <header
+    id="head_top"
+    :class="`head-top--${theme}`"
+  >
     <div class="left_area">
       <slot name="logo" />
-        <!-- 返回标签 -->
-        <span v-if="showHeaderBack" class="head_goback" @click="Back">
-          <SvgIcon icon-name="arrow-left" icon-class="svg" />
-        </span>
+      <!-- 返回标签 -->
+      <span
+        v-if="showHeaderBack"
+        class="head_goback"
+        @click="Back"
+      >
+        <SvgIcon
+          icon-name="arrow-left"
+          icon-class="svg"
+        />
+      </span>
 
-        <slot name="title" />
-        <!-- 文字标题 -->
-        <span class="title_text">
-          {{ Title }}
-        </span>
+      <slot name="title" />
+      <!-- 文字标题 -->
+      <span class="title_text">
+        {{ Title }}
+      </span>
       <!-- 定位 -->
-       <template v-if="showHeaderLocation">
-        <SvgIcon icon-name="location" icon-class="svg" />
+      <template v-if="showHeaderLocation">
+        <SvgIcon
+          icon-name="location"
+          icon-class="svg"
+        />
         <span class="location_text">
           {{ locationText }}
         </span>
-       </template>
-</div>
+      </template>
+    </div>
 
     <div class="right_area">
       <slot name="changecity" />

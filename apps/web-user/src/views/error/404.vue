@@ -44,10 +44,16 @@ function goBack() {
       </p>
 
       <div class="not-found__actions">
-        <button class="not-found__btn not-found__btn--primary" @click="goHome">
+        <button
+          class="not-found__btn not-found__btn--primary"
+          @click="goHome"
+        >
           回到首页
         </button>
-        <button class="not-found__btn not-found__btn--ghost" @click="goBack">
+        <button
+          class="not-found__btn not-found__btn--ghost"
+          @click="goBack"
+        >
           返回上页
         </button>
       </div>

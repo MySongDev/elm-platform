@@ -54,8 +54,16 @@ loadFilters()
     如需吸顶可在此处添加，基准是独立容器的顶部（top: 0）
   -->
   <div class="shop-review">
-    <ReviewFilterBar v-model="activeFilter" :filters="FILTERS" />
-    <ReviewList :reviews="filteredReviews" :loading="loading" :finished="finished" @reach-bottom="loadMore" />
+    <ReviewFilterBar
+      v-model="activeFilter"
+      :filters="FILTERS"
+    />
+    <ReviewList
+      :reviews="filteredReviews"
+      :loading="loading"
+      :finished="finished"
+      @reach-bottom="loadMore"
+    />
   </div>
 </template>
 

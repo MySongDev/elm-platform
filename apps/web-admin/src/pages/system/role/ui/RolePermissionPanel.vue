@@ -195,7 +195,10 @@ function collectMenuIds(nodes: RoleMenuPermissionNode[]): number[] {
         <template #default="{ data }">
           <span class="role-permission-panel__node">
             <span class="role-permission-panel__node-title">{{ data.title }}</span>
-            <span v-if="data.permission" class="role-permission-panel__node-code">
+            <span
+              v-if="data.permission"
+              class="role-permission-panel__node-code"
+            >
               {{ data.permission }}
             </span>
           </span>

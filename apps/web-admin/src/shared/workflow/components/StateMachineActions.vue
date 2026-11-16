@@ -66,7 +66,10 @@ function handleAction(action: string, item: ActionConfig) {
 
 <template>
   <div class="state-machine-actions">
-    <template v-for="item in visibleActions" :key="item.action">
+    <template
+      v-for="item in visibleActions"
+      :key="item.action"
+    >
       <el-button
         :link="buttonStyle !== 'button'"
         :type="getButtonType(item)"

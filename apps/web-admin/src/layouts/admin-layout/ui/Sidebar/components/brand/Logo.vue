@@ -7,9 +7,16 @@ defineProps<{
 </script>
 
 <template>
-  <div class="sidebar-logo-container" :class="{ collapses: collapse }">
+  <div
+    class="sidebar-logo-container"
+    :class="{ collapses: collapse }"
+  >
     <transition name="sidebarLogoFade">
-      <router-link :key="collapse ? 'collapse' : 'expand'" class="sidebar-logo-link" to="/">
+      <router-link
+        :key="collapse ? 'collapse' : 'expand'"
+        class="sidebar-logo-link"
+        to="/"
+      >
         <span class="sidebar-title">{{ collapse ? 'EA' : 'Elm Admin' }}</span>
       </router-link>
     </transition>

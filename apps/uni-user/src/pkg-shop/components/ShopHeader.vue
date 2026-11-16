@@ -19,7 +19,10 @@ defineProps({
 </script>
 
 <template>
-  <view v-if="shop" class="shop-header">
+  <view
+    v-if="shop"
+    class="shop-header"
+  >
     <view class="shop-header__row">
       <SmartImage
         class="shop-header__img"
@@ -61,7 +64,10 @@ defineProps({
         </view>
       </view>
     </view>
-    <text v-if="shop.description" class="shop-header__desc">
+    <text
+      v-if="shop.description"
+      class="shop-header__desc"
+    >
       {{ shop.description }}
     </text>
   </view>

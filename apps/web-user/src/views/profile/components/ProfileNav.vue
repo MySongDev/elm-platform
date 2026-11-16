@@ -20,9 +20,15 @@ defineProps({
       :to="item.to"
       class="nav-link"
     >
-      <svgIcon :icon-name="item.icon" :color="item.color" />
+      <svgIcon
+        :icon-name="item.icon"
+        :color="item.color"
+      />
       <span>{{ item.title }}</span>
-      <svgIcon icon-name="arrow-right" icon-class="svg-right" />
+      <svgIcon
+        icon-name="arrow-right"
+        icon-class="svg-right"
+      />
     </router-link>
   </nav>
 </template>

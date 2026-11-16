@@ -59,18 +59,31 @@ defineExpose({ scrollToCategory })
 </script>
 
 <template>
-  <section ref="listRef" class="product-list">
+  <section
+    ref="listRef"
+    class="product-list"
+  >
     <p class="global-tip">
       -----温馨提示：请适量点餐-----
     </p>
 
-    <p v-if="!categories.length" class="global-tip">
-本店暂无菜品
-</p>
+    <p
+      v-if="!categories.length"
+      class="global-tip"
+    >
+      本店暂无菜品
+    </p>
     <!-- add 的参数原样透传，rect 是飞球动画起点，别丢 -->
-    <MenuCategoryBlock v-for="(cat, index) in categories" :key="cat.id" :category="cat" :cart-map="cartMap"
-      :is-last="index === categories.length - 1" @add="(food, specIndex, rect) => emit('add', food, specIndex, rect)"
-      @decrease="emit('decrease', $event)" @load="(id, retry) => emit('load-category', id, retry)" />
+    <MenuCategoryBlock
+      v-for="(cat, index) in categories"
+      :key="cat.id"
+      :category="cat"
+      :cart-map="cartMap"
+      :is-last="index === categories.length - 1"
+      @add="(food, specIndex, rect) => emit('add', food, specIndex, rect)"
+      @decrease="emit('decrease', $event)"
+      @load="(id, retry) => emit('load-category', id, retry)"
+    />
   </section>
 </template>
 

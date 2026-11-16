@@ -28,7 +28,10 @@ function handleLogout() {
 
 <template>
   <HoverDropdown>
-    <TopNavigationAction class="user-entry" shape="pill">
+    <TopNavigationAction
+      class="user-entry"
+      shape="pill"
+    >
       <span class="user-entry__avatar">
         {{ (authStore.userInfo?.username || 'A').slice(0, 1).toUpperCase() }}
       </span>
@@ -42,7 +45,10 @@ function handleLogout() {
         <el-dropdown-item @click="handleAccountSettings">
           {{ t('header.accountSettings') }}
         </el-dropdown-item>
-        <el-dropdown-item divided @click="handleLogout">
+        <el-dropdown-item
+          divided
+          @click="handleLogout"
+        >
           {{ t('header.logout') }}
         </el-dropdown-item>
       </el-dropdown-menu>

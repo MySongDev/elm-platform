@@ -293,7 +293,10 @@ async function verifyAbort() {
         class="probe-item"
       >
         <view class="probe-head">
-          <text class="probe-dot" :class="[`dot-${probe.status}`]">
+          <text
+            class="probe-dot"
+            :class="[`dot-${probe.status}`]"
+          >
             ●
           </text>
           <text class="probe-title">

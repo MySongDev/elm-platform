@@ -37,16 +37,28 @@ loadAddresses()
 
 <template>
   <section class="address-page">
-    <head-top head-title="收货地址" theme="light" class="address-head">
+    <head-top
+      head-title="收货地址"
+      theme="light"
+      class="address-head"
+    >
       <template #edit>
-        <button class="add-button" type="button" @click="goAddAddress">
+        <button
+          class="add-button"
+          type="button"
+          @click="goAddAddress"
+        >
           新增地址
         </button>
       </template>
     </head-top>
 
     <ul class="address-list">
-      <li v-for="item in displayAddresses" :key="item.id" class="address-item">
+      <li
+        v-for="item in displayAddresses"
+        :key="item.id"
+        class="address-item"
+      >
         <div class="address-info">
           <h2>{{ getAddressTitle(item) }}</h2>
           <p>
@@ -55,7 +67,12 @@ loadAddresses()
             <span>{{ getContactPhone(item) }}</span>
           </p>
         </div>
-        <button class="edit-button" type="button" aria-label="编辑地址" @click="goEditAddress(item)">
+        <button
+          class="edit-button"
+          type="button"
+          aria-label="编辑地址"
+          @click="goEditAddress(item)"
+        >
           <van-icon name="edit" />
         </button>
       </li>

@@ -83,20 +83,47 @@ async function handleSave() {
       class="profile-form"
     >
       <el-form-item :label="t('profile.avatar')">
-        <el-avatar :size="80" :src="authStore.userInfo?.avatar ?? undefined">
+        <el-avatar
+          :size="80"
+          :src="authStore.userInfo?.avatar ?? undefined"
+        >
           {{ authStore.userInfo?.username?.charAt(0)?.toUpperCase() || 'U' }}
         </el-avatar>
       </el-form-item>
-      <el-form-item :label="t('profile.username')" prop="username">
-        <el-input v-model="form.username" :placeholder="t('profile.usernamePlaceholder')" />
+      <el-form-item
+        :label="t('profile.username')"
+        prop="username"
+      >
+        <el-input
+          v-model="form.username"
+          :placeholder="t('profile.usernamePlaceholder')"
+        />
       </el-form-item>
-      <el-form-item :label="t('profile.email')" prop="email">
-        <el-input v-model="form.email" :placeholder="t('profile.emailPlaceholder')" clearable />
+      <el-form-item
+        :label="t('profile.email')"
+        prop="email"
+      >
+        <el-input
+          v-model="form.email"
+          :placeholder="t('profile.emailPlaceholder')"
+          clearable
+        />
       </el-form-item>
-      <el-form-item :label="t('profile.phone')" prop="phone">
-        <el-input v-model="form.phone" :placeholder="t('profile.phonePlaceholder')" clearable />
+      <el-form-item
+        :label="t('profile.phone')"
+        prop="phone"
+      >
+        <el-input
+          v-model="form.phone"
+          :placeholder="t('profile.phonePlaceholder')"
+          clearable
+        />
       </el-form-item>
-      <el-button type="primary" :loading="loading" @click="handleSave">
+      <el-button
+        type="primary"
+        :loading="loading"
+        @click="handleSave"
+      >
         {{ t('profile.updateButton') }}
       </el-button>
     </el-form>

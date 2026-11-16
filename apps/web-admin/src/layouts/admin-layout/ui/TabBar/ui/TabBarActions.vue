@@ -24,8 +24,16 @@ function handleCommand(command: string | number | object) {
 </script>
 
 <template>
-  <el-dropdown trigger="click" placement="bottom-end" @command="handleCommand">
-    <button class="dropdown-btn" type="button" :aria-label="t('tabs.tabActions')">
+  <el-dropdown
+    trigger="click"
+    placement="bottom-end"
+    @command="handleCommand"
+  >
+    <button
+      class="dropdown-btn"
+      type="button"
+      :aria-label="t('tabs.tabActions')"
+    >
       <el-icon>
         <IconEpMoreFilled />
       </el-icon>

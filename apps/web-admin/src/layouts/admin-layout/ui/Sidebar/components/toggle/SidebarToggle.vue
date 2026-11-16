@@ -36,7 +36,10 @@ const presentation = computed(() => getSidebarTogglePresentation(props.collapsed
 </script>
 
 <template>
-  <el-tooltip :content="presentation.tooltip" :placement="tooltipPlacement">
+  <el-tooltip
+    :content="presentation.tooltip"
+    :placement="tooltipPlacement"
+  >
     <button
       class="sidebar-toggle"
       type="button"
@@ -44,7 +47,10 @@ const presentation = computed(() => getSidebarTogglePresentation(props.collapsed
       :aria-label="presentation.ariaLabel"
       @click="emit('toggleClick')"
     >
-      <el-icon :size="iconSize" :style="{ transform: presentation.iconTransform }">
+      <el-icon
+        :size="iconSize"
+        :style="{ transform: presentation.iconTransform }"
+      >
         <IconEpFold />
       </el-icon>
     </button>

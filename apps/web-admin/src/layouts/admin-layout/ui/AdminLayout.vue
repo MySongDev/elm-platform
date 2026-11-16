@@ -14,10 +14,19 @@ function toggleCollapse() {
 </script>
 
 <template>
-  <div class="app-wrapper" :class="{ collapse: isCollapse }">
-    <Sidebar :collapse="isCollapse" @toggle-collapse="toggleCollapse" />
+  <div
+    class="app-wrapper"
+    :class="{ collapse: isCollapse }"
+  >
+    <Sidebar
+      :collapse="isCollapse"
+      @toggle-collapse="toggleCollapse"
+    />
     <div class="main-container">
-      <TopNavigation :collapse="isCollapse" @toggle-collapse="toggleCollapse" />
+      <TopNavigation
+        :collapse="isCollapse"
+        @toggle-collapse="toggleCollapse"
+      />
       <TabBar />
       <MainContent />
     </div>

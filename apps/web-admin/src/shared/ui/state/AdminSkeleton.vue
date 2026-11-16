@@ -13,13 +13,22 @@ withDefaults(defineProps<{
 </script>
 
 <template>
-  <div class="admin-skeleton" :class="`admin-skeleton--${variant}`">
+  <div
+    class="admin-skeleton"
+    :class="`admin-skeleton--${variant}`"
+  >
     <template v-if="variant === 'table'">
-      <el-skeleton :rows="rows" animated />
+      <el-skeleton
+        :rows="rows"
+        animated
+      />
     </template>
 
     <template v-else-if="variant === 'form'">
-      <el-skeleton :rows="rows" animated />
+      <el-skeleton
+        :rows="rows"
+        animated
+      />
     </template>
 
     <template v-else>

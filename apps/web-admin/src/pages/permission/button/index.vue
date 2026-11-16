@@ -38,9 +38,16 @@ const groupOptions = computed(() =>
 
 <template>
   <div class="main">
-    <AdminTablePage :title="t('permission.button.title')" :loading="loading" @refresh="fetchRows">
+    <AdminTablePage
+      :title="t('permission.button.title')"
+      :loading="loading"
+      @refresh="fetchRows"
+    >
       <template #search>
-        <el-form :model="query" inline>
+        <el-form
+          :model="query"
+          inline
+        >
           <el-form-item :label="`${t('permission.button.name')}：`">
             <el-input
               v-model="query.name"
@@ -73,7 +80,10 @@ const groupOptions = computed(() =>
             </el-select>
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" :icon="IconEpSearch">
+            <el-button
+              type="primary"
+              :icon="IconEpSearch"
+            >
               {{ t('common.search') }}
             </el-button>
             <el-button @click="resetQuery">
@@ -89,9 +99,21 @@ const groupOptions = computed(() =>
         border
         stripe
       >
-        <el-table-column prop="group" :label="t('permission.button.group')" min-width="140" />
-        <el-table-column prop="name" :label="t('permission.button.name')" min-width="160" />
-        <el-table-column prop="code" :label="t('permission.button.code')" min-width="240">
+        <el-table-column
+          prop="group"
+          :label="t('permission.button.group')"
+          min-width="140"
+        />
+        <el-table-column
+          prop="name"
+          :label="t('permission.button.name')"
+          min-width="160"
+        />
+        <el-table-column
+          prop="code"
+          :label="t('permission.button.code')"
+          min-width="240"
+        >
           <template #default="{ row }">
             <el-tag effect="plain">
               {{ row.code }}

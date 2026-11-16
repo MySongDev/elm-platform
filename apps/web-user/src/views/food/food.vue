@@ -164,9 +164,18 @@ onMounted(() => {
       />
 
       <Transition name="container">
-        <div v-if="showDropdown" class="dropdown-wrapper">
-          <Transition name="content" mode="out-in">
-            <div :key="activeTab + switchTrigger" class="dropdown-content">
+        <div
+          v-if="showDropdown"
+          class="dropdown-wrapper"
+        >
+          <Transition
+            name="content"
+            mode="out-in"
+          >
+            <div
+              :key="activeTab + switchTrigger"
+              class="dropdown-content"
+            >
               <CategoryPanel
                 v-if="activeTab === 'category'"
                 :categories="categories"
@@ -197,7 +206,11 @@ onMounted(() => {
         </div>
       </Transition>
       <Transition name="fade">
-        <div v-if="showDropdown" class="overlay" @click="closeDropdown" />
+        <div
+          v-if="showDropdown"
+          class="overlay"
+          @click="closeDropdown"
+        />
       </Transition>
     </div>
 

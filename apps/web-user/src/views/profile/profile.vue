@@ -54,9 +54,15 @@ onMounted(async () => {
 </script>
 
 <template>
-<div>
-    <ProfileCard :is-logged-in="isLoggedIn" :user-name="userName" :user-avatar="userAvatar" :profile-link="profileLink"
-      :display-name="displayName" :display-desc="displayDesc" />
+  <div>
+    <ProfileCard
+      :is-logged-in="isLoggedIn"
+      :user-name="userName"
+      :user-avatar="userAvatar"
+      :profile-link="profileLink"
+      :display-name="displayName"
+      :display-desc="displayDesc"
+    />
     <ProfileStats :items="infoItems" />
     <ProfileNav :groups="navGroups" />
   </div>

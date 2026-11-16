@@ -23,7 +23,11 @@ function handleAction(action: string) {
 
 <template>
   <div class="order-actions">
-    <el-button link type="primary" @click="emit('detail', row)">
+    <el-button
+      link
+      type="primary"
+      @click="emit('detail', row)"
+    >
       {{ t('commerce.order.detail') }}
     </el-button>
     <StateMachineActions

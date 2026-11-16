@@ -42,15 +42,34 @@ const { loaded, failed } = useSmartImage({
 </script>
 
 <template>
-  <div ref="rootEl" class="smart-img">
-    <div v-if="skeleton && !loaded && !failed" class="smart-img__skeleton" aria-hidden="true" />
+  <div
+    ref="rootEl"
+    class="smart-img"
+  >
+    <div
+      v-if="skeleton && !loaded && !failed"
+      class="smart-img__skeleton"
+      aria-hidden="true"
+    />
 
-    <img v-show="!failed" ref="imgEl" :alt="alt" decoding="async" class="smart-img__img" :class="{
-      'smart-img__img--progressive': progressive,
-      'is-loaded': loaded,
-    }">
+    <img
+      v-show="!failed"
+      ref="imgEl"
+      :alt="alt"
+      decoding="async"
+      class="smart-img__img"
+      :class="{
+        'smart-img__img--progressive': progressive,
+        'is-loaded': loaded,
+      }"
+    >
 
-    <div v-if="failed" class="smart-img__broken" role="img" :aria-label="alt">
+    <div
+      v-if="failed"
+      class="smart-img__broken"
+      role="img"
+      :aria-label="alt"
+    >
       加载失败
     </div>
   </div>

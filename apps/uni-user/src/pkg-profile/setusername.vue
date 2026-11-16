@@ -52,20 +52,37 @@ async function saveUsername() {
   <view>
     <view class="setname">
       <view class="setname-top">
-        <input v-model="username" type="text" placeholder="输入用户名" :disabled="isSubmitting" :class="{ 'setname-input': showError }">
+        <input
+          v-model="username"
+          type="text"
+          placeholder="输入用户名"
+          :disabled="isSubmitting"
+          :class="{ 'setname-input': showError }"
+        >
 
         <view>
-          <text v-if="!hasInput" class="setname-hint">
+          <text
+            v-if="!hasInput"
+            class="setname-hint"
+          >
             用户名长度为 2～24 个字符，可多次修改
           </text>
-          <text v-else class="setname-hint" :class="{ unlikep: showError }">
+          <text
+            v-else
+            class="setname-hint"
+            :class="{ unlikep: showError }"
+          >
             用户名长度须在 2～24 个字符之间
           </text>
         </view>
       </view>
 
       <view class="reset">
-        <view class="reset-btn" :class="{ fontopacity: !isValid || isSubmitting }" @click="saveUsername">
+        <view
+          class="reset-btn"
+          :class="{ fontopacity: !isValid || isSubmitting }"
+          @click="saveUsername"
+        >
           {{ isSubmitting ? '保存中...' : '确认修改' }}
         </view>
       </view>

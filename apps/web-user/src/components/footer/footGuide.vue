@@ -8,22 +8,39 @@ const { totalQuantity } = storeToRefs(cartStore)
 </script>
 
 <template>
-  <van-tabbar route fixed placeholder>
+  <van-tabbar
+    route
+    fixed
+    placeholder
+  >
     <van-tabbar-item to="/msite">
       <template #icon="props">
-        <SvgIcon :icon-name="props.active ? 'eleme' : 'download'" icon-class="tabbar-icon" />
+        <SvgIcon
+          :icon-name="props.active ? 'eleme' : 'download'"
+          icon-class="tabbar-icon"
+        />
       </template>
       <span>外卖</span>
     </van-tabbar-item>
-    <van-tabbar-item icon="search" to="/search">
+    <van-tabbar-item
+      icon="search"
+      to="/search"
+    >
       搜索
     </van-tabbar-item>
 
-    <van-tabbar-item icon="cart-o" to="/cart" :badge="totalQuantity || undefined">
+    <van-tabbar-item
+      icon="cart-o"
+      to="/cart"
+      :badge="totalQuantity || undefined"
+    >
       购物车
     </van-tabbar-item>
 
-    <van-tabbar-item icon="user-o" to="/profile">
+    <van-tabbar-item
+      icon="user-o"
+      to="/profile"
+    >
       用户
     </van-tabbar-item>
   </van-tabbar>

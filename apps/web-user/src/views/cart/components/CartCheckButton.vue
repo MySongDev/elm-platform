@@ -18,9 +18,20 @@ const emit = defineEmits(['click'])
 </script>
 
 <template>
-  <span v-if="asSpan" class="cart-check-button" :class="{ checked }" aria-hidden="true" />
-  <button v-else class="cart-check-button" :class="{ checked }" type="button" :aria-label="ariaLabel"
-    @click="emit('click')" />
+  <span
+    v-if="asSpan"
+    class="cart-check-button"
+    :class="{ checked }"
+    aria-hidden="true"
+  />
+  <button
+    v-else
+    class="cart-check-button"
+    :class="{ checked }"
+    type="button"
+    :aria-label="ariaLabel"
+    @click="emit('click')"
+  />
 </template>
 
 <style lang="scss" scoped>

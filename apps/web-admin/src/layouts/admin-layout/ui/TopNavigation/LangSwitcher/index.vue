@@ -27,7 +27,10 @@ function handleCommand(command: string | number | object) {
 
 <template>
   <HoverDropdown @command="handleCommand">
-    <TopNavigationAction shape="circle" :aria-label="t('header.language')">
+    <TopNavigationAction
+      shape="circle"
+      :aria-label="t('header.language')"
+    >
       <el-icon :size="18">
         <SvgIcon icon-name="language" />
       </el-icon>

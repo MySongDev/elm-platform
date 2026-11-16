@@ -9,15 +9,31 @@ defineProps({
 </script>
 
 <template>
-  <component :is="to ? 'router-link' : 'div'" :to="to" class="setting-item">
+  <component
+    :is="to ? 'router-link' : 'div'"
+    :to="to"
+    class="setting-item"
+  >
     <div class="setting-item_left">
-      <SvgIcon v-if="icon" :icon-name="icon" icon-class="setting-item_icon" :color="iconColor" />
+      <SvgIcon
+        v-if="icon"
+        :icon-name="icon"
+        icon-class="setting-item_icon"
+        :color="iconColor"
+      />
       <span>{{ label }}</span>
     </div>
     <div class="setting-item_right">
-      <span v-if="value" class="setting-item_value">{{ value }}</span>
+      <span
+        v-if="value"
+        class="setting-item_value"
+      >{{ value }}</span>
       <slot />
-      <SvgIcon icon-name="arrow-right" icon-class="setting-item_arrow" color="#d8d8d8" />
+      <SvgIcon
+        icon-name="arrow-right"
+        icon-class="setting-item_arrow"
+        color="#d8d8d8"
+      />
     </div>
   </component>
 </template>

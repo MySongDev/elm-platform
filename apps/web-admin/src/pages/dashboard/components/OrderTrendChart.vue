@@ -64,7 +64,10 @@ const chartOption = computed(() => ({
 </script>
 
 <template>
-  <el-card class="dashboard-panel" shadow="hover">
+  <el-card
+    class="dashboard-panel"
+    shadow="hover"
+  >
     <template #header>
       <div class="dashboard-panel__header">
         <span>{{ t('dashboard.orderTrend') }}</span>
@@ -72,7 +75,11 @@ const chartOption = computed(() => ({
       </div>
     </template>
 
-    <VChart class="dashboard-order-trend-chart" :option="chartOption" autoresize />
+    <VChart
+      class="dashboard-order-trend-chart"
+      :option="chartOption"
+      autoresize
+    />
   </el-card>
 </template>
 

@@ -35,7 +35,10 @@ function onChange(value) {
 </script>
 
 <template>
-  <FormItemWrapper label="性别" :error="error">
+  <FormItemWrapper
+    label="性别"
+    :error="error"
+  >
     <view class="sex-group">
       <view
         v-for="opt in options"
@@ -51,7 +54,10 @@ function onChange(value) {
           <text class="sex-option_text">
             {{ opt.label }}
           </text>
-          <text v-if="modelValue === opt.value" class="sex-option_check">
+          <text
+            v-if="modelValue === opt.value"
+            class="sex-option_check"
+          >
             ✓
           </text>
         </view>

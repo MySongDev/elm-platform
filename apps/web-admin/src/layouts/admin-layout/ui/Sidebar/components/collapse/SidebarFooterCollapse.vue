@@ -14,7 +14,10 @@ const emit = defineEmits<{
 
 <template>
   <div class="sidebar-footer-collapse">
-    <SidebarToggle :collapsed="collapsed" @toggle-click="emit('toggleClick')" />
+    <SidebarToggle
+      :collapsed="collapsed"
+      @toggle-click="emit('toggleClick')"
+    />
   </div>
 </template>
 

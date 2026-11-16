@@ -36,18 +36,44 @@ onMounted(() => {
       border
       style="width: 100%"
     >
-      <el-table-column :label="t('securityLog.detail')" prop="message" min-width="140" />
-      <el-table-column :label="t('securityLog.ipAddress')" prop="ip" min-width="120" />
-      <el-table-column :label="t('securityLog.os')" prop="os" min-width="100" />
-      <el-table-column :label="t('securityLog.browser')" prop="browser" min-width="100" />
-      <el-table-column :label="t('securityLog.status')" prop="status" min-width="80">
+      <el-table-column
+        :label="t('securityLog.detail')"
+        prop="message"
+        min-width="140"
+      />
+      <el-table-column
+        :label="t('securityLog.ipAddress')"
+        prop="ip"
+        min-width="120"
+      />
+      <el-table-column
+        :label="t('securityLog.os')"
+        prop="os"
+        min-width="100"
+      />
+      <el-table-column
+        :label="t('securityLog.browser')"
+        prop="browser"
+        min-width="100"
+      />
+      <el-table-column
+        :label="t('securityLog.status')"
+        prop="status"
+        min-width="80"
+      >
         <template #default="{ row }">
-          <el-tag :type="row.status === 1 ? 'success' : 'danger'" size="small">
+          <el-tag
+            :type="row.status === 1 ? 'success' : 'danger'"
+            size="small"
+          >
             {{ row.status === 1 ? t('securityLog.logSuccess') : t('securityLog.logFailed') }}
           </el-tag>
         </template>
       </el-table-column>
-      <el-table-column :label="t('securityLog.time')" min-width="180">
+      <el-table-column
+        :label="t('securityLog.time')"
+        min-width="180"
+      >
         <template #default="{ row }">
           {{ formatDateTime(row.createdAt) }}
         </template>

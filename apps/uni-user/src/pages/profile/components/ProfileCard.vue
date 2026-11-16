@@ -44,8 +44,15 @@ function goProfile(link) {
         mode="aspectFill"
         @error="imageFailed = true"
       />
-      <view v-else class="profile-card_avatar profile-card_avatar--default">
-        <SvgIcon icon-name="avatar-default" class="profile-card_default-icon" color="#fff" />
+      <view
+        v-else
+        class="profile-card_avatar profile-card_avatar--default"
+      >
+        <SvgIcon
+          icon-name="avatar-default"
+          class="profile-card_default-icon"
+          color="#fff"
+        />
       </view>
 
       <view class="profile-card_info">

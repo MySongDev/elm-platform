@@ -65,23 +65,42 @@ onShow(() => loadAddresses())
 
 <template>
   <view class="address-page">
-    <view v-if="operationError" class="operation-error">
+    <view
+      v-if="operationError"
+      class="operation-error"
+    >
       {{ operationError }}
     </view>
-    <view v-if="!displayAddresses.length" class="empty-state">
+    <view
+      v-if="!displayAddresses.length"
+      class="empty-state"
+    >
       <text>暂无收货地址</text>
       <text class="empty-hint">
         点击下方按钮新增地址
       </text>
     </view>
-    <view v-else class="address-list">
-      <view v-for="item in displayAddresses" :key="item.id" class="address-item">
+    <view
+      v-else
+      class="address-list"
+    >
+      <view
+        v-for="item in displayAddresses"
+        :key="item.id"
+        class="address-item"
+      >
         <view class="address-info">
           <view class="address-tags">
-            <text v-if="item.isDefault" class="default-badge">
+            <text
+              v-if="item.isDefault"
+              class="default-badge"
+            >
               默认
             </text>
-            <text v-if="item.tag" class="address-info_tag">
+            <text
+              v-if="item.tag"
+              class="address-info_tag"
+            >
               {{ item.tag }}
             </text>
           </view>
@@ -94,22 +113,38 @@ onShow(() => loadAddresses())
             <text>{{ getContactPhone(item) }}</text>
           </view>
         </view>
-        <view class="address-item_actions" :class="{ 'actions-busy': busyId !== null }">
+        <view
+          class="address-item_actions"
+          :class="{ 'actions-busy': busyId !== null }"
+        >
           <view class="action-line">
-            <view class="edit-button" @click="goEditAddress(item)">
+            <view
+              class="edit-button"
+              @click="goEditAddress(item)"
+            >
               编辑
             </view>
-            <view class="delete-button" @click="handleDelete(item)">
+            <view
+              class="delete-button"
+              @click="handleDelete(item)"
+            >
               删除
             </view>
           </view>
-          <view v-if="!item.isDefault" class="default-button" @click="handleDefault(item)">
+          <view
+            v-if="!item.isDefault"
+            class="default-button"
+            @click="handleDefault(item)"
+          >
             设为默认
           </view>
         </view>
       </view>
     </view>
-    <view class="add-address-bar" @click="goAddAddress">
+    <view
+      class="add-address-bar"
+      @click="goAddAddress"
+    >
       + 新增地址
     </view>
   </view>

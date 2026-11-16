@@ -33,21 +33,39 @@ function getStarLabel(score) {
     <!-- 用户信息行 -->
     <div class="user-row">
       <div class="avatar-wrap">
-        <img v-if="review.avatar" v-lazy="review.avatar" class="avatar" :alt="review.nickname">
-        <div v-else class="avatar avatar-placeholder">
+        <img
+          v-if="review.avatar"
+          v-lazy="review.avatar"
+          class="avatar"
+          :alt="review.nickname"
+        >
+        <div
+          v-else
+          class="avatar avatar-placeholder"
+        >
           {{ review.nickname?.[0] }}
         </div>
         <!-- 来源标签 (票来等) -->
-        <span v-if="review.source" class="source-badge">{{ review.source }}</span>
+        <span
+          v-if="review.source"
+          class="source-badge"
+        >{{ review.source }}</span>
       </div>
 
       <div class="user-info">
         <div class="name-row">
           <span class="nickname">{{ review.nickname }}</span>
-          <span v-if="review.memberBadge" class="member-badge" :class="review.memberBadge.type">
+          <span
+            v-if="review.memberBadge"
+            class="member-badge"
+            :class="review.memberBadge.type"
+          >
             🤝 {{ review.memberBadge.label }}
           </span>
-          <span v-if="review.purchaseTimes" class="purchase-times">买过{{ review.purchaseTimes }}次</span>
+          <span
+            v-if="review.purchaseTimes"
+            class="purchase-times"
+          >买过{{ review.purchaseTimes }}次</span>
         </div>
         <div class="star-row">
           <span class="star-item">{{ getStarLabel(review.productStar) }} 商品{{ review.productStar }}星</span>
@@ -63,17 +81,31 @@ function getStarLabel(score) {
 
     <!-- 评价正文 -->
     <div class="review-content">
-      <p class="review-text" :class="{ empty: !review.content }">
+      <p
+        class="review-text"
+        :class="{ empty: !review.content }"
+      >
         {{ review.content || '该用户没有填写内容' }}
       </p>
       <!-- 图片列表 -->
-      <div v-if="review.images && review.images.length" class="image-list">
-        <img v-for="(img, i) in review.images" :key="i" v-lazy="img" class="review-image">
+      <div
+        v-if="review.images && review.images.length"
+        class="image-list"
+      >
+        <img
+          v-for="(img, i) in review.images"
+          :key="i"
+          v-lazy="img"
+          class="review-image"
+        >
       </div>
     </div>
 
     <!-- 好评商品标签 -->
-    <div v-if="review.relatedProduct" class="related-product">
+    <div
+      v-if="review.relatedProduct"
+      class="related-product"
+    >
       <span class="related-label">好评商品：{{ review.relatedProduct }}</span>
       <span class="chevron">›</span>
       <span class="useful">
@@ -82,12 +114,19 @@ function getStarLabel(score) {
     </div>
 
     <!-- 商家回复 -->
-    <div v-if="review.reply" class="merchant-reply">
+    <div
+      v-if="review.reply"
+      class="merchant-reply"
+    >
       <span class="reply-prefix">商家回复：</span>
       <span class="reply-text">
         {{ replyExpanded ? review.reply : review.reply.slice(0, 28) + (review.reply.length > 28 ? '...' : '') }}
       </span>
-      <span v-if="review.reply.length > 28" class="expand-btn" @click="toggleReply">
+      <span
+        v-if="review.reply.length > 28"
+        class="expand-btn"
+        @click="toggleReply"
+      >
         {{ replyExpanded ? '收起' : '展开' }}
       </span>
     </div>

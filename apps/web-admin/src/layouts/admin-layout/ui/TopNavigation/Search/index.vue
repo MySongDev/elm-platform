@@ -15,7 +15,10 @@ function openSearchDialog() {
 </script>
 
 <template>
-  <TopNavigationAction class="header-action--search" @click="openSearchDialog">
+  <TopNavigationAction
+    class="header-action--search"
+    @click="openSearchDialog"
+  >
     <el-icon>
       <IconEpSearch />
     </el-icon>

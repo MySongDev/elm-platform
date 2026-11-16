@@ -29,13 +29,29 @@ function asTenantInfo(row: unknown) {
 </script>
 
 <template>
-  <ConfigDataTable :loading="loading" :data="data" :columns="columns">
-    <el-table-column label="操作" fixed="right" min-width="260">
+  <ConfigDataTable
+    :loading="loading"
+    :data="data"
+    :columns="columns"
+  >
+    <el-table-column
+      label="操作"
+      fixed="right"
+      min-width="260"
+    >
       <template #default="{ row }">
-        <el-button type="primary" link @click="$emit('edit', asTenantInfo(row))">
+        <el-button
+          type="primary"
+          link
+          @click="$emit('edit', asTenantInfo(row))"
+        >
           编辑
         </el-button>
-        <el-button type="info" link @click="$emit('viewLogs', asTenantInfo(row))">
+        <el-button
+          type="info"
+          link
+          @click="$emit('viewLogs', asTenantInfo(row))"
+        >
           日志
         </el-button>
         <StateMachineActions

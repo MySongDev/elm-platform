@@ -20,26 +20,51 @@ const emit = defineEmits(['add', 'decrease', 'load'])
 </script>
 
 <template>
-  <div class="category-section" :data-category-id="String(category.id)"
-    :class="{ 'is-promo': category.type === 1, 'is-last': isLast }">
+  <div
+    class="category-section"
+    :data-category-id="String(category.id)"
+    :class="{ 'is-promo': category.type === 1, 'is-last': isLast }"
+  >
     <header class="section-head">
       <div class="section-title-row">
         <span class="section-name">{{ category.name }}</span>
-        <span v-if="category.description" class="section-desc">{{ category.description }}</span>
+        <span
+          v-if="category.description"
+          class="section-desc"
+        >{{ category.description }}</span>
       </div>
     </header>
 
     <!-- add 的参数原样透传，rect 是飞球动画起点，别丢 -->
-    <MenuFoodItem v-for="p in category.foods || []" :key="p._id || p.item_id" :food="p" :cart-map="cartMap"
-      @add="(food, specIndex, rect) => emit('add', food, specIndex, rect)" @decrease="emit('decrease', $event)" />
+    <MenuFoodItem
+      v-for="p in category.foods || []"
+      :key="p._id || p.item_id"
+      :food="p"
+      :cart-map="cartMap"
+      @add="(food, specIndex, rect) => emit('add', food, specIndex, rect)"
+      @decrease="emit('decrease', $event)"
+    />
     <!-- 页尾是可视区加载哨兵，不放在分类标题：第二页只能在已加载菜品的末尾触发。 -->
-    <div class="category-loader" :class="{ 'is-placeholder': !category.loaded }"
-      :data-load-category-id="String(category.id)">
-      <span v-if="category.loading">菜品加载中…</span>
-      <button v-else-if="category.loadError" type="button" @click="emit('load', category.id, true)">
+    <div
+      class="category-loader"
+      :class="{ 'is-placeholder': !category.loaded }"
+      :data-load-category-id="String(category.id)"
+    >
+      <span v-if="category.loading">
+        菜品加载中…
+      </span>
+      <button
+        v-else-if="category.loadError"
+        type="button"
+        @click="emit('load', category.id, true)"
+      >
         加载失败，点击重试
       </button>
-      <button v-else-if="!category.loaded || category.hasMore" type="button" @click="emit('load', category.id)">
+      <button
+        v-else-if="!category.loaded || category.hasMore"
+        type="button"
+        @click="emit('load', category.id)"
+      >
         {{ category.loaded ? '加载更多菜品' : '加载本分类菜品' }}
       </button>
       <span v-else>{{ category.foods.length ? '本分类已全部加载' : '本分类暂无菜品' }}</span>

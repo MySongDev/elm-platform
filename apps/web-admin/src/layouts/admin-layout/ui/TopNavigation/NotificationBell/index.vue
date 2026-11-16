@@ -52,8 +52,15 @@ async function clearCurrent() {
     popper-class="notification-popover"
   >
     <template #reference>
-      <TopNavigationAction shape="circle" :aria-label="t('notification.title')">
-        <el-badge :value="notificationStore.unreadCount" :hidden="notificationStore.unreadCount === 0" :max="99">
+      <TopNavigationAction
+        shape="circle"
+        :aria-label="t('notification.title')"
+      >
+        <el-badge
+          :value="notificationStore.unreadCount"
+          :hidden="notificationStore.unreadCount === 0"
+          :max="99"
+        >
           <el-icon :size="18">
             <IconEpBell />
           </el-icon>
@@ -84,7 +91,10 @@ async function clearCurrent() {
         </div>
       </div>
 
-      <el-tabs v-model="activeType" stretch>
+      <el-tabs
+        v-model="activeType"
+        stretch
+      >
         <el-tab-pane
           v-for="item in tabs"
           :key="item.value"
@@ -93,7 +103,10 @@ async function clearCurrent() {
         />
       </el-tabs>
 
-      <div v-if="currentList.length" class="notification-list">
+      <div
+        v-if="currentList.length"
+        class="notification-list"
+      >
         <button
           v-for="item in currentList"
           :key="item.id"
@@ -107,7 +120,11 @@ async function clearCurrent() {
           <span class="notification-item__time">{{ formatRelativeTime(item.createdAt) }}</span>
         </button>
       </div>
-      <el-empty v-else :description="t('notification.empty')" :image-size="72" />
+      <el-empty
+        v-else
+        :description="t('notification.empty')"
+        :image-size="72"
+      />
     </div>
   </el-popover>
 </template>

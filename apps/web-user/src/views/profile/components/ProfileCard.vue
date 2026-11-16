@@ -14,17 +14,36 @@ defineProps({
 
 <template>
   <div class="profile-card">
-    <router-link :to="profileLink" class="profile-card_link">
-      <img v-show="isLoggedIn" class="profile-card_avatar" :src="getUploadUrl(userAvatar)">
+    <router-link
+      :to="profileLink"
+      class="profile-card_link"
+    >
+      <img
+        v-show="isLoggedIn"
+        class="profile-card_avatar"
+        :src="getUploadUrl(userAvatar)"
+      >
 
       <div class="profile-card_info">
         <span class="profile-card_name">{{ displayName }}</span>
-        <span v-if="displayDesc" class="profile-card_desc">
-          <svgIcon v-if="displayDesc.icon" :icon-name="displayDesc.icon" icon-class="icon_mobile" color="#fff" />
+        <span
+          v-if="displayDesc"
+          class="profile-card_desc"
+        >
+          <svgIcon
+            v-if="displayDesc.icon"
+            :icon-name="displayDesc.icon"
+            icon-class="icon_mobile"
+            color="#fff"
+          />
           {{ displayDesc.text }}
         </span>
       </div>
-      <svgIcon :icon-name="profileCardConfig.arrowIcon" icon-class="profile-card_arrow" color="#fff" />
+      <svgIcon
+        :icon-name="profileCardConfig.arrowIcon"
+        icon-class="profile-card_arrow"
+        color="#fff"
+      />
     </router-link>
   </div>
 </template>

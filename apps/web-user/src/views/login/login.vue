@@ -72,20 +72,32 @@ function closeLogin() {
 <template>
   <main class="login_page">
     <div class="login_topbar">
-      <button class="close_button" type="button" aria-label="关闭登录页" @click="closeLogin">
+      <button
+        class="close_button"
+        type="button"
+        aria-label="关闭登录页"
+        @click="closeLogin"
+      >
         <span aria-hidden="true">×</span>
       </button>
     </div>
 
     <section class="login_content">
       <h1 class="login_title">
-欢迎登录
-</h1>
+        欢迎登录
+      </h1>
 
       <div class="phone_field">
-        <button class="country_code" type="button" aria-label="国家或地区代码">
+        <button
+          class="country_code"
+          type="button"
+          aria-label="国家或地区代码"
+        >
           <span>+86</span>
-          <span class="country_arrow" aria-hidden="true" />
+          <span
+            class="country_arrow"
+            aria-hidden="true"
+          />
         </button>
 
         <input
@@ -111,11 +123,17 @@ function closeLogin() {
         </button>
       </div>
 
-      <p v-if="loginMode === 'sms'" class="login_hint">
-未注册的手机号验证后自动创建账号
-</p>
+      <p
+        v-if="loginMode === 'sms'"
+        class="login_hint"
+      >
+        未注册的手机号验证后自动创建账号
+      </p>
 
-      <div v-else class="password_field">
+      <div
+        v-else
+        class="password_field"
+      >
         <input
           v-model="password"
           class="password_input"
@@ -136,19 +154,40 @@ function closeLogin() {
       </div>
 
       <label class="agreement_row">
-        <input v-model="agreementAccepted" type="checkbox">
-        <span class="agreement_mark" aria-hidden="true">✓</span>
+        <input
+          v-model="agreementAccepted"
+          type="checkbox"
+        >
+        <span
+          class="agreement_mark"
+          aria-hidden="true"
+        >✓</span>
         <span class="agreement_text">我已阅读并同意<span class="agreement_link">《用户协议》</span>和<span class="agreement_link">《隐私政策》</span></span>
       </label>
 
-      <button class="login_submit" type="button" :disabled="!canSubmit" @click="handleSubmit">
+      <button
+        class="login_submit"
+        type="button"
+        :disabled="!canSubmit"
+        @click="handleSubmit"
+      >
         {{ submitText }}
       </button>
 
-      <button v-if="loginMode === 'sms'" class="password_login" type="button" @click="switchToPassword">
+      <button
+        v-if="loginMode === 'sms'"
+        class="password_login"
+        type="button"
+        @click="switchToPassword"
+      >
         密码登录
       </button>
-      <button v-else class="password_login" type="button" @click="switchToSms">
+      <button
+        v-else
+        class="password_login"
+        type="button"
+        @click="switchToSms"
+      >
         验证码登录
       </button>
     </section>

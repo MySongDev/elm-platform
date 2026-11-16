@@ -34,21 +34,33 @@ function onChange(value) {
 </script>
 
 <template>
-  <FormItemWrapper label="性别" :error="error">
+  <FormItemWrapper
+    label="性别"
+    :error="error"
+  >
     <div class="sex-group">
       <label
-        v-for="opt in options" :key="opt.value" class="sex-option"
+        v-for="opt in options"
+        :key="opt.value"
+        class="sex-option"
         :class="{ active: modelValue === opt.value }"
       >
         <input
-          type="radio" :value="opt.value" name="sex" data-field="sex"
+          type="radio"
+          :value="opt.value"
+          name="sex"
+          data-field="sex"
           :checked="modelValue === opt.value"
-          class="sex-option_input" @change="onChange(opt.value)"
+          class="sex-option_input"
+          @change="onChange(opt.value)"
         >
         <span class="sex-option_content">
           <span class="sex-option_icon">{{ opt.icon }}</span>
           <span class="sex-option_text">{{ opt.label }}</span>
-          <span v-if="modelValue === opt.value" class="sex-option_check">✓</span>
+          <span
+            v-if="modelValue === opt.value"
+            class="sex-option_check"
+          >✓</span>
         </span>
       </label>
     </div>

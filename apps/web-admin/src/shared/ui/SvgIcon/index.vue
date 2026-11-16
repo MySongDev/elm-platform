@@ -15,7 +15,10 @@ const svgClass = computed(() => {
 </script>
 
 <template>
-  <svg :class="svgClass" aria-hidden="true">
+  <svg
+    :class="svgClass"
+    aria-hidden="true"
+  >
     <use :href="`#icon-${iconName}`" />
   </svg>
 </template>

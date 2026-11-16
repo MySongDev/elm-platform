@@ -152,24 +152,55 @@ async function submit() {
 <template>
   <div class="forget-content">
     <head-top />
-    <form class="reset-form" @submit.prevent="submit">
+    <form
+      class="reset-form"
+      @submit.prevent="submit"
+    >
       <FormItem
-        v-model="form.phone" label="手机号" placeholder="请输入手机号" name="phone" type="tel" :maxlength="11"
+        v-model="form.phone"
+        label="手机号"
+        placeholder="请输入手机号"
+        name="phone"
+        type="tel"
+        :maxlength="11"
         inputmode="numeric"
       />
       <FormItem
-        :model-value="form.smsCode" label="验证码" placeholder="6 位验证码" name="sms_code" :maxlength="6"
-        inputmode="numeric" pattern="[0-9]*" class="code-number" @input="onCodeInput"
+        :model-value="form.smsCode"
+        label="验证码"
+        placeholder="6 位验证码"
+        name="sms_code"
+        :maxlength="6"
+        inputmode="numeric"
+        pattern="[0-9]*"
+        class="code-number"
+        @input="onCodeInput"
       >
-        <button class="send-code" type="button" :disabled="secondsLeft > 0 || sendingCode" @click="sendCode">
+        <button
+          class="send-code"
+          type="button"
+          :disabled="secondsLeft > 0 || sendingCode"
+          @click="sendCode"
+        >
           {{ sendCodeText }}
         </button>
       </FormItem>
       <FormItem
-        v-for="field in formFields" :key="field.key" v-model="form[field.key]" :label="field.label"
-        :placeholder="field.placeholder" :name="field.name" :type="field.type" :maxlength="field.maxlength"
+        v-for="field in formFields"
+        :key="field.key"
+        v-model="form[field.key]"
+        :label="field.label"
+        :placeholder="field.placeholder"
+        :name="field.name"
+        :type="field.type"
+        :maxlength="field.maxlength"
       />
-      <button class="submit" :class="{ disabled: isSubmitDisabled }" :disabled="isSubmitDisabled" type="submit">
+      <button
+        class="submit"
+        :class="{ disabled: isSubmitDisabled }"
+        :disabled="isSubmitDisabled"
+        type="submit"
+      >
         {{ submitting ? '提交中...' : '确认重置' }}
       </button>
     </form>

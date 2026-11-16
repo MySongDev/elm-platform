@@ -31,17 +31,35 @@ const { loading, filteredData, query, fetchRows, resetQuery } = useReadonlyTable
 
 <template>
   <div class="main">
-    <AdminTablePage :title="t('permission.page.title')" :loading="loading" @refresh="fetchRows">
+    <AdminTablePage
+      :title="t('permission.page.title')"
+      :loading="loading"
+      @refresh="fetchRows"
+    >
       <template #search>
-        <el-form :model="query" inline>
+        <el-form
+          :model="query"
+          inline
+        >
           <el-form-item :label="`${t('permission.page.pageName')}：`">
-            <el-input v-model="query.title" :placeholder="t('permission.page.pageNamePlaceholder')" clearable />
+            <el-input
+              v-model="query.title"
+              :placeholder="t('permission.page.pageNamePlaceholder')"
+              clearable
+            />
           </el-form-item>
           <el-form-item :label="`${t('permission.page.routePath')}：`">
-            <el-input v-model="query.path" :placeholder="t('permission.page.routePathPlaceholder')" clearable />
+            <el-input
+              v-model="query.path"
+              :placeholder="t('permission.page.routePathPlaceholder')"
+              clearable
+            />
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" :icon="IconEpSearch">
+            <el-button
+              type="primary"
+              :icon="IconEpSearch"
+            >
               {{ t('common.search') }}
             </el-button>
             <el-button @click="resetQuery">
@@ -57,14 +75,29 @@ const { loading, filteredData, query, fetchRows, resetQuery } = useReadonlyTable
         border
         stripe
       >
-        <el-table-column prop="title" :label="t('permission.page.pageName')" min-width="150" />
-        <el-table-column prop="path" :label="t('permission.page.routePath')" min-width="180" />
-        <el-table-column prop="name" :label="t('permission.page.routeName')" min-width="140">
+        <el-table-column
+          prop="title"
+          :label="t('permission.page.pageName')"
+          min-width="150"
+        />
+        <el-table-column
+          prop="path"
+          :label="t('permission.page.routePath')"
+          min-width="180"
+        />
+        <el-table-column
+          prop="name"
+          :label="t('permission.page.routeName')"
+          min-width="140"
+        >
           <template #default="{ row }">
             {{ row.name || '-' }}
           </template>
         </el-table-column>
-        <el-table-column :label="t('permission.page.roles')" min-width="160">
+        <el-table-column
+          :label="t('permission.page.roles')"
+          min-width="160"
+        >
           <template #default="{ row }">
             <el-tag
               v-for="role in row.roles"
@@ -76,7 +109,10 @@ const { loading, filteredData, query, fetchRows, resetQuery } = useReadonlyTable
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column :label="t('permission.page.permissionCodes')" min-width="220">
+        <el-table-column
+          :label="t('permission.page.permissionCodes')"
+          min-width="220"
+        >
           <template #default="{ row }">
             <template v-if="row.auths?.length">
               <el-tag

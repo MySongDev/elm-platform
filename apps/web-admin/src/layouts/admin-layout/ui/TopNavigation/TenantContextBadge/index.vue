@@ -29,7 +29,10 @@ const label = computed(() => {
 </script>
 
 <template>
-  <span v-if="label" class="tenant-context-badge">
+  <span
+    v-if="label"
+    class="tenant-context-badge"
+  >
     {{ label }}
   </span>
 </template>

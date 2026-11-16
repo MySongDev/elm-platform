@@ -54,8 +54,14 @@ function onCheckoutTap() {
   <view class="cart-bar">
     <view class="cart-bar__left">
       <view class="cart-bar__icon">
-        <SvgIcon icon-name="cart-icon" class="cart-bar__svg" />
-        <text v-if="totalQty > 0" class="cart-bar__badge">
+        <SvgIcon
+          icon-name="cart-icon"
+          class="cart-bar__svg"
+        />
+        <text
+          v-if="totalQty > 0"
+          class="cart-bar__badge"
+        >
           {{ totalQty }}
         </text>
       </view>
@@ -68,7 +74,10 @@ function onCheckoutTap() {
             另需配送费 ¥{{ deliveryFee }}
           </text>
         </template>
-        <text v-else class="cart-bar__empty">
+        <text
+          v-else
+          class="cart-bar__empty"
+        >
           未选购商品
         </text>
       </view>

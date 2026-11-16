@@ -130,21 +130,39 @@ const submenuTitleClass = computed(() => {
           { 'nest-menu': isNest },
         ]"
       >
-        <div v-if="leafIcon" class="menu-icon" :class="{ 'is-collapse': props.collapse }">
+        <div
+          v-if="leafIcon"
+          class="menu-icon"
+          :class="{ 'is-collapse': props.collapse }"
+        >
           <SvgIcon :icon-name="leafIcon" />
         </div>
         <template #title>
-          <span class="menu-title" :class="leafTitleClass">{{ leafTitle }}</span>
+          <span
+            class="menu-title"
+            :class="leafTitleClass"
+          >{{ leafTitle }}</span>
         </template>
       </el-menu-item>
     </SidebarLinkItem>
 
-    <el-sub-menu v-else :index="fullPath" :class="[{ 'outer-most': !isNest }, { 'nest-menu': isNest }]">
+    <el-sub-menu
+      v-else
+      :index="fullPath"
+      :class="[{ 'outer-most': !isNest }, { 'nest-menu': isNest }]"
+    >
       <template #title>
-        <div v-if="route.meta?.icon" class="menu-icon" :class="{ 'is-collapse': props.collapse }">
+        <div
+          v-if="route.meta?.icon"
+          class="menu-icon"
+          :class="{ 'is-collapse': props.collapse }"
+        >
           <SvgIcon :icon-name="route.meta.icon" />
         </div>
-        <span class="menu-title" :class="submenuTitleClass">{{ getTitle(route.meta) }}</span>
+        <span
+          class="menu-title"
+          :class="submenuTitleClass"
+        >{{ getTitle(route.meta) }}</span>
       </template>
       <SidebarItem
         v-for="child in visibleChildren"

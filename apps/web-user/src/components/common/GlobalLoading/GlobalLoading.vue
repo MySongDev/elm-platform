@@ -7,9 +7,17 @@ const loadingStore = useLoadingStore()
 <template>
   <Teleport to="body">
     <Transition name="global-loading">
-      <div v-if="loadingStore.isLoading" class="global-loading" role="status" aria-live="polite">
+      <div
+        v-if="loadingStore.isLoading"
+        class="global-loading"
+        role="status"
+        aria-live="polite"
+      >
         <div class="global-loading__box">
-          <van-loading color="#2395ff" size="28px" />
+          <van-loading
+            color="#2395ff"
+            size="28px"
+          />
           <p class="global-loading__text">
             {{ loadingStore.text }}
           </p>

@@ -36,9 +36,17 @@ onMounted(fetchMenus)
 
 <template>
   <div class="main">
-    <AdminTablePage :title="t('system.menuManagement')" :loading="loading" @refresh="fetchMenus">
+    <AdminTablePage
+      :title="t('system.menuManagement')"
+      :loading="loading"
+      @refresh="fetchMenus"
+    >
       <template #search>
-        <AdminSearchForm v-model:model="query" :fields="searchFields" @reset="resetQuery" />
+        <AdminSearchForm
+          v-model:model="query"
+          :fields="searchFields"
+          @reset="resetQuery"
+        />
       </template>
 
       <template #buttons>

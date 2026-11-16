@@ -32,10 +32,18 @@ onMounted(fetchRows)
 </script>
 
 <template>
-  <AdminTablePage :title="t('commerce.order.title')" :loading="loading" @refresh="fetchRows">
+  <AdminTablePage
+    :title="t('commerce.order.title')"
+    :loading="loading"
+    @refresh="fetchRows"
+  >
     <template #search>
       <DataScopeHint />
-      <AdminSearchForm v-model:model="query" :fields="searchFields" @reset="resetQuery" />
+      <AdminSearchForm
+        v-model:model="query"
+        :fields="searchFields"
+        @reset="resetQuery"
+      />
     </template>
 
     <OrderTable

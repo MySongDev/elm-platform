@@ -120,20 +120,44 @@ onBeforeUnmount(() => navbarHeader?.clearHeader(headerOwner))
   <section class="cart-page">
     <main class="cart-content">
       <template v-if="hasItems">
-        <CartStoreCard v-for="store in stores" :key="store.id" :store="store" :selected="isStoreSelected(store)"
-          @toggle-store="toggleStore" @toggle-product="toggleProduct" @increase="increaseQuantity"
-          @decrease="decreaseQuantity" />
+        <CartStoreCard
+          v-for="store in stores"
+          :key="store.id"
+          :store="store"
+          :selected="isStoreSelected(store)"
+          @toggle-store="toggleStore"
+          @toggle-product="toggleProduct"
+          @increase="increaseQuantity"
+          @decrease="decreaseQuantity"
+        />
       </template>
 
-      <van-empty v-else class="cart-empty" image="shopping-cart-o" description="购物车还是空的">
-        <van-button round type="primary" size="small" @click="router.push('/msite')">
+      <van-empty
+        v-else
+        class="cart-empty"
+        image="shopping-cart-o"
+        description="购物车还是空的"
+      >
+        <van-button
+          round
+          type="primary"
+          size="small"
+          @click="router.push('/msite')"
+        >
           去逛逛
         </van-button>
       </van-empty>
     </main>
 
-    <CartBottomBar :total="displayTotal" :all-selected="allSelected" :selected-count="selectedCount"
-      :manage-mode="manageMode" @toggle-all="toggleAll" @checkout="checkout" @remove="removeSelectedProducts" />
+    <CartBottomBar
+      :total="displayTotal"
+      :all-selected="allSelected"
+      :selected-count="selectedCount"
+      :manage-mode="manageMode"
+      @toggle-all="toggleAll"
+      @checkout="checkout"
+      @remove="removeSelectedProducts"
+    />
   </section>
 </template>
 

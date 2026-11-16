@@ -71,10 +71,16 @@ function handleClear() {
       </div>
       <div class="tag-row">
         <div
-          v-for="tag in deliveryTags" :key="tag.id" class="filter-tag"
-          :class="{ active: selectedDelivery.includes(tag.id) }" @click="toggleDelivery(tag.id)"
+          v-for="tag in deliveryTags"
+          :key="tag.id"
+          class="filter-tag"
+          :class="{ active: selectedDelivery.includes(tag.id) }"
+          @click="toggleDelivery(tag.id)"
         >
-          <SvgIcon icon-name="fengniao" icon-class="tag-icon" />
+          <SvgIcon
+            icon-name="fengniao"
+            icon-class="tag-icon"
+          />
           <span>{{ tag.text }}</span>
         </div>
       </div>
@@ -86,10 +92,16 @@ function handleClear() {
       </div>
       <div class="tag-grid">
         <div
-          v-for="attr in attributes" :key="attr.id" class="filter-tag"
-          :class="{ active: modelValue.includes(attr.id) }" @click="toggleAttr(attr.id)"
+          v-for="attr in attributes"
+          :key="attr.id"
+          class="filter-tag"
+          :class="{ active: modelValue.includes(attr.id) }"
+          @click="toggleAttr(attr.id)"
         >
-          <span class="tag-icon" :style="getTagStyle(attr)">
+          <span
+            class="tag-icon"
+            :style="getTagStyle(attr)"
+          >
             {{ attr.icon_name }}
           </span>
           <span>{{ attr.name }}</span>
@@ -98,10 +110,16 @@ function handleClear() {
     </div>
 
     <div class="footer">
-      <button class="btn-clear" @click="handleClear">
+      <button
+        class="btn-clear"
+        @click="handleClear"
+      >
         清空
       </button>
-      <button class="btn-confirm" @click="emit('confirm')">
+      <button
+        class="btn-confirm"
+        @click="emit('confirm')"
+      >
         确定
       </button>
     </div>

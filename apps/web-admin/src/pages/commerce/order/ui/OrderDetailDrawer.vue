@@ -32,10 +32,17 @@ function displayTime(value: string | null) {
     size="680px"
     @update:model-value="emit('update:visible', $event)"
   >
-    <el-skeleton v-if="loading" :rows="8" animated />
+    <el-skeleton
+      v-if="loading"
+      :rows="8"
+      animated
+    />
 
     <template v-else-if="order">
-      <el-descriptions :column="1" border>
+      <el-descriptions
+        :column="1"
+        border
+      >
         <el-descriptions-item :label="t('commerce.order.orderNo')">
           {{ order.orderNo }}
         </el-descriptions-item>
@@ -83,20 +90,39 @@ function displayTime(value: string | null) {
         </el-timeline-item>
       </el-timeline>
 
-      <el-table :data="order.actionLogs || []" size="small" class="order-log-table">
-        <el-table-column prop="action" :label="t('commerce.order.logAction')" width="150" />
-        <el-table-column prop="operatorName" :label="t('commerce.order.logOperator')" width="120" />
+      <el-table
+        :data="order.actionLogs || []"
+        size="small"
+        class="order-log-table"
+      >
+        <el-table-column
+          prop="action"
+          :label="t('commerce.order.logAction')"
+          width="150"
+        />
+        <el-table-column
+          prop="operatorName"
+          :label="t('commerce.order.logOperator')"
+          width="120"
+        />
         <el-table-column :label="t('commerce.order.logRemark')">
           <template #default="{ row }">
             {{ row.reason || row.remark || '-' }}
           </template>
         </el-table-column>
-        <el-table-column :label="t('commerce.order.logRequestId')" min-width="220" show-overflow-tooltip>
+        <el-table-column
+          :label="t('commerce.order.logRequestId')"
+          min-width="220"
+          show-overflow-tooltip
+        >
           <template #default="{ row }">
             {{ displayOrderLogRequestId(row.requestId) }}
           </template>
         </el-table-column>
-        <el-table-column :label="t('commerce.order.logTime')" width="180">
+        <el-table-column
+          :label="t('commerce.order.logTime')"
+          width="180"
+        >
           <template #default="{ row }">
             {{ displayTime(row.createdAt) }}
           </template>

@@ -95,14 +95,21 @@ async function handleSubmit() {
         :label="field.label"
         :prop="field.prop"
       >
-        <FormFieldRenderer v-model="model[field.prop]" :field="field" />
+        <FormFieldRenderer
+          v-model="model[field.prop]"
+          :field="field"
+        />
       </el-form-item>
     </el-form>
     <template #footer>
       <el-button @click="visible = false">
         {{ resolvedCancelText }}
       </el-button>
-      <el-button type="primary" :loading="saving" @click="handleSubmit">
+      <el-button
+        type="primary"
+        :loading="saving"
+        @click="handleSubmit"
+      >
         {{ resolvedConfirmText }}
       </el-button>
     </template>

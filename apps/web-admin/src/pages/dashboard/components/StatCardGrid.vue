@@ -50,7 +50,10 @@ function formatStatValue(stat: DashboardStatCard) {
 </script>
 
 <template>
-  <el-row :gutter="16" class="dashboard-stat-grid">
+  <el-row
+    :gutter="16"
+    class="dashboard-stat-grid"
+  >
     <el-col
       v-for="stat in stats"
       :key="stat.key"
@@ -58,7 +61,11 @@ function formatStatValue(stat: DashboardStatCard) {
       :sm="12"
       :lg="6"
     >
-      <el-card shadow="hover" class="dashboard-stat-card" :class="typeMeta[stat.type].className">
+      <el-card
+        shadow="hover"
+        class="dashboard-stat-card"
+        :class="typeMeta[stat.type].className"
+      >
         <div class="dashboard-stat-card__content">
           <div>
             <div class="dashboard-stat-card__label">

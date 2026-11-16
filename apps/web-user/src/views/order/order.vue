@@ -118,15 +118,25 @@ watch(
 
 <template>
   <section class="order-page">
-    <div v-if="!isAuthenticated" class="order-state">
-      <div class="state-visual login" aria-hidden="true" />
+    <div
+      v-if="!isAuthenticated"
+      class="order-state"
+    >
+      <div
+        class="state-visual login"
+        aria-hidden="true"
+      />
       <p class="state-title">
         登录后查看订单
       </p>
       <p class="state-desc">
         当前账号的支付订单会在这里同步展示。
       </p>
-      <button class="primary-button" type="button" @click="goLogin">
+      <button
+        class="primary-button"
+        type="button"
+        @click="goLogin"
+      >
         登录/注册
       </button>
     </div>
@@ -141,15 +151,27 @@ watch(
             最近创建与支付
           </p>
         </div>
-        <button class="refresh-button" type="button" :disabled="loading" @click="retryFetch">
+        <button
+          class="refresh-button"
+          type="button"
+          :disabled="loading"
+          @click="retryFetch"
+        >
           {{ loading ? '刷新中' : '刷新' }}
         </button>
       </header>
 
-      <BaseState class="order-state-host" :state="orderState" @retry="retryFetch">
+      <BaseState
+        class="order-state-host"
+        :state="orderState"
+        @retry="retryFetch"
+      >
         <template #loading>
           <div class="order-state">
-            <van-loading size="28px" color="#1677ff" />
+            <van-loading
+              size="28px"
+              color="#1677ff"
+            />
             <p class="state-desc">
               正在加载订单
             </p>
@@ -158,14 +180,21 @@ watch(
 
         <template #error>
           <div class="order-state">
-            <div class="state-visual error" aria-hidden="true" />
+            <div
+              class="state-visual error"
+              aria-hidden="true"
+            />
             <p class="state-title">
               订单加载失败
             </p>
             <p class="state-desc">
               {{ error }}
             </p>
-            <button class="primary-button" type="button" @click="retryFetch">
+            <button
+              class="primary-button"
+              type="button"
+              @click="retryFetch"
+            >
               重新加载
             </button>
           </div>
@@ -174,7 +203,11 @@ watch(
         <template #empty>
           <div class="order-state">
             <van-empty description="暂无支付订单" />
-            <button class="primary-button" type="button" @click="goMsite">
+            <button
+              class="primary-button"
+              type="button"
+              @click="goMsite"
+            >
               去点餐
             </button>
           </div>

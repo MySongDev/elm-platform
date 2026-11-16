@@ -51,7 +51,10 @@ const cartQty = computed(() => getCartQty(props.cartMap, props.food))
         {{ food.name }}
       </text>
 
-      <view v-if="food.attributes?.length" class="food-item__labels">
+      <view
+        v-if="food.attributes?.length"
+        class="food-item__labels"
+      >
         <text
           v-for="attr in food.attributes"
           :key="`${food._id}-${attr?.icon_name}`"
@@ -62,7 +65,11 @@ const cartQty = computed(() => getCartQty(props.cartMap, props.food))
         </text>
       </view>
 
-      <view v-if="food.activity?.image_text" class="food-item__activity" :style="getFoodActivityBoxStyle(food)">
+      <view
+        v-if="food.activity?.image_text"
+        class="food-item__activity"
+        :style="getFoodActivityBoxStyle(food)"
+      >
         <text :style="getFoodActivityTextStyle(food)">
           {{ food.activity.image_text }}
         </text>
@@ -79,19 +86,32 @@ const cartQty = computed(() => getCartQty(props.cartMap, props.food))
               ¥
             </text>{{ getFoodPrice(food) }}
           </text>
-          <text v-if="getFoodOriginalPrice(food) > 0" class="price__old">
+          <text
+            v-if="getFoodOriginalPrice(food) > 0"
+            class="price__old"
+          >
             ¥{{ getFoodOriginalPrice(food) }}
           </text>
         </view>
 
         <view class="cart-btns">
-          <view v-if="cartQty > 0" class="decrease-btn" @click.stop="emit('decrease', food)">
+          <view
+            v-if="cartQty > 0"
+            class="decrease-btn"
+            @click.stop="emit('decrease', food)"
+          >
             <text>−</text>
           </view>
-          <text v-if="cartQty > 0" class="qty">
+          <text
+            v-if="cartQty > 0"
+            class="qty"
+          >
             {{ cartQty }}
           </text>
-          <view class="add-btn" @click.stop="emit('add', food)">
+          <view
+            class="add-btn"
+            @click.stop="emit('add', food)"
+          >
             <text>+</text>
           </view>
         </view>

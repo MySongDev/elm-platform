@@ -14,7 +14,10 @@ function closeAlert() {
 </script>
 
 <template>
-  <div v-if="alertText" class="alet_container">
+  <div
+    v-if="alertText"
+    class="alet_container"
+  >
     <section class="tip_text_container">
       <div class="tip_icon">
         <span />
@@ -23,7 +26,10 @@ function closeAlert() {
       <p class="tip_text">
         {{ alertText }}
       </p>
-      <div class="confrim" @click="closeAlert">
+      <div
+        class="confrim"
+        @click="closeAlert"
+      >
         确认
       </div>
     </section>

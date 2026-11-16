@@ -29,9 +29,16 @@ onMounted(() => {
 
 <template>
   <router-view v-slot="{ Component }">
-    <transition name="page" mode="out-in">
+    <transition
+      name="page"
+      mode="out-in"
+    >
       <KeepAlive :include="cachedLayouts">
-        <component :is="Component" :key="routeViewKey" class="app-page" />
+        <component
+          :is="Component"
+          :key="routeViewKey"
+          class="app-page"
+        />
       </KeepAlive>
     </transition>
   </router-view>

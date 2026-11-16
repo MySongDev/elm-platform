@@ -33,7 +33,11 @@ function asUserInfo(row: unknown) {
 </script>
 
 <template>
-  <ConfigDataTable :loading="loading" :data="data" :columns="columns">
+  <ConfigDataTable
+    :loading="loading"
+    :data="data"
+    :columns="columns"
+  >
     <CrudActionColumn
       :column="{ label: t('user.actions') }"
       :edit-action="{ auth: Permissions.USER_EDIT, text: t('common.edit') }"

@@ -91,7 +91,10 @@ function onCancel() {
     @cancel="onCancel"
   >
     <view class="area-picker">
-      <text class="area-picker_text" :class="{ 'area-picker_placeholder': !modelValue }">
+      <text
+        class="area-picker_text"
+        :class="{ 'area-picker_placeholder': !modelValue }"
+      >
         {{ modelValue || placeholder }}
       </text>
       <text class="area-picker_arrow">

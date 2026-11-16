@@ -13,17 +13,30 @@ const emit = defineEmits(['toggle', 'increase', 'decrease'])
 
 <template>
   <article class="cart-product">
-    <CartCheckButton :checked="product.selected" :aria-label="product.selected ? '取消选择商品' : '选择商品'"
-      @click="emit('toggle', product.id)" />
+    <CartCheckButton
+      :checked="product.selected"
+      :aria-label="product.selected ? '取消选择商品' : '选择商品'"
+      @click="emit('toggle', product.id)"
+    />
 
-    <img class="product-image" :src="product.image" :alt="product.name">
+    <img
+      class="product-image"
+      :src="product.image"
+      :alt="product.name"
+    >
 
     <div class="product-content">
       <h3 class="product-name">
-        <span v-if="product.tag" class="product-tag">{{ product.tag }}</span>
+        <span
+          v-if="product.tag"
+          class="product-tag"
+        >{{ product.tag }}</span>
         {{ product.name }}
       </h3>
-      <p v-if="product.spec" class="product-spec">
+      <p
+        v-if="product.spec"
+        class="product-spec"
+      >
         {{ product.spec }}
       </p>
 
@@ -34,12 +47,22 @@ const emit = defineEmits(['toggle', 'increase', 'decrease'])
           <span class="origin-price">¥{{ product.originPrice }}</span>
         </div>
         <div class="quantity-stepper">
-          <button class="stepper-button" type="button" :disabled="product.quantity <= 1" aria-label="减少商品数量"
-            @click="emit('decrease', product.id)">
+          <button
+            class="stepper-button"
+            type="button"
+            :disabled="product.quantity <= 1"
+            aria-label="减少商品数量"
+            @click="emit('decrease', product.id)"
+          >
             −
           </button>
           <span class="quantity">{{ product.quantity }}</span>
-          <button class="stepper-button" type="button" aria-label="增加商品数量" @click="emit('increase', product.id)">
+          <button
+            class="stepper-button"
+            type="button"
+            aria-label="增加商品数量"
+            @click="emit('increase', product.id)"
+          >
             +
           </button>
         </div>

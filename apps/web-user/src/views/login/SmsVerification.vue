@@ -155,23 +155,38 @@ onBeforeUnmount(() => clearInterval(countdownTimer))
 <template>
   <main class="verification_page">
     <header class="verification_topbar">
-      <button class="back_button" type="button" aria-label="返回登录页" @click="backToLogin">
+      <button
+        class="back_button"
+        type="button"
+        aria-label="返回登录页"
+        @click="backToLogin"
+      >
         <span aria-hidden="true" />
       </button>
-      <button class="help_button" type="button">
-帮助
-</button>
+      <button
+        class="help_button"
+        type="button"
+      >
+        帮助
+      </button>
     </header>
 
-    <section class="verification_content" aria-labelledby="verification-title">
+    <section
+      class="verification_content"
+      aria-labelledby="verification-title"
+    >
       <h1 id="verification-title">
-输入验证码
-</h1>
+        输入验证码
+      </h1>
       <p class="phone_hint">
-验证码已发送至 <span>+86 {{ formattedPhone }}</span>
-</p>
+        验证码已发送至 <span>+86 {{ formattedPhone }}</span>
+      </p>
 
-      <div class="otp_inputs" role="group" aria-label="六位短信验证码">
+      <div
+        class="otp_inputs"
+        role="group"
+        aria-label="六位短信验证码"
+      >
         <input
           v-for="(_, index) in otp"
           :key="index"
@@ -190,20 +205,38 @@ onBeforeUnmount(() => clearInterval(countdownTimer))
         >
       </div>
 
-      <p v-if="errorMessage" class="verification_error" role="alert" aria-live="polite">
+      <p
+        v-if="errorMessage"
+        class="verification_error"
+        role="alert"
+        aria-live="polite"
+      >
         {{ errorMessage }}
       </p>
-      <p v-else-if="isVerifying" class="verification_status" aria-live="polite">
+      <p
+        v-else-if="isVerifying"
+        class="verification_status"
+        aria-live="polite"
+      >
         正在验证...
       </p>
 
       <div class="verification_actions">
-        <button class="resend_button" type="button" :disabled="secondsLeft > 0 || isVerifying || isResending" @click="resendCode">
+        <button
+          class="resend_button"
+          type="button"
+          :disabled="secondsLeft > 0 || isVerifying || isResending"
+          @click="resendCode"
+        >
           {{ isResending ? '发送中...' : resendText }}
         </button>
-        <button class="phone_disabled" type="button" :disabled="isVerifying">
-手机号已停用?
-</button>
+        <button
+          class="phone_disabled"
+          type="button"
+          :disabled="isVerifying"
+        >
+          手机号已停用?
+        </button>
       </div>
     </section>
   </main>

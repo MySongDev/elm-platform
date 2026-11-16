@@ -19,8 +19,13 @@ function selectFilter(key) {
 
 <template>
   <div class="filter-bar">
-    <div v-for="item in filters" :key="item._id" class="filter-tag" :class="{ active: modelValue === item.name }"
-      @click="selectFilter(item.name)">
+    <div
+      v-for="item in filters"
+      :key="item._id"
+      class="filter-tag"
+      :class="{ active: modelValue === item.name }"
+      @click="selectFilter(item.name)"
+    >
       <span> {{ item.name }}</span>
       <span>({{ item.count }})</span>
     </div>

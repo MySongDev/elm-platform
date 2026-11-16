@@ -35,9 +35,15 @@ const columnOptions = computed<CrudActionColumnOptions & typeof DEFAULT_CRUD_ACT
   >
     <template #default="{ row }">
       <div class="crud-action-column__actions">
-        <slot name="prepend" :row="row" />
+        <slot
+          name="prepend"
+          :row="row"
+        />
 
-        <slot name="edit" :row="row">
+        <slot
+          name="edit"
+          :row="row"
+        >
           <el-button
             v-if="shouldRenderCrudActionPreset(editAction)"
             v-auth="editAction?.auth"
@@ -50,7 +56,10 @@ const columnOptions = computed<CrudActionColumnOptions & typeof DEFAULT_CRUD_ACT
           </el-button>
         </slot>
 
-        <slot name="delete" :row="row">
+        <slot
+          name="delete"
+          :row="row"
+        >
           <el-button
             v-if="shouldRenderCrudActionPreset(deleteAction)"
             v-auth="deleteAction?.auth"
@@ -63,7 +72,10 @@ const columnOptions = computed<CrudActionColumnOptions & typeof DEFAULT_CRUD_ACT
           </el-button>
         </slot>
 
-        <slot name="append" :row="row" />
+        <slot
+          name="append"
+          :row="row"
+        />
       </div>
     </template>
   </el-table-column>

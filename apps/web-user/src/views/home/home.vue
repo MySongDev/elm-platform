@@ -69,11 +69,20 @@ onMounted(loadCurrentLocation)
       </template>
     </head-top>
     <nav class="home_nav">
-      <button class="location-card" type="button" :class="{ 'is-clickable': canEnterMsite }" @click="enterMsite">
+      <button
+        class="location-card"
+        type="button"
+        :class="{ 'is-clickable': canEnterMsite }"
+        @click="enterMsite"
+      >
         <span class="location-label">当前定位</span>
         <strong>{{ locationText }}</strong>
       </button>
-      <button class="relocate-button" type="button" @click="loadCurrentLocation">
+      <button
+        class="relocate-button"
+        type="button"
+        @click="loadCurrentLocation"
+      >
         <van-icon name="aim" />
         <span>重新定位</span>
       </button>
@@ -83,24 +92,44 @@ onMounted(loadCurrentLocation)
         热门城市
       </h4>
       <ul class="home-u">
-        <router-link v-for="item in hotCityList" :key="item.id" v-slot="{ navigate }"
-          :to="{ path: `/city/${item.id}`, query: { cityname: item?.name } }" custom>
-          <li class="to_city" @click="nextPage(item, navigate)">
+        <router-link
+          v-for="item in hotCityList"
+          :key="item.id"
+          v-slot="{ navigate }"
+          :to="{ path: `/city/${item.id}`, query: { cityname: item?.name } }"
+          custom
+        >
+          <li
+            class="to_city"
+            @click="nextPage(item, navigate)"
+          >
             {{ item.name }}
           </li>
         </router-link>
       </ul>
 
       <ul class="city_list">
-        <li v-for="(value, key, index) in GroupCityList" :key="key" class="city_li">
+        <li
+          v-for="(value, key, index) in GroupCityList"
+          :key="key"
+          class="city_li"
+        >
           <h4 class="city_title">
             {{ key }}
             <span v-if="index === 0">（按字母排序）</span>
           </h4>
           <ul class="groupcity_name_container citylistul">
-            <router-link v-for="item in value" :key="item.id" v-slot="{ navigate }"
-              :to="{ path: `/city/${item.id}`, query: { cityname: item?.name } }" custom>
-              <li class="ellipsis" @click="nextPage(item, navigate)">
+            <router-link
+              v-for="item in value"
+              :key="item.id"
+              v-slot="{ navigate }"
+              :to="{ path: `/city/${item.id}`, query: { cityname: item?.name } }"
+              custom
+            >
+              <li
+                class="ellipsis"
+                @click="nextPage(item, navigate)"
+              >
                 {{ item.name }}
               </li>
             </router-link>

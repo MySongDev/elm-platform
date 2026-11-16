@@ -29,7 +29,10 @@ const emit = defineEmits<{
 
 <template>
   <div class="admin-table-page">
-    <div v-if="$slots.search" class="admin-table-page__search">
+    <div
+      v-if="$slots.search"
+      class="admin-table-page__search"
+    >
       <slot name="search" />
     </div>
 
@@ -40,7 +43,11 @@ const emit = defineEmits<{
       <div class="admin-table-page__actions">
         <slot name="buttons" />
 
-        <el-button :icon="IconEpRefresh" :loading="loading" @click="emit('refresh')">
+        <el-button
+          :icon="IconEpRefresh"
+          :loading="loading"
+          @click="emit('refresh')"
+        >
           {{ $t('common.refresh') }}
         </el-button>
       </div>

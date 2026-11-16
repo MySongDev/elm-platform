@@ -107,7 +107,10 @@ async function handleLogout() {
     </view>
 
     <!-- 动态分组 -->
-    <template v-for="group in settingGroups.slice(1)" :key="group.title">
+    <template
+      v-for="group in settingGroups.slice(1)"
+      :key="group.title"
+    >
       <view class="section-title">
         {{ group.title }}
       </view>
@@ -121,7 +124,10 @@ async function handleLogout() {
     </template>
 
     <!-- 退出登录 -->
-    <view class="logout-btn" @click="handleLogout">
+    <view
+      class="logout-btn"
+      @click="handleLogout"
+    >
       退出登录
     </view>
   </view>

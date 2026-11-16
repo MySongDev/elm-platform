@@ -45,7 +45,10 @@ function navToShop() {
 
 <template>
   <!-- <router-link v-slot="{ navigate }" :to="shopUrl" custom> -->
-  <li class="shopping-item" @click="navToShop">
+  <li
+    class="shopping-item"
+    @click="navToShop"
+  >
     <!-- @click="handleItemClick(navigate)" -->
     <SmartImage
       :src="imgBaseUrl + item.image_path"
@@ -58,7 +61,11 @@ function navToShop() {
           {{ item.name }}
         </h4>
         <div class="shop-detail_supports">
-          <span v-for="(support, idx) in item.supports" :key="idx" class="shop-detail_supported-methods">
+          <span
+            v-for="(support, idx) in item.supports"
+            :key="idx"
+            class="shop-detail_supported-methods"
+          >
             {{ support.icon_name }}
           </span>
         </div>
@@ -70,7 +77,10 @@ function navToShop() {
           <span class="monthly_sales">月售{{ item.recent_order_num }}单</span>
         </div>
         <div class="delivery-methods">
-          <span v-if="item.delivery_mode" class="delivery_span span-bg-blue">
+          <span
+            v-if="item.delivery_mode"
+            class="delivery_span span-bg-blue"
+          >
             {{ item.delivery_mode.text }}
           </span>
           <span class="delivery_span span-bg-white">准时达</span>

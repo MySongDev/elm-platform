@@ -112,40 +112,82 @@ history()
   <div class="nav">
     <head-top :head-title="CityName">
       <template #changecity>
-        <router-link to="/home" class="change_city">
+        <router-link
+          to="/home"
+          class="change_city"
+        >
           切换城市
         </router-link>
       </template>
     </head-top>
-    <form class="city_form" @submit.prevent>
+    <form
+      class="city_form"
+      @submit.prevent
+    >
       <div>
-        <input v-model="inputValue" type="search" name="city" placeholder="输入学校、商务楼、地址" class="city_input input_style"
-          required @search="handleSearch">
+        <input
+          v-model="inputValue"
+          type="search"
+          name="city"
+          placeholder="输入学校、商务楼、地址"
+          class="city_input input_style"
+          required
+          @search="handleSearch"
+        >
       </div>
       <div>
-        <input type="submit" name="submit" class="city_submit input_style" value="提交" @click="sendKeyword">
+        <input
+          type="submit"
+          name="submit"
+          class="city_submit input_style"
+          value="提交"
+          @click="sendKeyword"
+        >
       </div>
     </form>
 
-    <main v-if="cityInfo.length" class="results_container">
+    <main
+      v-if="cityInfo.length"
+      class="results_container"
+    >
       <span class="results-title">附近地区</span>
       <ul>
-        <li v-for="(item, index) in cityInfo" :key="index" class="city_name" @click="ToMsite(item)">
+        <li
+          v-for="(item, index) in cityInfo"
+          :key="index"
+          class="city_name"
+          @click="ToMsite(item)"
+        >
           {{ item.name }}
         </li>
       </ul>
     </main>
 
-    <nav v-show="!inputValue" class="results_container">
+    <nav
+      v-show="!inputValue"
+      class="results_container"
+    >
       <span class="results-title">搜索历史</span>
 
       <ul>
-        <li v-for="(item, index) in searchHistory" :key="index" class="history_style" @click="inputSearch(item)">
+        <li
+          v-for="(item, index) in searchHistory"
+          :key="index"
+          class="history_style"
+          @click="inputSearch(item)"
+        >
           {{ item }}
-          <span class="remove" @click.stop="remove(item)">x</span>
+          <span
+            class="remove"
+            @click.stop="remove(item)"
+          >x</span>
         </li>
       </ul>
-      <div v-if="searchHistory.length" class="clear_search_history" @click="clearAllHistory">
+      <div
+        v-if="searchHistory.length"
+        class="clear_search_history"
+        @click="clearAllHistory"
+      >
         清空搜索历史
       </div>
     </nav>

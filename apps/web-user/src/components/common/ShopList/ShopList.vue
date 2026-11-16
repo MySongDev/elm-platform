@@ -58,30 +58,64 @@ defineExpose({ scrollToTop })
 </script>
 
 <template>
-  <div ref="localContainer" class="shopping-container" :class="{ 'is-scrollable': !pageRef }">
-    <ShopListSkeleton v-if="showInitialSkeleton" :rows="skeletonRows" />
+  <div
+    ref="localContainer"
+    class="shopping-container"
+    :class="{ 'is-scrollable': !pageRef }"
+  >
+    <ShopListSkeleton
+      v-if="showInitialSkeleton"
+      :rows="skeletonRows"
+    />
 
-    <ul v-else-if="list.length > 0" class="shopping-list">
-      <ShopItem v-for="item in list" :key="item.id" :item="item" @click="emit('item-click', $event)" />
+    <ul
+      v-else-if="list.length > 0"
+      class="shopping-list"
+    >
+      <ShopItem
+        v-for="item in list"
+        :key="item.id"
+        :item="item"
+        @click="emit('item-click', $event)"
+      />
     </ul>
 
-    <div v-else-if="!loading" class="empty-placeholder">
+    <div
+      v-else-if="!loading"
+      class="empty-placeholder"
+    >
       <van-empty description="附近暂无商家" />
     </div>
 
-    <div v-show="!showInitialSkeleton && showSentinel" ref="sentinel" class="list-footer">
-      <div v-if="loading" class="loading-status">
+    <div
+      v-show="!showInitialSkeleton && showSentinel"
+      ref="sentinel"
+      class="list-footer"
+    >
+      <div
+        v-if="loading"
+        class="loading-status"
+      >
         <van-loading size="18px">
           加载中...
         </van-loading>
       </div>
-      <div v-else-if="finished" class="finished-status">
+      <div
+        v-else-if="finished"
+        class="finished-status"
+      >
         —— 到底了 ——
       </div>
     </div>
 
     <Teleport to="body">
-      <BackTop v-if="enableBackTop && scrollTarget" :target="scrollTarget" :threshold="400" :right="20" :bottom="80">
+      <BackTop
+        v-if="enableBackTop && scrollTarget"
+        :target="scrollTarget"
+        :threshold="400"
+        :right="20"
+        :bottom="80"
+      >
         <div class="back-top-icon">
           <van-icon name="arrow-up" />
         </div>

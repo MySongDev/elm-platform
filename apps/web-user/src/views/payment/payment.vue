@@ -89,7 +89,10 @@ async function pay() {
         <div class="card-title">
           订单信息
         </div>
-        <div v-if="!hasDraft" class="empty-tip">
+        <div
+          v-if="!hasDraft"
+          class="empty-tip"
+        >
           未读取到结算单，请返回商家页重新选择商品后再支付。
         </div>
         <div class="detail-row">
@@ -110,8 +113,14 @@ async function pay() {
         <div class="card-title">
           支付方式
         </div>
-        <button v-for="method in paymentMethods" :key="method.key" class="method-item"
-          :class="{ active: selectedMethod === method.key }" type="button" @click="selectedMethod = method.key">
+        <button
+          v-for="method in paymentMethods"
+          :key="method.key"
+          class="method-item"
+          :class="{ active: selectedMethod === method.key }"
+          type="button"
+          @click="selectedMethod = method.key"
+        >
           <span class="method-icon">{{ method.icon }}</span>
           <span class="method-copy">
             <strong>{{ method.name }}</strong>
@@ -127,7 +136,11 @@ async function pay() {
         <span>合计</span>
         <strong>¥{{ payableAmount.toFixed(2) }}</strong>
       </div>
-      <button type="button" :disabled="isPaying || !canSubmit" @click="pay">
+      <button
+        type="button"
+        :disabled="isPaying || !canSubmit"
+        @click="pay"
+      >
         {{ isPaying ? '正在跳转支付宝...' : '确认支付' }}
       </button>
     </footer>

@@ -131,7 +131,10 @@ onBeforeUnmount(() => {
         <p>如果你已经完成支付，请稍等几秒后重新查询。</p>
       </template>
 
-      <div v-if="order" class="result-card">
+      <div
+        v-if="order"
+        class="result-card"
+      >
         <div class="row">
           <span>订单编号</span>
           <strong>{{ order.orderNo }}</strong>
@@ -147,10 +150,18 @@ onBeforeUnmount(() => {
       </div>
 
       <div class="actions">
-        <button class="btn secondary" type="button" @click="fetchStatus(true)">
+        <button
+          class="btn secondary"
+          type="button"
+          @click="fetchStatus(true)"
+        >
           重新查询
         </button>
-        <button class="btn primary" type="button" @click="backToNextPage">
+        <button
+          class="btn primary"
+          type="button"
+          @click="backToNextPage"
+        >
           {{ order?.status === 'PAID' ? '查看订单' : order?.shopId ? '返回商家' : '返回首页' }}
         </button>
       </div>

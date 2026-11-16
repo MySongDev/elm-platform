@@ -113,7 +113,11 @@ watch(
       </el-icon>
     </button>
 
-    <div ref="scrollContainerRef" class="tab-scroll-container" @wheel="handleWheel">
+    <div
+      ref="scrollContainerRef"
+      class="tab-scroll-container"
+      @wheel="handleWheel"
+    >
       <div
         ref="tabTrackRef"
         class="tab-track"

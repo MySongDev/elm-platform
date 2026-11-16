@@ -173,23 +173,43 @@ function handleKeydown(e) {
 <template>
   <Teleport to="body">
     <Transition name="spec-panel">
-      <div v-if="food" class="spec-overlay" role="dialog" aria-modal="true" aria-labelledby="food-title"
-        @click.self="handleClose" @keydown="handleKeydown">
+      <div
+        v-if="food"
+        class="spec-overlay"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="food-title"
+        @click.self="handleClose"
+        @keydown="handleKeydown"
+      >
         <div class="spec-panel">
           <!-- 关闭按钮 -->
-          <button class="close-btn" aria-label="关闭" type="button" @click="handleClose">
+          <button
+            class="close-btn"
+            aria-label="关闭"
+            type="button"
+            @click="handleClose"
+          >
             ✕
           </button>
 
           <!-- 菜品标题 -->
-          <h3 id="food-title" class="food-title">
+          <h3
+            id="food-title"
+            class="food-title"
+          >
             {{ food.name }}
           </h3>
 
           <!-- 规格组列表 -->
           <div class="spec-groups">
-            <div v-for="spec in cleanedSpecs" :key="spec.name" class="spec-group" role="radiogroup"
-              :aria-label="spec.name">
+            <div
+              v-for="spec in cleanedSpecs"
+              :key="spec.name"
+              class="spec-group"
+              role="radiogroup"
+              :aria-label="spec.name"
+            >
               <!-- 规格组名称，如"份量"、"规格" -->
               <p class="spec-group-name">
                 {{ spec.name }}
@@ -197,9 +217,16 @@ function handleKeydown(e) {
 
               <!-- 规格选项 -->
               <div class="spec-values">
-                <button v-for="value in spec.values" :key="value" type="button" class="spec-value-btn" role="radio"
+                <button
+                  v-for="value in spec.values"
+                  :key="value"
+                  type="button"
+                  class="spec-value-btn"
+                  role="radio"
                   :aria-checked="selectedSpecs[spec.name] === value"
-                  :class="{ active: selectedSpecs[spec.name] === value }" @click="selectSpec(spec.name, value)">
+                  :class="{ active: selectedSpecs[spec.name] === value }"
+                  @click="selectSpec(spec.name, value)"
+                >
                   {{ value }}
                   <!-- 对应 SKU 的价格 -->
                   <span class="spec-value-price">
@@ -219,8 +246,13 @@ function handleKeydown(e) {
               <span class="current-price">
                 <i>¥</i>{{ currentPrice }}
               </span>
-              <button type="button" class="confirm-btn" :class="{ 'confirm-btn--disabled': isSoldOut }"
-                :disabled="isSoldOut" @click="handleConfirm">
+              <button
+                type="button"
+                class="confirm-btn"
+                :class="{ 'confirm-btn--disabled': isSoldOut }"
+                :disabled="isSoldOut"
+                @click="handleConfirm"
+              >
                 {{ isSoldOut ? '已售罄' : '+ 加入购物车' }}
               </button>
             </div>

@@ -146,7 +146,10 @@ onUnload(() => {
 <template>
   <view class="verification_page">
     <view class="verification_topbar">
-      <view class="back_button" @click="navigateBack()">
+      <view
+        class="back_button"
+        @click="navigateBack()"
+      >
         <text>‹</text>
       </view>
       <view class="help_button">
@@ -175,10 +178,16 @@ onUnload(() => {
         >
       </view>
 
-      <text v-if="errorMessage" class="verification_error">
+      <text
+        v-if="errorMessage"
+        class="verification_error"
+      >
         {{ errorMessage }}
       </text>
-      <text v-else-if="isVerifying" class="verification_status">
+      <text
+        v-else-if="isVerifying"
+        class="verification_status"
+      >
         正在验证...
       </text>
 

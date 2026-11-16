@@ -51,15 +51,35 @@ async function handleFileChange(event) {
 </script>
 
 <template>
-  <div class="avatar-uploader" @click="triggerUpload">
-    <input ref="fileInputRef" type="file" accept="image/*" class="avatar-uploader_input" @change="handleFileChange">
+  <div
+    class="avatar-uploader"
+    @click="triggerUpload"
+  >
+    <input
+      ref="fileInputRef"
+      type="file"
+      accept="image/*"
+      class="avatar-uploader_input"
+      @change="handleFileChange"
+    >
     <span class="avatar-uploader_label">头像</span>
     <div class="avatar-uploader_right">
-      <img v-if="avatar" :src="getUploadUrl(avatar)" class="avatar-uploader_img">
-      <span v-else class="avatar-uploader_img avatar-uploader_img--default">
+      <img
+        v-if="avatar"
+        :src="getUploadUrl(avatar)"
+        class="avatar-uploader_img"
+      >
+      <span
+        v-else
+        class="avatar-uploader_img avatar-uploader_img--default"
+      >
         <SvgIcon icon-name="avatar-default" />
       </span>
-      <SvgIcon icon-name="arrow-right" icon-class="avatar-uploader_arrow" color="#d8d8d8" />
+      <SvgIcon
+        icon-name="arrow-right"
+        icon-class="avatar-uploader_arrow"
+        color="#d8d8d8"
+      />
     </div>
   </div>
 </template>

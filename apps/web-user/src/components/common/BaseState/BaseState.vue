@@ -17,32 +17,50 @@ defineEmits(['retry'])
 </script>
 
 <template>
-  <div class="state-container" :class="{ 'is-active': state !== '' }">
+  <div
+    class="state-container"
+    :class="{ 'is-active': state !== '' }"
+  >
     <!-- 成功状态内容（始终渲染，通过 v-show 控制显示） -->
-    <div v-show="state === 'success'" class="state-content">
+    <div
+      v-show="state === 'success'"
+      class="state-content"
+    >
       <slot />
     </div>
 
     <!-- 过渡动画依然保留在包裹层上 -->
     <transition name="fade">
       <!-- 覆盖层容器：当处于非成功状态且非空时显示 -->
-      <div v-show="state && state !== 'success'" class="state-overlay">
+      <div
+        v-show="state && state !== 'success'"
+        class="state-overlay"
+      >
         <!-- 加载中 -->
-        <div v-show="state === 'loading'" class="overlay-loading">
+        <div
+          v-show="state === 'loading'"
+          class="overlay-loading"
+        >
           <slot name="loading">
             <DefaultLoading />
           </slot>
         </div>
 
         <!-- 错误 -->
-        <div v-show="state === 'error'" class="overlay-error">
+        <div
+          v-show="state === 'error'"
+          class="overlay-error"
+        >
           <slot name="error">
             <DefaultError @retry="$emit('retry')" />
           </slot>
         </div>
 
         <!-- 空数据 -->
-        <div v-show="state === 'empty'" class="overlay-empty">
+        <div
+          v-show="state === 'empty'"
+          class="overlay-empty"
+        >
           <slot name="empty">
             <DefaultEmpty />
           </slot>

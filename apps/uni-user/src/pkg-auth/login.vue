@@ -109,7 +109,10 @@ function closeLogin() {
 <template>
   <view class="login_page">
     <view class="login_topbar">
-      <view class="close_button" @click="closeLogin">
+      <view
+        class="close_button"
+        @click="closeLogin"
+      >
         <text>×</text>
       </view>
     </view>
@@ -131,16 +134,26 @@ function closeLogin() {
           placeholder="请输入手机号"
           @input="handlePhoneInput"
         >
-        <view v-if="phone" class="clear_phone" @click="clearPhone">
+        <view
+          v-if="phone"
+          class="clear_phone"
+          @click="clearPhone"
+        >
           <text>×</text>
         </view>
       </view>
 
-      <text v-if="loginMode === 'sms'" class="login_hint">
+      <text
+        v-if="loginMode === 'sms'"
+        class="login_hint"
+      >
         未注册的手机号验证后自动创建账号
       </text>
 
-      <view v-else class="password_field">
+      <view
+        v-else
+        class="password_field"
+      >
         <input
           v-model="password"
           class="password_input"
@@ -155,7 +168,10 @@ function closeLogin() {
         </view>
       </view>
 
-      <view class="agreement_row" @click="toggleAgreement">
+      <view
+        class="agreement_row"
+        @click="toggleAgreement"
+      >
         <view
           class="agreement_mark"
           :class="{ checked: agreementAccepted }"
@@ -181,10 +197,18 @@ function closeLogin() {
         {{ submitText }}
       </view>
 
-      <view v-if="loginMode === 'sms'" class="password_login" @click="switchToPassword">
+      <view
+        v-if="loginMode === 'sms'"
+        class="password_login"
+        @click="switchToPassword"
+      >
         密码登录
       </view>
-      <view v-else class="password_login" @click="switchToSms">
+      <view
+        v-else
+        class="password_login"
+        @click="switchToSms"
+      >
         验证码登录
       </view>
     </view>

@@ -36,7 +36,11 @@ watch(() => route.path, (newPath, oldPath) => {
     <main class="address-main">
       <router-view v-slot="{ Component, route }">
         <transition :name="transitionName">
-          <component :is="Component" :key="route.path" class="address-page" />
+          <component
+            :is="Component"
+            :key="route.path"
+            class="address-page"
+          />
         </transition>
       </router-view>
     </main>

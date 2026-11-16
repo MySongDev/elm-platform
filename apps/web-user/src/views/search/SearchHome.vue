@@ -75,40 +75,89 @@ loadHistory()
 <template>
   <div>
     <div class="search-contanier">
-      <input v-model="inputValue" type="search" name="search" placeholder="请输入商家或美食名称" class="search-input"
-        @search="clearRestaurantList" @input="inputFn">
-      <button class="search-submit" @click="sendSearch">
+      <input
+        v-model="inputValue"
+        type="search"
+        name="search"
+        placeholder="请输入商家或美食名称"
+        class="search-input"
+        @search="clearRestaurantList"
+        @input="inputFn"
+      >
+      <button
+        class="search-submit"
+        @click="sendSearch"
+      >
         搜索
       </button>
     </div>
 
-    <BaseState :state="state" @retry="sendSearch">
+    <BaseState
+      :state="state"
+      @retry="sendSearch"
+    >
       <template #default>
-        <div v-if="restaurantList.length" class="restaurant-content">
+        <div
+          v-if="restaurantList.length"
+          class="restaurant-content"
+        >
           <h4 class="title-restaurant">
             商家
           </h4>
-          <router-link v-for="(item, index) in restaurantList" :key="index" to="/profile" class="restaurant-list">
+          <router-link
+            v-for="(item, index) in restaurantList"
+            :key="index"
+            to="/profile"
+            class="restaurant-list"
+          >
             <li class="list-item">
               <div class="item-left">
-                <img :src="getImageUrl(item.image_path)" alt="餐厅图片">
+                <img
+                  :src="getImageUrl(item.image_path)"
+                  alt="餐厅图片"
+                >
               </div>
               <div class="item-right">
                 <div class="item-right_text">
                   <p>
                     <span>{{ item.name }}</span>
-                    <svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="24" height="14" class="pay_icon">
-                      <polygon points="0,14 4,0 24,0 20,14" style="fill:none;stroke:#FF6000;stroke-width:1" />
-                      <line x1="1.5" y1="12" x2="20" y2="12" style="stroke:#FF6000;stroke-width:1.5" />
-                      <text x="3.5" y="9" style="font-size:9;font-weight:bold;fill:#FF6000;">支付</text>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      version="1.1"
+                      width="24"
+                      height="14"
+                      class="pay_icon"
+                    >
+                      <polygon
+                        points="0,14 4,0 24,0 20,14"
+                        style="fill:none;stroke:#FF6000;stroke-width:1"
+                      />
+                      <line
+                        x1="1.5"
+                        y1="12"
+                        x2="20"
+                        y2="12"
+                        style="stroke:#FF6000;stroke-width:1.5"
+                      />
+                      <text
+                        x="3.5"
+                        y="9"
+                        style="font-size:9;font-weight:bold;fill:#FF6000;"
+                      >支付</text>
                     </svg>
                   </p>
                   <p>月售 {{ item.month_sales || item.recent_order_num }} 单</p>
                   <p>{{ item.delivery_fee || item.float_minimum_order_amount }} 元起送 / 距离{{ item.distance }}</p>
                 </div>
                 <ul class="item-right_detail">
-                  <li v-for="activities in item.activities" :key="activities.id">
-                    <span :style="{ backgroundColor: `#${activities.icon_color}` }" class="activities_icon">
+                  <li
+                    v-for="activities in item.activities"
+                    :key="activities.id"
+                  >
+                    <span
+                      :style="{ backgroundColor: `#${activities.icon_color}` }"
+                      class="activities_icon"
+                    >
                       {{ activities.icon_name }}
                     </span>
                     <span>{{ activities.name }}</span>
@@ -122,18 +171,36 @@ loadHistory()
       </template>
     </BaseState>
 
-    <div v-if="!inputValue" class="search-history">
+    <div
+      v-if="!inputValue"
+      class="search-history"
+    >
       <h2 class="search-history_title">
         搜索历史
       </h2>
       <div class="search-history_content">
-        <div v-for="(item, index) in searchHistory" :key="index" class="search-history_text" @click="searchInput(item)">
+        <div
+          v-for="(item, index) in searchHistory"
+          :key="index"
+          class="search-history_text"
+          @click="searchInput(item)"
+        >
           {{ item }}
-          <div class="search-history_clear-img" @click.stop="handleRemove(item)">
-            <img src="./image/close.png" alt="删除">
+          <div
+            class="search-history_clear-img"
+            @click.stop="handleRemove(item)"
+          >
+            <img
+              src="./image/close.png"
+              alt="删除"
+            >
           </div>
         </div>
-        <div v-show="searchHistory?.length" class="search-history_clear-all" @click="handleClearAll">
+        <div
+          v-show="searchHistory?.length"
+          class="search-history_clear-all"
+          @click="handleClearAll"
+        >
           清空搜索历史
         </div>
       </div>

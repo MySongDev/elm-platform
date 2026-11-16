@@ -252,7 +252,10 @@ async function onCategorySelect(id) {
         温馨提示：请适量点餐
       </text>
 
-      <text v-if="!foodMenuData.length" class="menu-area__tip">
+      <text
+        v-if="!foodMenuData.length"
+        class="menu-area__tip"
+      >
         本店暂无菜品
       </text>
       <view
@@ -265,7 +268,10 @@ async function onCategorySelect(id) {
           <text class="food-category__name">
             {{ cat.name }}
           </text>
-          <text v-if="cat.description" class="food-category__desc">
+          <text
+            v-if="cat.description"
+            class="food-category__desc"
+          >
             {{ cat.description }}
           </text>
         </view>
@@ -278,18 +284,23 @@ async function onCategorySelect(id) {
           @add="emit('add', $event)"
           @decrease="emit('decrease', $event)"
         />
-        <view class="category-loader" :class="{ 'is-placeholder': !cat.loaded }">
+        <view
+          class="category-loader"
+          :class="{ 'is-placeholder': !cat.loaded }"
+        >
           <text v-if="cat.loading">
             菜品加载中…
           </text>
           <text
-            v-else-if="cat.loadError" class="category-loader__action"
+            v-else-if="cat.loadError"
+            class="category-loader__action"
             @click="loadCategoryFoods(cat.id, { retry: true })"
           >
             加载失败，点击重试
           </text>
           <text
-            v-else-if="!cat.loaded || cat.hasMore" class="category-loader__action"
+            v-else-if="!cat.loaded || cat.hasMore"
+            class="category-loader__action"
             @click="loadCategoryFoods(cat.id)"
           >
             {{ cat.loaded ? '加载更多菜品' : '加载本分类菜品' }}

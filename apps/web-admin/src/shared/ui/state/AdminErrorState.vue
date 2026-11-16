@@ -51,7 +51,11 @@ const resolvedRetryText = computed(() => props.retryText ?? t('state.error.retry
       {{ resolvedDescription }}
     </div>
     <slot name="actions">
-      <el-button type="primary" :icon="IconEpRefresh" @click="emit('retry')">
+      <el-button
+        type="primary"
+        :icon="IconEpRefresh"
+        @click="emit('retry')"
+      >
         {{ resolvedRetryText }}
       </el-button>
     </slot>

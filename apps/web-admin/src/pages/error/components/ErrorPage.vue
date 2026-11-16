@@ -18,17 +18,31 @@ const { t } = useI18n()
 <template>
   <div class="error-page">
     <div class="error-content">
-      <h1 class="error-code" data-testid="error-code">
+      <h1
+        class="error-code"
+        data-testid="error-code"
+      >
         {{ code }}
       </h1>
-      <p class="error-desc" data-testid="error-desc">
+      <p
+        class="error-desc"
+        data-testid="error-desc"
+      >
         {{ description }}
       </p>
       <div class="error-actions">
-        <el-button type="primary" data-testid="btn-home" @click="emit('home')">
+        <el-button
+          type="primary"
+          data-testid="btn-home"
+          @click="emit('home')"
+        >
           {{ t('error.backHome') }}
         </el-button>
-        <el-button v-if="showBack" data-testid="btn-back" @click="emit('back')">
+        <el-button
+          v-if="showBack"
+          data-testid="btn-back"
+          @click="emit('back')"
+        >
           {{ t('error.backPrev') }}
         </el-button>
       </div>

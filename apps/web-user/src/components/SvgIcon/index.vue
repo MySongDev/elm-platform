@@ -33,7 +33,11 @@ const svgStyle = computed(() => {
 </script>
 
 <template>
-  <svg :class="svgClass" aria-hidden="true" :style="svgStyle">
+  <svg
+    :class="svgClass"
+    aria-hidden="true"
+    :style="svgStyle"
+  >
     <use :href="useIconName" />
   </svg>
 </template>

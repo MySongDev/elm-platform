@@ -21,7 +21,11 @@ provide(activePaneKey, activePaneInfo)
 
 <template>
   <el-container class="account-settings-page">
-    <AccountSidebar :panes="accountPanes" :active-key="activePane" @change="activePane = $event" />
+    <AccountSidebar
+      :panes="accountPanes"
+      :active-key="activePane"
+      @change="activePane = $event"
+    />
     <el-main>
       <component :is="currentComponent" />
     </el-main>

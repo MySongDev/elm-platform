@@ -34,12 +34,21 @@ function getCellTag(row: Row, column: ConfigTableColumn<Row>) {
     :fixed="column.fixed"
     :show-overflow-tooltip="column.showOverflowTooltip"
   >
-    <template v-if="column.tag" #default="{ row }">
-      <el-tag v-if="getCellTag(row, column)" :type="getCellTag(row, column)?.type">
+    <template
+      v-if="column.tag"
+      #default="{ row }"
+    >
+      <el-tag
+        v-if="getCellTag(row, column)"
+        :type="getCellTag(row, column)?.type"
+      >
         {{ getCellTag(row, column)?.label }}
       </el-tag>
     </template>
-    <template v-else-if="column.formatter" #default="{ row }">
+    <template
+      v-else-if="column.formatter"
+      #default="{ row }"
+    >
       {{ getCellText(row, column) }}
     </template>
   </el-table-column>

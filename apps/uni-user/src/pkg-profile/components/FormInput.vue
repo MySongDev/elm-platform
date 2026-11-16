@@ -48,8 +48,14 @@ function onBlur(e) {
 </script>
 
 <template>
-  <view class="form-item" :class="{ 'has-error': error }">
-    <text v-if="label" class="form-item_label">
+  <view
+    class="form-item"
+    :class="{ 'has-error': error }"
+  >
+    <text
+      v-if="label"
+      class="form-item_label"
+    >
       {{ label }}
     </text>
     <view class="form-item_body">
@@ -63,11 +69,17 @@ function onBlur(e) {
         @input="onInput"
         @blur="onBlur"
       >
-      <text v-if="optional" class="form-input_tag">
+      <text
+        v-if="optional"
+        class="form-input_tag"
+      >
         选填
       </text>
     </view>
-    <text v-if="error" class="form-item_error">
+    <text
+      v-if="error"
+      class="form-item_error"
+    >
       {{ error }}
     </text>
   </view>

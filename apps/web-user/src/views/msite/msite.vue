@@ -192,18 +192,49 @@ onDeactivated(() => {
 </script>
 
 <template>
-  <div ref="msiteRef" class="msite">
+  <div
+    ref="msiteRef"
+    class="msite"
+  >
     <!-- 轮播图 -->
-    <div ref="headerRef" class="header-content">
+    <div
+      ref="headerRef"
+      class="header-content"
+    >
       <div class="swiper">
-        <img v-if="foodCategoryLoading" src="./images/fl.svg" alt="轮播图加载中" class="swiper-placeholder">
-        <Swiper v-else-if="paginatedFoodList.length > 0" :modules="[Pagination]" :loop="paginatedFoodList.length >= 2" :pagination="{ clickable: true }">
-          <SwiperSlide v-for="(page, index) in paginatedFoodList" :key="index" class="slide-style">
-            <figure v-for="(item, itemIndex) in page" :key="itemIndex" class="slide-item">
-              <router-link v-slot="{ navigate }"
+        <img
+          v-if="foodCategoryLoading"
+          src="./images/fl.svg"
+          alt="轮播图加载中"
+          class="swiper-placeholder"
+        >
+        <Swiper
+          v-else-if="paginatedFoodList.length > 0"
+          :modules="[Pagination]"
+          :loop="paginatedFoodList.length >= 2"
+          :pagination="{ clickable: true }"
+        >
+          <SwiperSlide
+            v-for="(page, index) in paginatedFoodList"
+            :key="index"
+            class="slide-style"
+          >
+            <figure
+              v-for="(item, itemIndex) in page"
+              :key="itemIndex"
+              class="slide-item"
+            >
+              <router-link
+                v-slot="{ navigate }"
                 :to="{ path: '/food', query: { foodtitle: item.title, restaurant_category_id: extractIdFromUrl(item.link) } }"
-                custom>
-                <img :src="categoryImageUrl(item.image_url)" :alt="item.title" class="slide-img" @click="navigate">
+                custom
+              >
+                <img
+                  :src="categoryImageUrl(item.image_url)"
+                  :alt="item.title"
+                  class="slide-img"
+                  @click="navigate"
+                >
                 <figcaption class="slide-title">
                   {{ item.title }}
                 </figcaption>
@@ -215,16 +246,32 @@ onDeactivated(() => {
     </div>
     <!-- 商家 -->
     <div class="shopping-contnet">
-      <h2 class="contnet-title" :class="{ 'is-sticky': isSticky }">
-        <SvgIcon icon-class="contnet-title_svg" icon-name="shop" />
+      <h2
+        class="contnet-title"
+        :class="{ 'is-sticky': isSticky }"
+      >
+        <SvgIcon
+          icon-class="contnet-title_svg"
+          icon-name="shop"
+        />
         附近商家
       </h2>
 
-      <ShopList :list="shopList" :loading="loading" :finished="finished" :page-ref="msiteRef"
-        :enable-back-top="false" @reach-bottom="handleLoadMore" @item-click="toShop" />
+      <ShopList
+        :list="shopList"
+        :loading="loading"
+        :finished="finished"
+        :page-ref="msiteRef"
+        :enable-back-top="false"
+        @reach-bottom="handleLoadMore"
+        @item-click="toShop"
+      />
     </div>
 
-    <BackTop :target="msiteRef" :show-after="headerRef" />
+    <BackTop
+      :target="msiteRef"
+      :show-after="headerRef"
+    />
   </div>
 </template>
 

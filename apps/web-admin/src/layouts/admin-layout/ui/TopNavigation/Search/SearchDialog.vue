@@ -27,7 +27,11 @@ defineExpose({ open })
 <template>
   <Teleport to="body">
     <transition name="el-fade-in">
-      <div v-if="visible" class="global-search-overlay" @click.self="close">
+      <div
+        v-if="visible"
+        class="global-search-overlay"
+        @click.self="close"
+      >
         <div
           class="global-search-dialog"
           role="dialog"
@@ -35,7 +39,10 @@ defineExpose({ open })
           aria-labelledby="global-search-title"
           @keydown="onKeydown"
         >
-          <div id="global-search-title" class="global-search-dialog__title">
+          <div
+            id="global-search-title"
+            class="global-search-dialog__title"
+          >
             {{ t('globalSearch.title') }}
           </div>
           <div class="global-search-input">
@@ -56,7 +63,11 @@ defineExpose({ open })
             <kbd class="global-search-input__hint">ESC</kbd>
           </div>
 
-          <div id="global-search-results" class="global-search-results" role="listbox">
+          <div
+            id="global-search-results"
+            class="global-search-results"
+            role="listbox"
+          >
             <template v-if="displayList.length">
               <SearchResultItem
                 v-for="(item, index) in displayList"
@@ -67,7 +78,10 @@ defineExpose({ open })
                 @activate="activeIndex = index"
               />
             </template>
-            <div v-else class="global-search-empty">
+            <div
+              v-else
+              class="global-search-empty"
+            >
               {{ emptyText }}
             </div>
           </div>

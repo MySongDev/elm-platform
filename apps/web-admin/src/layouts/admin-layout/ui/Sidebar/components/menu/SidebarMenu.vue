@@ -20,7 +20,10 @@ const {
 </script>
 
 <template>
-  <el-scrollbar wrap-class="sidebar-menu__scrollbar-wrapper" class="sidebar-menu-scrollbar">
+  <el-scrollbar
+    wrap-class="sidebar-menu__scrollbar-wrapper"
+    class="sidebar-menu-scrollbar"
+  >
     <el-menu
       ref="menuRef"
       unique-opened

@@ -25,7 +25,11 @@ function backHome() {
 
 <template>
   <aside class="account-sidebar">
-    <button class="back-button" type="button" @click="backHome">
+    <button
+      class="back-button"
+      type="button"
+      @click="backHome"
+    >
       <el-icon>
         <IconEpArrowLeft />
       </el-icon>

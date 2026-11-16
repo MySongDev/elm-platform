@@ -58,13 +58,24 @@ function getImageUrl(filename) {
     <!-- 左侧一级分类 -->
     <div class="cat-sidebar">
       <div
-        v-for="(item, index) in categories" :key="item.id" class="cat-item"
-        :class="{ active: activeIndex === index }" @click="handleCategoryClick(index)"
+        v-for="(item, index) in categories"
+        :key="item.id"
+        class="cat-item"
+        :class="{ active: activeIndex === index }"
+        @click="handleCategoryClick(index)"
       >
-        <img v-if="item.image_url" :src="getImageUrl(item.image_url)" class="cat-icon" alt="">
+        <img
+          v-if="item.image_url"
+          :src="getImageUrl(item.image_url)"
+          class="cat-icon"
+          alt=""
+        >
         <span class="cat-name">{{ item.name }}</span>
         <div class="cat-meta">
-          <span v-if="item.count > 0" class="cat-count">{{ formatCount(item.count) }}</span>
+          <span
+            v-if="item.count > 0"
+            class="cat-count"
+          >{{ formatCount(item.count) }}</span>
           <span class="cat-arrow">›</span>
         </div>
       </div>
@@ -72,16 +83,29 @@ function getImageUrl(filename) {
 
     <!-- 右侧二级分类 -->
     <div class="cat-content">
-      <div v-for="sub in currentSubCategories" :key="sub.id" class="sub-item" @click="handleSubClick(sub)">
+      <div
+        v-for="sub in currentSubCategories"
+        :key="sub.id"
+        class="sub-item"
+        @click="handleSubClick(sub)"
+      >
         <div class="sub-info">
-          <img v-if="sub.image_url" :src="getImageUrl(sub.image_url)" class="sub-icon" alt="">
+          <img
+            v-if="sub.image_url"
+            :src="getImageUrl(sub.image_url)"
+            class="sub-icon"
+            alt=""
+          >
           <span class="sub-name">{{ sub.name }}</span>
         </div>
         <span class="sub-count">{{ sub.count }}</span>
       </div>
 
       <!-- 空状态 -->
-      <div v-if="currentSubCategories.length === 0" class="empty-state">
+      <div
+        v-if="currentSubCategories.length === 0"
+        class="empty-state"
+      >
         <div class="empty-text">
           暂无子分类
         </div>

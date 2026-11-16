@@ -10,21 +10,53 @@ defineProps({
 </script>
 
 <template>
-  <ul class="shop-list-skeleton" aria-hidden="true">
-    <li v-for="index in rows" :key="index" class="shop-skeleton-item">
-      <SkeletonBlock width="64px" height="64px" radius="4px" class="shop-skeleton-item__avatar" />
+  <ul
+    class="shop-list-skeleton"
+    aria-hidden="true"
+  >
+    <li
+      v-for="index in rows"
+      :key="index"
+      class="shop-skeleton-item"
+    >
+      <SkeletonBlock
+        width="64px"
+        height="64px"
+        radius="4px"
+        class="shop-skeleton-item__avatar"
+      />
       <div class="shop-skeleton-item__content">
         <div class="shop-skeleton-item__header">
-          <SkeletonBlock width="46%" height="18px" />
-          <SkeletonBlock width="52px" height="16px" radius="3px" />
+          <SkeletonBlock
+            width="46%"
+            height="18px"
+          />
+          <SkeletonBlock
+            width="52px"
+            height="16px"
+            radius="3px"
+          />
         </div>
         <div class="shop-skeleton-item__row">
-          <SkeletonBlock width="120px" height="14px" />
-          <SkeletonBlock width="72px" height="18px" radius="3px" />
+          <SkeletonBlock
+            width="120px"
+            height="14px"
+          />
+          <SkeletonBlock
+            width="72px"
+            height="18px"
+            radius="3px"
+          />
         </div>
         <div class="shop-skeleton-item__row">
-          <SkeletonBlock width="150px" height="14px" />
-          <SkeletonBlock width="78px" height="14px" />
+          <SkeletonBlock
+            width="150px"
+            height="14px"
+          />
+          <SkeletonBlock
+            width="78px"
+            height="14px"
+          />
         </div>
       </div>
     </li>

@@ -45,9 +45,18 @@ defineExpose({
         class="tab-context-menu"
         :style="{ left: `${x}px`, top: `${y}px` }"
       >
-        <template v-for="item in commands" :key="item.command">
-          <li v-if="item.divided" class="divider" />
-          <li :class="{ disabled: item.disabled }" @click="handleCommand(item)">
+        <template
+          v-for="item in commands"
+          :key="item.command"
+        >
+          <li
+            v-if="item.divided"
+            class="divider"
+          />
+          <li
+            :class="{ disabled: item.disabled }"
+            @click="handleCommand(item)"
+          >
             <el-icon>
               <component :is="item.icon" />
             </el-icon>

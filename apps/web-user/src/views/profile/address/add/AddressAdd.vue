@@ -90,44 +90,98 @@ async function handleSubmit() {
 
 <template>
   <div class="address-add">
-    <form class="form" @submit.prevent="handleSubmit">
+    <form
+      class="form"
+      @submit.prevent="handleSubmit"
+    >
       <FormInput
-        v-model="form.name" type="text" label="姓名" placeholder="输入姓名" name="name"
-        :error="errors.name" @field-change="validateField('name')" @field-blur="validateField('name')"
+        v-model="form.name"
+        type="text"
+        label="姓名"
+        placeholder="输入姓名"
+        name="name"
+        :error="errors.name"
+        @field-change="validateField('name')"
+        @field-blur="validateField('name')"
       />
 
-      <SexSelector v-model="form.sex" :error="errors.sex" @field-change="validateField('sex')" />
+      <SexSelector
+        v-model="form.sex"
+        :error="errors.sex"
+        @field-change="validateField('sex')"
+      />
 
       <FormInput
-        v-model="form.detail" inputmode="none" label="所在地区" placeholder="所在地区" name="detail"
-        :error="errors.detail" @field-change="validateField('detail')" @click="showArea = true"
+        v-model="form.detail"
+        inputmode="none"
+        label="所在地区"
+        placeholder="所在地区"
+        name="detail"
+        :error="errors.detail"
+        @field-change="validateField('detail')"
+        @click="showArea = true"
       />
-      <van-popup v-model:show="showArea" destroy-on-close position="bottom">
-        <van-area :area-list="areaList" @confirm="onAreaConfirm" @cancel="showArea = false" />
+      <van-popup
+        v-model:show="showArea"
+        destroy-on-close
+        position="bottom"
+      >
+        <van-area
+          :area-list="areaList"
+          @confirm="onAreaConfirm"
+          @cancel="showArea = false"
+        />
       </van-popup>
 
       <FormInput
-        v-model="form.community" type="text" label="小区" placeholder="小区" name="community"
-        :error="errors.community" @field-change="validateField('community')" @field-blur="validateField('community')"
+        v-model="form.community"
+        type="text"
+        label="小区"
+        placeholder="小区"
+        name="community"
+        :error="errors.community"
+        @field-change="validateField('community')"
+        @field-blur="validateField('community')"
       />
 
       <FormInput
-        v-model="form.phone" type="tel" label="手机号" placeholder="手机号" :maxlength="11" name="phone"
-        :error="errors.phone" @field-change="validateField('phone')" @field-blur="validateField('phone')"
+        v-model="form.phone"
+        type="tel"
+        label="手机号"
+        placeholder="手机号"
+        :maxlength="11"
+        name="phone"
+        :error="errors.phone"
+        @field-change="validateField('phone')"
+        @field-blur="validateField('phone')"
       />
 
       <FormInput
-        v-model="form.phoneBk" type="tel" label="备用电话" placeholder="选填" :maxlength="11" name="phoneBk"
-        optional :error="errors.phoneBk" @field-blur="validateField('phoneBk')"
+        v-model="form.phoneBk"
+        type="tel"
+        label="备用电话"
+        placeholder="选填"
+        :maxlength="11"
+        name="phoneBk"
+        optional
+        :error="errors.phoneBk"
+        @field-blur="validateField('phoneBk')"
       />
 
       <transition name="fade">
-        <div v-if="formError" class="form-error">
+        <div
+          v-if="formError"
+          class="form-error"
+        >
           {{ formError }}
         </div>
       </transition>
 
-      <button type="submit" class="submit-btn" :disabled="!canSubmit || isLoading">
+      <button
+        type="submit"
+        class="submit-btn"
+        :disabled="!canSubmit || isLoading"
+      >
         {{ isLoading ? '提交中...' : '新增地址' }}
       </button>
     </form>

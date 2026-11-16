@@ -41,12 +41,21 @@ const skeletonVariant = computed(() => props.skeleton || 'table')
 
 <template>
   <div class="admin-state-view">
-    <slot v-if="stateKind === 'forbidden'" name="forbidden">
+    <slot
+      v-if="stateKind === 'forbidden'"
+      name="forbidden"
+    >
       <AdminForbiddenHint />
     </slot>
 
-    <slot v-else-if="stateKind === 'loading'" name="loading">
-      <AdminSkeleton v-if="shouldRenderSkeleton" :variant="skeletonVariant" />
+    <slot
+      v-else-if="stateKind === 'loading'"
+      name="loading"
+    >
+      <AdminSkeleton
+        v-if="shouldRenderSkeleton"
+        :variant="skeletonVariant"
+      />
       <slot v-else />
     </slot>
 
@@ -56,7 +65,10 @@ const skeletonVariant = computed(() => props.skeleton || 'table')
       :error="error"
       :retry="() => emit('retry')"
     >
-      <AdminErrorState :error="error" @retry="emit('retry')" />
+      <AdminErrorState
+        :error="error"
+        @retry="emit('retry')"
+      />
     </slot>
 
     <slot
@@ -65,7 +77,10 @@ const skeletonVariant = computed(() => props.skeleton || 'table')
       :reason="emptyReason"
       :clear-filter="() => emit('clearFilter')"
     >
-      <AdminEmptyState :reason="emptyReason" @clear-filter="emit('clearFilter')" />
+      <AdminEmptyState
+        :reason="emptyReason"
+        @clear-filter="emit('clearFilter')"
+      />
     </slot>
 
     <slot v-else />

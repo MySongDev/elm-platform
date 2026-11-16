@@ -46,11 +46,27 @@ watch(
 </script>
 
 <template>
-  <aside ref="menuRef" class="category-menu">
-    <div v-for="(cat, index) in categories" :key="cat.id ?? cat._id ?? index" class="cat-item"
-      :class="{ active: String(activeId) === String(cat.id) }" @click="emit('update:activeId', cat.id)">
-      <div class="cat-content" :class="{ row: cat.icon_url }">
-        <img v-if="cat.icon_url" :src="getImageUrl(cat.icon_url)" class="cat-icon" alt="">
+  <aside
+    ref="menuRef"
+    class="category-menu"
+  >
+    <div
+      v-for="(cat, index) in categories"
+      :key="cat.id ?? cat._id ?? index"
+      class="cat-item"
+      :class="{ active: String(activeId) === String(cat.id) }"
+      @click="emit('update:activeId', cat.id)"
+    >
+      <div
+        class="cat-content"
+        :class="{ row: cat.icon_url }"
+      >
+        <img
+          v-if="cat.icon_url"
+          :src="getImageUrl(cat.icon_url)"
+          class="cat-icon"
+          alt=""
+        >
         <span class="cat-name">{{ cat.name }}</span>
       </div>
     </div>

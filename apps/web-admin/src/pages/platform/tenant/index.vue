@@ -79,7 +79,11 @@ onMounted(() => {
 
 <template>
   <div class="main">
-    <AdminTablePage title="租户管理" :loading="loading" @refresh="fetchTenants">
+    <AdminTablePage
+      title="租户管理"
+      :loading="loading"
+      @refresh="fetchTenants"
+    >
       <template #search>
         <AdminSearchForm
           v-model:model="query"

@@ -132,7 +132,10 @@ onShow(() => {
 
 <template>
   <view class="order-page">
-    <view v-if="!isAuthenticated" class="order-state">
+    <view
+      v-if="!isAuthenticated"
+      class="order-state"
+    >
       <view class="state-visual login" />
       <text class="state-title">
         登录后查看订单
@@ -140,7 +143,10 @@ onShow(() => {
       <text class="state-desc">
         当前账号的支付订单会在这里同步展示。
       </text>
-      <view class="primary-button" @click="goLogin">
+      <view
+        class="primary-button"
+        @click="goLogin"
+      >
         登录/注册
       </view>
     </view>
@@ -164,7 +170,10 @@ onShow(() => {
         </view>
       </view>
 
-      <BaseState :state="orderState" @retry="retryFetch">
+      <BaseState
+        :state="orderState"
+        @retry="retryFetch"
+      >
         <template #loading>
           <view class="order-state">
             <LocalLoading />
@@ -183,7 +192,10 @@ onShow(() => {
             <text class="state-desc">
               {{ error }}
             </text>
-            <view class="primary-button" @click="retryFetch">
+            <view
+              class="primary-button"
+              @click="retryFetch"
+            >
               重新加载
             </view>
           </view>
@@ -194,7 +206,10 @@ onShow(() => {
             <text class="state-desc">
               暂无支付订单
             </text>
-            <view class="primary-button" @click="goMsite">
+            <view
+              class="primary-button"
+              @click="goMsite"
+            >
               去点餐
             </view>
           </view>
@@ -214,8 +229,15 @@ onShow(() => {
     </template>
 
     <!-- 退款原因弹窗（自绘，降级 vant van-dialog） -->
-    <view v-if="refundDialogVisible" class="refund-dialog-mask" @click.stop="closeRefundDialog">
-      <view class="refund-dialog" @click.stop>
+    <view
+      v-if="refundDialogVisible"
+      class="refund-dialog-mask"
+      @click.stop="closeRefundDialog"
+    >
+      <view
+        class="refund-dialog"
+        @click.stop
+      >
         <view class="refund-dialog_title">
           申请退款
         </view>
@@ -226,7 +248,10 @@ onShow(() => {
           placeholder="请输入退款原因（不少于 2 个字）"
         />
         <view class="refund-dialog_actions">
-          <view class="refund-dialog_btn cancel" @click="closeRefundDialog">
+          <view
+            class="refund-dialog_btn cancel"
+            @click="closeRefundDialog"
+          >
             取消
           </view>
           <view

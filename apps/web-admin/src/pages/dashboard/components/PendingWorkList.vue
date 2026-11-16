@@ -18,7 +18,10 @@ function handleClick(item: PendingWorkItem) {
 </script>
 
 <template>
-  <el-card class="dashboard-panel" shadow="hover">
+  <el-card
+    class="dashboard-panel"
+    shadow="hover"
+  >
     <template #header>
       <span>{{ t('dashboard.pendingWork') }}</span>
     </template>
@@ -32,7 +35,10 @@ function handleClick(item: PendingWorkItem) {
         @click="handleClick(item)"
       >
         <span>{{ t(item.titleKey) }}</span>
-        <el-badge :value="item.count" :max="99" />
+        <el-badge
+          :value="item.count"
+          :max="99"
+        />
       </button>
     </div>
   </el-card>

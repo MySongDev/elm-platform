@@ -26,8 +26,6 @@ const sharedRules = {
   'ts/no-empty-object-type': 'off',
   'max-depth': ['warn', 3],
   '@typescript-eslint/no-explicit-any': 'warn',
-  'vue/custom-event-name-casing': 'off',
-  'vue/no-template-shadow': 'off',
 }
 
 // 测试需要直接构造 Controller/Prisma mock；这两个现有导入 CLI 是组合根，不属于请求业务链路。
@@ -193,9 +191,18 @@ export default antfu(
       }],
     },
   },
+  // 三个前端应用共用一套模板排版：每个属性独占一行，标签跨行时闭合括号也独立成行。
+  // html-indent 必须一起开，拆行后的属性靠它缩进；关掉的话自动修复会把属性顶格。
+  // 开头两条只对 .vue 生效，与排版无关，放这里是为了不污染全仓 sharedRules。
   {
-    files: ['apps/web-admin/**/*.vue'],
+    files: [
+      'apps/web-admin/**/*.vue',
+      'apps/web-user/**/*.vue',
+      'apps/uni-user/**/*.vue',
+    ],
     rules: {
+      'vue/custom-event-name-casing': 'off',
+      'vue/no-template-shadow': 'off',
       'vue/html-indent': ['error', 2, {
         attribute: 1,
         baseIndent: 1,
@@ -205,7 +212,7 @@ export default antfu(
       }],
       'vue/max-attributes-per-line': ['error', {
         singleline: {
-          max: 3,
+          max: 1,
         },
         multiline: {
           max: 1,
@@ -219,14 +226,6 @@ export default antfu(
         singleline: 'ignore',
         multiline: 'below',
       }],
-    },
-  },
-  {
-    files: ['apps/web-user/**/*.vue'],
-    rules: {
-      'vue/html-indent': 'off',
-      'vue/html-closing-bracket-newline': 'off',
-      'vue/first-attribute-linebreak': 'off',
     },
   },
 )

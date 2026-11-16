@@ -10,8 +10,17 @@ defineProps({
 <template>
   <div class="info-data">
     <ul class="info-data_list">
-      <router-link v-for="item in items" :key="item.to" v-slot="{ navigate }" :to="item.to" custom>
-        <li class="info-data_item" @click="navigate">
+      <router-link
+        v-for="item in items"
+        :key="item.to"
+        v-slot="{ navigate }"
+        :to="item.to"
+        custom
+      >
+        <li
+          class="info-data_item"
+          @click="navigate"
+        >
           <span class="info-data_item_top">
             <b :style="{ color: item.color }">{{ item.value }}</b>{{ item.unit }}
           </span>

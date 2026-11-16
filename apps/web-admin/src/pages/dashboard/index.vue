@@ -47,16 +47,29 @@ onMounted(() => {
     >
       <StatCardGrid :stats="stats" />
 
-      <el-row :gutter="16" class="dashboard__main-row">
-        <el-col :xs="24" :lg="16" class="dashboard__chart-col">
+      <el-row
+        :gutter="16"
+        class="dashboard__main-row"
+      >
+        <el-col
+          :xs="24"
+          :lg="16"
+          class="dashboard__chart-col"
+        >
           <DashboardOrderTrendChart :data="orderTrend" />
         </el-col>
-        <el-col :xs="24" :lg="8">
+        <el-col
+          :xs="24"
+          :lg="8"
+        >
           <PendingWorkList :items="pendingItems" />
         </el-col>
       </el-row>
 
-      <ShopRankingTable class="dashboard__ranking" :data="shopRanking" />
+      <ShopRankingTable
+        class="dashboard__ranking"
+        :data="shopRanking"
+      />
     </AdminStateView>
   </div>
 </template>

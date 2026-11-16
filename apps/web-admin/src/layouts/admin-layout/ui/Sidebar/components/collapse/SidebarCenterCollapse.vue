@@ -17,9 +17,19 @@ defineEmits<{
 </script>
 
 <template>
-  <el-tooltip :content="isActive ? '点击折叠' : '点击展开'" placement="right">
-    <button class="center-collapse" type="button" @click="$emit('toggleClick')">
-      <el-icon :size="16" :style="{ transform: isActive ? 'none' : 'rotateY(180deg)' }">
+  <el-tooltip
+    :content="isActive ? '点击折叠' : '点击展开'"
+    placement="right"
+  >
+    <button
+      class="center-collapse"
+      type="button"
+      @click="$emit('toggleClick')"
+    >
+      <el-icon
+        :size="16"
+        :style="{ transform: isActive ? 'none' : 'rotateY(180deg)' }"
+      >
         <IconEpArrowLeft />
       </el-icon>
     </button>

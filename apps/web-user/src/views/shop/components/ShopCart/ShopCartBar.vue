@@ -83,29 +83,49 @@ function checkout() {
   <Teleport to="body">
     <!-- 遮罩层 -->
     <Transition name="fade">
-      <div v-if="showPanel && totalQty > 0" class="cart-overlay" @click="closePanel" />
+      <div
+        v-if="showPanel && totalQty > 0"
+        class="cart-overlay"
+        @click="closePanel"
+      />
     </Transition>
 
     <!-- 商品列表面板 -->
     <Transition name="slide-up">
-      <div v-if="showPanel && totalQty > 0" class="cart-panel">
+      <div
+        v-if="showPanel && totalQty > 0"
+        class="cart-panel"
+      >
         <div class="panel-header">
           <span class="panel-title">已选商品</span>
-          <button class="clear-btn" @click="emit('clear')">
+          <button
+            class="clear-btn"
+            @click="emit('clear')"
+          >
             清空
           </button>
         </div>
         <div class="panel-list">
-          <div v-for="item in cartItems" :key="`${item.food.item_id}-${item.specIndex}`" class="panel-item">
+          <div
+            v-for="item in cartItems"
+            :key="`${item.food.item_id}-${item.specIndex}`"
+            class="panel-item"
+          >
             <span class="item-name">{{ item.food.name }}</span>
             <div class="item-right">
               <span class="item-price">¥{{ (getFoodPrice(item) * item.qty).toFixed(2) }}</span>
               <div class="item-actions">
-                <button class="act-btn decrease" @click="emit('decrease', item.food, item.specIndex)">
+                <button
+                  class="act-btn decrease"
+                  @click="emit('decrease', item.food, item.specIndex)"
+                >
                   -
                 </button>
                 <span class="item-qty">{{ item.qty }}</span>
-                <button class="act-btn increase" @click="emit('add', item.food, item.specIndex)">
+                <button
+                  class="act-btn increase"
+                  @click="emit('add', item.food, item.specIndex)"
+                >
                   +
                 </button>
               </div>
@@ -116,10 +136,22 @@ function checkout() {
     </Transition>
 
     <!-- 底部购物车栏 -->
-    <div v-if="totalQty > 0" class="cart-bar-wrapper">
-      <div class="cart-bar" @click="togglePanel">
-        <div class="cart-icon-box" :class="{ active: totalQty > 0 }">
-          <div v-if="totalQty > 0" class="badge">
+    <div
+      v-if="totalQty > 0"
+      class="cart-bar-wrapper"
+    >
+      <div
+        class="cart-bar"
+        @click="togglePanel"
+      >
+        <div
+          class="cart-icon-box"
+          :class="{ active: totalQty > 0 }"
+        >
+          <div
+            v-if="totalQty > 0"
+            class="badge"
+          >
             {{ totalQty }}
           </div>
           <span class="iconfont icon-cart">🛒</span>
@@ -134,8 +166,12 @@ function checkout() {
           </div>
         </div>
 
-        <button class="submit-btn" :class="{ ready: diffAmount === 0 }" :disabled="diffAmount > 0"
-          @click.stop="checkout">
+        <button
+          class="submit-btn"
+          :class="{ ready: diffAmount === 0 }"
+          :disabled="diffAmount > 0"
+          @click.stop="checkout"
+        >
           {{ diffAmount > 0 ? `还差 ¥${diffAmount.toFixed(1)} 起送` : '去结算' }}
         </button>
       </div>

@@ -14,13 +14,23 @@ defineProps({
 
 <template>
   <header class="shop-header">
-    <div v-if="shop.image_path !== ''" class="shop-header__banner">
-      <img :src="getImageUrl(shop.image_path)" :alt="shop.name" loading="lazy">
+    <div
+      v-if="shop.image_path !== ''"
+      class="shop-header__banner"
+    >
+      <img
+        :src="getImageUrl(shop.image_path)"
+        :alt="shop.name"
+        loading="lazy"
+      >
     </div>
 
     <section class="shop-header__main">
       <div class="shop-header__logo">
-        <img :src="getImageUrl(shop.image_path)" :alt="shop.name">
+        <img
+          :src="getImageUrl(shop.image_path)"
+          :alt="shop.name"
+        >
       </div>
 
       <div class="shop-header__content">
@@ -45,9 +55,17 @@ defineProps({
       </div>
     </section>
 
-    <div v-if="shop.activities?.length > 0" class="shop-header__activities">
-      <DynamicCoupon v-for="item in shop.activities" :key="item._id" :title="item.description"
-        :action-text="item.icon_name" class="activity-coupon" />
+    <div
+      v-if="shop.activities?.length > 0"
+      class="shop-header__activities"
+    >
+      <DynamicCoupon
+        v-for="item in shop.activities"
+        :key="item._id"
+        :title="item.description"
+        :action-text="item.icon_name"
+        class="activity-coupon"
+      />
     </div>
   </header>
 </template>

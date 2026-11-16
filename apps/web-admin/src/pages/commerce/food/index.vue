@@ -47,9 +47,17 @@ onMounted(fetchRows)
   <div>
     <DataScopeHint />
     <div class="main">
-      <AdminTablePage :title="t('commerce.food.title')" :loading="loading" @refresh="fetchRows">
+      <AdminTablePage
+        :title="t('commerce.food.title')"
+        :loading="loading"
+        @refresh="fetchRows"
+      >
         <template #search>
-          <AdminSearchForm v-model:model="query" :fields="searchFields" @reset="resetQuery" />
+          <AdminSearchForm
+            v-model:model="query"
+            :fields="searchFields"
+            @reset="resetQuery"
+          />
         </template>
 
         <template #buttons>
@@ -63,7 +71,11 @@ onMounted(fetchRows)
           </el-button>
         </template>
 
-        <ConfigDataTable :loading="loading" :data="filteredData" :columns="tableColumns">
+        <ConfigDataTable
+          :loading="loading"
+          :data="filteredData"
+          :columns="tableColumns"
+        >
           <CrudActionColumn
             :edit-action="{ auth: Permissions.COMMERCE_FOOD_EDIT }"
             :delete-action="{ auth: Permissions.COMMERCE_FOOD_DELETE }"

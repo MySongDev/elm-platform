@@ -48,7 +48,10 @@ function handleInput(e) {
 
 <template>
   <div class="form-item">
-    <label class="form-label" :for="name">
+    <label
+      class="form-label"
+      :for="name"
+    >
       {{ label }}
     </label>
     <input

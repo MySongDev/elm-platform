@@ -26,20 +26,35 @@ const emit = defineEmits(['toggle-all', 'checkout', 'remove'])
 <template>
   <footer class="cart-bottom">
     <div class="bottom-summary">
-      <button class="select-all" type="button" @click="emit('toggle-all')">
-        <CartCheckButton :checked="allSelected" as-span />
+      <button
+        class="select-all"
+        type="button"
+        @click="emit('toggle-all')"
+      >
+        <CartCheckButton
+          :checked="allSelected"
+          as-span
+        />
         <span class="select-label">全选</span>
       </button>
 
-      <div v-if="!manageMode" class="total-price">
+      <div
+        v-if="!manageMode"
+        class="total-price"
+      >
         <span class="total-label">合计</span>
         <span class="currency">¥</span>
         <strong>{{ total }}</strong>
       </div>
     </div>
 
-    <button class="action-button" :class="{ active: selectedCount > 0, danger: manageMode }" type="button"
-      :disabled="selectedCount === 0" @click="emit(manageMode ? 'remove' : 'checkout')">
+    <button
+      class="action-button"
+      :class="{ active: selectedCount > 0, danger: manageMode }"
+      type="button"
+      :disabled="selectedCount === 0"
+      @click="emit(manageMode ? 'remove' : 'checkout')"
+    >
       {{ manageMode ? '删除' : '去结算' }}
     </button>
   </footer>

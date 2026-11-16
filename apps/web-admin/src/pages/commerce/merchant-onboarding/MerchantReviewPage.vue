@@ -46,10 +46,16 @@ function goBack() { router.back() }
 </script>
 
 <template>
-  <div v-if="authStore.hasPermission('merchant:onboarding:manage')" class="p-4 max-w-md mx-auto mt-8">
+  <div
+    v-if="authStore.hasPermission('merchant:onboarding:manage')"
+    class="p-4 max-w-md mx-auto mt-8"
+  >
     <el-card :header="actionLabels[action] || '审核'">
       <el-form label-position="top">
-        <el-form-item :label="reasonRequired ? '原因（必填）' : '审核意见'" :required="reasonRequired">
+        <el-form-item
+          :label="reasonRequired ? '原因（必填）' : '审核意见'"
+          :required="reasonRequired"
+        >
           <el-input
             v-model="reason"
             type="textarea"
@@ -65,7 +71,11 @@ function goBack() { router.back() }
           <el-button @click="goBack">
             取消
           </el-button>
-          <el-button :type="action === 'REJECT' ? 'danger' : 'primary'" :loading="submitting" @click="handleSubmit">
+          <el-button
+            :type="action === 'REJECT' ? 'danger' : 'primary'"
+            :loading="submitting"
+            @click="handleSubmit"
+          >
             确认{{ actionLabels[action] }}
           </el-button>
         </div>

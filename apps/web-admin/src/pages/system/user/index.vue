@@ -47,7 +47,11 @@ onMounted(() => {
 
 <template>
   <div class="main">
-    <AdminTablePage :title="t('user.userList')" :loading="loading" @refresh="fetchUsers">
+    <AdminTablePage
+      :title="t('user.userList')"
+      :loading="loading"
+      @refresh="fetchUsers"
+    >
       <template #search>
         <AdminSearchForm
           v-model:model="query"

@@ -55,7 +55,10 @@ function handleConfirm() {
 <template>
   <!-- <Teleport to="body"> -->
   <Transition name="confirm-fade">
-    <div v-if="model" class="overlay">
+    <div
+      v-if="model"
+      class="overlay"
+    >
       <div class="overlay-content">
         <!-- icon slot -->
         <slot name="icon">
@@ -71,11 +74,17 @@ function handleConfirm() {
 
         <!-- actions -->
         <div class="actions">
-          <button class="cancel" @click="handleCancel">
+          <button
+            class="cancel"
+            @click="handleCancel"
+          >
             {{ cancelText }}
           </button>
 
-          <button class="confirm" @click="handleConfirm">
+          <button
+            class="confirm"
+            @click="handleConfirm"
+          >
             {{ confirmText }}
           </button>
         </div>

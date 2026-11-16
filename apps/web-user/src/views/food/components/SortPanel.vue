@@ -17,19 +17,43 @@ function handleSelect(value) {
 <template>
   <div class="sort-panel">
     <div
-      v-for="opt in options" :key="opt.value" class="sort-item" :class="{ active: modelValue === opt.value }"
+      v-for="opt in options"
+      :key="opt.value"
+      class="sort-item"
+      :class="{ active: modelValue === opt.value }"
       @click="handleSelect(opt.value)"
     >
       <div class="sort-left">
-        <span class="sort-icon" :style="{ color: opt.iconColor }">
-          <svg viewBox="0 0 24 24" width="18" height="18">
-            <circle cx="12" cy="12" r="10" fill="currentColor" opacity="0.2" />
-            <circle cx="12" cy="12" r="5" fill="currentColor" />
+        <span
+          class="sort-icon"
+          :style="{ color: opt.iconColor }"
+        >
+          <svg
+            viewBox="0 0 24 24"
+            width="18"
+            height="18"
+          >
+            <circle
+              cx="12"
+              cy="12"
+              r="10"
+              fill="currentColor"
+              opacity="0.2"
+            />
+            <circle
+              cx="12"
+              cy="12"
+              r="5"
+              fill="currentColor"
+            />
           </svg>
         </span>
         <span class="sort-text">{{ opt.text }}</span>
       </div>
-      <span v-if="modelValue === opt.value" class="check-icon">✓</span>
+      <span
+        v-if="modelValue === opt.value"
+        class="check-icon"
+      >✓</span>
     </div>
   </div>
 </template>

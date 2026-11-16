@@ -36,9 +36,17 @@ onMounted(fetchDepts)
 
 <template>
   <div class="main">
-    <AdminTablePage :title="t('system.deptManagement')" :loading="loading" @refresh="fetchDepts">
+    <AdminTablePage
+      :title="t('system.deptManagement')"
+      :loading="loading"
+      @refresh="fetchDepts"
+    >
       <template #search>
-        <AdminSearchForm v-model:model="query" :fields="searchFields" @reset="resetQuery" />
+        <AdminSearchForm
+          v-model:model="query"
+          :fields="searchFields"
+          @reset="resetQuery"
+        />
       </template>
 
       <template #buttons>

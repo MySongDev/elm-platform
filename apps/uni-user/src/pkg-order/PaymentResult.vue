@@ -238,7 +238,10 @@ onUnload(() => {
         </view>
       </template>
 
-      <view v-if="order" class="result-card">
+      <view
+        v-if="order"
+        class="result-card"
+      >
         <view class="row">
           <text>订单编号</text>
           <text class="row-value">
@@ -260,10 +263,16 @@ onUnload(() => {
       </view>
 
       <view class="actions">
-        <view class="btn secondary" @click="fetchStatus(true)">
+        <view
+          class="btn secondary"
+          @click="fetchStatus(true)"
+        >
           重新查询
         </view>
-        <view class="btn primary" @click="backToNextPage">
+        <view
+          class="btn primary"
+          @click="backToNextPage"
+        >
           {{ order?.status === 'PAID' ? '查看订单' : order?.shopId ? '返回商家' : '返回首页' }}
         </view>
       </view>

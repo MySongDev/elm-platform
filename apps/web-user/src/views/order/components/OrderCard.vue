@@ -90,7 +90,10 @@ const timeText = computed(() => {
 </script>
 
 <template>
-  <article class="order-card" :class="{ highlighted: highlight }">
+  <article
+    class="order-card"
+    :class="{ highlighted: highlight }"
+  >
     <div class="order-card__header">
       <div class="shop-info">
         <h3 class="shop-name">
@@ -100,7 +103,10 @@ const timeText = computed(() => {
           {{ order.orderNo }}
         </p>
       </div>
-      <span class="status-tag" :class="statusMeta.className">
+      <span
+        class="status-tag"
+        :class="statusMeta.className"
+      >
         {{ statusMeta.label }}
       </span>
     </div>
@@ -136,7 +142,10 @@ const timeText = computed(() => {
         申请退款
       </button>
     </div>
-    <p v-if="order.refundStatus === 'REJECTED' && order.refundRejectReason" class="refund-reason">
+    <p
+      v-if="order.refundStatus === 'REJECTED' && order.refundRejectReason"
+      class="refund-reason"
+    >
       驳回原因：{{ order.refundRejectReason }}
     </p>
   </article>

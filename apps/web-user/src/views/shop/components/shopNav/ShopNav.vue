@@ -114,23 +114,44 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <nav class="shop-nav" :style="navDynamicStyle">
-    <div class="nav-back" @click="goBack">
-      <SvgIcon icon-name="back" icon-class="iconfont" />
+  <nav
+    class="shop-nav"
+    :style="navDynamicStyle"
+  >
+    <div
+      class="nav-back"
+      @click="goBack"
+    >
+      <SvgIcon
+        icon-name="back"
+        icon-class="iconfont"
+      />
     </div>
 
     <div class="nav-search-wrapper">
-      <div class="search-bar" @click="goSearch">
+      <div
+        class="search-bar"
+        @click="goSearch"
+      >
         <div class="search-icon-box">
-          <SvgIcon icon-name="search" icon-class="iconfont nav-search" />
+          <SvgIcon
+            icon-name="search"
+            icon-class="iconfont nav-search"
+          />
         </div>
 
         <Transition name="fade">
-          <span v-show="scrollPercent > 0.5" class="line" />
+          <span
+            v-show="scrollPercent > 0.5"
+            class="line"
+          />
         </Transition>
 
         <Transition name="fade">
-          <div v-show="scrollPercent > 0.5" class="search-content">
+          <div
+            v-show="scrollPercent > 0.5"
+            class="search-content"
+          >
             <span class="placeholder">搜索商品...</span>
           </div>
         </Transition>

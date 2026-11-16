@@ -20,7 +20,10 @@ defineProps({
 </script>
 
 <template>
-  <div class="coupon-container" :style="{ '--right-w': `${rightWidth}px`, '--color': color }">
+  <div
+    class="coupon-container"
+    :style="{ '--right-w': `${rightWidth}px`, '--color': color }"
+  >
     <div class="coupon-left">
       <!-- <div class="amount-group">
         <span class="symbol">¥</span>
@@ -30,7 +33,10 @@ defineProps({
         <div class="title">
           {{ title }}
         </div>
-        <div v-if="subtitle" class="subtitle">
+        <div
+          v-if="subtitle"
+          class="subtitle"
+        >
           {{ subtitle }}
         </div>
       </div>

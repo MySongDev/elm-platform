@@ -67,15 +67,30 @@ function onTouchMove(e) {
 </script>
 
 <template>
-  <div ref="container" class="star" @mousemove="onMove" @click="onClick" @mouseleave="onLeave"
-    @touchmove.prevent="onTouchMove" @touchstart.prevent="onTouchMove">
+  <div
+    ref="container"
+    class="star"
+    @mousemove="onMove"
+    @click="onClick"
+    @mouseleave="onLeave"
+    @touchmove.prevent="onTouchMove"
+    @touchstart.prevent="onTouchMove"
+  >
     <!-- 灰色底 -->
     <div class="star-bg">
-      <SvgIcon v-for="num in max" :key="num" icon-name="star" />
+      <SvgIcon
+        v-for="num in max"
+        :key="num"
+        icon-name="star"
+      />
     </div>
     <!-- 高亮层 -->
     <div class="star-active">
-      <SvgIcon v-for="num in max" :key="num" icon-name="star" />
+      <SvgIcon
+        v-for="num in max"
+        :key="num"
+        icon-name="star"
+      />
     </div>
   </div>
   <span class="rating">{{ rating }}</span>

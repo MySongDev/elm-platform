@@ -55,7 +55,11 @@ function handleReset() {
     :disabled="disabled"
     @submit.prevent="handleSearch"
   >
-    <TransitionGroup name="admin-search-field" tag="div" class="admin-search-form__content">
+    <TransitionGroup
+      name="admin-search-field"
+      tag="div"
+      class="admin-search-form__content"
+    >
       <el-form-item
         v-for="field in visibleFields"
         :key="field.prop"
@@ -63,12 +67,23 @@ function handleReset() {
         :prop="field.prop"
         class="admin-search-form__item"
       >
-        <slot :name="`field-${field.prop}`" :field="field" :model="model">
-          <FormFieldRenderer v-model="model[field.prop]" :field="field" />
+        <slot
+          :name="`field-${field.prop}`"
+          :field="field"
+          :model="model"
+        >
+          <FormFieldRenderer
+            v-model="model[field.prop]"
+            :field="field"
+          />
         </slot>
       </el-form-item>
 
-      <el-form-item v-if="showActions" key="__actions" class="admin-search-form__actions">
+      <el-form-item
+        v-if="showActions"
+        key="__actions"
+        class="admin-search-form__actions"
+      >
         <el-button
           type="primary"
           native-type="submit"
@@ -77,7 +92,10 @@ function handleReset() {
         >
           {{ resolvedSearchText }}
         </el-button>
-        <el-button :disabled="loading" @click="handleReset">
+        <el-button
+          :disabled="loading"
+          @click="handleReset"
+        >
           {{ resolvedResetText }}
         </el-button>
       </el-form-item>

@@ -48,7 +48,10 @@ function onClick() {
     <h3 class="section-title">
       {{ sectionTitle }}
     </h3>
-    <template v-for="(item, index) in list" :key="index">
+    <template
+      v-for="(item, index) in list"
+      :key="index"
+    >
       <div class="management-item">
         <div class="management-item__content">
           <p class="management-item__title">
@@ -58,7 +61,11 @@ function onClick() {
             {{ item.illustrate }}
           </el-text>
         </div>
-        <el-button type="primary" text @click="onClick">
+        <el-button
+          type="primary"
+          text
+          @click="onClick"
+        >
           {{ item.button }}
         </el-button>
       </div>

@@ -12,8 +12,15 @@ defineProps({
 </script>
 
 <template>
-  <div class="local-loading" role="status" aria-live="polite">
-    <van-loading :size="size" color="#2395ff" />
+  <div
+    class="local-loading"
+    role="status"
+    aria-live="polite"
+  >
+    <van-loading
+      :size="size"
+      color="#2395ff"
+    />
     <span class="local-loading__text">{{ text }}</span>
   </div>
 </template>

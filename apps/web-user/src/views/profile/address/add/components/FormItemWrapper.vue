@@ -9,15 +9,24 @@ defineProps({
 </script>
 
 <template>
-  <div class="form-item" :class="{ 'has-error': error }">
-    <label v-if="label" class="form-item_label">{{ label }}</label>
+  <div
+    class="form-item"
+    :class="{ 'has-error': error }"
+  >
+    <label
+      v-if="label"
+      class="form-item_label"
+    >{{ label }}</label>
     <div class="form-item_body">
       <slot />
     </div>
     <transition name="slide">
-      <div v-if="error" class="form-item_error">
-{{ error }}
-</div>
+      <div
+        v-if="error"
+        class="form-item_error"
+      >
+        {{ error }}
+      </div>
     </transition>
   </div>
 </template>

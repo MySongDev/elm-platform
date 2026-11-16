@@ -27,11 +27,17 @@ const tabs = computed(() => [
 <template>
   <div class="filter-header">
     <div
-      v-for="tab in tabs" :key="tab.key" class="filter-tab"
-      :class="{ active: activeTab === tab.key && showDropdown }" @click="emit('toggle', tab.key)"
+      v-for="tab in tabs"
+      :key="tab.key"
+      class="filter-tab"
+      :class="{ active: activeTab === tab.key && showDropdown }"
+      @click="emit('toggle', tab.key)"
     >
       <span class="tab-text">{{ tab.label }}</span>
-      <span class="tab-arrow" :class="{ rotate: activeTab === tab.key && showDropdown }">▼</span>
+      <span
+        class="tab-arrow"
+        :class="{ rotate: activeTab === tab.key && showDropdown }"
+      >▼</span>
     </div>
   </div>
 </template>

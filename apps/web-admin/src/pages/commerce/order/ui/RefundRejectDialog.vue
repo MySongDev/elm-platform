@@ -46,7 +46,10 @@ watch(() => props.visible, (visible) => {
     />
 
     <template #footer>
-      <el-button :disabled="saving" @click="close">
+      <el-button
+        :disabled="saving"
+        @click="close"
+      >
         {{ t('common.cancel') }}
       </el-button>
       <el-button

@@ -288,7 +288,10 @@ onLoad((options) => {
         <view class="card-title">
           订单信息
         </view>
-        <view v-if="!hasDraft" class="empty-tip">
+        <view
+          v-if="!hasDraft"
+          class="empty-tip"
+        >
           未读取到结算单，请返回商家页重新选择商品后再支付。
         </view>
         <view class="detail-row">

@@ -41,7 +41,10 @@ function handleKeydown(e: KeyboardEvent) {
     @keydown="handleKeydown"
     @contextmenu="emit('contextmenu', $event)"
   >
-    <el-icon v-if="tab.icon" class="tab-icon">
+    <el-icon
+      v-if="tab.icon"
+      class="tab-icon"
+    >
       <SvgIcon :icon-name="tab.icon" />
     </el-icon>
     <span class="tab-title">{{ title }}</span>

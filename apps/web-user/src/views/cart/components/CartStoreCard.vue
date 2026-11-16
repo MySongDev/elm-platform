@@ -24,23 +24,41 @@ const hasReserveInfo = computed(() => props.store.reserveText || props.store.del
 <template>
   <section class="store-card">
     <header class="store-header">
-      <CartCheckButton :checked="selected" :aria-label="selected ? '取消选择店铺' : '选择店铺'"
-        @click="emit('toggle-store', store.id)" />
+      <CartCheckButton
+        :checked="selected"
+        :aria-label="selected ? '取消选择店铺' : '选择店铺'"
+        @click="emit('toggle-store', store.id)"
+      />
 
       <div class="store-main">
         <div class="store-line">
           <h2 class="store-name">
             {{ store.name }}
           </h2>
-          <van-icon class="store-arrow" name="arrow" />
+          <van-icon
+            class="store-arrow"
+            name="arrow"
+          />
         </div>
 
-        <div v-if="hasReserveInfo" class="reserve-info">
-          <span v-if="store.reserveText" class="reserve-tag">{{ store.reserveText }}</span>
-          <span v-if="store.deliveryText" class="reserve-time">{{ store.deliveryText }}</span>
+        <div
+          v-if="hasReserveInfo"
+          class="reserve-info"
+        >
+          <span
+            v-if="store.reserveText"
+            class="reserve-tag"
+          >{{ store.reserveText }}</span>
+          <span
+            v-if="store.deliveryText"
+            class="reserve-time"
+          >{{ store.deliveryText }}</span>
         </div>
 
-        <div v-if="hasDeliveryInfo" class="delivery-info">
+        <div
+          v-if="hasDeliveryInfo"
+          class="delivery-info"
+        >
           <span>{{ store.deliveryTime }}</span>
           <span>{{ store.distance }}</span>
         </div>
@@ -48,9 +66,14 @@ const hasReserveInfo = computed(() => props.store.reserveText || props.store.del
     </header>
 
     <div class="product-list">
-      <CartProductRow v-for="product in store.products" :key="product.id" :product="product"
-        @toggle="emit('toggle-product', $event)" @increase="emit('increase', $event)"
-        @decrease="emit('decrease', $event)" />
+      <CartProductRow
+        v-for="product in store.products"
+        :key="product.id"
+        :product="product"
+        @toggle="emit('toggle-product', $event)"
+        @increase="emit('increase', $event)"
+        @decrease="emit('decrease', $event)"
+      />
     </div>
   </section>
 </template>

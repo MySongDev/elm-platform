@@ -122,9 +122,15 @@ watch(() => tableOptions.value.density, (value) => {
 
 <template>
   <div class="config-data-table">
-    <div v-if="hasToolbar" class="config-data-table__toolbar">
+    <div
+      v-if="hasToolbar"
+      class="config-data-table__toolbar"
+    >
       <div class="config-data-table__batch-actions">
-        <span v-if="isSelectionEnabled" class="config-data-table__selection-count">
+        <span
+          v-if="isSelectionEnabled"
+          class="config-data-table__selection-count"
+        >
           {{ t('tableEnhance.selectedCount', { count: selectedCount }) }}
         </span>
         <el-button
@@ -146,12 +152,25 @@ watch(() => tableOptions.value.density, (value) => {
           class="config-data-table__density"
           :aria-label="t('tableEnhance.density')"
         >
-          <el-option :label="t('tableEnhance.densityDefault')" value="default" />
-          <el-option :label="t('tableEnhance.densityComfortable')" value="comfortable" />
-          <el-option :label="t('tableEnhance.densityCompact')" value="compact" />
+          <el-option
+            :label="t('tableEnhance.densityDefault')"
+            value="default"
+          />
+          <el-option
+            :label="t('tableEnhance.densityComfortable')"
+            value="comfortable"
+          />
+          <el-option
+            :label="t('tableEnhance.densityCompact')"
+            value="compact"
+          />
         </el-select>
 
-        <el-popover v-if="isColumnSettingsEnabled" trigger="click" width="220">
+        <el-popover
+          v-if="isColumnSettingsEnabled"
+          trigger="click"
+          width="220"
+        >
           <template #reference>
             <el-button :icon="IconEpOperation">
               {{ t('tableEnhance.columnSettings') }}
@@ -159,7 +178,10 @@ watch(() => tableOptions.value.density, (value) => {
           </template>
 
           <div class="config-data-table__column-settings">
-            <el-checkbox-group v-model="visibleColumnKeys" @change="handleColumnCheckChange">
+            <el-checkbox-group
+              v-model="visibleColumnKeys"
+              @change="handleColumnCheckChange"
+            >
               <el-checkbox
                 v-for="option in columnOptions"
                 :key="option.key"
@@ -169,13 +191,21 @@ watch(() => tableOptions.value.density, (value) => {
                 {{ option.column.label }}
               </el-checkbox>
             </el-checkbox-group>
-            <el-button link type="primary" @click="resetColumns">
+            <el-button
+              link
+              type="primary"
+              @click="resetColumns"
+            >
               {{ t('tableEnhance.resetColumns') }}
             </el-button>
           </div>
         </el-popover>
 
-        <el-button v-if="isExportEnabled" :icon="IconEpDownload" @click="exportCsv">
+        <el-button
+          v-if="isExportEnabled"
+          :icon="IconEpDownload"
+          @click="exportCsv"
+        >
           {{ t('tableEnhance.exportCsv') }}
         </el-button>
       </div>
@@ -191,7 +221,11 @@ watch(() => tableOptions.value.density, (value) => {
       :size="densitySize"
       @selection-change="handleSelectionChange"
     >
-      <el-table-column v-if="isSelectionEnabled" type="selection" width="48" />
+      <el-table-column
+        v-if="isSelectionEnabled"
+        type="selection"
+        width="48"
+      />
       <ConfigTableColumns :columns="visibleColumns" />
       <slot />
     </el-table>

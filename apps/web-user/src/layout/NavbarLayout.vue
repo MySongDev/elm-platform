@@ -85,19 +85,46 @@ onBeforeUnmount(saveScrollPosition)
 
 <template>
   <div class="nav-layout">
-    <head-top v-if="showLayoutHeader" :head-title="visibleNavbarHeader?.title || ''">
-      <template v-if="visibleNavbarHeader?.editLabel" #edit>
-        <button class="nav-header-edit" type="button" @click="visibleNavbarHeader.onEdit">
+    <head-top
+      v-if="showLayoutHeader"
+      :head-title="visibleNavbarHeader?.title || ''"
+    >
+      <template
+        v-if="visibleNavbarHeader?.editLabel"
+        #edit
+      >
+        <button
+          class="nav-header-edit"
+          type="button"
+          @click="visibleNavbarHeader.onEdit"
+        >
           {{ visibleNavbarHeader.editLabel }}
         </button>
       </template>
     </head-top>
-    <div v-else class="nav-header-spacer" aria-hidden="true" />
-    <main ref="navMainRef" class="nav-main">
+    <div
+      v-else
+      class="nav-header-spacer"
+      aria-hidden="true"
+    />
+    <main
+      ref="navMainRef"
+      class="nav-main"
+    >
       <router-view v-slot="{ Component, route }">
-        <transition name="nav-bar" mode="out-in">
-          <KeepAlive :include="cachedSubPages" :max="10">
-            <component :is="Component" :key="route.name" class="nav-page" />
+        <transition
+          name="nav-bar"
+          mode="out-in"
+        >
+          <KeepAlive
+            :include="cachedSubPages"
+            :max="10"
+          >
+            <component
+              :is="Component"
+              :key="route.name"
+              class="nav-page"
+            />
           </KeepAlive>
         </transition>
       </router-view>

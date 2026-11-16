@@ -71,9 +71,17 @@ onMounted(() => {
 <template>
   <div class="role-management">
     <div class="role-management__table">
-      <AdminTablePage :title="t('system.roleManagement')" :loading="loading" @refresh="fetchRoles">
+      <AdminTablePage
+        :title="t('system.roleManagement')"
+        :loading="loading"
+        @refresh="fetchRoles"
+      >
         <template #search>
-          <AdminSearchForm v-model:model="query" :fields="searchFields" @reset="resetQuery" />
+          <AdminSearchForm
+            v-model:model="query"
+            :fields="searchFields"
+            @reset="resetQuery"
+          />
         </template>
 
         <template #buttons>
@@ -87,7 +95,11 @@ onMounted(() => {
           </el-button>
         </template>
 
-        <ConfigDataTable :loading="loading" :data="filteredData" :columns="tableColumns">
+        <ConfigDataTable
+          :loading="loading"
+          :data="filteredData"
+          :columns="tableColumns"
+        >
           <CrudActionColumn
             :column="{ width: 230 }"
             :edit-action="{ auth: Permissions.ROLE_EDIT }"

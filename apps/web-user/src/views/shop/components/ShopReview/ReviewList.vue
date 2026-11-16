@@ -40,8 +40,15 @@ const { sentinel } = useInfiniteScroll({
     </div>
 
     <!-- 初始加载骨架 -->
-    <div v-if="isInitialLoading" class="loading-placeholder">
-      <div v-for="i in 3" :key="i" class="skeleton-item">
+    <div
+      v-if="isInitialLoading"
+      class="loading-placeholder"
+    >
+      <div
+        v-for="i in 3"
+        :key="i"
+        class="skeleton-item"
+      >
         <div class="skeleton skeleton-avatar" />
         <div class="skeleton-body">
           <div class="skeleton skeleton-line w60" />
@@ -54,21 +61,38 @@ const { sentinel } = useInfiniteScroll({
     <!-- 评价列表 -->
     <template v-else>
       <template v-if="hasReviews">
-        <ReviewItem v-for="review in reviews" :key="review.id" :review="review" />
+        <ReviewItem
+          v-for="review in reviews"
+          :key="review.id"
+          :review="review"
+        />
       </template>
-      <div v-else class="empty-tip">
+      <div
+        v-else
+        class="empty-tip"
+      >
         数据为空
       </div>
     </template>
 
     <!-- 底部加载状态 -->
-    <div v-show="!isInitialLoading && reviews.length > 0" ref="sentinel" class="list-footer">
-      <div v-if="loading" class="loading-status">
+    <div
+      v-show="!isInitialLoading && reviews.length > 0"
+      ref="sentinel"
+      class="list-footer"
+    >
+      <div
+        v-if="loading"
+        class="loading-status"
+      >
         <van-loading size="16px">
           加载中...
         </van-loading>
       </div>
-      <div v-else-if="finished" class="finished-status">
+      <div
+        v-else-if="finished"
+        class="finished-status"
+      >
         —— 到底了 ——
       </div>
     </div>

@@ -74,7 +74,11 @@ onMounted(fetchRows)
         @clear-filter="handleClearFilter"
       >
         <template #search>
-          <AdminSearchForm v-model:model="query" :fields="searchFields" @reset="resetQuery" />
+          <AdminSearchForm
+            v-model:model="query"
+            :fields="searchFields"
+            @reset="resetQuery"
+          />
         </template>
 
         <template #buttons>

@@ -42,7 +42,10 @@ const blockStyle = computed(() => {
 </script>
 
 <template>
-  <span class="skeleton-block" :style="blockStyle" />
+  <span
+    class="skeleton-block"
+    :style="blockStyle"
+  />
 </template>
 
 <style scoped>

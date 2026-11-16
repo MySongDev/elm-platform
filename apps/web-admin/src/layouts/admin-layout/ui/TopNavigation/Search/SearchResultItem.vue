@@ -39,7 +39,10 @@ const routeItem = computed(() => {
       <span class="global-search-result__title">{{ item.title }}</span>
     </template>
     <template v-else>
-      <el-icon v-if="routeItem?.icon" class="global-search-result__icon">
+      <el-icon
+        v-if="routeItem?.icon"
+        class="global-search-result__icon"
+      >
         <SvgIcon :icon-name="routeItem.icon" />
       </el-icon>
       <span class="global-search-result__title">{{ item.title }}</span>

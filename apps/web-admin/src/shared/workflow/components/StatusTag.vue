@@ -29,7 +29,11 @@ const tagConfig = computed(() => {
     :effect="dot ? 'plain' : 'light'"
     disable-transitions
   >
-    <span v-if="dot" class="status-dot" :class="`status-dot--${tagConfig.type || 'info'}`" />
+    <span
+      v-if="dot"
+      class="status-dot"
+      :class="`status-dot--${tagConfig.type || 'info'}`"
+    />
     {{ tagConfig.label }}
   </el-tag>
 </template>

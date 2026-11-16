@@ -118,24 +118,44 @@ watch(
 <template>
   <div class="shop-page">
     <ShopPageSkeleton v-if="pageLoading && !shopData" />
-    <div v-else-if="loadError" class="shop-load-error">
+    <div
+      v-else-if="loadError"
+      class="shop-load-error"
+    >
       <p>店铺加载失败</p>
-      <button type="button" @click="loadShopData">
-点击重试
-</button>
+      <button
+        type="button"
+        @click="loadShopData"
+      >
+        点击重试
+      </button>
     </div>
 
-    <div v-else-if="shopData" class="shop-layout">
-      <div ref="outerRef" class="outer-scroller">
+    <div
+      v-else-if="shopData"
+      class="shop-layout"
+    >
+      <div
+        ref="outerRef"
+        class="outer-scroller"
+      >
         <ShopNav :scroll-element="outerRef" />
 
-        <ShopHeader ref="shopHeaderRef" :shop="shopData" />
+        <ShopHeader
+          ref="shopHeaderRef"
+          :shop="shopData"
+        />
 
         <nav class="sticky-nav">
-          <div v-for="tab in TABS" :key="tab.id" class="tab-item" :class="{ active: activeTab === tab.id }"
-            @click="switchTab(tab.id)">
-{{ tab.label }}
-</div>
+          <div
+            v-for="tab in TABS"
+            :key="tab.id"
+            class="tab-item"
+            :class="{ active: activeTab === tab.id }"
+            @click="switchTab(tab.id)"
+          >
+            {{ tab.label }}
+          </div>
         </nav>
 
         <div class="content-area">
@@ -160,12 +180,19 @@ watch(
           </template>
 
           <template v-else-if="activeTab === 'review'">
-            <ShopReview :shop-id="shopId" class="review-content" />
+            <ShopReview
+              :shop-id="shopId"
+              class="review-content"
+            />
           </template>
         </div>
       </div>
 
-      <BackTop :target="outerRef" :show-after="shopHeaderRef" :offset="-50" />
+      <BackTop
+        :target="outerRef"
+        :show-after="shopHeaderRef"
+        :offset="-50"
+      />
 
       <ShopCartBar
         :cart-items="cartList"
@@ -181,14 +208,22 @@ watch(
       />
 
       <div class="fly-ball-layer">
-        <div v-for="ball in flyBalls" :key="ball.id" class="fly-ball-outer" :style="{
-          left: `${ball.startX}px`,
-          top: `${ball.startY}px`,
-          transform: ball.flying ? `translateX(${ball.endX - ball.startX}px)` : 'translateX(0)',
-        }">
-          <div class="fly-ball-inner" :style="{
-            transform: ball.flying ? `translateY(${ball.endY - ball.startY}px) scale(0.4)` : 'translateY(0) scale(1)',
-          }" />
+        <div
+          v-for="ball in flyBalls"
+          :key="ball.id"
+          class="fly-ball-outer"
+          :style="{
+            left: `${ball.startX}px`,
+            top: `${ball.startY}px`,
+            transform: ball.flying ? `translateX(${ball.endX - ball.startX}px)` : 'translateX(0)',
+          }"
+        >
+          <div
+            class="fly-ball-inner"
+            :style="{
+              transform: ball.flying ? `translateY(${ball.endY - ball.startY}px) scale(0.4)` : 'translateY(0) scale(1)',
+            }"
+          />
         </div>
       </div>
     </div>

@@ -141,7 +141,10 @@ const pageState = computed(() => {
 <template>
   <view class="shop-page">
     <!-- 主内容不放进 BaseState 插槽：它的根节点高度 auto，会断开 scroll-view 的高度链。 -->
-    <view v-if="pageState === '' || pageState === 'success'" class="shop-body">
+    <view
+      v-if="pageState === '' || pageState === 'success'"
+      class="shop-body"
+    >
       <ShopHeader :shop="shopData" />
 
       <view class="tab-bar">
@@ -155,13 +158,19 @@ const pageState = computed(() => {
           <text class="tab-item__text">
             {{ tab }}
           </text>
-          <view v-if="activeTab === tab" class="tab-item__underline" />
+          <view
+            v-if="activeTab === tab"
+            class="tab-item__underline"
+          />
         </view>
       </view>
 
       <view class="content-area">
         <!-- 切评价只隐藏外框，不销毁 ShopMenu，保留点菜滚动位置。 -->
-        <view v-show="activeTab === '点菜'" class="menu-panel">
+        <view
+          v-show="activeTab === '点菜'"
+          class="menu-panel"
+        >
           <ShopMenu
             v-model:active-category-id="activeCategoryId"
             class="menu-panel__content"
@@ -175,7 +184,10 @@ const pageState = computed(() => {
           />
         </view>
 
-        <ShopReview v-show="activeTab === '评价'" :shop-id="shopId" />
+        <ShopReview
+          v-show="activeTab === '评价'"
+          :shop-id="shopId"
+        />
       </view>
 
       <CartBar
@@ -187,7 +199,12 @@ const pageState = computed(() => {
       />
     </view>
 
-    <BaseState v-else class="shop-state" :state="pageState" @retry="loadShopData" />
+    <BaseState
+      v-else
+      class="shop-state"
+      :state="pageState"
+      @retry="loadShopData"
+    />
   </view>
 </template>
 

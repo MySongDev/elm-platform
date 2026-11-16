@@ -13,7 +13,11 @@ function handleCommand(command: DropdownCommand) {
 </script>
 
 <template>
-  <el-dropdown trigger="hover" placement="bottom-end" @command="handleCommand">
+  <el-dropdown
+    trigger="hover"
+    placement="bottom-end"
+    @command="handleCommand"
+  >
     <slot />
     <template #dropdown>
       <slot name="dropdown" />

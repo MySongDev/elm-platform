@@ -130,10 +130,16 @@ async function handleSubmit() {
 
 <template>
   <view class="address-add">
-    <view v-if="initialLoading" class="loading-state">
+    <view
+      v-if="initialLoading"
+      class="loading-state"
+    >
       加载地址中...
     </view>
-    <view v-else class="form">
+    <view
+      v-else
+      class="form"
+    >
       <FormInput
         v-model="form.name"
         label="姓名"
@@ -147,8 +153,14 @@ async function handleSubmit() {
         <text class="form-item_label">
           所在地区{{ isEdit ? '（选填，原地址未记录）' : '' }}
         </text>
-        <AreaPicker v-model="form.region" placeholder="所在地区" />
-        <text v-if="errors.region" class="field-error">
+        <AreaPicker
+          v-model="form.region"
+          placeholder="所在地区"
+        />
+        <text
+          v-if="errors.region"
+          class="field-error"
+        >
           {{ errors.region }}
         </text>
       </view>
@@ -198,7 +210,13 @@ async function handleSubmit() {
           标签（选填）
         </text>
         <view class="tag-group">
-          <view v-for="opt in tagOptions" :key="opt" class="tag-option" :class="{ active: form.tag === opt }" @click="form.tag = opt">
+          <view
+            v-for="opt in tagOptions"
+            :key="opt"
+            class="tag-option"
+            :class="{ active: form.tag === opt }"
+            @click="form.tag = opt"
+          >
             {{ opt }}
           </view>
         </view>
@@ -207,12 +225,25 @@ async function handleSubmit() {
         <text class="form-item_label">
           设为默认地址
         </text>
-        <switch class="default-switch" :checked="form.isDefault" color="#1890ff" @change="form.isDefault = $event.detail.value" />
+        <switch
+          class="default-switch"
+          :checked="form.isDefault"
+          color="#1890ff"
+          @change="form.isDefault = $event.detail.value"
+        />
       </view>
-      <view v-if="formError" class="form-error">
+      <view
+        v-if="formError"
+        class="form-error"
+      >
         {{ formError }}
       </view>
-      <button class="submit-btn" :class="{ 'submit-btn_disabled': !canSubmit || isLoading }" :disabled="!canSubmit || isLoading" @click="handleSubmit">
+      <button
+        class="submit-btn"
+        :class="{ 'submit-btn_disabled': !canSubmit || isLoading }"
+        :disabled="!canSubmit || isLoading"
+        @click="handleSubmit"
+      >
         {{ isLoading ? '提交中...' : '保存地址' }}
       </button>
     </view>

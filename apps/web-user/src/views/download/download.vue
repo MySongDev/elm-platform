@@ -30,11 +30,17 @@ async function downLoadApp() {
     <head-top />
 
     <div class="download-content">
-      <SvgIcon icon-name="eleme" icon-class="download-svg" />
+      <SvgIcon
+        icon-name="eleme"
+        icon-class="download-svg"
+      />
       <h4 class="download-sapn">
         下载饿了么APP
       </h4>
-      <button class="download-btn" @click="downLoadApp">
+      <button
+        class="download-btn"
+        @click="downLoadApp"
+      >
         下载
       </button>
     </div>

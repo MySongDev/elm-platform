@@ -9,9 +9,16 @@ const tabsStore = useTabsStore()
 <template>
   <div class="main-content">
     <router-view v-slot="{ Component, route }">
-      <transition name="fade-transform" mode="out-in" appear>
+      <transition
+        name="fade-transform"
+        mode="out-in"
+        appear
+      >
         <keep-alive :include="tabsStore.cachedViews">
-          <component :is="Component" :key="route.fullPath" />
+          <component
+            :is="Component"
+            :key="route.fullPath"
+          />
         </keep-alive>
       </transition>
     </router-view>
