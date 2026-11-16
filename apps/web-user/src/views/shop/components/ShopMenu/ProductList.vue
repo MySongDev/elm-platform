@@ -67,8 +67,9 @@ defineExpose({ scrollToCategory })
     <p v-if="!categories.length" class="global-tip">
 本店暂无菜品
 </p>
-    <MenuCategoryBlock v-for="(cat, index) in categories" :key="cat.id"
-      :category="cat" :cart-map="cartMap" :is-last="index === categories.length - 1" @add="(food, specs, rect) => emit('add', food, specs, rect)"
+    <!-- add 的参数原样透传，rect 是飞球动画起点，别丢 -->
+    <MenuCategoryBlock v-for="(cat, index) in categories" :key="cat.id" :category="cat" :cart-map="cartMap"
+      :is-last="index === categories.length - 1" @add="(food, specIndex, rect) => emit('add', food, specIndex, rect)"
       @decrease="emit('decrease', $event)" @load="(id, retry) => emit('load-category', id, retry)" />
   </section>
 </template>

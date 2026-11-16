@@ -29,8 +29,9 @@ const emit = defineEmits(['add', 'decrease', 'load'])
       </div>
     </header>
 
+    <!-- add 的参数原样透传，rect 是飞球动画起点，别丢 -->
     <MenuFoodItem v-for="p in category.foods || []" :key="p._id || p.item_id" :food="p" :cart-map="cartMap"
-      @add="(food, specs, rect) => emit('add', food, specs, rect)" @decrease="emit('decrease', $event)" />
+      @add="(food, specIndex, rect) => emit('add', food, specIndex, rect)" @decrease="emit('decrease', $event)" />
     <!-- 页尾是可视区加载哨兵，不放在分类标题：第二页只能在已加载菜品的末尾触发。 -->
     <div class="category-loader" :class="{ 'is-placeholder': !category.loaded }"
       :data-load-category-id="String(category.id)">

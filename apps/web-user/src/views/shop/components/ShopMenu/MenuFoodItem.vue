@@ -28,6 +28,8 @@ const props = defineProps({
     default: () => new Map(),
   },
 })
+// add 的 rect 是飞球动画起点，只有点击处拿得到；specIndex 是命中 SKU 在 specfoods 里的下标。
+// 中间层只原样透传，改参数要连 shop.vue 的 handleAdd 一起改。
 const emit = defineEmits(['add', 'decrease'])
 
 // 当前菜品在购物车中的数量
