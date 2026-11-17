@@ -17,13 +17,23 @@ import ShopReview from './components/ShopReview.vue'
 import { useShopCart } from './composables/useShopCart'
 import { useShopPageData } from './composables/useShopPageData'
 
-const TABS = ['点菜', '评价']
+// id 用作状态键，label 只负责显示；改文案时不会漏改内容区判断，导致页签空白。
+const TABS = [
+  {
+    id: 'menu',
+    label: '点菜',
+  },
+  {
+    id: 'review',
+    label: '评价',
+  },
+]
 
 const userStore = useUserStore()
 const checkoutEntry = useCheckoutEntry()
 
 const shopId = ref('')
-const activeTab = ref(TABS[0])
+const activeTab = ref(TABS[0].id)
 
 onLoad((options) => {
   shopId.value = String(options?.shopid ?? '')
@@ -150,16 +160,16 @@ const pageState = computed(() => {
       <view class="tab-bar">
         <view
           v-for="tab in TABS"
-          :key="tab"
+          :key="tab.id"
           class="tab-item"
-          :class="{ active: activeTab === tab }"
-          @click="activeTab = tab"
+          :class="{ active: activeTab === tab.id }"
+          @click="activeTab = tab.id"
         >
           <text class="tab-item__text">
-            {{ tab }}
+            {{ tab.label }}
           </text>
           <view
-            v-if="activeTab === tab"
+            v-if="activeTab === tab.id"
             class="tab-item__underline"
           />
         </view>
@@ -168,7 +178,7 @@ const pageState = computed(() => {
       <view class="content-area">
         <!-- 切评价只隐藏外框，不销毁 ShopMenu，保留点菜滚动位置。 -->
         <view
-          v-show="activeTab === '点菜'"
+          v-show="activeTab === 'menu'"
           class="menu-panel"
         >
           <ShopMenu
@@ -177,7 +187,7 @@ const pageState = computed(() => {
             :shop-id="shopId"
             :food-menu-data="foodMenuData"
             :cart-map="cartMap"
-            :active="activeTab === '点菜'"
+            :active="activeTab === 'menu'"
             :load-category-foods="loadCategoryFoods"
             @add="addToCart"
             @decrease="decreaseFromCart"
@@ -185,7 +195,7 @@ const pageState = computed(() => {
         </view>
 
         <ShopReview
-          v-show="activeTab === '评价'"
+          v-show="activeTab === 'review'"
           :shop-id="shopId"
         />
       </view>
