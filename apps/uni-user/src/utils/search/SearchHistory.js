@@ -1,10 +1,5 @@
-// ⚠️ 与 apps/web-user/src/utils/search/SearchHistory.js 同源，修改需同步两处。
-// 不抽共享包的原因见迁移方案议题 7。
-//
-// ★ 与 web-user 的差异（方案 ⑥ 节）：web-user 在 :4,30,61,74 **直接用 localStorage，
-// 无任何保护** —— 小程序端没有 localStorage 全局对象，会直接 ReferenceError。
-// 这里改走 platform/storage 的 getStore/setStore/removeStore 封装
-// （顺带修掉绕过封装的坏味道）。业务逻辑（去重/上限 10 条/大小写不敏感）逐行一致。
+// 与 apps/web-user/src/utils/search/SearchHistory.js 同源，业务规则修改需同步两处。
+// 小程序统一从 platform/storage 读写，底层由 uni.*StorageSync 适配。
 
 import { getStore, removeStore, setStore } from '@/platform/storage'
 
@@ -12,9 +7,7 @@ const MAX_HISTORY_COUNT = 10
 
 function readHistory(key) {
   const items = getStore(key)
-  if (!items)
-    return []
-
+  // getStore 解析失败会返回原字符串，搜索页面只接受历史数组。
   return Array.isArray(items) ? items : []
 }
 
