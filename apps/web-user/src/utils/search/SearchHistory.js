@@ -15,6 +15,9 @@ export function setSearchHistory(key, value) {
 
   try {
     const trimmedValue = value.trim()
+    // 拿输入的数据 和 保存后数组内的数据进行对比
+    // 拿出不重复的 重复的内容全部丢掉
+    // 之后再把输入的内容追加到新数组的最前面
     const items = readHistory(key).filter(item => item !== trimmedValue)
 
     items.unshift(trimmedValue)

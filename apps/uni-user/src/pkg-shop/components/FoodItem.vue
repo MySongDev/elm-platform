@@ -33,6 +33,8 @@ const props = defineProps({
   },
 })
 
+// add 当前只传 food，shop.vue 的 addToCart 默认取第一个 SKU；本端没有规格选择和飞球坐标。
+// 将来加规格参数时要连 ShopMenu 的转发一起改，否则它只传 $event，会丢掉新参数。
 const emit = defineEmits(['add', 'decrease'])
 
 const cartQty = computed(() => getCartQty(props.cartMap, props.food))

@@ -276,6 +276,7 @@ async function onCategorySelect(id) {
           </text>
         </view>
 
+        <!-- 当前 add 只有 food；增加规格参数时这里要一起透传，不能只转 $event。 -->
         <FoodItem
           v-for="food in cat.foods || []"
           :key="food._id || food.item_id"
