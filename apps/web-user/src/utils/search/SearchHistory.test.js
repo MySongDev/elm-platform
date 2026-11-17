@@ -9,12 +9,13 @@ describe('searchHistory', () => {
     localStorage.clear()
   })
 
-  it('stores newest keywords first and removes duplicates case-insensitively', () => {
+  it('stores newest keywords first and only removes exact duplicates', () => {
     setSearchHistory(key, 'Milk Tea')
     setSearchHistory(key, 'noodles')
     setSearchHistory(key, 'milk tea')
+    setSearchHistory(key, ' Milk Tea ')
 
-    expect(getSearchHistory(key)).toEqual(['milk tea', 'noodles'])
+    expect(getSearchHistory(key)).toEqual(['Milk Tea', 'milk tea', 'noodles'])
   })
 
   it('limits history to ten items', () => {
@@ -25,11 +26,12 @@ describe('searchHistory', () => {
     expect(getSearchHistory(key)[0]).toBe('keyword-11')
   })
 
-  it('removes one item and can clear all history', () => {
+  it('removes only the matching case variant and can clear all history', () => {
+    setSearchHistory(key, 'Apple')
     setSearchHistory(key, 'apple')
     setSearchHistory(key, 'banana')
 
-    expect(removeSearchItem(key, 'apple')).toEqual(['banana'])
+    expect(removeSearchItem(key, 'apple')).toEqual(['banana', 'Apple'])
 
     clearAll(key)
     expect(getSearchHistory(key)).toEqual([])
