@@ -1,17 +1,11 @@
+import { getStore, removeStore, setStore } from '@/utils/storage/storage'
+
 const MAX_HISTORY_COUNT = 10
 
 function readHistory(key) {
-  const raw = localStorage.getItem(key)
-  if (!raw)
-    return []
-
-  try {
-    const items = JSON.parse(raw)
-    return Array.isArray(items) ? items : []
-  }
-  catch {
-    return []
-  }
+  const items = getStore(key)
+  // getStore 解析失败会返回原字符串，搜索页面只接受历史数组。
+  return Array.isArray(items) ? items : []
 }
 
 export function setSearchHistory(key, value) {
@@ -27,7 +21,7 @@ export function setSearchHistory(key, value) {
     items.unshift(trimmedValue)
     const limitedItems = items.slice(0, MAX_HISTORY_COUNT)
 
-    localStorage.setItem(key, JSON.stringify(limitedItems))
+    setStore(key, limitedItems)
     return limitedItems
   }
   catch (error) {
@@ -58,7 +52,7 @@ export function removeSearchItem(key, value) {
       item => item.toLowerCase() !== value.toLowerCase(),
     )
 
-    localStorage.setItem(key, JSON.stringify(newItems))
+    setStore(key, newItems)
     return newItems
   }
   catch (error) {
@@ -71,5 +65,5 @@ export function clearAll(key) {
   if (!key)
     return
 
-  localStorage.removeItem(key)
+  removeStore(key)
 }
