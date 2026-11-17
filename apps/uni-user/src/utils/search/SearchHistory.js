@@ -11,15 +11,14 @@ function readHistory(key) {
   return Array.isArray(items) ? items : []
 }
 
+// 去掉首尾空格后，大小写不同的搜索词仍分别保留。
 export function setSearchHistory(key, value) {
   if (!key || !value || value.trim() === '')
     return []
 
   try {
     const trimmedValue = value.trim()
-    const items = readHistory(key).filter(
-      item => item.toLowerCase() !== trimmedValue.toLowerCase(),
-    )
+    const items = readHistory(key).filter(item => item !== trimmedValue)
 
     items.unshift(trimmedValue)
     const limitedItems = items.slice(0, MAX_HISTORY_COUNT)
@@ -46,14 +45,13 @@ export function getSearchHistory(key) {
   }
 }
 
+// 按展示的原文删除，避免同时删掉大小写不同的另一条历史。
 export function removeSearchItem(key, value) {
   if (!key || !value)
     return []
 
   try {
-    const newItems = readHistory(key).filter(
-      item => item.toLowerCase() !== value.toLowerCase(),
-    )
+    const newItems = readHistory(key).filter(item => item !== value)
 
     setStore(key, newItems)
     return newItems
