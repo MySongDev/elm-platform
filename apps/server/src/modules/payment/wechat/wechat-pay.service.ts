@@ -235,7 +235,7 @@ export class WechatPayService {
     const signature = this.sign(`${method}\n${path}\n${timestamp}\n${nonce}\n${body}\n`)
     const authorization = `WECHATPAY2-SHA256-RSA2048 mchid="${this.value('mchId')}",nonce_str="${nonce}",timestamp="${timestamp}",serial_no="${this.value('serialNo')}",signature="${signature}"`
     try {
-      const response = await fetch(`https://api.mch.weixin.qq.com${path}`, {
+      const init: RequestInit = {
         method,
         headers: {
           'Authorization': authorization,
@@ -243,10 +243,14 @@ export class WechatPayService {
           'Content-Type': 'application/json',
           'Wechatpay-Serial': this.value('publicKeyId'),
         },
-        body: body || undefined,
         redirect: 'error',
         signal: AbortSignal.timeout(8000),
-      })
+      }
+      // 只在有载荷时带 body：GET 带 body 会被 fetch 直接抛 TypeError，
+      // 而 POST 的 payload 为 undefined 时 body 是 ''，也不能当成"有载荷"发出去。
+      if (method !== 'GET' && body)
+        init.body = body
+      const response = await fetch(`https://api.mch.weixin.qq.com${path}`, init)
       const text = await response.text()
       const headers = Object.fromEntries(response.headers.entries())
       if (!response.ok) {
