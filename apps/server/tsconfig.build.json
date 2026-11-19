@@ -1,14 +1,14 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    // TS 6 把 rootDir 默认值从「推导出的公共目录」改成了 tsconfig 所在目录（.）。
-    // 不显式写，nest build 的产物会从 dist/main.js 变成 dist/src/main.js，
-    // 连带 start:prod 的 `node dist/main` 直接跑不起来。
-    "rootDir": "./src",
     // nest-cli.json 配了 deleteOutDir: true，每次构建先清空 dist。
     // 但增量编译只看 tsbuildinfo：TS 6 下 dist 被删后它认为「没变化」，直接跳过 emit，
     // 结果是构建报成功、dist 却是空的（main.js 消失）。关掉增量与 deleteOutDir 语义对齐。
-    "incremental": false
+    "incremental": false,
+    // TS 6 把 rootDir 默认值从「推导出的公共目录」改成了 tsconfig 所在目录（.）。
+    // 不显式写，nest build 的产物会从 dist/main.js 变成 dist/src/main.js，
+    // 连带 start:prod 的 `node dist/main` 直接跑不起来。
+    "rootDir": "./src"
   },
   "exclude": ["node_modules", "test", "dist", "**/*spec.ts", "prisma", "prisma.config.ts"]
 }
