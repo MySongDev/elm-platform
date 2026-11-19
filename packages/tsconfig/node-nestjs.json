@@ -13,6 +13,9 @@
     "allowSyntheticDefaultImports": true,
     "strictBindCallApply": true,
     "strictNullChecks": true,
+    // DTO 是拿来给 Swagger 读元数据的，从不 new。它们靠 class-validator 在运行时填值，
+    // 写 `id: number` 而不是 `id!: number` 是这个框架的常规写法。
+    "strictPropertyInitialization": false,
     "noImplicitAny": true,
     "noFallthroughCasesInSwitch": true
   }

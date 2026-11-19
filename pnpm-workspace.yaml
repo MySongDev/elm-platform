@@ -117,10 +117,10 @@ catalog:
   ts-loader: ^9.5.1
   ts-node: ^10.9.2
   tsconfig-paths: ^4.2.0
-  tsup: ^8.4.0
+  tsup: ^9.0.0
   tsx: ^4.19.0
   turbo: ^2.9.16
-  typescript: ^5.8.3
+  typescript: ^6.0.3
   unplugin-auto-import: ^21.0.0
   unplugin-icons: ^23.0.1
   unplugin-vue-components: ^31.0.0
