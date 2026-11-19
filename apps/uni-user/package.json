@@ -4,7 +4,7 @@
   "private": true,
   "description": "uni-app 用户端（微信小程序优先）。版本约束原因见 README.md，不得随意统一版本。",
   "engines": {
-    "node": "^20.19.0 || >=22.12.0"
+    "node": ">=22.18.0"
   },
   "scripts": {
     "dev": "uni -p mp-weixin",

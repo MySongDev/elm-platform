@@ -21,6 +21,9 @@
         "./src/redis/*"
       ]
     },
+    // TS 6 不再自动把 node_modules/@types 全部塞进全局作用域（默认从「全部」变成「空」）。
+    // 少了 node 就没有 process/Buffer，少了 jest 就没有 describe/it —— 全在 spec 文件里炸。
+    "types": ["node", "jest"],
     "outDir": "./dist"
   }
 }
