@@ -1,6 +1,6 @@
 import type { Request, Response } from 'express'
 import { Controller, Get, Req, Res, StreamableFile } from '@nestjs/common'
-import { ApiOperation, ApiTags } from '@nestjs/swagger'
+import { ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger'
 import { rawResponse } from '../../../common/interceptors/transform.interceptor'
 import { ElmImageProxyService } from '../../../modules/elm-media/services/elm-image-proxy.service'
 
@@ -27,17 +27,23 @@ import { ElmImageProxyService } from '../../../modules/elm-media/services/elm-im
 export class ElmImageProxyController {
   constructor(private readonly imageProxy: ElmImageProxyService) {}
 
-  @Get('img/*')
+  @Get('img/*path')
   @ApiOperation({ summary: '本地读取图片（长期契约，小程序端唯一图片来源；正常请求不访问上游）' })
+  @ApiParam({
+    name: 'path',
+    type: String,
+    description: '完整图片路径，如 shop/a.jpg 或 cdn/a.jpg',
+  })
   async proxyImage(
-    @Req() req: Request,
+    @Req() req: Request<{ path: string[] }>,
     // passthrough: 可以设响应头，但仍由 Nest 处理返回的 StreamableFile 走流式响应。
     // ⚠️ 不用 @Header() 装饰器：它在 handler 执行前就写入响应头，
     // 异常路径（404/502）同样会命中 → 一张图临时 404 会被 immutable 强缓存一年。
     @Res({ passthrough: true }) res: Response,
   ) {
-    // Express 4 的通配路由把匹配部分放进 params[0]，不含前导斜杠
-    const wildcard = (req.params as Record<string, string>)[0] ?? ''
+    // Express 5 的命名通配符按斜杠分段；必须拼回完整路径，
+    // 否则 shop/ 或 cdn/ 下的图片会被当成错误的本地键，正常图片也会返回 404。
+    const wildcard = req.params.path.join('/')
     const path = `/${wildcard.replace(/^\/+/, '')}` as `/${string}`
 
     const { stream, contentType } = await this.imageProxy.getImage(path)

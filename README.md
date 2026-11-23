@@ -35,7 +35,7 @@ elm-platform/
 ## 技术栈
 
 ### 后端 (server)
-- **框架**: NestJS 10
+- **框架**: NestJS 12
 - **数据库**: Prisma ORM
 - **认证**: JWT + Passport
 - **缓存**: Redis (node-redis)
@@ -60,7 +60,7 @@ elm-platform/
 
 ### 环境要求
 
-- Node.js >= 22
+- Node.js 24.15.0 及以上的 24.x，或 26.0.0 及以上（`^24.15.0 || >=26.0.0`）；CI / Render 使用 24.x
 - pnpm >= 11
 
 ### 安装依赖

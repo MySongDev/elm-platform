@@ -4,7 +4,6 @@
     "/api/auth/login": {
       "post": {
         "operationId": "AuthController_login",
-        "summary": "用户登录",
         "parameters": [],
         "requestBody": {
           "required": true,
@@ -116,6 +115,7 @@
             }
           }
         },
+        "summary": "用户登录",
         "tags": [
           "管理端－认证"
         ]
@@ -124,7 +124,6 @@
     "/api/auth/profile": {
       "get": {
         "operationId": "AuthController_getProfile",
-        "summary": "获取当前用户信息",
         "parameters": [],
         "responses": {
           "200": {
@@ -202,18 +201,18 @@
             }
           }
         },
-        "tags": [
-          "管理端－认证"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "获取当前用户信息",
+        "tags": [
+          "管理端－认证"
         ]
       },
       "patch": {
         "operationId": "AuthController_updateProfile",
-        "summary": "更新当前用户信息",
         "parameters": [],
         "requestBody": {
           "required": true,
@@ -349,20 +348,20 @@
             }
           }
         },
-        "tags": [
-          "管理端－认证"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "更新当前用户信息",
+        "tags": [
+          "管理端－认证"
         ]
       }
     },
     "/api/auth/menus": {
       "get": {
         "operationId": "AuthController_getMenus",
-        "summary": "获取当前用户可访问的菜单树",
         "parameters": [],
         "responses": {
           "200": {
@@ -443,20 +442,20 @@
             }
           }
         },
-        "tags": [
-          "管理端－认证"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "获取当前用户可访问的菜单树",
+        "tags": [
+          "管理端－认证"
         ]
       }
     },
     "/api/auth/logout": {
       "post": {
         "operationId": "AuthController_logout",
-        "summary": "退出登录",
         "parameters": [],
         "responses": {
           "200": {
@@ -518,20 +517,20 @@
             }
           }
         },
-        "tags": [
-          "管理端－认证"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "退出登录",
+        "tags": [
+          "管理端－认证"
         ]
       }
     },
     "/api/auth/security-logs": {
       "get": {
         "operationId": "AuthController_getSecurityLogs",
-        "summary": "获取安全日志",
         "parameters": [
           {
             "name": "page",
@@ -652,20 +651,20 @@
             }
           }
         },
-        "tags": [
-          "管理端－认证"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "获取安全日志",
+        "tags": [
+          "管理端－认证"
         ]
       }
     },
     "/api/users": {
       "post": {
         "operationId": "UserController_create",
-        "summary": "创建用户",
         "parameters": [],
         "requestBody": {
           "required": true,
@@ -825,13 +824,13 @@
             }
           }
         },
+        "summary": "创建用户",
         "tags": [
           "管理端－账号管理"
         ]
       },
       "get": {
         "operationId": "UserController_findAll",
-        "summary": "获取所有用户",
         "parameters": [],
         "responses": {
           "200": {
@@ -936,6 +935,7 @@
             }
           }
         },
+        "summary": "获取所有用户",
         "tags": [
           "管理端－账号管理"
         ]
@@ -944,7 +944,6 @@
     "/api/users/{id}": {
       "get": {
         "operationId": "UserController_findOne",
-        "summary": "根据 ID 获取用户",
         "parameters": [
           {
             "name": "id",
@@ -1105,13 +1104,13 @@
             }
           }
         },
+        "summary": "根据 ID 获取用户",
         "tags": [
           "管理端－账号管理"
         ]
       },
       "patch": {
         "operationId": "UserController_update",
-        "summary": "更新用户",
         "parameters": [
           {
             "name": "id",
@@ -1306,13 +1305,13 @@
             }
           }
         },
+        "summary": "更新用户",
         "tags": [
           "管理端－账号管理"
         ]
       },
       "delete": {
         "operationId": "UserController_remove",
-        "summary": "删除用户",
         "parameters": [
           {
             "name": "id",
@@ -1457,6 +1456,7 @@
             }
           }
         },
+        "summary": "删除用户",
         "tags": [
           "管理端－账号管理"
         ]
@@ -1465,7 +1465,6 @@
     "/api/admin/tenants": {
       "get": {
         "operationId": "TenantController_listTenants",
-        "summary": "租户列表",
         "parameters": [],
         "responses": {
           "200": {
@@ -1570,18 +1569,18 @@
             }
           }
         },
-        "tags": [
-          "管理端－租户管理"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "租户列表",
+        "tags": [
+          "管理端－租户管理"
         ]
       },
       "post": {
         "operationId": "TenantController_createTenant",
-        "summary": "创建租户",
         "parameters": [],
         "requestBody": {
           "required": true,
@@ -1717,20 +1716,20 @@
             }
           }
         },
-        "tags": [
-          "管理端－租户管理"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "创建租户",
+        "tags": [
+          "管理端－租户管理"
         ]
       }
     },
     "/api/admin/tenants/{id}": {
       "get": {
         "operationId": "TenantController_getTenantDetail",
-        "summary": "租户详情",
         "parameters": [
           {
             "name": "id",
@@ -1889,18 +1888,18 @@
             }
           }
         },
-        "tags": [
-          "管理端－租户管理"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "租户详情",
+        "tags": [
+          "管理端－租户管理"
         ]
       },
       "patch": {
         "operationId": "TenantController_updateTenant",
-        "summary": "更新租户",
         "parameters": [
           {
             "name": "id",
@@ -2069,20 +2068,20 @@
             }
           }
         },
-        "tags": [
-          "管理端－租户管理"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "更新租户",
+        "tags": [
+          "管理端－租户管理"
         ]
       }
     },
     "/api/admin/tenants/{id}/events/{event}": {
       "post": {
         "operationId": "TenantController_transitionTenant",
-        "summary": "触发租户状态事件",
         "parameters": [
           {
             "name": "id",
@@ -2275,20 +2274,20 @@
             }
           }
         },
-        "tags": [
-          "管理端－租户管理"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "触发租户状态事件",
+        "tags": [
+          "管理端－租户管理"
         ]
       }
     },
     "/api/admin/tenants/{id}/action-logs": {
       "get": {
         "operationId": "TenantController_getTenantActionLogs",
-        "summary": "租户状态动作日志",
         "parameters": [
           {
             "name": "id",
@@ -2450,20 +2449,20 @@
             }
           }
         },
-        "tags": [
-          "管理端－租户管理"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "租户状态动作日志",
+        "tags": [
+          "管理端－租户管理"
         ]
       }
     },
     "/api/admin/notifications": {
       "get": {
         "operationId": "NotificationController_list",
-        "summary": "获取当前管理员通知列表",
         "parameters": [],
         "responses": {
           "200": {
@@ -2568,18 +2567,18 @@
             }
           }
         },
-        "tags": [
-          "管理端－通知中心"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "获取当前管理员通知列表",
+        "tags": [
+          "管理端－通知中心"
         ]
       },
       "delete": {
         "operationId": "NotificationController_clear",
-        "summary": "按类型清空通知",
         "parameters": [],
         "responses": {
           "200": {
@@ -2681,20 +2680,20 @@
             }
           }
         },
-        "tags": [
-          "管理端－通知中心"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "按类型清空通知",
+        "tags": [
+          "管理端－通知中心"
         ]
       }
     },
     "/api/admin/notifications/read-all": {
       "patch": {
         "operationId": "NotificationController_markAllRead",
-        "summary": "按类型批量标记已读",
         "parameters": [],
         "requestBody": {
           "required": true,
@@ -2806,20 +2805,20 @@
             }
           }
         },
-        "tags": [
-          "管理端－通知中心"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "按类型批量标记已读",
+        "tags": [
+          "管理端－通知中心"
         ]
       }
     },
     "/api/admin/notifications/{id}/read": {
       "patch": {
         "operationId": "NotificationController_markRead",
-        "summary": "标记单条通知已读",
         "parameters": [
           {
             "name": "id",
@@ -2930,20 +2929,20 @@
             }
           }
         },
-        "tags": [
-          "管理端－通知中心"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "标记单条通知已读",
+        "tags": [
+          "管理端－通知中心"
         ]
       }
     },
     "/api/admin/notifications/{id}": {
       "delete": {
         "operationId": "NotificationController_remove",
-        "summary": "删除单条通知",
         "parameters": [
           {
             "name": "id",
@@ -3054,20 +3053,20 @@
             }
           }
         },
-        "tags": [
-          "管理端－通知中心"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "删除单条通知",
+        "tags": [
+          "管理端－通知中心"
         ]
       }
     },
     "/api/admin/merchant-applications": {
       "get": {
         "operationId": "MerchantOnboardingController_listApplications",
-        "summary": "Merchant application list",
         "parameters": [],
         "responses": {
           "200": {
@@ -3196,20 +3195,20 @@
             }
           }
         },
-        "tags": [
-          "管理端－商家入驻"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "Merchant application list",
+        "tags": [
+          "管理端－商家入驻"
         ]
       }
     },
     "/api/admin/merchant-applications/{id}": {
       "get": {
         "operationId": "MerchantOnboardingController_getApplicationDetail",
-        "summary": "Merchant application detail",
         "parameters": [
           {
             "name": "id",
@@ -3344,20 +3343,20 @@
             }
           }
         },
-        "tags": [
-          "管理端－商家入驻"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "Merchant application detail",
+        "tags": [
+          "管理端－商家入驻"
         ]
       }
     },
     "/api/admin/merchant-applications/{id}/review": {
       "post": {
         "operationId": "MerchantOnboardingController_reviewApplication",
-        "summary": "Review merchant application",
         "parameters": [
           {
             "name": "id",
@@ -3550,20 +3549,20 @@
             }
           }
         },
-        "tags": [
-          "管理端－商家入驻"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "Review merchant application",
+        "tags": [
+          "管理端－商家入驻"
         ]
       }
     },
     "/api/admin/merchant-applications/{id}/action-logs": {
       "get": {
         "operationId": "MerchantOnboardingController_getApplicationActionLogs",
-        "summary": "Merchant application action logs",
         "parameters": [
           {
             "name": "id",
@@ -3701,20 +3700,20 @@
             }
           }
         },
-        "tags": [
-          "管理端－商家入驻"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "Merchant application action logs",
+        "tags": [
+          "管理端－商家入驻"
         ]
       }
     },
     "/api/admin/system/roles": {
       "get": {
         "operationId": "AdminController_getRoles",
-        "summary": "角色列表",
         "parameters": [],
         "responses": {
           "200": {
@@ -3819,18 +3818,18 @@
             }
           }
         },
-        "tags": [
-          "管理端－角色管理"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "角色列表",
+        "tags": [
+          "管理端－角色管理"
         ]
       },
       "post": {
         "operationId": "AdminController_createRole",
-        "summary": "创建角色",
         "parameters": [],
         "requestBody": {
           "required": true,
@@ -3966,20 +3965,20 @@
             }
           }
         },
-        "tags": [
-          "管理端－角色管理"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "创建角色",
+        "tags": [
+          "管理端－角色管理"
         ]
       }
     },
     "/api/admin/system/roles/{id}": {
       "patch": {
         "operationId": "AdminController_updateRole",
-        "summary": "更新角色",
         "parameters": [
           {
             "name": "id",
@@ -4148,18 +4147,18 @@
             }
           }
         },
-        "tags": [
-          "管理端－角色管理"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "更新角色",
+        "tags": [
+          "管理端－角色管理"
         ]
       },
       "delete": {
         "operationId": "AdminController_deleteRole",
-        "summary": "删除角色",
         "parameters": [
           {
             "name": "id",
@@ -4294,20 +4293,20 @@
             }
           }
         },
-        "tags": [
-          "管理端－角色管理"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "删除角色",
+        "tags": [
+          "管理端－角色管理"
         ]
       }
     },
     "/api/admin/system/menus": {
       "get": {
         "operationId": "AdminController_getMenus",
-        "summary": "菜单列表",
         "parameters": [],
         "responses": {
           "200": {
@@ -4412,18 +4411,18 @@
             }
           }
         },
-        "tags": [
-          "管理端－菜单管理"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "菜单列表",
+        "tags": [
+          "管理端－菜单管理"
         ]
       },
       "post": {
         "operationId": "AdminController_createMenu",
-        "summary": "创建菜单",
         "parameters": [],
         "requestBody": {
           "required": true,
@@ -4559,20 +4558,20 @@
             }
           }
         },
-        "tags": [
-          "管理端－菜单管理"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "创建菜单",
+        "tags": [
+          "管理端－菜单管理"
         ]
       }
     },
     "/api/admin/system/menus/{id}": {
       "patch": {
         "operationId": "AdminController_updateMenu",
-        "summary": "更新菜单",
         "parameters": [
           {
             "name": "id",
@@ -4741,18 +4740,18 @@
             }
           }
         },
-        "tags": [
-          "管理端－菜单管理"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "更新菜单",
+        "tags": [
+          "管理端－菜单管理"
         ]
       },
       "delete": {
         "operationId": "AdminController_deleteMenu",
-        "summary": "删除菜单",
         "parameters": [
           {
             "name": "id",
@@ -4887,20 +4886,20 @@
             }
           }
         },
-        "tags": [
-          "管理端－菜单管理"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "删除菜单",
+        "tags": [
+          "管理端－菜单管理"
         ]
       }
     },
     "/api/admin/system/depts": {
       "get": {
         "operationId": "AdminController_getDepts",
-        "summary": "部门列表",
         "parameters": [],
         "responses": {
           "200": {
@@ -5005,18 +5004,18 @@
             }
           }
         },
-        "tags": [
-          "管理端－部门管理"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "部门列表",
+        "tags": [
+          "管理端－部门管理"
         ]
       },
       "post": {
         "operationId": "AdminController_createDept",
-        "summary": "创建部门",
         "parameters": [],
         "requestBody": {
           "required": true,
@@ -5152,20 +5151,20 @@
             }
           }
         },
-        "tags": [
-          "管理端－部门管理"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "创建部门",
+        "tags": [
+          "管理端－部门管理"
         ]
       }
     },
     "/api/admin/system/depts/{id}": {
       "patch": {
         "operationId": "AdminController_updateDept",
-        "summary": "更新部门",
         "parameters": [
           {
             "name": "id",
@@ -5334,18 +5333,18 @@
             }
           }
         },
-        "tags": [
-          "管理端－部门管理"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "更新部门",
+        "tags": [
+          "管理端－部门管理"
         ]
       },
       "delete": {
         "operationId": "AdminController_deleteDept",
-        "summary": "删除部门",
         "parameters": [
           {
             "name": "id",
@@ -5480,20 +5479,20 @@
             }
           }
         },
-        "tags": [
-          "管理端－部门管理"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "删除部门",
+        "tags": [
+          "管理端－部门管理"
         ]
       }
     },
     "/api/admin/permissions/pages": {
       "get": {
         "operationId": "AdminController_getPagePermissions",
-        "summary": "页面权限列表",
         "parameters": [],
         "responses": {
           "200": {
@@ -5598,20 +5597,20 @@
             }
           }
         },
-        "tags": [
-          "管理端－权限目录"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "页面权限列表",
+        "tags": [
+          "管理端－权限目录"
         ]
       }
     },
     "/api/admin/permissions/buttons": {
       "get": {
         "operationId": "AdminController_getButtonPermissions",
-        "summary": "按钮权限列表",
         "parameters": [],
         "responses": {
           "200": {
@@ -5716,20 +5715,20 @@
             }
           }
         },
-        "tags": [
-          "管理端－权限目录"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "按钮权限列表",
+        "tags": [
+          "管理端－权限目录"
         ]
       }
     },
     "/api/admin/monitor/online-users": {
       "get": {
         "operationId": "AdminController_getOnlineUsers",
-        "summary": "在线用户列表",
         "parameters": [],
         "responses": {
           "200": {
@@ -5834,20 +5833,20 @@
             }
           }
         },
-        "tags": [
-          "管理端－在线用户"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "在线用户列表",
+        "tags": [
+          "管理端－在线用户"
         ]
       }
     },
     "/api/admin/monitor/online-users/{id}/force-logout": {
       "post": {
         "operationId": "AdminController_forceLogout",
-        "summary": "强制用户下线",
         "parameters": [
           {
             "name": "id",
@@ -5982,20 +5981,20 @@
             }
           }
         },
-        "tags": [
-          "管理端－在线用户"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "强制用户下线",
+        "tags": [
+          "管理端－在线用户"
         ]
       }
     },
     "/api/admin/monitor/login-logs": {
       "get": {
         "operationId": "AdminController_getLoginLogs",
-        "summary": "登录日志",
         "parameters": [],
         "responses": {
           "200": {
@@ -6100,20 +6099,20 @@
             }
           }
         },
-        "tags": [
-          "管理端－日志查询"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "登录日志",
+        "tags": [
+          "管理端－日志查询"
         ]
       }
     },
     "/api/admin/monitor/operation-logs": {
       "get": {
         "operationId": "AdminController_getOperationLogs",
-        "summary": "操作日志",
         "parameters": [],
         "responses": {
           "200": {
@@ -6218,20 +6217,20 @@
             }
           }
         },
-        "tags": [
-          "管理端－日志查询"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "操作日志",
+        "tags": [
+          "管理端－日志查询"
         ]
       }
     },
     "/api/admin/monitor/system-logs": {
       "get": {
         "operationId": "AdminController_getSystemLogs",
-        "summary": "系统日志",
         "parameters": [],
         "responses": {
           "200": {
@@ -6336,58 +6335,58 @@
             }
           }
         },
-        "tags": [
-          "管理端－日志查询"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "系统日志",
+        "tags": [
+          "管理端－日志查询"
         ]
       }
     },
     "/api/admin/commerce/restaurants": {
       "get": {
         "operationId": "ElmAdminController_getRestaurants",
-        "summary": "管理端餐馆列表",
         "parameters": [],
         "responses": {
           "200": {
             "description": ""
           }
         },
-        "tags": [
-          "管理端－餐馆管理"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "管理端餐馆列表",
+        "tags": [
+          "管理端－餐馆管理"
         ]
       },
       "post": {
         "operationId": "ElmAdminController_createRestaurant",
-        "summary": "管理端创建餐馆",
         "parameters": [],
         "responses": {
           "201": {
             "description": ""
           }
         },
-        "tags": [
-          "管理端－餐馆管理"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "管理端创建餐馆",
+        "tags": [
+          "管理端－餐馆管理"
         ]
       }
     },
     "/api/admin/commerce/restaurants/{id}": {
       "patch": {
         "operationId": "ElmAdminController_updateRestaurant",
-        "summary": "管理端更新餐馆",
         "parameters": [
           {
             "name": "id",
@@ -6403,18 +6402,18 @@
             "description": ""
           }
         },
-        "tags": [
-          "管理端－餐馆管理"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "管理端更新餐馆",
+        "tags": [
+          "管理端－餐馆管理"
         ]
       },
       "delete": {
         "operationId": "ElmAdminController_deleteRestaurant",
-        "summary": "管理端删除餐馆",
         "parameters": [
           {
             "name": "id",
@@ -6430,58 +6429,58 @@
             "description": ""
           }
         },
-        "tags": [
-          "管理端－餐馆管理"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "管理端删除餐馆",
+        "tags": [
+          "管理端－餐馆管理"
         ]
       }
     },
     "/api/admin/commerce/foods": {
       "get": {
         "operationId": "ElmAdminController_getFoods",
-        "summary": "管理端食品列表",
         "parameters": [],
         "responses": {
           "200": {
             "description": ""
           }
         },
-        "tags": [
-          "管理端－食品管理"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "管理端食品列表",
+        "tags": [
+          "管理端－食品管理"
         ]
       },
       "post": {
         "operationId": "ElmAdminController_createFood",
-        "summary": "管理端创建食品",
         "parameters": [],
         "responses": {
           "201": {
             "description": ""
           }
         },
-        "tags": [
-          "管理端－食品管理"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "管理端创建食品",
+        "tags": [
+          "管理端－食品管理"
         ]
       }
     },
     "/api/admin/commerce/foods/{id}": {
       "patch": {
         "operationId": "ElmAdminController_updateFood",
-        "summary": "管理端更新食品",
         "parameters": [
           {
             "name": "id",
@@ -6497,18 +6496,18 @@
             "description": ""
           }
         },
-        "tags": [
-          "管理端－食品管理"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "管理端更新食品",
+        "tags": [
+          "管理端－食品管理"
         ]
       },
       "delete": {
         "operationId": "ElmAdminController_deleteFood",
-        "summary": "管理端删除食品",
         "parameters": [
           {
             "name": "id",
@@ -6524,20 +6523,20 @@
             "description": ""
           }
         },
-        "tags": [
-          "管理端－食品管理"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "管理端删除食品",
+        "tags": [
+          "管理端－食品管理"
         ]
       }
     },
     "/api/admin/commerce/orders": {
       "get": {
         "operationId": "ElmAdminController_getOrders",
-        "summary": "管理端真实支付订单列表",
         "parameters": [],
         "responses": {
           "200": {
@@ -6551,20 +6550,20 @@
             }
           }
         },
-        "tags": [
-          "管理端－订单管理"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "管理端真实支付订单列表",
+        "tags": [
+          "管理端－订单管理"
         ]
       }
     },
     "/api/admin/commerce/orders/{orderNo}": {
       "get": {
         "operationId": "ElmAdminController_getOrderDetail",
-        "summary": "管理端订单详情",
         "parameters": [
           {
             "name": "orderNo",
@@ -6588,20 +6587,20 @@
             }
           }
         },
-        "tags": [
-          "管理端－订单管理"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "管理端订单详情",
+        "tags": [
+          "管理端－订单管理"
         ]
       }
     },
     "/api/admin/commerce/orders/{orderNo}/accept": {
       "post": {
         "operationId": "ElmAdminController_acceptOrder",
-        "summary": "管理端订单接单",
         "parameters": [
           {
             "name": "orderNo",
@@ -6617,20 +6616,20 @@
             "description": ""
           }
         },
-        "tags": [
-          "管理端－订单管理"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "管理端订单接单",
+        "tags": [
+          "管理端－订单管理"
         ]
       }
     },
     "/api/admin/commerce/orders/{orderNo}/start-preparing": {
       "post": {
         "operationId": "ElmAdminController_startPreparing",
-        "summary": "管理端订单开始制作",
         "parameters": [
           {
             "name": "orderNo",
@@ -6646,20 +6645,20 @@
             "description": ""
           }
         },
-        "tags": [
-          "管理端－订单管理"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "管理端订单开始制作",
+        "tags": [
+          "管理端－订单管理"
         ]
       }
     },
     "/api/admin/commerce/orders/{orderNo}/start-delivery": {
       "post": {
         "operationId": "ElmAdminController_startDelivery",
-        "summary": "管理端订单开始配送",
         "parameters": [
           {
             "name": "orderNo",
@@ -6675,20 +6674,20 @@
             "description": ""
           }
         },
-        "tags": [
-          "管理端－订单管理"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "管理端订单开始配送",
+        "tags": [
+          "管理端－订单管理"
         ]
       }
     },
     "/api/admin/commerce/orders/{orderNo}/complete": {
       "post": {
         "operationId": "ElmAdminController_completeOrder",
-        "summary": "管理端订单完成",
         "parameters": [
           {
             "name": "orderNo",
@@ -6704,20 +6703,20 @@
             "description": ""
           }
         },
-        "tags": [
-          "管理端－订单管理"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "管理端订单完成",
+        "tags": [
+          "管理端－订单管理"
         ]
       }
     },
     "/api/admin/commerce/orders/{orderNo}/refund/approve": {
       "post": {
         "operationId": "ElmAdminController_approveRefund",
-        "summary": "管理端同意退款",
         "parameters": [
           {
             "name": "orderNo",
@@ -6743,20 +6742,20 @@
             "description": ""
           }
         },
-        "tags": [
-          "管理端－订单管理"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "管理端同意退款",
+        "tags": [
+          "管理端－订单管理"
         ]
       }
     },
     "/api/admin/commerce/orders/{orderNo}/refund/reject": {
       "post": {
         "operationId": "ElmAdminController_rejectRefund",
-        "summary": "管理端驳回退款",
         "parameters": [
           {
             "name": "orderNo",
@@ -6782,20 +6781,20 @@
             "description": ""
           }
         },
-        "tags": [
-          "管理端－订单管理"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "管理端驳回退款",
+        "tags": [
+          "管理端－订单管理"
         ]
       }
     },
     "/api/customer-auth/sms/send": {
       "post": {
         "operationId": "CustomerAuthController_sendSms",
-        "summary": "发送短信验证码",
         "parameters": [],
         "requestBody": {
           "required": true,
@@ -6907,6 +6906,7 @@
             }
           }
         },
+        "summary": "发送短信验证码",
         "tags": [
           "消费者端－认证"
         ]
@@ -6915,7 +6915,6 @@
     "/api/customer-auth/password/reset": {
       "post": {
         "operationId": "CustomerAuthController_resetPassword",
-        "summary": "通过短信验证码重置密码",
         "parameters": [],
         "requestBody": {
           "required": true,
@@ -7011,6 +7010,7 @@
             }
           }
         },
+        "summary": "通过短信验证码重置密码",
         "tags": [
           "消费者端－认证"
         ]
@@ -7019,7 +7019,6 @@
     "/api/customer-auth/login/password": {
       "post": {
         "operationId": "CustomerAuthController_loginByPassword",
-        "summary": "手机号密码登录",
         "parameters": [],
         "requestBody": {
           "required": true,
@@ -7131,6 +7130,7 @@
             }
           }
         },
+        "summary": "手机号密码登录",
         "tags": [
           "消费者端－认证"
         ]
@@ -7139,7 +7139,6 @@
     "/api/customer-auth/login/sms": {
       "post": {
         "operationId": "CustomerAuthController_loginBySms",
-        "summary": "手机号验证码登录",
         "parameters": [],
         "requestBody": {
           "required": true,
@@ -7251,6 +7250,7 @@
             }
           }
         },
+        "summary": "手机号验证码登录",
         "tags": [
           "消费者端－认证"
         ]
@@ -7259,7 +7259,6 @@
     "/api/customer-auth/refresh": {
       "post": {
         "operationId": "CustomerAuthController_refresh",
-        "summary": "刷新用户端访问令牌",
         "parameters": [],
         "requestBody": {
           "required": true,
@@ -7371,6 +7370,7 @@
             }
           }
         },
+        "summary": "刷新用户端访问令牌",
         "tags": [
           "消费者端－认证"
         ]
@@ -7379,7 +7379,6 @@
     "/api/customer-auth/logout": {
       "post": {
         "operationId": "CustomerAuthController_logout",
-        "summary": "撤销用户端刷新令牌",
         "parameters": [],
         "requestBody": {
           "required": true,
@@ -7451,6 +7450,7 @@
             }
           }
         },
+        "summary": "撤销用户端刷新令牌",
         "tags": [
           "消费者端－认证"
         ]
@@ -7459,7 +7459,6 @@
     "/api/customer-auth/profile": {
       "get": {
         "operationId": "CustomerAuthController_getProfile",
-        "summary": "获取普通用户信息",
         "parameters": [],
         "responses": {
           "200": {
@@ -7537,20 +7536,20 @@
             }
           }
         },
-        "tags": [
-          "消费者端－认证"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "获取普通用户信息",
+        "tags": [
+          "消费者端－认证"
         ]
       }
     },
     "/api/customer-auth/profile/nickname": {
       "put": {
         "operationId": "CustomerAuthController_updateNickname",
-        "summary": "修改普通用户的用户名（昵称）",
         "parameters": [],
         "requestBody": {
           "required": true,
@@ -7686,20 +7685,20 @@
             }
           }
         },
-        "tags": [
-          "消费者端－认证"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "修改普通用户的用户名（昵称）",
+        "tags": [
+          "消费者端－认证"
         ]
       }
     },
     "/api/customer-addresses": {
       "get": {
         "operationId": "CustomerAddressController_list",
-        "summary": "获取当前用户的收货地址列表",
         "parameters": [],
         "responses": {
           "200": {
@@ -7780,18 +7779,18 @@
             }
           }
         },
-        "tags": [
-          "消费者端－收货地址"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "获取当前用户的收货地址列表",
+        "tags": [
+          "消费者端－收货地址"
         ]
       },
       "post": {
         "operationId": "CustomerAddressController_create",
-        "summary": "新增收货地址",
         "parameters": [],
         "requestBody": {
           "required": true,
@@ -7903,20 +7902,20 @@
             }
           }
         },
-        "tags": [
-          "消费者端－收货地址"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "新增收货地址",
+        "tags": [
+          "消费者端－收货地址"
         ]
       }
     },
     "/api/customer-addresses/{id}": {
       "get": {
         "operationId": "CustomerAddressController_detail",
-        "summary": "获取当前用户的收货地址详情",
         "parameters": [
           {
             "name": "id",
@@ -8051,18 +8050,18 @@
             }
           }
         },
-        "tags": [
-          "消费者端－收货地址"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "获取当前用户的收货地址详情",
+        "tags": [
+          "消费者端－收货地址"
         ]
       },
       "patch": {
         "operationId": "CustomerAddressController_update",
-        "summary": "更新收货地址",
         "parameters": [
           {
             "name": "id",
@@ -8209,18 +8208,18 @@
             }
           }
         },
-        "tags": [
-          "消费者端－收货地址"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "更新收货地址",
+        "tags": [
+          "消费者端－收货地址"
         ]
       },
       "put": {
         "operationId": "CustomerAddressController_replace",
-        "summary": "全量更新收货地址",
         "parameters": [
           {
             "name": "id",
@@ -8365,18 +8364,18 @@
             }
           }
         },
-        "tags": [
-          "消费者端－收货地址"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "全量更新收货地址",
+        "tags": [
+          "消费者端－收货地址"
         ]
       },
       "delete": {
         "operationId": "CustomerAddressController_remove",
-        "summary": "删除收货地址",
         "parameters": [
           {
             "name": "id",
@@ -8471,20 +8470,20 @@
             }
           }
         },
-        "tags": [
-          "消费者端－收货地址"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "删除收货地址",
+        "tags": [
+          "消费者端－收货地址"
         ]
       }
     },
     "/api/customer-addresses/{id}/default": {
       "post": {
         "operationId": "CustomerAddressController_setDefault",
-        "summary": "设为默认收货地址",
         "parameters": [
           {
             "name": "id",
@@ -8605,20 +8604,20 @@
             }
           }
         },
-        "tags": [
-          "消费者端－收货地址"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "设为默认收货地址",
+        "tags": [
+          "消费者端－收货地址"
         ]
       }
     },
     "/api/customer-avatar": {
       "post": {
         "operationId": "CustomerAvatarController_upload",
-        "summary": "上传当前用户头像",
         "parameters": [],
         "requestBody": {
           "required": true,
@@ -8739,26 +8738,27 @@
             }
           }
         },
-        "tags": [
-          "消费者端－头像"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "上传当前用户头像",
+        "tags": [
+          "消费者端－头像"
         ]
       }
     },
     "/api/v1/cities": {
       "get": {
         "operationId": "ElmLocationController_getCities",
-        "summary": "获取城市列表",
         "parameters": [],
         "responses": {
           "200": {
             "description": ""
           }
         },
+        "summary": "获取城市列表",
         "tags": [
           "消费者端－城市定位"
         ]
@@ -8767,7 +8767,6 @@
     "/api/v1/cities/{id}": {
       "get": {
         "operationId": "ElmLocationController_getCity",
-        "summary": "获取城市信息",
         "parameters": [
           {
             "name": "id",
@@ -8783,6 +8782,7 @@
             "description": ""
           }
         },
+        "summary": "获取城市信息",
         "tags": [
           "消费者端－城市定位"
         ]
@@ -8791,7 +8791,6 @@
     "/api/v1/pois": {
       "get": {
         "operationId": "ElmLocationController_searchPois",
-        "summary": "搜索地址",
         "parameters": [
           {
             "name": "city_id",
@@ -8807,6 +8806,7 @@
             "description": ""
           }
         },
+        "summary": "搜索地址",
         "tags": [
           "消费者端－城市定位"
         ]
@@ -8815,7 +8815,6 @@
     "/api/geo/reverse-geocode": {
       "get": {
         "operationId": "ElmLocationController_getPoi",
-        "summary": "逆地理编码：坐标反查地址与城市",
         "parameters": [
           {
             "name": "geohash",
@@ -8850,6 +8849,7 @@
             "description": ""
           }
         },
+        "summary": "逆地理编码：坐标反查地址与城市",
         "tags": [
           "消费者端－城市定位"
         ]
@@ -8858,13 +8858,13 @@
     "/api/v2/index_entry": {
       "get": {
         "operationId": "ElmLocationController_getIndexEntry",
-        "summary": "食品分类列表",
         "parameters": [],
         "responses": {
           "200": {
             "description": ""
           }
         },
+        "summary": "食品分类列表",
         "tags": [
           "消费者端－城市定位"
         ]
@@ -8873,7 +8873,6 @@
     "/api/orders": {
       "post": {
         "operationId": "OrderController_createOrder",
-        "summary": "创建订单（不含支付）",
         "parameters": [],
         "requestBody": {
           "required": true,
@@ -8969,18 +8968,18 @@
             }
           }
         },
-        "tags": [
-          "消费者端－订单"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "创建订单（不含支付）",
+        "tags": [
+          "消费者端－订单"
         ]
       },
       "get": {
         "operationId": "PaymentController_listOrders",
-        "summary": "用户支付订单列表",
         "parameters": [
           {
             "name": "limit",
@@ -9051,20 +9050,20 @@
             }
           }
         },
-        "tags": [
-          "消费者端－订单"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "用户支付订单列表",
+        "tags": [
+          "消费者端－订单"
         ]
       }
     },
     "/api/orders/{orderNo}/refund/request": {
       "post": {
         "operationId": "PaymentController_requestRefund",
-        "summary": "用户申请订单退款",
         "parameters": [
           {
             "name": "orderNo",
@@ -9217,20 +9216,20 @@
             }
           }
         },
-        "tags": [
-          "消费者端－订单"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "用户申请订单退款",
+        "tags": [
+          "消费者端－订单"
         ]
       }
     },
     "/api/payments/alipay/wap/create": {
       "post": {
         "operationId": "PaymentController_createAlipayWapPayment",
-        "summary": "创建支付宝 WAP 支付单",
         "parameters": [],
         "requestBody": {
           "required": true,
@@ -9326,20 +9325,20 @@
             }
           }
         },
-        "tags": [
-          "消费者端－支付"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "创建支付宝 WAP 支付单",
+        "tags": [
+          "消费者端－支付"
         ]
       }
     },
     "/api/payments/alipay/wap/resume": {
       "post": {
         "operationId": "PaymentController_resumeAlipayWapPayment",
-        "summary": "继续支付宝 WAP 支付单",
         "parameters": [],
         "requestBody": {
           "required": true,
@@ -9459,20 +9458,20 @@
             }
           }
         },
-        "tags": [
-          "消费者端－支付"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "继续支付宝 WAP 支付单",
+        "tags": [
+          "消费者端－支付"
         ]
       }
     },
     "/api/payments/alipay/status/{orderNo}": {
       "get": {
         "operationId": "PaymentController_getAlipayPaymentStatus",
-        "summary": "查询支付宝支付状态",
         "parameters": [
           {
             "name": "orderNo",
@@ -9575,20 +9574,20 @@
             }
           }
         },
-        "tags": [
-          "消费者端－支付"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "查询支付宝支付状态",
+        "tags": [
+          "消费者端－支付"
         ]
       }
     },
     "/api/payments/wechat/create": {
       "post": {
         "operationId": "WechatPaymentController_createOrder",
-        "summary": "创建微信支付订单（服务端查价 + 请求幂等）",
         "parameters": [],
         "requestBody": {
           "required": true,
@@ -9708,20 +9707,20 @@
             }
           }
         },
-        "tags": [
-          "消费者端－支付"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "创建微信支付订单（服务端查价 + 请求幂等）",
+        "tags": [
+          "消费者端－支付"
         ]
       }
     },
     "/api/payments/wechat/resume": {
       "post": {
         "operationId": "WechatPaymentController_resumePayment",
-        "summary": "为已建订单生成微信预支付参数（首次支付与续付共用）",
         "parameters": [],
         "requestBody": {
           "required": true,
@@ -9841,20 +9840,20 @@
             }
           }
         },
-        "tags": [
-          "消费者端－支付"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "为已建订单生成微信预支付参数（首次支付与续付共用）",
+        "tags": [
+          "消费者端－支付"
         ]
       }
     },
     "/api/payments/wechat/status/{orderNo}": {
       "get": {
         "operationId": "WechatPaymentController_getStatus",
-        "summary": "查询微信订单支付状态（可主动查单刷新）",
         "parameters": [
           {
             "name": "orderNo",
@@ -9949,26 +9948,27 @@
             }
           }
         },
-        "tags": [
-          "消费者端－支付"
-        ],
         "security": [
           {
             "bearer": []
           }
+        ],
+        "summary": "查询微信订单支付状态（可主动查单刷新）",
+        "tags": [
+          "消费者端－支付"
         ]
       }
     },
     "/api/shopping/restaurants": {
       "get": {
         "operationId": "ElmRestaurantPublicController_getRestaurants",
-        "summary": "获取商铺列表",
         "parameters": [],
         "responses": {
           "200": {
             "description": ""
           }
         },
+        "summary": "获取商铺列表",
         "tags": [
           "消费者端－餐馆浏览"
         ]
@@ -9977,13 +9977,13 @@
     "/api/shopping/restaurants/count": {
       "get": {
         "operationId": "ElmRestaurantPublicController_getRestaurantCount",
-        "summary": "获取餐馆数量",
         "parameters": [],
         "responses": {
           "200": {
             "description": ""
           }
         },
+        "summary": "获取餐馆数量",
         "tags": [
           "消费者端－餐馆浏览"
         ]
@@ -9992,13 +9992,13 @@
     "/api/v4/restaurants": {
       "get": {
         "operationId": "ElmRestaurantPublicController_searchRestaurants",
-        "summary": "搜索餐馆",
         "parameters": [],
         "responses": {
           "200": {
             "description": ""
           }
         },
+        "summary": "搜索餐馆",
         "tags": [
           "消费者端－餐馆浏览"
         ]
@@ -10007,13 +10007,13 @@
     "/api/shopping/v2/restaurant/category": {
       "get": {
         "operationId": "ElmRestaurantPublicController_getRestaurantCategories",
-        "summary": "商铺分类列表",
         "parameters": [],
         "responses": {
           "200": {
             "description": ""
           }
         },
+        "summary": "商铺分类列表",
         "tags": [
           "消费者端－餐馆浏览"
         ]
@@ -10022,13 +10022,13 @@
     "/api/shopping/v1/restaurants/delivery_modes": {
       "get": {
         "operationId": "ElmRestaurantPublicController_getDeliveryModes",
-        "summary": "配送方式列表",
         "parameters": [],
         "responses": {
           "200": {
             "description": ""
           }
         },
+        "summary": "配送方式列表",
         "tags": [
           "消费者端－餐馆浏览"
         ]
@@ -10037,13 +10037,13 @@
     "/api/shopping/v1/restaurants/activity_attributes": {
       "get": {
         "operationId": "ElmRestaurantPublicController_getActivityAttributes",
-        "summary": "商家属性活动列表",
         "parameters": [],
         "responses": {
           "200": {
             "description": ""
           }
         },
+        "summary": "商家属性活动列表",
         "tags": [
           "消费者端－餐馆浏览"
         ]
@@ -10052,7 +10052,6 @@
     "/api/shopping/restaurant/{shopId}": {
       "get": {
         "operationId": "ElmRestaurantPublicController_getRestaurant",
-        "summary": "餐馆详情",
         "parameters": [
           {
             "name": "shopId",
@@ -10068,6 +10067,7 @@
             "description": ""
           }
         },
+        "summary": "餐馆详情",
         "tags": [
           "消费者端－餐馆浏览"
         ]
@@ -10076,7 +10076,6 @@
     "/api/shopping/v2/menu": {
       "get": {
         "operationId": "ElmFoodPublicController_getMenu",
-        "summary": "获取菜单列表；include_foods=false 时只返回分类和菜品数量",
         "parameters": [
           {
             "name": "restaurant_id",
@@ -10101,6 +10100,7 @@
             "description": ""
           }
         },
+        "summary": "获取菜单列表；include_foods=false 时只返回分类和菜品数量",
         "tags": [
           "消费者端－食品菜单"
         ]
@@ -10109,7 +10109,6 @@
     "/api/shopping/v2/menu/{categoryId}/foods": {
       "get": {
         "operationId": "ElmFoodPublicController_getCategoryFoods",
-        "summary": "按分类分页获取菜品（每页默认 20 条，上限 50 条）",
         "parameters": [
           {
             "name": "categoryId",
@@ -10158,6 +10157,7 @@
             "description": ""
           }
         },
+        "summary": "按分类分页获取菜品（每页默认 20 条，上限 50 条）",
         "tags": [
           "消费者端－食品菜单"
         ]
@@ -10166,7 +10166,6 @@
     "/api/shopping/getcategory/{restaurantId}": {
       "get": {
         "operationId": "ElmFoodPublicController_getFoodCategories",
-        "summary": "获取店铺食品种类",
         "parameters": [
           {
             "name": "restaurantId",
@@ -10182,6 +10181,7 @@
             "description": ""
           }
         },
+        "summary": "获取店铺食品种类",
         "tags": [
           "消费者端－食品菜单"
         ]
@@ -10190,7 +10190,6 @@
     "/api/shopping/v2/menu/{categoryId}": {
       "get": {
         "operationId": "ElmFoodPublicController_getFoodCategoryDetail",
-        "summary": "获取食品种类详情",
         "parameters": [
           {
             "name": "categoryId",
@@ -10206,6 +10205,7 @@
             "description": ""
           }
         },
+        "summary": "获取食品种类详情",
         "tags": [
           "消费者端－食品菜单"
         ]
@@ -10214,13 +10214,13 @@
     "/api/shopping/v2/foods": {
       "get": {
         "operationId": "ElmFoodPublicController_getFoods",
-        "summary": "获取食品列表",
         "parameters": [],
         "responses": {
           "200": {
             "description": ""
           }
         },
+        "summary": "获取食品列表",
         "tags": [
           "消费者端－食品菜单"
         ]
@@ -10229,13 +10229,13 @@
     "/api/shopping/v2/foods/count": {
       "get": {
         "operationId": "ElmFoodPublicController_getFoodCount",
-        "summary": "获取食品数量",
         "parameters": [],
         "responses": {
           "200": {
             "description": ""
           }
         },
+        "summary": "获取食品数量",
         "tags": [
           "消费者端－食品菜单"
         ]
@@ -10244,7 +10244,6 @@
     "/api/ugc/v2/restaurants/{restaurantId}/ratings/tags": {
       "get": {
         "operationId": "ElmFoodPublicController_getRatingTags",
-        "summary": "评价分类",
         "parameters": [
           {
             "name": "restaurantId",
@@ -10260,6 +10259,7 @@
             "description": ""
           }
         },
+        "summary": "评价分类",
         "tags": [
           "消费者端－评价"
         ]
@@ -10268,7 +10268,6 @@
     "/api/ugc/v2/restaurants/{restaurantId}/ratings": {
       "get": {
         "operationId": "ElmFoodPublicController_getRatings",
-        "summary": "评价列表",
         "parameters": [
           {
             "name": "restaurantId",
@@ -10284,6 +10283,7 @@
             "description": ""
           }
         },
+        "summary": "评价列表",
         "tags": [
           "消费者端－评价"
         ]
@@ -10292,13 +10292,13 @@
     "/api/bos/orders": {
       "get": {
         "operationId": "ElmOrderPublicController_getOrders",
-        "summary": "订单列表",
         "parameters": [],
         "responses": {
           "200": {
             "description": ""
           }
         },
+        "summary": "订单列表",
         "tags": [
           "商家端－兼容订单"
         ]
@@ -10307,28 +10307,38 @@
     "/api/bos/orders/count": {
       "get": {
         "operationId": "ElmOrderPublicController_getOrderCount",
-        "summary": "订单数量",
         "parameters": [],
         "responses": {
           "200": {
             "description": ""
           }
         },
+        "summary": "订单数量",
         "tags": [
           "商家端－兼容订单"
         ]
       }
     },
-    "/api/img/*": {
+    "/api/img/{path}": {
       "get": {
         "operationId": "ElmImageProxyController_proxyImage",
-        "summary": "本地读取图片（长期契约，小程序端唯一图片来源；正常请求不访问上游）",
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "path",
+            "required": true,
+            "in": "path",
+            "description": "完整图片路径，如 shop/a.jpg 或 cdn/a.jpg",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": ""
           }
         },
+        "summary": "本地读取图片（长期契约，小程序端唯一图片来源；正常请求不访问上游）",
         "tags": [
           "共享接口－图片读取"
         ]
@@ -10337,7 +10347,6 @@
     "/api/health": {
       "get": {
         "operationId": "HealthController_check",
-        "summary": "服务健康检查",
         "parameters": [],
         "responses": {
           "200": {
@@ -10391,6 +10400,7 @@
             }
           }
         },
+        "summary": "服务健康检查",
         "tags": [
           "共享接口－健康检查"
         ]
@@ -10399,7 +10409,6 @@
     "/api/payments/alipay/notify": {
       "post": {
         "operationId": "PaymentController_handleAlipayNotify",
-        "summary": "支付宝异步通知",
         "parameters": [],
         "responses": {
           "201": {
@@ -10441,6 +10450,7 @@
             }
           }
         },
+        "summary": "支付宝异步通知",
         "tags": [
           "第三方回调－支付宝"
         ]
@@ -10449,13 +10459,13 @@
     "/api/shopping/addshop": {
       "post": {
         "operationId": "ElmRestaurantPublicController_addRestaurant",
-        "summary": "添加餐馆",
         "parameters": [],
         "responses": {
           "201": {
             "description": ""
           }
         },
+        "summary": "添加餐馆",
         "tags": [
           "兼容接口－餐馆写入"
         ]
@@ -10464,13 +10474,13 @@
     "/api/shopping/updateshop": {
       "post": {
         "operationId": "ElmRestaurantPublicController_updateRestaurant",
-        "summary": "更新餐馆",
         "parameters": [],
         "responses": {
           "201": {
             "description": ""
           }
         },
+        "summary": "更新餐馆",
         "tags": [
           "兼容接口－餐馆写入"
         ]
@@ -10479,7 +10489,6 @@
     "/api/shopping/restaurant/{restaurantId}": {
       "delete": {
         "operationId": "ElmRestaurantPublicController_deleteRestaurant",
-        "summary": "删除餐馆",
         "parameters": [
           {
             "name": "restaurantId",
@@ -10495,6 +10504,7 @@
             "description": ""
           }
         },
+        "summary": "删除餐馆",
         "tags": [
           "兼容接口－餐馆写入"
         ]
@@ -10503,13 +10513,13 @@
     "/api/shopping/v2/addfood": {
       "post": {
         "operationId": "ElmFoodPublicController_addFood",
-        "summary": "添加食品",
         "parameters": [],
         "responses": {
           "201": {
             "description": ""
           }
         },
+        "summary": "添加食品",
         "tags": [
           "兼容接口－食品写入"
         ]
@@ -10518,13 +10528,13 @@
     "/api/shopping/v2/updatefood": {
       "post": {
         "operationId": "ElmFoodPublicController_updateFood",
-        "summary": "更新食品",
         "parameters": [],
         "responses": {
           "201": {
             "description": ""
           }
         },
+        "summary": "更新食品",
         "tags": [
           "兼容接口－食品写入"
         ]
@@ -10533,7 +10543,6 @@
     "/api/shopping/v2/food/{foodId}": {
       "delete": {
         "operationId": "ElmFoodPublicController_deleteFood",
-        "summary": "删除食品",
         "parameters": [
           {
             "name": "foodId",
@@ -10549,6 +10558,7 @@
             "description": ""
           }
         },
+        "summary": "删除食品",
         "tags": [
           "兼容接口－食品写入"
         ]
@@ -10710,6 +10720,7 @@
           },
           "tenant": {
             "nullable": true,
+            "type": "object",
             "allOf": [
               {
                 "$ref": "#/components/schemas/LoginTenantDto"
@@ -10900,6 +10911,7 @@
           "tenant": {
             "description": "所属租户",
             "nullable": true,
+            "type": "object",
             "allOf": [
               {
                 "$ref": "#/components/schemas/AdminTenantResponseDto"

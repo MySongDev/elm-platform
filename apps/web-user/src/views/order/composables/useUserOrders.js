@@ -7,6 +7,7 @@ export function useUserOrders(isLoggedIn, options = {}) {
   const loading = shallowRef(false)
   const error = shallowRef('')
   const hasLoaded = shallowRef(false)
+  // 竞态处理，只要最后一次的请求
   let requestSeq = 0
 
   async function fetchOrders() {
@@ -28,7 +29,9 @@ export function useUserOrders(isLoggedIn, options = {}) {
       if (currentRequest !== requestSeq)
         return
 
-      orders.value = Array.isArray(result?.orders) ? result.orders : []
+      orders.value = Array.isArray(result?.orders)
+        ? result.orders
+        : []
     }
     catch (err) {
       if (currentRequest !== requestSeq)

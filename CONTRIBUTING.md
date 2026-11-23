@@ -4,7 +4,7 @@
 
 ## 1. 环境要求
 
-- Node.js: 建议 20.x（CI 使用 Node 20）
+- Node.js: 24.15.0 及以上的 24.x，或 26.0.0 及以上（`^24.15.0 || >=26.0.0`）；CI / Render 使用 24.x
 - pnpm: 11.5.0（见根目录 `packageManager`）
 - Docker Desktop（用于本地 PostgreSQL / Redis）
 

@@ -1491,7 +1491,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/img/*": {
+    "/api/img/{path}": {
         parameters: {
             query?: never;
             header?: never;
@@ -9915,7 +9915,10 @@ export interface operations {
         parameters: {
             query?: never;
             header?: never;
-            path?: never;
+            path: {
+                /** @description 完整图片路径，如 shop/a.jpg 或 cdn/a.jpg */
+                path: string;
+            };
             cookie?: never;
         };
         requestBody?: never;

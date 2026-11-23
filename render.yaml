@@ -10,6 +10,10 @@ services:
     buildCommand: npm install -g pnpm && pnpm install --frozen-lockfile && pnpm build:packages && pnpm --filter @elm-platform/server run prisma:generate && pnpm --filter @elm-platform/server run prisma:migrate:prod && pnpm --filter @elm-platform/server run prisma:seed && pnpm --filter @elm-platform/server run build
     startCommand: pnpm --filter @elm-platform/server run start:prod
     envVars:
+      # 固定已验证的 Node 24 主版本，避免 engines 的 >=26 分支随新 major 发布漂移。
+      # NODE_VERSION 优先于 package.json engines：https://render.com/docs/node-version
+      - key: NODE_VERSION
+        value: '24'
       - key: CI
         value: 'true'
       - key: APP_PORT

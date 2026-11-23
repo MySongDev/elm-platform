@@ -1,7 +1,7 @@
 #!/bin/bash
 # ============================================
 # Elm Platform - Linux 一键部署脚本
-# 运行方式：bash scripts/deploy-linux.sh
+# 运行方式：bash scripts/sh/deploy-linux.sh
 # ============================================
 
 set -e
@@ -21,19 +21,31 @@ warn()  { echo -e "${YELLOW}[!]${NC} $1"; }
 error() { echo -e "${RED}[✗]${NC} $1"; exit 1; }
 
 # ------------------------------------------
-# 1. 安装 Node.js 22
+# 1. 安装并校验 Node.js
 # ------------------------------------------
 echo ""
-echo "=== 1. 安装 Node.js 22 ==="
+echo "=== 1. 安装并校验 Node.js ==="
 
 if command -v node &> /dev/null; then
     NODE_VER=$(node --version)
     info "Node.js 已安装: $NODE_VER"
 else
-    info "正在安装 Node.js 22..."
-    curl -fsSL https://deb.nodesource.com/setup_22.x | sudo -E bash -
+    info "正在安装 Node.js 24..."
+    curl -fsSL https://deb.nodesource.com/setup_24.x | sudo -E bash -
     sudo apt install -y nodejs
     info "Node.js 安装完成: $(node --version)"
+fi
+
+# 已有 Node 也要校验，避免继续运行数据库和部署步骤后才发现不满足后端运行要求。
+if ! node -e '
+const version = process.versions.node
+const [major, minor] = version.split(".").map(Number)
+if (!((major === 24 && minor >= 15) || major >= 26)) {
+    console.error(`Node.js ${version} 不符合 ^24.15.0 || >=26.0.0（24.x 至少 24.15.0，或 26.0.0 及以上；不接受 25.x）`)
+    process.exit(1)
+}
+'; then
+    error "Node.js 版本校验失败，请先切换到受支持版本再运行部署脚本"
 fi
 
 # ------------------------------------------

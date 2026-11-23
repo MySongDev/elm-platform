@@ -2,11 +2,25 @@
 
 本文件为在此仓库中工作的 AI 工具（Codex、Claude Code、opencode 等）提供指引。
 
+## 代码与文档仓库
+
+- **主代码仓库**：[MySongDev/elm-platform](https://github.com/MySongDev/elm-platform)。
+- **独立私有文档仓库**：[MySongDev/elm-platform-docs](https://github.com/MySongDev/elm-platform-docs)。本机直接位于 `docs/`，有自己的 `.git`、`main` 和 `origin`；主代码仓库继续忽略 `/docs/`。
+- 修改文档或生成工程报告前，先读取本地 `docs/AGENTS.md`；远端入口为[文档仓库工作指引](https://github.com/MySongDev/elm-platform-docs/blob/main/AGENTS.md)。业务代码约束仍遵循本文件及对应应用指引。
+- 从主代码仓库根操作文档 Git 时使用 `git -C docs ...`，在文档仓库内使用普通 `git ...`。报告从本项目根看仍位于 `docs/reports/`，从文档 Git 根看位于 `reports/`。
+- 文档和业务代码分别暂存、提交；报告记录关联的代码提交 SHA。推送任一仓库仍需遵循本会话用户授权，不将文档作为主仓库 submodule 或强制纳入代码 `main`。
+
+新克隆主仓库且没有 `docs/` 时，具有私有文档仓库访问权限后可克隆到原位置：
+
+```bash
+git clone https://github.com/MySongDev/elm-platform-docs.git docs
+```
+
 ## 项目概览
 
 Elm Platform 是一个外卖全栈应用的 pnpm workspace：
 
-- `apps/server`：NestJS 10 后端，使用 Prisma、PostgreSQL、Redis、JWT/Passport 认证、Swagger。
+- `apps/server`：NestJS 12 后端，使用 Prisma、PostgreSQL、Redis、JWT/Passport 认证、Swagger。
 - `apps/web-admin`：Vue 3 + TypeScript 管理后台，使用 Element Plus、Pinia、Vue Router、Vite。
 - `apps/web-user`：Vue 3 + TypeScript/JavaScript 移动端用户应用，使用 Vant、Pinia、Vue Router、Vite、Vitest，支持可选 mock 数据。
 - `packages/*`：共享包工作区槽位；当前由 `pnpm-workspace.yaml` 纳入。
@@ -86,6 +100,8 @@ HTTP 接口位于 `apps/server/src/api`，第一层按 `admin`、`customer`、`m
 
 Prisma 在 `apps/server/prisma/schema.prisma` 中配置为 PostgreSQL，具体数据模型以 schema 为准。共享后端基础设施位于 `src/common`、`src/config`、`src/prisma`、`src/redis` 下；健康检查业务位于 `src/health`，其 Controller 也由 `src/api` 注册。
 
+后端模块格式决策（2026-11-23）：运行环境限定为 Node `^24.15.0 || >=26.0.0`，CI / Render 使用 24.x。NestJS 12 的 ESM 依赖可由这一 Node 范围的 CommonJS `require()` 加载；现有 `packages/tsconfig/node-nestjs.json` 的 `module: commonjs` 已在 Node 24.15.0 下通过后端构建，Prisma generator 保留 `moduleFormat = "cjs"`。Jest 配套升级至 30，但普通 Node 能加载 ESM 不代表 Jest 的 VM 环境也能加载：全部后端测试脚本显式使用 `node --experimental-vm-modules` 启动 Jest，为其 ESM 加载器提供 VM 模块 API。运行已有测试请使用这些脚本，直接 `exec jest` 会绕过该参数；不要仅因 Nest 包改为 ESM 就添加 `type: module`、批量补导入扩展名或迁移整个仓库的模块格式，后续兼容调整必须由实际编译或运行失败证明必要。
+
 ### 管理端应用
 
 `apps/web-admin/src/main.ts` 创建带持久化的 Pinia、配置共享 HTTP 客户端、安装 Vue Router、i18n、指令、Element Plus 样式、SVG 图标和全局样式。应用采用类 FSD 分层：`app` 为应用装配，`entities` 为领域状态，`pages` 为路由页面级业务，`layouts` 为布局（仅 admin-layout），`shared` 为 API/config/lib/styles/ui。
@@ -141,6 +157,8 @@ Pinia store 位于 `src/stores/modules`，涵盖用户/会话、地址、定位�
 ## 写报告约定
 
 任何工程变更（重构、缺陷修复、新功能、配置、依赖升级）都必须在 `docs/reports/` 中留档，供后续 AI 会话和人类复查。此规则适用于在本仓库工作的所有 AI 工具。
+
+报告及索引由上面的独立文档仓库管理；编辑与提交遵循 `docs/AGENTS.md`，通过 `git -C docs` 操作，主代码仓库不跟踪这些文件。
 
 - **分类目录**：`docs/reports/<类别>/`，类别固定为 `server`（后端）、`web-admin`（管理端）、`web-user`（H5 用户端）、`uni-user`（小程序端）、`ci-cd`（部署/CI）、`tooling`（工具链/工程化）、`architecture`（选型/架构评估）。跨端改动按「主体代码所在端」归类，纯基建归 `tooling`。
 - **目录命名**：`docs/reports/<类别>/YYYY-MM-DD-中文名称/` —— 日期加简短中文标题（内部允许英文术语，如 `2026-08-19-购物车store瘦身`）。不要使用纯英文 slug。
