@@ -75,8 +75,7 @@ apps/server/uploads/
 backup/
 
 # Docs
-docs/*
-!docs/engineering
-!docs/refactor
+# 文档在本地专用分支保存，代码分支忽略整个目录，避免后续提交带到远端。
+/docs/
 apps/*/docs
 reports/
