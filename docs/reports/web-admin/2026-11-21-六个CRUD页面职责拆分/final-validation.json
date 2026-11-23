@@ -1,0 +1,30 @@
+{
+  "lint": {
+    "command": "pnpm --filter @elm-platform/web-admin run lint",
+    "result": "pass, 0 errors / 26 existing warnings",
+    "seconds": 9.7
+  },
+  "type-check": {
+    "command": "pnpm --filter @elm-platform/web-admin run type-check",
+    "result": "pass",
+    "seconds": 6.46
+  },
+  "test": {
+    "command": "pnpm --filter @elm-platform/web-admin run test:unit",
+    "result": "pass, 47 files / 178 tests",
+    "duration": "Vitest 6.74s"
+  },
+  "build": {
+    "command": "pnpm --filter @elm-platform/web-admin run build",
+    "result": "pass, includes vue-tsc",
+    "duration": "Vite 4.21s"
+  },
+  "diff": {
+    "command": "git diff --check",
+    "result": "pass"
+  },
+  "browser": {
+    "result": "pass, 7 pages / 126 observations / 0 pageerrors",
+    "details": "browser-*-results.json and manual-browser-observations.md"
+  }
+}

@@ -1,0 +1,3 @@
+await page.evaluate(()=>window.smoke.mount('user'))
+await page.waitForTimeout(700)
+console.log(JSON.stringify(await page.evaluate(()=>{const s=window.smoke.find('UserList')?.setupState;const table=window.smoke.find('UserTable')?.setupState;const action=window.smoke.find('CrudActionColumn')?.setupState;return {body:document.body.innerText,buttons:[...document.querySelectorAll('button')].map(x=>({text:x.innerText,label:x.getAttribute('aria-label'),disabled:x.disabled})),page:s?{query:s.query,loading:s.loading,error:s.error?String(s.error):null,data:s.filteredData}:null,table:table?{props:table.__props??table.props}:null,action:action?{props:action.props,column:action.columnOptions}:null,calls:window.smoke.calls.slice(-8)}}),null,2))

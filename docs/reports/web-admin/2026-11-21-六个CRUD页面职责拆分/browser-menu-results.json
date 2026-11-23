@@ -1,0 +1,96 @@
+{
+  "executedAt": "2026-11-21T16:52:19.523Z",
+  "page": "menu",
+  "observations": [
+    {
+      "label": "required fields validate before request",
+      "result": "PASS"
+    },
+    {
+      "label": "failed create retains draft",
+      "result": "PASS"
+    },
+    {
+      "label": "saving disables edit cancel",
+      "result": "PASS"
+    },
+    {
+      "label": "saving blocks close and duplicate submit",
+      "result": "PASS"
+    },
+    {
+      "label": "retry creates one row",
+      "result": "PASS"
+    },
+    {
+      "label": "parents exclude self but retain descendants and full tree",
+      "result": "PASS",
+      "detail": [
+        42,
+        43
+      ]
+    },
+    {
+      "label": "editing root preserves null despite create parent preset",
+      "result": "PASS"
+    },
+    {
+      "label": "edit cancel leaves source tree row unchanged",
+      "result": "PASS"
+    },
+    {
+      "label": "reopen restores edit draft",
+      "result": "PASS"
+    },
+    {
+      "label": "update payload excludes identity and children",
+      "result": "PASS",
+      "detail": {
+        "method": "patch",
+        "url": "/admin/system/menus/41",
+        "payload": {
+          "parentId": null,
+          "title": "Root A",
+          "path": "/a",
+          "name": "RootA",
+          "icon": "",
+          "permission": "page:a",
+          "type": "catalog",
+          "sort": 0,
+          "status": "ACTIVE"
+        },
+        "at": 184315.39999997616
+      }
+    },
+    {
+      "label": "create child uses initial parent",
+      "result": "PASS"
+    },
+    {
+      "label": "rapid switch drops stale save",
+      "result": "PASS"
+    },
+    {
+      "label": "filter retains matching child ancestor and complete source tree",
+      "result": "PASS",
+      "detail": {
+        "ids": [
+          41
+        ],
+        "children": [
+          42
+        ],
+        "full": 2
+      }
+    },
+    {
+      "label": "filtered page editor keeps nonmatching parent options",
+      "result": "PASS"
+    },
+    {
+      "label": "save success refresh failure belongs to list",
+      "result": "PASS"
+    }
+  ],
+  "errors": []
+}

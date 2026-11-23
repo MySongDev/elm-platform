@@ -1,0 +1,111 @@
+{
+  "executedAt": "2026-11-21T16:51:11.860Z",
+  "page": "tenant",
+  "observations": [
+    {
+      "label": "empty code and name validation",
+      "result": "PASS"
+    },
+    {
+      "label": "invalid code pattern rejected",
+      "result": "PASS"
+    },
+    {
+      "label": "failed save retains tenant draft",
+      "result": "PASS"
+    },
+    {
+      "label": "saving disables fields and cancel",
+      "result": "PASS"
+    },
+    {
+      "label": "saving blocks close and duplicate save",
+      "result": "PASS"
+    },
+    {
+      "label": "retry saves tenant once",
+      "result": "PASS"
+    },
+    {
+      "label": "create preserves blank optional contacts as undefined",
+      "result": "PASS",
+      "detail": {
+        "method": "post",
+        "url": "/admin/tenants",
+        "payload": {
+          "code": "new-tenant",
+          "name": "New Tenant",
+          "planCode": "standard"
+        },
+        "at": 112764.60000002384
+      }
+    },
+    {
+      "label": "edit code readonly",
+      "result": "PASS"
+    },
+    {
+      "label": "cancel retains source row",
+      "result": "PASS"
+    },
+    {
+      "label": "reopen resets tenant draft",
+      "result": "PASS"
+    },
+    {
+      "label": "update omits immutable code",
+      "result": "PASS",
+      "detail": {
+        "method": "patch",
+        "url": "/admin/tenants/11",
+        "payload": {
+          "name": "Tenant A",
+          "contactName": "Original",
+          "planCode": "standard"
+        },
+        "at": 114145.60000002384
+      }
+    },
+    {
+      "label": "rapid tenant switch drops stale save",
+      "result": "PASS"
+    },
+    {
+      "label": "save success refresh error belongs to list",
+      "result": "PASS"
+    },
+    {
+      "label": "transition prompt cancel makes no request",
+      "result": "PASS"
+    },
+    {
+      "label": "transition prompt passes event and reason",
+      "result": "PASS",
+      "detail": {
+        "method": "post",
+        "url": "/admin/tenants/11/events/SUSPEND",
+        "payload": {
+          "reason": "manual reason"
+        },
+        "at": 117812.39999997616
+      }
+    },
+    {
+      "label": "log load error displayed",
+      "result": "PASS"
+    },
+    {
+      "label": "log retry recovers",
+      "result": "PASS"
+    },
+    {
+      "label": "fast tenant switch ignores old logs",
+      "result": "PASS"
+    },
+    {
+      "label": "close reopen ignores old log response",
+      "result": "PASS"
+    }
+  ],
+  "errors": []
+}
