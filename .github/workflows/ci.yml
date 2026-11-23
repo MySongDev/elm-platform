@@ -11,10 +11,10 @@ jobs:
     runs-on: ubuntu-latest
     if: github.event_name == 'pull_request'
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with: {fetch-depth: 0}
       - uses: pnpm/action-setup@v6
-      - uses: actions/setup-node@v6
+      - uses: actions/setup-node@v7
         with: {node-version: 22, cache: pnpm}
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -24,9 +24,9 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: pnpm/action-setup@v6
-      - uses: actions/setup-node@v6
+      - uses: actions/setup-node@v7
         with: {node-version: 22, cache: pnpm}
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -36,9 +36,9 @@ jobs:
   build-and-test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: pnpm/action-setup@v6
-      - uses: actions/setup-node@v6
+      - uses: actions/setup-node@v7
         with: {node-version: 22, cache: pnpm}
       # 只读 apps/uni-user/package.json，不需要依赖 → 放在 install 之前，违规时最快失败。
       # 防止「顺手统一版本」把 uni-app 工程搞坏：@dcloudio/uni-app 的 dist-tag latest
@@ -75,9 +75,9 @@ jobs:
           --health-timeout 5s
           --health-retries 5
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: pnpm/action-setup@v6
-      - uses: actions/setup-node@v6
+      - uses: actions/setup-node@v7
         with: {node-version: 22, cache: pnpm}
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
