@@ -107,14 +107,16 @@ export function useRestaurantList() {
       if (!confirmed || disposed)
         return
 
-      await Promise.all(rows.map(row => deleteCommerceRestaurant(row.id)))
+      // 删除仍一起发起；部分失败时也须等其余请求结束后刷新，否则表格会留下已删除行。
+      const results = await Promise.allSettled(rows.map(row => deleteCommerceRestaurant(row.id)))
       if (disposed)
         return
-      ElMessage.success(t('commerce.deleteSuccess'))
+      if (results.every(result => result.status === 'fulfilled'))
+        ElMessage.success(t('commerce.deleteSuccess'))
       await fetchRestaurants()
     }
     catch {
-      // 删除失败由 shared HTTP 提示，保留当前列表供再次操作。
+      // 保留 shared HTTP 的失败提示，不能把部分删除失败提示成整批成功。
     }
     finally {
       deleting = false
