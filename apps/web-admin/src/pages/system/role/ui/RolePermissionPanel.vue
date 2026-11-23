@@ -1,8 +1,8 @@
 <script setup lang="ts">
 /**
  * @file 角色页面权限面板
- * @domain features/role-management
- * @description 以菜单树形式展示页面权限，父级勾选只作为批量选择，保存时交由父级提交。
+ * @domain pages/system/role
+ * @description 有副作用：加载并保存角色页面权限，维护树交互和面板动画。
  */
 
 import type { RoleMenuPermissionNode } from '../model/permission-tree'
@@ -12,19 +12,18 @@ import {
   IconClose as IconEpClose,
   IconSearch as IconEpSearch,
 } from '@iconify-prerendered/vue-ep'
+import { computed, nextTick, onScopeDispose, ref, shallowRef, useTemplateRef, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
+import { useRolePermissions } from '../model/useRolePermissions'
 
 defineOptions({ name: 'RolePermissionPanel' })
 
 const props = defineProps<{
   role: RoleItem | null
-  treeData: RoleMenuPermissionNode[]
-  checkedKeys: number[]
-  saving: boolean
 }>()
 
 const emit = defineEmits<{
-  close: []
-  save: [checkedKeys: number[]]
+  saved: []
 }>()
 
 interface TreeInstance {
@@ -41,60 +40,95 @@ const expandAll = shallowRef(true)
 const selectAll = shallowRef(false)
 const renderKey = shallowRef(0)
 const currentCheckedKeys = ref<number[]>([])
-
-const treeProps = {
+let restoreVersion = 0
+const {
+  selectedRole,
+  checkedMenuIds,
+  permissionPanelRendered,
+  permissionPanelVisible,
+  menuPermissionTree,
+  loading,
+  loadError,
+  menuReady,
+  savingPermissions,
+  saveError,
+  fetchMenuTree,
+  openPermissionPanel,
+  closePermissionPanel,
+  saveMenuPermissions,
+} = useRolePermissions(() => emit('saved'))
+const treeDisabled = computed(() => savingPermissions.value || loading.value || !menuReady.value)
+const treeProps = computed(() => ({
   label: 'title',
   children: 'children',
-}
+  disabled: () => treeDisabled.value,
+}))
 
-const allMenuIds = computed(() => collectMenuIds(props.treeData))
+const allMenuIds = computed(() => collectMenuIds(menuPermissionTree.value))
 const checkedCount = computed(() => currentCheckedKeys.value.length)
-const roleTitle = computed(() => props.role?.name ? `${t('role.menuPermissions')}（${props.role.name}）` : t('role.menuPermissions'))
-const hasWildcardPermission = computed(() => props.role?.permissions.includes('*:*:*') ?? false)
+const roleTitle = computed(() => selectedRole.value?.name ? `${t('role.menuPermissions')}（${selectedRole.value.name}）` : t('role.menuPermissions'))
+const hasWildcardPermission = computed(() => selectedRole.value?.permissions.includes('*:*:*') ?? false)
 
 watch(searchValue, value => treeRef.value?.filter(value))
 
-watch(
-  () => props.checkedKeys,
-  (keys) => {
-    currentCheckedKeys.value = [...keys]
-    nextTick(() => treeRef.value?.setCheckedKeys(keys))
-  },
-  { immediate: true },
-)
-
-watch(
-  () => visible.value,
-  (isVisible) => {
-    if (!isVisible)
-      return
-
+watch([visible, () => props.role], ([open, role]) => {
+  restoreVersion++
+  if (open && role) {
     searchValue.value = ''
     selectAll.value = false
-    currentCheckedKeys.value = [...props.checkedKeys]
-    nextTick(() => treeRef.value?.setCheckedKeys(props.checkedKeys))
-  },
-)
+    currentCheckedKeys.value = []
+    void openPermissionPanel(role)
+  }
+  else if (permissionPanelRendered.value) {
+    closePermissionPanel()
+  }
+}, {
+  immediate: true,
+  flush: 'sync',
+})
+
+watch(checkedMenuIds, (keys) => {
+  currentCheckedKeys.value = [...keys]
+  void restoreTreeChecks()
+})
 
 watch(expandAll, () => {
   renderKey.value += 1
-  nextTick(() => treeRef.value?.setCheckedKeys(props.checkedKeys))
 })
 
-watch(selectAll, (checked) => {
+watch([renderKey, permissionPanelRendered], () => {
+  void restoreTreeChecks()
+})
+
+async function restoreTreeChecks() {
+  const version = ++restoreVersion
+  await nextTick()
+  if (version !== restoreVersion)
+    return
+  // 展开开关会重建树，必须恢复未保存的当前勾选，不能退回角色原始权限。
+  treeRef.value?.setCheckedKeys(currentCheckedKeys.value)
+  treeRef.value?.filter(searchValue.value)
+}
+
+function toggleSelectAll(checked: boolean | string | number) {
+  if (treeDisabled.value)
+    return
   const nextKeys = checked ? allMenuIds.value : []
   currentCheckedKeys.value = nextKeys
   treeRef.value?.setCheckedKeys(nextKeys)
-})
+}
 
 function closePanel() {
+  if (savingPermissions.value)
+    return
   visible.value = false
-  emit('close')
 }
 
 function savePermissions() {
+  if (treeDisabled.value)
+    return
   syncCheckedKeys()
-  emit('save', currentCheckedKeys.value)
+  void saveMenuPermissions(currentCheckedKeys.value)
 }
 
 function syncCheckedKeys() {
@@ -113,13 +147,18 @@ function filterNode(query: string, data: Record<string, unknown>) {
 function collectMenuIds(nodes: RoleMenuPermissionNode[]): number[] {
   return nodes.flatMap(node => [node.id, ...(node.children ? collectMenuIds(node.children) : [])])
 }
+
+onScopeDispose(() => {
+  restoreVersion++
+})
 </script>
 
 <template>
   <aside
+    v-if="permissionPanelRendered"
     class="role-permission-panel"
-    :class="{ 'is-visible': visible, 'is-collapsed': !visible }"
-    :aria-hidden="!visible"
+    :class="{ 'is-visible': permissionPanelVisible, 'is-collapsed': !permissionPanelVisible }"
+    :aria-hidden="!permissionPanelVisible"
   >
     <div class="role-permission-panel__inner">
       <header class="role-permission-panel__header">
@@ -132,7 +171,8 @@ function collectMenuIds(nodes: RoleMenuPermissionNode[]): number[] {
               type="primary"
               circle
               :icon="IconEpCheck"
-              :loading="saving"
+              :loading="savingPermissions"
+              :disabled="loading || !menuReady"
               :aria-label="t('common.save')"
               @click="savePermissions"
             />
@@ -141,12 +181,38 @@ function collectMenuIds(nodes: RoleMenuPermissionNode[]): number[] {
             <el-button
               circle
               :icon="IconEpClose"
+              :disabled="savingPermissions"
               :aria-label="t('common.cancel')"
               @click="closePanel"
             />
           </el-tooltip>
         </div>
       </header>
+
+      <el-alert
+        v-if="loadError"
+        class="role-permission-panel__notice"
+        type="error"
+        :closable="false"
+        :title="t('state.error.title')"
+        show-icon
+      >
+        <el-button
+          link
+          type="primary"
+          @click="fetchMenuTree()"
+        >
+          {{ t('state.error.retry') }}
+        </el-button>
+      </el-alert>
+      <el-alert
+        v-if="saveError"
+        class="role-permission-panel__notice"
+        type="error"
+        :closable="false"
+        :title="t('crud.saveFailed')"
+        show-icon
+      />
 
       <el-alert
         v-if="hasWildcardPermission"
@@ -169,10 +235,17 @@ function collectMenuIds(nodes: RoleMenuPermissionNode[]): number[] {
       />
 
       <div class="role-permission-panel__toolbar">
-        <el-checkbox v-model="expandAll">
+        <el-checkbox
+          v-model="expandAll"
+          :disabled="treeDisabled"
+        >
           {{ t('role.expandAll') }}
         </el-checkbox>
-        <el-checkbox v-model="selectAll">
+        <el-checkbox
+          v-model="selectAll"
+          :disabled="treeDisabled"
+          @change="toggleSelectAll"
+        >
           {{ t('role.selectAll') }}
         </el-checkbox>
         <span class="role-permission-panel__count">
@@ -183,10 +256,11 @@ function collectMenuIds(nodes: RoleMenuPermissionNode[]): number[] {
       <el-tree
         :key="renderKey"
         ref="treeRef"
+        v-loading="loading"
         class="role-permission-panel__tree"
         node-key="id"
         show-checkbox
-        :data="treeData"
+        :data="menuPermissionTree"
         :props="treeProps"
         :default-expand-all="expandAll"
         :filter-node-method="filterNode"

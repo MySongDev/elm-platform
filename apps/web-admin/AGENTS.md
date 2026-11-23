@@ -34,16 +34,15 @@ pnpm --filter @elm-platform/web-admin run preview
 | `api/endpoints.ts` | 全部后端接口路径常量(auth / users / admin / tenants / merchant-onboarding / notifications) |
 | `config/paths.ts` | 路由路径常量:首页 `/dashboard/index`、登录、403、500 |
 | `config/access.ts` | 角色类型与全部按钮级权限码 `Permissions`(roles.ts 仅转发 access.ts) |
-| `config-crud/index.ts` | 配置化 CRUD 引擎统一出口(见下方细目) |
+| `config-crud/index.ts` | 公共表格、表单弹窗、操作列及展示类型出口(见下方细目) |
 | `config-crud/model/table.ts` | 表格列 / 批量操作 / 密度等类型定义与默认值 |
 | `config-crud/model/table-preferences.ts` | 列显隐偏好:默认列、localStorage 读取/合并/持久化 |
-| `config-crud/model/form.ts` | 表单弹窗字段类型(基于 field-schema)与弹窗/表单/操作默认配置 |
+| `config-crud/model/form.ts` | 表单字段类型(基于 field-schema)与翻译函数类型；弹窗属性直接定义在组件中 |
 | `config-crud/model/csv.ts` | CSV 导出:单元格转义与内容构建 |
-| `config-crud/model/useConfigCrud.ts` | CRUD 流程 composable:列表加载(带 AbortController)、增删改查、确认框、保存反馈 |
 | `config-crud/model/presets.ts` | 转发 lib/admin-display 的启用状态选项 / 状态标签预设 |
 | `config-crud/components/ConfigDataTable/index.vue` | 增强表格:密度切换、列设置、批量操作、CSV 导出 |
 | `config-crud/components/ConfigDataTable/ConfigTableColumns.vue` | 按列配置渲染单元格(标签 / formatter / 空值) |
-| `config-crud/components/ConfigFormDialog/index.vue` | schema 驱动表单弹窗:校验、提交、`showWhen` 条件字段 |
+| `config-crud/components/ConfigFormDialog/index.vue` | 共用表单弹窗:校验、提交与忙碌保护；默认插槽供业务直接写字段，无插槽时按 `fields` / `showWhen` 配置渲染；直接接收 `title` / `rules` / `submitDisabled` 等 props |
 | `config-crud/components/CrudActionColumn/index.vue` | 编辑/删除操作列,支持 `v-auth` 权限与前后插槽 |
 | `i18n/index.ts` | vue-i18n 实例、Element Plus 语言包合并、语言持久化、非组件环境翻译(`transformI18n` / `useLocale` / `$t`) |
 | `i18n/lang/zh-CN.ts`、`i18n/lang/en.ts` | 中英文语言包 |
@@ -60,9 +59,7 @@ pnpm --filter @elm-platform/web-admin run preview
 | `ui/AdminSearchForm/types.ts` | 搜索字段类型(复用 field-schema 类型别名) |
 | `ui/AdminTablePage/index.vue` | 列表页骨架:标题栏、搜索区、按钮区、刷新、五态视图容器 |
 | `ui/form/field-schema.ts` | 表单字段 schema 类型联合:input / password / textarea / inputNumber / select / radio / date / dateRange / custom |
-| `ui/form/FieldRenderer/index.vue` | 字段渲染分发器:`field.type` → 对应渲染器组件(v-model 双向绑定) |
-| `ui/form/FieldRenderer/renderer-map.ts` | type → 渲染器组件映射 |
-| `ui/form/FieldRenderer/renderers/*.vue` | 8 个字段渲染器(Element Plus 控件薄封装) |
+| `ui/form/FieldRenderer/index.vue` | 搜索/编辑表单共用的字段渲染入口:按 `field.type` 直接渲染 8 种 Element Plus 控件(v-model 双向绑定) |
 | `ui/state/` | 页面五态组件:forbidden / loading / error / empty / ready;`AdminStateView` 统一调度,`useSubmitGuard` 防重复提交 |
 | `ui/SvgIcon/index.vue` | SVG sprite 图标组件(`<use #icon-xxx>`) |
 | `workflow/` | 通用状态机 UI 套件:`StatusTag`(状态标签)、`StateMachineActions`(动作按钮:后端可用动作 + 权限 + 确认框)、`StateMachineTimeline`(操作时间线);`model/types.ts` 纯 UI 类型,`model/permissions.ts` 动作可见性规则 |
@@ -144,13 +141,23 @@ pnpm --filter @elm-platform/web-admin run preview
 ## 关键约定
 
 - 新页面路由定义在 `src/app/router` 体系内:静态页放 `routes/*.ts`,菜单驱动的页面由后端菜单 → `permission.ts` 动态构建,`component` 字段必须能在 `src/pages/**/index.vue` 中解析到
-- 新后台 CRUD 页面优先复用 `shared/config-crud`(表格/表单/搜索/操作列全部 schema 驱动)
-- 新字段类型先检查 `shared/ui/form/field-schema.ts` 是否已支持,不足再扩展 schema 而非在页面内写死控件
+- 后台 CRUD 页面按业务拆分：`model/useXxxList.ts` 负责查询、加载、错误与列表操作；`ui/XxxFormDialog.vue` 负责独立草稿、校验、选项与保存；`model/form.ts` 提供默认值、回填与明确载荷。不要重建接收 CRUD 回调的通用流程引擎。
+- 路由 `index.vue` 只连接列表、当前编辑对象和弹窗 `visible`，监听 `saved` 刷新列表；保存成功与刷新失败分别反馈。角色权限面板、租户日志等独立流程由对应业务组件管理。
+- 继续复用 `shared/config-crud` 的表格、表单弹窗和操作列；搜索与表格适合静态配置，业务表单优先直接写字段。简单且清楚的表单配置可保留在编辑器内部，不要求所有控件 schema 驱动，也不为统一目录新增纯转发表格组件。
+- 用户管理采用独立列表与编辑器：`pages/system/user/model/useUserList.ts` 维护查询、加载和删除，`ui/UserFormDialog.vue` 维护草稿、选项、校验与保存，`model/form.ts` 提供独立草稿和明确的创建/更新载荷
+- 用户管理页面只传弹窗 `visible` / `user` 并监听 `saved` 刷新列表；表单字段直接写在业务插槽，搜索与表格列继续使用 `config/fields.ts`
+- 为搜索或静态表单配置新增字段类型时，先检查 `shared/ui/form/field-schema.ts`；只有实际复用需求才扩展 schema。
 - 新权限点需同时登记:`shared/config/access.ts` 的 `Permissions` 常量 + 后端权限码
 - 页面加载/空/错误/无权限态统一使用 `shared/ui/state` 的 `AdminStateView`
 - 禁止新增与 `TabBar` 功能重复的标签栏实现(曾存在废弃的 `TabBarFromScratch`,已移除)
 
 ## 设计决策记录(why 类细节)
+
+### 用户编辑器的密码规则始终必填
+
+- 前提：`UserFormDialog.vue` 的密码 `el-form-item` 仅在 `!isEdit` 时挂载；Element Plus 表单校验遍历已注册的字段，字段卸载时退出注册。
+- 新增时密码项已注册，`required: true` 保证必填；编辑时没有密码项参与校验，更新载荷也明确排除密码。
+- 若让规则随 `isEdit` 改变，Element Plus 的规则变化监听会重新校验整表；编辑转新增时草稿刚被清空，就会提前显示用户名和密码错误。保持规则稳定，把模式判断只放在字段挂载处，避免这次浏览器验证发现的提前报错。
 
 遇到「看起来不对称 / 反直觉」的细节,注释与答疑都要写清**为什么这样才成立**(逼出它的约束),不能一句话带过。这类属「设计理由 / 设计意图」(design rationale)问题,默认给完整推导:前提 → 各情形 → 为什么成立 → 改成对称或另一种判断会怎样坏。
 

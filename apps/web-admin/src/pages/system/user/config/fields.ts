@@ -1,12 +1,12 @@
 /**
  * @file 用户管理字段配置
- * @domain features/user-management
- * @description 定义用户查询表单、表格列和编辑表单字段，供配置化 CRUD 组件渲染。
+ * @domain pages/system/user
+ * @description 定义用户搜索字段与表格列，编辑字段由业务弹窗直接渲染。
  */
 
 import type { UserInfo } from '@/entities/user'
-import type { ConfigFieldOption, ConfigFormField, ConfigTableColumn, Translate } from '@/shared/config-crud'
-import { createEnabledStatusOptions, createEnabledStatusSearchOptions, formatDateTime, getEnabledStatusTag, getStatusText } from '@/shared/lib/admin-display'
+import type { ConfigFormField, ConfigTableColumn, Translate } from '@/shared/config-crud'
+import { createEnabledStatusSearchOptions, formatDateTime, getEnabledStatusTag, getStatusText } from '@/shared/lib/admin-display'
 
 export function createUserSearchFields(t: Translate) {
   return [
@@ -88,109 +88,4 @@ export function createUserTableColumns(t: Translate) {
       formatter: row => formatDateTime(row.createdAt),
     },
   ] satisfies ConfigTableColumn<UserInfo>[]
-}
-
-export function createUserFormFields(t: Translate, permissionOptions: ConfigFieldOption[], isEdit: boolean, tenantOptions: ConfigFieldOption[] = [], shopOptions: ConfigFieldOption[] = []) {
-  return [
-    {
-      prop: 'username',
-      label: t('user.username'),
-      type: 'input',
-      placeholder: t('user.usernamePlaceholder'),
-    },
-    ...(!isEdit
-      ? [{
-          prop: 'password',
-          label: t('login.password'),
-          type: 'password' as const,
-          placeholder: t('user.passwordPlaceholder'),
-          showPassword: true,
-        }]
-      : []),
-    {
-      prop: 'role',
-      label: t('user.role'),
-      type: 'radio',
-      options: [
-        {
-          label: t('common.admin'),
-          value: 'admin',
-        },
-        {
-          label: t('common.user'),
-          value: 'user',
-        },
-      ],
-    },
-    {
-      prop: 'dataScope',
-      label: '数据范围',
-      type: 'select',
-      placeholder: '请选择数据范围',
-      options: [
-        {
-          label: '全部（平台管理员）',
-          value: 'ALL',
-        },
-        {
-          label: '租户',
-          value: 'TENANT',
-        },
-        {
-          label: '店铺',
-          value: 'SHOP',
-        },
-      ],
-    },
-    {
-      prop: 'tenantId',
-      label: '所属租户',
-      type: 'select',
-      placeholder: '请选择租户',
-      filterable: true,
-      options: tenantOptions,
-      showWhen: (model: Record<string, unknown>) => model.dataScope !== 'ALL',
-    },
-    {
-      prop: 'boundShopIds',
-      label: '绑定店铺',
-      type: 'select',
-      placeholder: '请选择绑定店铺',
-      multiple: true,
-      filterable: true,
-      collapseTags: true,
-      collapseTagsTooltip: true,
-      options: shopOptions,
-      showWhen: (model: Record<string, unknown>) => model.dataScope === 'SHOP',
-    },
-    {
-      prop: 'status',
-      label: t('user.status'),
-      type: 'radio',
-      options: createEnabledStatusOptions(getStatusText(t)),
-    },
-    {
-      prop: 'email',
-      label: t('user.email'),
-      type: 'input',
-      placeholder: t('user.emailPlaceholder'),
-    },
-    {
-      prop: 'phone',
-      label: t('user.phone'),
-      type: 'input',
-      placeholder: t('user.phonePlaceholder'),
-    },
-    {
-      prop: 'permissions',
-      label: t('user.permissions'),
-      type: 'select',
-      placeholder: t('user.permissionsPlaceholder'),
-      multiple: true,
-      filterable: true,
-      collapseTags: true,
-      collapseTagsTooltip: true,
-      options: permissionOptions,
-    },
-  ] satisfies ConfigFormField[]
 }

@@ -1,12 +1,20 @@
 <script setup lang="ts">
+/**
+ * @file 角色管理页面
+ * @domain pages/system/role
+ * @description 装配角色列表、基本信息弹窗与页面权限面板，持有编辑目标和可见状态。
+ */
+
 import type { RoleItem } from './model/types'
 import { IconMenu as IconEpMenu, IconPlus as IconEpPlus } from '@iconify-prerendered/vue-ep'
+import { computed, onMounted, shallowRef } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { ConfigDataTable, CrudActionColumn } from '@/shared/config-crud'
 import { Permissions } from '@/shared/config/access'
 import AdminSearchForm from '@/shared/ui/AdminSearchForm/index.vue'
 import AdminTablePage from '@/shared/ui/AdminTablePage/index.vue'
 import { createRoleSearchFields, createRoleTableColumns } from './config/fields'
-import { useRoleManagement } from './model/useRoleManagement'
+import { useRoleList } from './model/useRoleList'
 import RoleFormDialog from './ui/RoleFormDialog.vue'
 import RolePermissionPanel from './ui/RolePermissionPanel.vue'
 
@@ -15,38 +23,29 @@ defineOptions({ name: 'RoleManagement' })
 const { t } = useI18n()
 const searchFields = computed(() => createRoleSearchFields(t))
 const tableColumns = computed(() => createRoleTableColumns(t))
+const editingRole = shallowRef<RoleItem | null>(null)
+const dialogVisible = shallowRef(false)
+const permissionRole = shallowRef<RoleItem | null>(null)
+const permissionVisible = shallowRef(false)
 
 const {
   loading,
-  saving,
-  savingPermissions,
-  dialogVisible,
-  permissionOptions,
-  menuPermissionTree,
-  permissionPanelRendered,
-  permissionPanelVisible,
-  selectedRole,
-  checkedMenuIds,
+  error,
   query,
-  form,
-  isEdit,
-  rules,
   filteredData,
   resetQuery,
-  openCreateDialog,
-  openEditDialog,
   fetchRoles,
-  fetchPermissionOptions,
-  fetchMenuTree,
-  submitForm,
   handleDelete,
-  openPermissionPanel,
-  closePermissionPanel,
-  saveMenuPermissions,
-} = useRoleManagement()
+} = useRoleList()
+
+function openCreateDialog() {
+  editingRole.value = null
+  dialogVisible.value = true
+}
 
 function handleEditRow(row: unknown) {
-  openEditDialog(row as RoleItem)
+  editingRole.value = row as RoleItem
+  dialogVisible.value = true
 }
 
 function handleDeleteRow(row: unknown) {
@@ -54,17 +53,12 @@ function handleDeleteRow(row: unknown) {
 }
 
 function handlePermissionRow(row: unknown) {
-  void openPermissionPanel(row as RoleItem)
-}
-
-function handleSaveMenuPermissions(checkedKeys: number[]) {
-  saveMenuPermissions(checkedKeys)
+  permissionRole.value = row as RoleItem
+  permissionVisible.value = true
 }
 
 onMounted(() => {
-  fetchRoles()
-  fetchPermissionOptions()
-  fetchMenuTree()
+  void fetchRoles()
 })
 </script>
 
@@ -74,6 +68,7 @@ onMounted(() => {
       <AdminTablePage
         :title="t('system.roleManagement')"
         :loading="loading"
+        :error="error"
         @refresh="fetchRoles"
       >
         <template #search>
@@ -124,24 +119,15 @@ onMounted(() => {
     </div>
 
     <RolePermissionPanel
-      v-if="permissionPanelRendered"
-      v-model:visible="permissionPanelVisible"
-      :role="selectedRole"
-      :tree-data="menuPermissionTree"
-      :checked-keys="checkedMenuIds"
-      :saving="savingPermissions"
-      @close="closePermissionPanel"
-      @save="handleSaveMenuPermissions"
+      v-model:visible="permissionVisible"
+      :role="permissionRole"
+      @saved="fetchRoles"
     />
 
     <RoleFormDialog
       v-model:visible="dialogVisible"
-      v-model:form="form"
-      :saving="saving"
-      :is-edit="isEdit"
-      :rules="rules"
-      :permission-options="permissionOptions"
-      @submit="submitForm"
+      :role="editingRole"
+      @saved="fetchRoles"
     />
   </div>
 </template>

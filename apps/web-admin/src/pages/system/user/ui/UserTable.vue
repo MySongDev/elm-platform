@@ -1,7 +1,7 @@
 <script setup lang="ts">
 /**
  * @file 用户表格
- * @domain features/user-management
+ * @domain pages/system/user
  * @description 展示用户列表和行级操作，删除按钮根据当前登录用户禁用自删除入口。
  */
 

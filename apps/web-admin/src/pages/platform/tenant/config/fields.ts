@@ -114,68 +114,6 @@ export function createTenantTableColumns(_t: Translate) {
   ] satisfies ConfigTableColumn<TenantInfo>[]
 }
 
-export function createTenantFormFields(_t: Translate, isEdit: boolean) {
-  return [
-    {
-      prop: 'code',
-      label: '租户编码',
-      type: 'input',
-      placeholder: '请输入租户编码（创建后不可修改）',
-      disabled: isEdit,
-    },
-    {
-      prop: 'name',
-      label: '租户名称',
-      type: 'input',
-      placeholder: '请输入租户名称',
-    },
-    {
-      prop: 'contactName',
-      label: '联系人',
-      type: 'input',
-      placeholder: '请输入联系人姓名',
-    },
-    {
-      prop: 'contactPhone',
-      label: '联系电话',
-      type: 'input',
-      placeholder: '请输入联系电话',
-    },
-    {
-      prop: 'contactEmail',
-      label: '联系邮箱',
-      type: 'input',
-      placeholder: '请输入联系邮箱',
-    },
-    {
-      prop: 'planCode',
-      label: '套餐',
-      type: 'select',
-      placeholder: '请选择套餐',
-      options: [
-        {
-          label: '标准版',
-          value: 'standard',
-        },
-        {
-          label: '专业版',
-          value: 'professional',
-        },
-        {
-          label: '企业版',
-          value: 'enterprise',
-        },
-      ],
-    },
-    {
-      prop: 'remark',
-      label: '备注',
-      type: 'textarea',
-      placeholder: '请输入备注',
-    },
-  ] satisfies ConfigFormField[]
-}
-
 export function createTenantStatusSearchOptions(): TenantListQuery['status'][] {
   return ['', ...Object.keys(tenantStatusMap)] as TenantListQuery['status'][]
 }

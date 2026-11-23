@@ -7,7 +7,7 @@ import { Permissions } from '@/shared/config/access'
 import AdminSearchForm from '@/shared/ui/AdminSearchForm/index.vue'
 import AdminTablePage from '@/shared/ui/AdminTablePage/index.vue'
 import { createRestaurantSearchFields, createRestaurantTableColumns } from './config/fields'
-import { useRestaurantManagement } from './model/useRestaurantManagement'
+import { useRestaurantList } from './model/useRestaurantList'
 import RestaurantFormDialog from './ui/RestaurantFormDialog.vue'
 
 defineOptions({ name: 'CommerceRestaurantView' })
@@ -15,24 +15,18 @@ defineOptions({ name: 'CommerceRestaurantView' })
 const { t } = useI18n()
 const searchFields = computed(() => createRestaurantSearchFields(t))
 const tableColumns = computed(() => createRestaurantTableColumns(t))
+const editingRestaurant = shallowRef<RestaurantItem | null>(null)
+const dialogVisible = shallowRef(false)
 const {
   loading,
-  saving,
   error,
-  dialogVisible,
   query,
-  form,
-  isEdit,
-  rules,
   filteredData,
   resetQuery,
-  openCreateDialog,
-  openEditDialog,
-  fetchRows,
-  submitForm,
+  fetchRestaurants,
   handleDelete,
   batchDeleteRows,
-} = useRestaurantManagement()
+} = useRestaurantList()
 
 const hasSearchCondition = computed(() => Boolean(query.name.trim() || query.category.trim()))
 const emptyReason = computed(() => hasSearchCondition.value ? 'no-filter-result' : 'no-data')
@@ -40,11 +34,17 @@ const isTableEmpty = computed(() => !loading.value && !error.value && filteredDa
 
 function handleClearFilter() {
   resetQuery()
-  fetchRows()
+  fetchRestaurants()
+}
+
+function openCreateDialog() {
+  editingRestaurant.value = null
+  dialogVisible.value = true
 }
 
 function handleEditRow(row: unknown) {
-  openEditDialog(row as RestaurantItem)
+  editingRestaurant.value = row as RestaurantItem
+  dialogVisible.value = true
 }
 
 function handleDeleteRow(row: unknown) {
@@ -56,7 +56,7 @@ function handleBatchAction(actionKey: string, rows: RestaurantItem[]) {
     batchDeleteRows(rows)
 }
 
-onMounted(fetchRows)
+onMounted(fetchRestaurants)
 </script>
 
 <template>
@@ -70,7 +70,7 @@ onMounted(fetchRows)
         :empty="isTableEmpty"
         :empty-reason="emptyReason"
         skeleton="table"
-        @refresh="fetchRows"
+        @refresh="fetchRestaurants"
         @clear-filter="handleClearFilter"
       >
         <template #search>
@@ -122,11 +122,8 @@ onMounted(fetchRows)
 
       <RestaurantFormDialog
         v-model:visible="dialogVisible"
-        v-model:form="form"
-        :saving="saving"
-        :is-edit="isEdit"
-        :rules="rules"
-        @submit="submitForm"
+        :restaurant="editingRestaurant"
+        @saved="fetchRestaurants"
       />
     </div>
   </div>

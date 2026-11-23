@@ -1,46 +1,28 @@
 import type { RoleItem } from '../../model/types'
 import type { MenuItem } from '@/entities/system-menu'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { computed, effectScope, ref, shallowRef } from 'vue'
-import { useRoleManagement } from '../useRoleManagement'
+import { effectScope } from 'vue'
+import { useRolePermissions } from '../useRolePermissions'
 
 const roleApi = vi.hoisted(() => ({
-  createRole: vi.fn(),
-  deleteRole: vi.fn(),
-  getRoles: vi.fn(),
   updateRole: vi.fn(),
-}))
-
-const permissionApi = vi.hoisted(() => ({
-  getButtonPermissions: vi.fn(),
 }))
 
 const menuApi = vi.hoisted(() => ({
   getMenus: vi.fn(),
 }))
 
-vi.mock('@/shared/config-crud', async () => {
-  const actual = await vi.importActual<typeof import('@/shared/config-crud/model/useConfigCrud')>('@/shared/config-crud/model/useConfigCrud')
-  return actual
-})
-
 vi.mock('../../api', () => roleApi)
-vi.mock('@/entities/permission', () => permissionApi)
 vi.mock('@/entities/system-menu', () => menuApi)
+vi.mock('vue-i18n', () => ({
+  useI18n: () => ({ t: (key: string) => key }),
+}))
 
 vi.mock('element-plus', () => ({
   ElMessage: {
     success: vi.fn(),
   },
-  ElMessageBox: {
-    confirm: vi.fn().mockResolvedValue(undefined),
-  },
 }))
-
-vi.mock('@/shared/config-crud', async () => {
-  const actual = await vi.importActual<typeof import('@/shared/config-crud/model/useConfigCrud')>('@/shared/config-crud/model/useConfigCrud')
-  return actual
-})
 
 const menus: MenuItem[] = [
   {
@@ -132,24 +114,14 @@ function runInScope<T>(factory: () => T) {
 
 beforeEach(() => {
   vi.clearAllMocks()
-  vi.stubGlobal('computed', computed)
-  vi.stubGlobal('ref', ref)
-  vi.stubGlobal('shallowRef', shallowRef)
-  vi.stubGlobal('useI18n', () => ({
-    t: (key: string) => key,
-  }))
-  roleApi.createRole.mockResolvedValue(undefined)
-  roleApi.deleteRole.mockResolvedValue(undefined)
-  roleApi.getRoles.mockResolvedValue([])
   roleApi.updateRole.mockResolvedValue(undefined)
-  permissionApi.getButtonPermissions.mockResolvedValue([])
   menuApi.getMenus.mockResolvedValue(menus)
 })
 
-describe('useRoleManagement menu permissions', () => {
+describe('useRolePermissions menu permissions', () => {
   it('renders the permission panel collapsed before marking it visible for the enter transition', async () => {
     vi.useFakeTimers()
-    const { result: roleManagement, dispose } = runInScope(() => useRoleManagement())
+    const { result: roleManagement, dispose } = runInScope(() => useRolePermissions())
 
     try {
       await roleManagement.fetchMenuTree()
@@ -170,7 +142,7 @@ describe('useRoleManagement menu permissions', () => {
 
   it('keeps the permission panel rendered until the close transition can finish', async () => {
     vi.useFakeTimers()
-    const { result: roleManagement, dispose } = runInScope(() => useRoleManagement())
+    const { result: roleManagement, dispose } = runInScope(() => useRolePermissions())
 
     try {
       await roleManagement.fetchMenuTree()
@@ -200,7 +172,7 @@ describe('useRoleManagement menu permissions', () => {
 
   it('opens the permission panel with checked menu ids from role permissions', async () => {
     vi.useFakeTimers()
-    const { result: roleManagement, dispose } = runInScope(() => useRoleManagement())
+    const { result: roleManagement, dispose } = runInScope(() => useRolePermissions())
 
     try {
       await roleManagement.fetchMenuTree()
@@ -218,11 +190,11 @@ describe('useRoleManagement menu permissions', () => {
   })
 
   it('saves selected page permissions while preserving button permissions', async () => {
-    const { result: roleManagement, dispose } = runInScope(() => useRoleManagement())
+    const { result: roleManagement, dispose } = runInScope(() => useRolePermissions())
 
     try {
       await roleManagement.fetchMenuTree()
-      roleManagement.openPermissionPanel(normalRole)
+      await roleManagement.openPermissionPanel(normalRole)
 
       await roleManagement.saveMenuPermissions([5])
 

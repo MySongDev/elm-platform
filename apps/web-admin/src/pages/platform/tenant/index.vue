@@ -1,12 +1,18 @@
 <script setup lang="ts">
-import type { TenantEvent, TenantInfo } from '@/entities/tenant'
+/**
+ * @file 租户管理页面
+ * @domain pages/platform/tenant
+ * @description 组装租户列表、编辑器和日志弹窗，维护两类弹窗的当前选择。
+ */
+
+import type { TenantInfo } from '@/entities/tenant'
 import { IconPlus as IconEpPlus } from '@iconify-prerendered/vue-ep'
-import { ElMessage, ElMessageBox } from 'element-plus'
-import { getTenantActionLogs, transitionTenant } from '@/entities/tenant'
+import { computed, onMounted, shallowRef } from 'vue'
+import { useI18n } from 'vue-i18n'
 import AdminSearchForm from '@/shared/ui/AdminSearchForm/index.vue'
 import AdminTablePage from '@/shared/ui/AdminTablePage/index.vue'
 import { createTenantSearchFields } from './config/fields'
-import { useTenantManagement } from './model/useTenantManagement'
+import { useTenantList } from './model/useTenantList'
 import TenantActionLogDialog from './ui/TenantActionLogDialog.vue'
 import TenantFormDialog from './ui/TenantFormDialog.vue'
 import TenantTable from './ui/TenantTable.vue'
@@ -16,60 +22,33 @@ defineOptions({ name: 'PlatformTenantView' })
 const { t } = useI18n()
 const {
   loading,
-  saving,
-  dialogVisible,
+  error,
   query,
-  form,
-  isEdit,
   filteredData,
-  rules,
   resetQuery,
-  openCreateDialog,
-  openEditDialog,
-  submitForm,
   fetchTenants,
-} = useTenantManagement()
+  handleTransition,
+} = useTenantList()
 
 const searchFields = computed(() => createTenantSearchFields(t))
+const dialogVisible = shallowRef(false)
+const selectedTenant = shallowRef<TenantInfo | null>(null)
+const actionLogVisible = shallowRef(false)
+const actionLogTenant = shallowRef<TenantInfo | null>(null)
 
-const actionLogVisible = ref(false)
-const actionLogs = ref<Awaited<ReturnType<typeof getTenantActionLogs>>>([])
-
-const actionLogLoading = ref(false)
-
-async function handleViewActionLogs(row: TenantInfo) {
-  actionLogVisible.value = true
-  actionLogLoading.value = true
-  try {
-    actionLogs.value = await getTenantActionLogs(row.id)
-  }
-  catch {
-    actionLogs.value = []
-  }
-  finally {
-    actionLogLoading.value = false
-  }
+function openCreateDialog() {
+  selectedTenant.value = null
+  dialogVisible.value = true
 }
 
-async function handleTransition(row: TenantInfo, event: TenantEvent) {
-  try {
-    const { value: reason } = await ElMessageBox.prompt(
-      `确认对租户「${row.name}」执行操作：${event}？`,
-      '状态变更',
-      {
-        confirmButtonText: '确认',
-        cancelButtonText: '取消',
-        inputPlaceholder: '变更原因（可选）',
-        inputType: 'textarea',
-      },
-    )
-    await transitionTenant(row.id, event, { reason: reason || undefined })
-    ElMessage.success('状态变更成功')
-    fetchTenants()
-  }
-  catch {
-    // cancelled or error
-  }
+function openEditDialog(tenant: TenantInfo) {
+  selectedTenant.value = tenant
+  dialogVisible.value = true
+}
+
+function handleViewActionLogs(tenant: TenantInfo) {
+  actionLogTenant.value = tenant
+  actionLogVisible.value = true
 }
 
 onMounted(() => {
@@ -82,6 +61,7 @@ onMounted(() => {
     <AdminTablePage
       title="租户管理"
       :loading="loading"
+      :error="error"
       @refresh="fetchTenants"
     >
       <template #search>
@@ -115,17 +95,13 @@ onMounted(() => {
 
     <TenantFormDialog
       v-model:visible="dialogVisible"
-      v-model:form="form"
-      :saving="saving"
-      :is-edit="isEdit"
-      :rules="rules"
-      @submit="submitForm"
+      :tenant="selectedTenant"
+      @saved="fetchTenants"
     />
 
     <TenantActionLogDialog
       v-model:visible="actionLogVisible"
-      :loading="actionLogLoading"
-      :logs="actionLogs"
+      :tenant="actionLogTenant"
     />
   </div>
 </template>
