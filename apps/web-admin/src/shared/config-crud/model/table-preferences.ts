@@ -23,7 +23,9 @@ export function parseStoredVisibleColumnKeys(value: string | null) {
     if (!Array.isArray(parsed))
       return null
     const keys = parsed.filter((item): item is string => typeof item === 'string')
-    return keys.length > 0 ? keys : null
+    return keys.length > 0
+      ? keys
+      : null
   }
   catch {
     return null
@@ -55,5 +57,7 @@ export function mergeVisibleColumnKeys<Row extends object>(columns: ConfigTableC
       mergedKeys.push(key)
   }
 
-  return mergedKeys.length > 0 ? mergedKeys : defaultKeys
+  return mergedKeys.length > 0
+    ? mergedKeys
+    : defaultKeys
 }

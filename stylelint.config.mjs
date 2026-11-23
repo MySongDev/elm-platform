@@ -47,7 +47,11 @@ export default {
         ignoreTypes: ['page', 'swiper', 'scroll-view'],
       },
     ],
-    'scss/at-import-partial-extension': null,
+    // stylelint-scss 7.x 移除了单一规则 at-import-partial-extension，拆成 allowed/disallowed
+    // 两个规则；旧的 scss/at-import-partial-extension 再写在配置里会被判为 Unknown rule，
+    // 直接让 lint-staged 的 stylelint 以 code 1 失败、卡住所有前端提交。继续禁用新名即可。
+    'scss/at-import-partial-extension-allowed-list': null,
+    'scss/at-import-partial-extension-disallowed-list': null,
     'scss/at-mixin-pattern': null,
     'selector-pseudo-class-no-unknown': [
       true,

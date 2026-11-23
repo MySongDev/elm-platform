@@ -41,7 +41,9 @@ export class HealthService {
     catch (error) {
       return {
         status: 'error',
-        detail: error instanceof Error ? error.message : String(error),
+        detail: error instanceof Error
+          ? error.message
+          : String(error),
       }
     }
   }
@@ -60,7 +62,9 @@ export class HealthService {
     catch (error) {
       return {
         status: 'error',
-        detail: error instanceof Error ? error.message : String(error),
+        detail: error instanceof Error
+          ? error.message
+          : String(error),
       }
     }
   }

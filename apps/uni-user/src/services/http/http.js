@@ -37,8 +37,12 @@ export function http(options = {}) {
   return request({
     url,
     method: normalizedMethod,
-    [normalizedMethod === 'GET' ? 'params' : 'data']:
-      normalizedMethod === 'GET' ? params : data,
+    [normalizedMethod === 'GET'
+      ? 'params'
+      : 'data']:
+      normalizedMethod === 'GET'
+        ? params
+        : data,
 
     ...rest,
 

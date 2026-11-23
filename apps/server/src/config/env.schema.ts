@@ -2,7 +2,10 @@ import { z } from 'zod'
 
 const optionalEmptyString = z.literal('').transform(() => undefined)
 
-const optionalString = z.union([z.string().trim().min(1), optionalEmptyString]).optional()
+const optionalString = z.union([
+  z.string().trim().min(1),
+  optionalEmptyString,
+]).optional()
 
 const portSchema = z.coerce.number().int().min(1).max(65535)
 

@@ -5,7 +5,11 @@ import { CustomerAddressService } from './customer-address.service'
 function setup() {
   const calls: string[] = []
   const tx = {
-    $queryRaw: jest.fn(async () => { calls.push('lock'); return [{ id: 1 }] }),
+    $queryRaw: jest.fn(async () => {
+      calls.push('lock'); return [
+        { id: 1 },
+      ]
+    }),
     customerAddress: {
       findFirst: jest.fn(async () => { calls.push('owned'); return { id: 7 } as { id: number } | null }),
       updateMany: jest.fn(async () => { calls.push('clear'); return { count: 1 } }),
@@ -37,7 +41,9 @@ describe('地址写入顺序', () => {
     const { service, calls, tx } = setup()
     await service.create(1, body)
     expect(calls).toEqual(['lock', 'clear', 'create'])
-    expect(tx.customerAddress.updateMany).toHaveBeenCalledWith(expect.objectContaining({ where: expect.objectContaining({ customerId: 1 }) }))
+    expect(tx.customerAddress.updateMany).toHaveBeenCalledWith(expect.objectContaining({
+      where: expect.objectContaining({ customerId: 1 }),
+    }))
   })
   it('编辑先锁并查归属，再改默认及字段', async () => {
     const { service, calls } = setup()

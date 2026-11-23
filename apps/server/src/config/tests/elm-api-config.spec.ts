@@ -70,11 +70,26 @@ describe('elm API configuration', () => {
   })
 
   it.each([
-    ['an invalid upstream URL', { ELM_API_BASE_URL: 'not-a-url' }],
-    ['an FTP upstream URL', { ELM_API_BASE_URL: 'ftp://elm.example.test' }],
-    ['an upstream URL with a query', { ELM_API_BASE_URL: 'https://elm.example.test?token=secret' }],
-    ['an upstream URL with a fragment', { ELM_API_BASE_URL: 'https://elm.example.test#internal' }],
-    ['a zero timeout', { ELM_API_TIMEOUT_MS: '0' }],
+    [
+      'an invalid upstream URL',
+      { ELM_API_BASE_URL: 'not-a-url' },
+    ],
+    [
+      'an FTP upstream URL',
+      { ELM_API_BASE_URL: 'ftp://elm.example.test' },
+    ],
+    [
+      'an upstream URL with a query',
+      { ELM_API_BASE_URL: 'https://elm.example.test?token=secret' },
+    ],
+    [
+      'an upstream URL with a fragment',
+      { ELM_API_BASE_URL: 'https://elm.example.test#internal' },
+    ],
+    [
+      'a zero timeout',
+      { ELM_API_TIMEOUT_MS: '0' },
+    ],
   ])('rejects %s', (_description, overrides) => {
     expect(() =>
       validateEnv({

@@ -31,8 +31,11 @@ export function resolveSidebarOpenKeys(path: string, routes: RouteRecordRaw[], b
     const visibleChildren = getVisibleChildren(routeItem)
     if (visibleChildren.length) {
       const childResult = resolveSidebarOpenKeys(path, visibleChildren, fullPath)
-      if (childResult !== null)
-        return isRenderedAsSubMenu(routeItem) ? [fullPath, ...childResult] : childResult
+      if (childResult !== null) {
+        return isRenderedAsSubMenu(routeItem)
+          ? [fullPath, ...childResult]
+          : childResult
+      }
     }
   }
 

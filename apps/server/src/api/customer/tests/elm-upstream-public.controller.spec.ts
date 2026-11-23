@@ -16,7 +16,9 @@ import { ElmRestaurantPublicController } from '@/api/customer/restaurant/elm-res
  */
 describe('elm public controllers delegate to local services', () => {
   it('serves index entries from the local table', async () => {
-    const payload = [{ id: 1 }]
+    const payload = [
+      { id: 1 },
+    ]
     const homeMeta = {
       listCategoryEntries: jest.fn().mockResolvedValue(payload),
     }
@@ -35,10 +37,12 @@ describe('elm public controllers delegate to local services', () => {
   })
 
   it('passes the query coordinates through so distance is computed against the caller', async () => {
-    const payload = [{
-      id: 42,
-      distance: '1.2公里',
-    }]
+    const payload = [
+      {
+        id: 42,
+        distance: '1.2公里',
+      },
+    ]
     const query = {
       latitude: '31.23',
       longitude: '121.47',
@@ -88,11 +92,13 @@ describe('elm public controllers delegate to local services', () => {
   })
 
   it('serves the menu from the local table', async () => {
-    const payload = [{
-      id: 7,
-      name: 'local menu',
-      foods: [],
-    }]
+    const payload = [
+      {
+        id: 7,
+        name: 'local menu',
+        foods: [],
+      },
+    ]
     const foodService = {
       getMenuForApi: jest.fn().mockResolvedValue(payload),
     }

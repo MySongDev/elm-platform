@@ -35,7 +35,9 @@ export const useLocationStore = defineStore('location', () => {
 
   // 浏览器定位流程状态：locating | success | error，仅描述"这次定位成功没有"。
   // 已有缓存坐标时直接视作 success，避免秒开时 loading 判据误显骨架屏。
-  const status = ref(latitude.value && longitude.value ? 'success' : 'locating')
+  const status = ref(latitude.value && longitude.value
+    ? 'success'
+    : 'locating')
 
   // 是否已具备可用坐标。不区分来源（浏览器定位 / 手动选城 / 缓存），
   // 与 msite 内 `!latitude || !longitude` 的判据保持一致。

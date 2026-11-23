@@ -59,7 +59,10 @@ function invokeRoute<T>(method: string, url: string, context: MockRequestContext
 
 beforeEach(() => {
   resetNotificationMockState()
-  routes = [...createAuthMockRoutes(), ...createNotificationMockRoutes()]
+  routes = [
+    ...createAuthMockRoutes(),
+    ...createNotificationMockRoutes(),
+  ]
 })
 
 describe('admin auth mock routes', () => {

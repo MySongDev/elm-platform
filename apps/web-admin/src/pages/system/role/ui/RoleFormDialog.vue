@@ -32,19 +32,25 @@ const saveError = shallowRef(false)
 const permissionOptions = shallowRef<ButtonPermission[]>([])
 let editorVersion = 0
 let optionsVersion = 0
-const title = computed(() => t(props.role ? 'crud.editTitle' : 'crud.addTitle', { title: t('role.name') }))
+const title = computed(() => t(props.role ? 'crud.editTitle' : 'crud.addTitle', {
+  title: t('role.name'),
+}))
 const statusOptions = computed(() => createEnabledStatusOptions(getStatusText(t)))
 const rules = computed<FormRules>(() => ({
-  name: [{
-    required: true,
-    message: t('role.nameRequired'),
-    trigger: 'blur',
-  }],
-  code: [{
-    required: true,
-    message: t('role.codeRequired'),
-    trigger: 'blur',
-  }],
+  name: [
+    {
+      required: true,
+      message: t('role.nameRequired'),
+      trigger: 'blur',
+    },
+  ],
+  code: [
+    {
+      required: true,
+      message: t('role.codeRequired'),
+      trigger: 'blur',
+    },
+  ],
 }))
 
 async function loadOptions() {
@@ -71,7 +77,10 @@ async function loadOptions() {
   }
 }
 
-watch([visible, () => props.role], ([open, role]) => {
+watch([
+  visible,
+  () => props.role,
+], ([open, role]) => {
   editorVersion++
   optionsVersion++
   saving.value = false

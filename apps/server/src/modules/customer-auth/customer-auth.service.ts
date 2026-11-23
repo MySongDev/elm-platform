@@ -16,7 +16,9 @@ export class CustomerAuthService {
   ) {}
 
   async resetPassword(dto: CustomerPasswordResetInput) {
-    const user = await (this.prisma as any).customerUser.findUnique({ where: { phone: dto.phone } })
+    const user = await (this.prisma as any).customerUser.findUnique({
+      where: { phone: dto.phone },
+    })
     if (!user) {
       throw new NotFoundException('手机号未注册')
     }
@@ -35,7 +37,9 @@ export class CustomerAuthService {
   }
 
   async loginByPassword(dto: CustomerPasswordLoginInput) {
-    const user = await (this.prisma as any).customerUser.findUnique({ where: { phone: dto.phone } })
+    const user = await (this.prisma as any).customerUser.findUnique({
+      where: { phone: dto.phone },
+    })
     if (!user) {
       throw new UnauthorizedException('手机号或密码错误')
     }
@@ -53,14 +57,18 @@ export class CustomerAuthService {
 
     const updated = await (this.prisma as any).customerUser.update({
       where: { id: user.id },
-      data: { lastLoginAt: new Date() },
+      data: {
+        lastLoginAt: new Date(),
+      },
     })
 
     return this.tokens.sign(updated)
   }
 
   async loginBySms(dto: CustomerSmsLoginInput) {
-    let user = await (this.prisma as any).customerUser.findUnique({ where: { phone: dto.phone } })
+    let user = await (this.prisma as any).customerUser.findUnique({
+      where: { phone: dto.phone },
+    })
     if (!user) {
       const autoRegister = this.config.get<boolean>('auth.customerLoginAutoRegister', true)
       if (!autoRegister) {
@@ -84,14 +92,18 @@ export class CustomerAuthService {
 
     const updated = await (this.prisma as any).customerUser.update({
       where: { id: user.id },
-      data: { lastLoginAt: new Date() },
+      data: {
+        lastLoginAt: new Date(),
+      },
     })
 
     return this.tokens.sign(updated)
   }
 
   async getProfile(userId: number) {
-    const user = await (this.prisma as any).customerUser.findUnique({ where: { id: userId } })
+    const user = await (this.prisma as any).customerUser.findUnique({
+      where: { id: userId },
+    })
     if (!user || user.status !== 'ACTIVE') {
       throw new UnauthorizedException('用户不存在或已禁用')
     }
@@ -115,7 +127,9 @@ export class CustomerAuthService {
 
   async refresh(refreshToken: string) {
     const { userId } = await this.tokens.consumeRefreshToken(refreshToken)
-    const user = await (this.prisma as any).customerUser.findUnique({ where: { id: userId } })
+    const user = await (this.prisma as any).customerUser.findUnique({
+      where: { id: userId },
+    })
     if (!user || user.status !== 'ACTIVE') {
       throw new UnauthorizedException('用户不存在或已禁用')
     }

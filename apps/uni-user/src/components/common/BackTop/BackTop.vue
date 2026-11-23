@@ -41,8 +41,12 @@ const props = defineProps({
 const emit = defineEmits(['to-top'])
 
 const positionStyle = computed(() => ({
-  right: typeof props.right === 'number' ? `${props.right}rpx` : props.right,
-  bottom: typeof props.bottom === 'number' ? `${props.bottom}rpx` : props.bottom,
+  right: typeof props.right === 'number'
+    ? `${props.right}rpx`
+    : props.right,
+  bottom: typeof props.bottom === 'number'
+    ? `${props.bottom}rpx`
+    : props.bottom,
 }))
 </script>
 

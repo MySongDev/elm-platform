@@ -21,14 +21,20 @@ const useIconName = computed(() => `#icon-${props.iconName}`)
 
 const svgClass = computed(() => {
   const base = 'svg-icon'
-  const cls = props.iconClass ? `${base} ${props.iconClass}` : base
-  return props.multicolor ? `${cls} svg-icon--multicolor` : cls
+  const cls = props.iconClass
+    ? `${base} ${props.iconClass}`
+    : base
+  return props.multicolor
+    ? `${cls} svg-icon--multicolor`
+    : cls
 })
 
 const svgStyle = computed(() => {
   if (props.multicolor)
     return undefined
-  return props.color ? { '--icon-fill': props.color } : undefined
+  return props.color
+    ? { '--icon-fill': props.color }
+    : undefined
 })
 </script>
 

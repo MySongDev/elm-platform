@@ -22,7 +22,9 @@ import {
 const DEFAULT_SESSION_TTL_SECONDS = 24 * 60 * 60
 
 function resolvePersistStorage(): Storage | undefined {
-  return typeof localStorage === 'undefined' ? undefined : localStorage
+  return typeof localStorage === 'undefined'
+    ? undefined
+    : localStorage
 }
 
 /**

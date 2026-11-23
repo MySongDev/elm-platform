@@ -38,7 +38,9 @@ function handleSubClick(sub) {
 }
 
 function formatCount(count) {
-  return count > 999 ? '999+' : count
+  return count > 999
+    ? '999+'
+    : count
 }
 
 function getImageUrl(filename) {

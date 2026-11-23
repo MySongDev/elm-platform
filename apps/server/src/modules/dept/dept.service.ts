@@ -20,7 +20,12 @@ export class DeptService {
    */
   async getDepts() {
     try {
-      const list = await (this.prisma as any).dept.findMany({ orderBy: [{ sort: 'asc' }, { id: 'asc' }] })
+      const list = await (this.prisma as any).dept.findMany({
+        orderBy: [
+          { sort: 'asc' },
+          { id: 'asc' },
+        ],
+      })
       return buildTree(list)
     }
     catch {
@@ -35,7 +40,9 @@ export class DeptService {
    */
   async createDept(dto: DeptUpsertInput) {
     try {
-      return await (this.prisma as any).dept.create({ data: this.normalizeDept(dto) })
+      return await (this.prisma as any).dept.create({
+        data: this.normalizeDept(dto),
+      })
     }
     catch {
       const dept = {
@@ -81,7 +88,9 @@ export class DeptService {
    */
   async deleteDept(id: number) {
     try {
-      await (this.prisma as any).dept.delete({ where: { id } })
+      await (this.prisma as any).dept.delete({
+        where: { id },
+      })
     }
     catch {
       this.memoryDepts = this.memoryDepts.filter(item => item.id !== id && item.parentId !== id)

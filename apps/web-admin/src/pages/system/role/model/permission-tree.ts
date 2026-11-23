@@ -25,7 +25,9 @@ export function createRoleMenuPermissionTree(menus: MenuItem[]): RoleMenuPermiss
   return menus
     .filter(isActivePageMenu)
     .map((menu): RoleMenuPermissionNode => {
-      const children = menu.children ? createRoleMenuPermissionTree(menu.children) : []
+      const children = menu.children
+        ? createRoleMenuPermissionTree(menu.children)
+        : []
       return {
         id: menu.id,
         parentId: menu.parentId,
@@ -33,7 +35,9 @@ export function createRoleMenuPermissionTree(menus: MenuItem[]): RoleMenuPermiss
         path: menu.path,
         permission: menu.permission,
         type: menu.type,
-        ...(children.length ? { children } : {}),
+        ...(children.length
+          ? { children }
+          : {}),
       }
     })
     .filter(node => Boolean(node.permission) || Boolean(node.children?.length))
@@ -75,7 +79,10 @@ export function mergeRoleMenuPermissions(
 ): string[] {
   const menuPermissionSet = new Set(menuPermissionCodes)
   const preservedPermissions = currentPermissions.filter(permission => !menuPermissionSet.has(permission))
-  return unique([...preservedPermissions, ...selectedMenuPermissionCodes])
+  return unique([
+    ...preservedPermissions,
+    ...selectedMenuPermissionCodes,
+  ])
 }
 
 function isActivePageMenu(menu: MenuItem): menu is MenuItem & { type: Extract<MenuItem['type'], 'catalog' | 'menu'> } {
@@ -90,7 +97,12 @@ function collectPageMenuNodes(menus: MenuPermissionSource): MenuPermissionSource
     if (menu.type === 'button')
       return []
 
-    return [menu, ...(menu.children ? collectPageMenuNodes(menu.children) : [])]
+    return [
+      menu,
+      ...(menu.children
+        ? collectPageMenuNodes(menu.children)
+        : []),
+    ]
   })
 }
 

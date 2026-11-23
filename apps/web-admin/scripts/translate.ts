@@ -26,7 +26,9 @@ function parseModule(filePath: string): Record<string, any> {
 function flattenKeys(obj: Record<string, any>, prefix = ''): string[] {
   const keys: string[] = []
   for (const [key, value] of Object.entries(obj)) {
-    const fullKey = prefix ? `${prefix}.${key}` : key
+    const fullKey = prefix
+      ? `${prefix}.${key}`
+      : key
     if (typeof value === 'object' && value !== null) {
       keys.push(...flattenKeys(value, fullKey))
     }

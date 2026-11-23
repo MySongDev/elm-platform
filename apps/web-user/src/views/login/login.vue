@@ -18,11 +18,17 @@ const { completeLogin } = useLoginSuccess()
 const formattedPhone = computed(() => formatPhone(phone.value))
 const isPhoneValid = computed(() => phone.value.length === 11 && /^1\d{10}$/.test(phone.value))
 const canSubmit = computed(() => isPhoneValid.value && agreementAccepted.value && (loginMode.value === 'sms' || password.value.length > 0))
-const submitText = computed(() => (loginMode.value === 'sms' ? '获取短信验证码' : '登录'))
+const submitText = computed(() => (loginMode.value === 'sms'
+  ? '获取短信验证码'
+  : '登录'))
 
 function formatPhone(value) {
   const digits = value.replace(/\D/g, '').slice(0, 11)
-  return [digits.slice(0, 3), digits.slice(3, 7), digits.slice(7, 11)].filter(Boolean).join(' ')
+  return [
+    digits.slice(0, 3),
+    digits.slice(3, 7),
+    digits.slice(7, 11),
+  ].filter(Boolean).join(' ')
 }
 
 function handlePhoneInput(event) {

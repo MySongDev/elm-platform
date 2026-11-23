@@ -75,7 +75,12 @@ function Back() {
 // 根据当前路径动态控制头部返回按钮
 const showHeaderBack = computed(() => {
   // ⚠️ 修正死链：去掉不迁移的 '/home'；tabBar 页无返回语义
-  const noBackPages = ['/pages/msite/msite', '/pages/search/SearchHome', '/pages/cart/cart', '/pages/profile/profile']
+  const noBackPages = [
+    '/pages/msite/msite',
+    '/pages/search/SearchHome',
+    '/pages/cart/cart',
+    '/pages/profile/profile',
+  ]
 
   return props.showBack && !noBackPages.includes(getCurrentPath())
 })

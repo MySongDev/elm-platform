@@ -95,7 +95,9 @@ describe('merchantOnboardingService', () => {
         id: 'app_1',
         merchantName: 'Flower Cake',
         availableActions: ['VIEW', 'START_REVIEW'],
-        materials: [expect.objectContaining({ id: 'mat_1' })],
+        materials: [
+          expect.objectContaining({ id: 'mat_1' }),
+        ],
       }),
     ])
   })
@@ -129,7 +131,12 @@ describe('merchantOnboardingService', () => {
     expect(result).toEqual(expect.objectContaining({
       id: 'app_1',
       status: 'UNDER_REVIEW',
-      availableActions: ['VIEW', 'APPROVE', 'REJECT', 'REQUEST_SUPPLEMENT'],
+      availableActions: [
+        'VIEW',
+        'APPROVE',
+        'REJECT',
+        'REQUEST_SUPPLEMENT',
+      ],
     }))
     expect(tx.merchantApplication.updateMany).toHaveBeenCalledWith({
       where: {

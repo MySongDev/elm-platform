@@ -38,12 +38,16 @@ export function ApiSuccessResponse<T>(
       schema: {
         title: `ApiResponseOf${model.name}`,
         allOf: [
-          { $ref: getSchemaPath(ApiResponseEnvelopeDto) },
+          {
+            $ref: getSchemaPath(ApiResponseEnvelopeDto),
+          },
           {
             type: 'object',
             required: ['data'],
             properties: {
-              data: { $ref: getSchemaPath(model) },
+              data: {
+                $ref: getSchemaPath(model),
+              },
             },
           },
         ],
@@ -64,14 +68,18 @@ export function ApiArrayResponse<T>(
       schema: {
         title: `ApiArrayResponseOf${model.name}`,
         allOf: [
-          { $ref: getSchemaPath(ApiResponseEnvelopeDto) },
+          {
+            $ref: getSchemaPath(ApiResponseEnvelopeDto),
+          },
           {
             type: 'object',
             required: ['data'],
             properties: {
               data: {
                 type: 'array',
-                items: { $ref: getSchemaPath(model) },
+                items: {
+                  $ref: getSchemaPath(model),
+                },
               },
             },
           },
@@ -87,7 +95,9 @@ export function ApiEmptyResponse(options: ApiSuccessOptions = {}) {
     ApiResponse({
       status: options.status ?? 200,
       description: options.description ?? '请求成功',
-      schema: { $ref: getSchemaPath(ApiResponseEnvelopeDto) },
+      schema: {
+        $ref: getSchemaPath(ApiResponseEnvelopeDto),
+      },
     }),
   )
 }
@@ -101,7 +111,9 @@ export function ApiRawResponse<T>(
     ApiResponse({
       status: options.status ?? 200,
       description: options.description ?? '请求成功',
-      schema: { $ref: getSchemaPath(model) },
+      schema: {
+        $ref: getSchemaPath(model),
+      },
     }),
   )
 }
@@ -115,7 +127,9 @@ export function ApiErrorResponses(...statuses: ErrorStatus[]) {
         description: ERROR_DESCRIPTIONS[status],
         schema: {
           allOf: [
-            { $ref: getSchemaPath(ApiErrorResponseDto) },
+            {
+              $ref: getSchemaPath(ApiErrorResponseDto),
+            },
             {
               properties: {
                 code: { example: status },

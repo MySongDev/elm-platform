@@ -83,9 +83,15 @@ describe('buildSingleShopSelection', () => {
   })
 
   it('缺 itemId 或数量非法时返回 null，不把脏数据送进建单', () => {
-    expect(buildSingleShopSelection([item({ itemId: '' })])).toBeNull()
-    expect(buildSingleShopSelection([item({ qty: 0 })])).toBeNull()
-    expect(buildSingleShopSelection([item({ qty: 1.5 })])).toBeNull()
+    expect(buildSingleShopSelection([
+      item({ itemId: '' }),
+    ])).toBeNull()
+    expect(buildSingleShopSelection([
+      item({ qty: 0 }),
+    ])).toBeNull()
+    expect(buildSingleShopSelection([
+      item({ qty: 1.5 }),
+    ])).toBeNull()
   })
 })
 
@@ -104,7 +110,10 @@ describe('describeCrossShopCheckout', () => {
   })
 
   it('单一商家返回 null', () => {
-    expect(describeCrossShopCheckout([item(), item({ itemId: '12' })])).toBeNull()
+    expect(describeCrossShopCheckout([
+      item(),
+      item({ itemId: '12' }),
+    ])).toBeNull()
   })
 })
 
@@ -123,21 +132,25 @@ describe('findPendingCheckoutSnapshot', () => {
         userId: '1',
         requestId: 'req-a',
         shopId: '1',
-        cartItems: [{
-          itemId: '11',
-          skuId: '111',
-          qty: 1,
-        }],
+        cartItems: [
+          {
+            itemId: '11',
+            skuId: '111',
+            qty: 1,
+          },
+        ],
       },
       {
         userId: '1',
         requestId: 'req-b',
         shopId: '1',
-        cartItems: [{
-          itemId: '11',
-          skuId: '111',
-          qty: 2,
-        }],
+        cartItems: [
+          {
+            itemId: '11',
+            skuId: '111',
+            qty: 2,
+          },
+        ],
       },
     ])
 
@@ -149,16 +162,20 @@ describe('findPendingCheckoutSnapshot', () => {
   })
 
   it('不跨用户、不跨商家匹配', () => {
-    const state = stateWith([{
-      userId: '1',
-      requestId: 'req-a',
-      shopId: '1',
-      cartItems: [{
-        itemId: '11',
-        skuId: '111',
-        qty: 1,
-      }],
-    }])
+    const state = stateWith([
+      {
+        userId: '1',
+        requestId: 'req-a',
+        shopId: '1',
+        cartItems: [
+          {
+            itemId: '11',
+            skuId: '111',
+            qty: 1,
+          },
+        ],
+      },
+    ])
 
     expect(findPendingCheckoutSnapshot(state, {
       userId: '2',
@@ -172,17 +189,21 @@ describe('findPendingCheckoutSnapshot', () => {
 
   it('已消费的快照不会被再次取用', () => {
     const state = {
-      snapshots: [{
-        userId: '1',
-        requestId: 'req-a',
-        shopId: '1',
-        cartItems: [{
-          itemId: '11',
-          skuId: '111',
-          qty: 1,
-        }],
-        consumed: true,
-      }],
+      snapshots: [
+        {
+          userId: '1',
+          requestId: 'req-a',
+          shopId: '1',
+          cartItems: [
+            {
+              itemId: '11',
+              skuId: '111',
+              qty: 1,
+            },
+          ],
+          consumed: true,
+        },
+      ],
     }
 
     expect(findPendingCheckoutSnapshot(state, {
@@ -199,21 +220,25 @@ describe('discardSnapshotsOfOtherUsers', () => {
         userId: '1',
         requestId: 'req-a',
         shopId: '1',
-        cartItems: [{
-          itemId: '11',
-          skuId: '111',
-          qty: 1,
-        }],
+        cartItems: [
+          {
+            itemId: '11',
+            skuId: '111',
+            qty: 1,
+          },
+        ],
       },
       {
         userId: '2',
         requestId: 'req-b',
         shopId: '1',
-        cartItems: [{
-          itemId: '11',
-          skuId: '111',
-          qty: 1,
-        }],
+        cartItems: [
+          {
+            itemId: '11',
+            skuId: '111',
+            qty: 1,
+          },
+        ],
       },
     ])
 
@@ -223,31 +248,39 @@ describe('discardSnapshotsOfOtherUsers', () => {
   })
 
   it('没有别人的快照时原样返回，不制造新对象', () => {
-    const state = stateWith([{
-      userId: '1',
-      requestId: 'req-a',
-      shopId: '1',
-      cartItems: [{
-        itemId: '11',
-        skuId: '111',
-        qty: 1,
-      }],
-    }])
+    const state = stateWith([
+      {
+        userId: '1',
+        requestId: 'req-a',
+        shopId: '1',
+        cartItems: [
+          {
+            itemId: '11',
+            skuId: '111',
+            qty: 1,
+          },
+        ],
+      },
+    ])
 
     expect(discardSnapshotsOfOtherUsers(state, '1')).toBe(state)
   })
 
   it('登出（userId 为空）清空全部快照', () => {
-    const state = stateWith([{
-      userId: '1',
-      requestId: 'req-a',
-      shopId: '1',
-      cartItems: [{
-        itemId: '11',
-        skuId: '111',
-        qty: 1,
-      }],
-    }])
+    const state = stateWith([
+      {
+        userId: '1',
+        requestId: 'req-a',
+        shopId: '1',
+        cartItems: [
+          {
+            itemId: '11',
+            skuId: '111',
+            qty: 1,
+          },
+        ],
+      },
+    ])
 
     expect(discardSnapshotsOfOtherUsers(state, '').snapshots).toHaveLength(0)
   })
@@ -263,11 +296,17 @@ describe('isSnapshotShopPresent', () => {
   }
 
   it('商家车里还有商品时返回 true', () => {
-    expect(isSnapshotShopPresent([storeWith('1', [{ id: 'p1' }])], '1')).toBe(true)
+    expect(isSnapshotShopPresent([
+      storeWith('1', [
+        { id: 'p1' },
+      ]),
+    ], '1')).toBe(true)
   })
 
   it('商家车已被清空时返回 false', () => {
-    expect(isSnapshotShopPresent([storeWith('1', [])], '1')).toBe(false)
+    expect(isSnapshotShopPresent([
+      storeWith('1', []),
+    ], '1')).toBe(false)
   })
 
   it('商家已不在车里时返回 false', () => {

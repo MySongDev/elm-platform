@@ -11,7 +11,19 @@ import { ElmUpstreamModule } from '../elm-upstream/elm-upstream.module'
  * 后续如需按端收窄依赖，改为直接导入具体子模块即可。
  */
 @Module({
-  imports: [ElmMediaModule, ElmUpstreamModule, ElmCatalogModule, ElmLocationModule, ElmLegacyModule],
-  exports: [ElmMediaModule, ElmUpstreamModule, ElmCatalogModule, ElmLocationModule, ElmLegacyModule],
+  imports: [
+    ElmMediaModule,
+    ElmUpstreamModule,
+    ElmCatalogModule,
+    ElmLocationModule,
+    ElmLegacyModule,
+  ],
+  exports: [
+    ElmMediaModule,
+    ElmUpstreamModule,
+    ElmCatalogModule,
+    ElmLocationModule,
+    ElmLegacyModule,
+  ],
 })
 export class ElmModule {}

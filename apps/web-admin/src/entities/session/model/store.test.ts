@@ -174,7 +174,9 @@ describe('useAuthStore session expiry', () => {
 
   it('clears token on authentication error when loading user info', async () => {
     const error = new Error('Unauthorized')
-    Object.assign(error, { response: { status: 401 } })
+    Object.assign(error, {
+      response: { status: 401 },
+    })
     vi.mocked(getCurrentUser).mockRejectedValueOnce(error)
 
     const store = useAuthStore()

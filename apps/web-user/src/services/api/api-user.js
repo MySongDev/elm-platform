@@ -5,7 +5,9 @@ import { authEndpoints } from './endpoints/auth.endpoints'
 
 /** 获取当前手机号用户信息 */
 export function getCustomerProfile() {
-  return get(authEndpoints.customerProfile).then(res => (res?.data && res.code === 200 ? res.data : res))
+  return get(authEndpoints.customerProfile).then(res => (res?.data && res.code === 200
+    ? res.data
+    : res))
 }
 
 /** 获取用户信息 */
@@ -21,7 +23,11 @@ export function uploadUserAvatar(file) {
 export function signout() {
   return post(
     authEndpoints.customerLogout,
-    { refreshToken: getRefreshToken() },
-    { meta: { skipAuthRefresh: true } },
+    {
+      refreshToken: getRefreshToken(),
+    },
+    {
+      meta: { skipAuthRefresh: true },
+    },
   )
 }

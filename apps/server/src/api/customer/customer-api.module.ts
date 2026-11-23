@@ -19,7 +19,15 @@ import { ElmRestaurantPublicController } from './restaurant/elm-restaurant-publi
 
 /** 仅注册本端接口；业务 Provider 来自导入模块，避免重复实例化和反向依赖。 */
 @Module({
-  imports: [AuthModule, CustomerAuthModule, CustomerAddressModule, CustomerAvatarModule, ElmModule, OrderModule, PaymentModule],
+  imports: [
+    AuthModule,
+    CustomerAuthModule,
+    CustomerAddressModule,
+    CustomerAvatarModule,
+    ElmModule,
+    OrderModule,
+    PaymentModule,
+  ],
   controllers: [
     CustomerAuthController,
     CustomerAddressController,

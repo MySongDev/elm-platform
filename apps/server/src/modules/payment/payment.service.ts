@@ -15,7 +15,9 @@ function toDate(value: unknown) {
     return null
   const normalized = String(value).replace(' ', 'T')
   const date = new Date(normalized)
-  return Number.isNaN(date.getTime()) ? null : date
+  return Number.isNaN(date.getTime())
+    ? null
+    : date
 }
 
 @Injectable()
@@ -107,7 +109,9 @@ export class PaymentService {
           tradeStatus,
           status: this.mapTradeStatus(tradeStatus),
           queryPayload: trade || undefined,
-          buyerPayAmount: trade?.buyer_pay_amount ? toPrice(trade.buyer_pay_amount) : undefined,
+          buyerPayAmount: trade?.buyer_pay_amount
+            ? toPrice(trade.buyer_pay_amount)
+            : undefined,
           paidAt: toDate(trade?.send_pay_date || trade?.gmt_payment) || order.paidAt || undefined,
         },
       })
@@ -194,7 +198,9 @@ export class PaymentService {
   }
 
   private async findOrder(orderNo: string) {
-    const order = await (this.prisma as any).paymentOrder.findUnique({ where: { orderNo } })
+    const order = await (this.prisma as any).paymentOrder.findUnique({
+      where: { orderNo },
+    })
     if (!order)
       throw new NotFoundException('订单不存在')
     return order as PaymentOrderRecord
@@ -217,7 +223,9 @@ export class PaymentService {
         tradeStatus,
         status: this.mapTradeStatus(tradeStatus),
         queryPayload: trade || undefined,
-        buyerPayAmount: trade?.buyer_pay_amount ? toPrice(trade.buyer_pay_amount) : undefined,
+        buyerPayAmount: trade?.buyer_pay_amount
+          ? toPrice(trade.buyer_pay_amount)
+          : undefined,
         paidAt: toDate(trade?.send_pay_date || trade?.gmt_payment) || order.paidAt || undefined,
       },
     })

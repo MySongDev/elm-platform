@@ -12,7 +12,12 @@ export const fulfillmentStatuses = [
 ] as const
 export type FulfillmentStatus = (typeof fulfillmentStatuses)[number]
 
-export const refundStatuses = ['NONE', 'REQUESTED', 'APPROVED', 'REJECTED'] as const
+export const refundStatuses = [
+  'NONE',
+  'REQUESTED',
+  'APPROVED',
+  'REJECTED',
+] as const
 export type RefundStatus = (typeof refundStatuses)[number]
 
 export const adminOrderActions = [

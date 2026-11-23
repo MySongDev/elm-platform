@@ -34,19 +34,27 @@ const saveError = shallowRef(false)
 let editorVersion = 0
 const { t } = useI18n()
 const isEdit = computed(() => props.dept !== null)
-const title = computed(() => t(isEdit.value ? 'crud.editTitle' : 'crud.addTitle', { title: t('dept.name') }))
+const title = computed(() => t(isEdit.value ? 'crud.editTitle' : 'crud.addTitle', {
+  title: t('dept.name'),
+}))
 const statusOptions = computed(() => createEnabledStatusOptions(getStatusText(t)))
 // 沿用原上级选择范围，只排除当前部门；不要在这次职责拆分中新增后代禁选规则。
 const parentOptions = computed(() => flattenTree(props.depts).filter(dept => dept.id !== props.dept?.id))
 const rules = computed<FormRules>(() => ({
-  name: [{
-    required: true,
-    message: t('dept.nameRequired'),
-    trigger: 'blur',
-  }],
+  name: [
+    {
+      required: true,
+      message: t('dept.nameRequired'),
+      trigger: 'blur',
+    },
+  ],
 }))
 
-watch([visible, () => props.dept, () => props.initialParentId], ([open, dept, parentId]) => {
+watch([
+  visible,
+  () => props.dept,
+  () => props.initialParentId,
+], ([open, dept, parentId]) => {
   editorVersion++
   saving.value = false
   saveError.value = false

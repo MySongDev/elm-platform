@@ -1,13 +1,35 @@
-export const tenantStatuses = ['PENDING', 'ACTIVE', 'SUSPENDED', 'DISABLED', 'EXPIRED', 'ARCHIVED'] as const
+export const tenantStatuses = [
+  'PENDING',
+  'ACTIVE',
+  'SUSPENDED',
+  'DISABLED',
+  'EXPIRED',
+  'ARCHIVED',
+] as const
 export type TenantStatus = (typeof tenantStatuses)[number]
 
-export const tenantEvents = ['APPROVE', 'REJECT', 'SUSPEND', 'RESUME', 'DISABLE', 'ACTIVATE', 'EXPIRE', 'RENEW', 'ARCHIVE'] as const
+export const tenantEvents = [
+  'APPROVE',
+  'REJECT',
+  'SUSPEND',
+  'RESUME',
+  'DISABLE',
+  'ACTIVATE',
+  'EXPIRE',
+  'RENEW',
+  'ARCHIVE',
+] as const
 export type TenantEvent = (typeof tenantEvents)[number]
 
 export const dataScopes = ['ALL', 'TENANT', 'SHOP', 'SELF'] as const
 export type DataScope = (typeof dataScopes)[number]
 
-export const tenantActorTypes = ['PLATFORM_ADMIN', 'TENANT_ADMIN', 'SHOP_OPERATOR', 'SYSTEM'] as const
+export const tenantActorTypes = [
+  'PLATFORM_ADMIN',
+  'TENANT_ADMIN',
+  'SHOP_OPERATOR',
+  'SYSTEM',
+] as const
 export type TenantActorType = (typeof tenantActorTypes)[number]
 
 export interface TenantStateActor {

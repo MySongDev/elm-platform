@@ -1,5 +1,7 @@
 export function toStringValue(value: unknown, fallback = '') {
-  const source = Array.isArray(value) ? value[0] : value
+  const source = Array.isArray(value)
+    ? value[0]
+    : value
   if (typeof source === 'string')
     return source
   if (source === null || source === undefined)
@@ -8,18 +10,24 @@ export function toStringValue(value: unknown, fallback = '') {
 }
 
 export function toNumberValue(value: unknown, fallback = 0) {
-  const source = Array.isArray(value) ? value[0] : value
+  const source = Array.isArray(value)
+    ? value[0]
+    : value
   if (source === null || source === undefined)
     return fallback
   if (typeof source === 'string' && source.trim() === '')
     return fallback
 
   const result = Number(source)
-  return Number.isFinite(result) ? result : fallback
+  return Number.isFinite(result)
+    ? result
+    : fallback
 }
 
 export function nextNumberId(values: number[]) {
-  return values.length ? Math.max(...values) + 1 : 1
+  return values.length
+    ? Math.max(...values) + 1
+    : 1
 }
 
 export function parseGeoHash(

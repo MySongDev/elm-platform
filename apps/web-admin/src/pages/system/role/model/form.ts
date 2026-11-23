@@ -23,7 +23,9 @@ export function createRoleForm(role: RoleItem | null = null): RoleFormState {
     code: role?.code ?? '',
     status: role?.status ?? 'ACTIVE',
     remark: role?.remark ?? '',
-    permissions: [...(role?.permissions ?? [])],
+    permissions: [
+      ...(role?.permissions ?? []),
+    ],
   }
 }
 

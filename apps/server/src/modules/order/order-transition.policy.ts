@@ -77,7 +77,9 @@ export function getAdminAvailableActions(order: OrderWorkflowSnapshot): AdminOrd
 }
 
 export function getCustomerAvailableActions(order: OrderWorkflowSnapshot): CustomerOrderAction[] {
-  return canRequestRefund(order) ? ['REQUEST_REFUND'] : []
+  return canRequestRefund(order)
+    ? ['REQUEST_REFUND']
+    : []
 }
 
 export function canRequestRefund(order: OrderWorkflowSnapshot) {

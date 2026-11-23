@@ -29,12 +29,16 @@ function normalizeElement(target: any): HTMLElement | null {
   if (value === window || value instanceof HTMLElement)
     return value
 
-  return value.$el instanceof HTMLElement ? value.$el : null
+  return value.$el instanceof HTMLElement
+    ? value.$el
+    : null
 }
 
 function toNumber(value: string): number {
   const number = Number.parseFloat(value)
-  return Number.isFinite(number) ? number : 0
+  return Number.isFinite(number)
+    ? number
+    : 0
 }
 
 function getVerticalOuterSize(element: Element | null): number {
@@ -49,10 +53,17 @@ function getVerticalOuterSize(element: Element | null): number {
 
 function getAnchorEndDistance(target: ScrollTarget, anchor: Element): number {
   const isWindow = target === window
-  const targetTop = isWindow ? 0 : (target as HTMLElement).getBoundingClientRect().top
-  const baseScrollTop = isWindow ? window.scrollY : (target as HTMLElement).scrollTop || 0
+  const targetTop = isWindow
+    ? 0
+    : (target as HTMLElement).getBoundingClientRect().top
+  const baseScrollTop = isWindow
+    ? window.scrollY
+    : (target as HTMLElement).scrollTop || 0
 
-  const candidates = [anchor, ...anchor.querySelectorAll('*')]
+  const candidates = [
+    anchor,
+    ...anchor.querySelectorAll('*'),
+  ]
   let maxBottom = anchor.getBoundingClientRect().bottom + toNumber(window.getComputedStyle(anchor).marginBottom)
 
   for (const element of candidates) {
@@ -154,7 +165,9 @@ export function useBackTop(options: UseBackTopOptions | number = {}): UseBackTop
   }
 
   function setTarget(target: ScrollTarget | null) {
-    const nextTarget = target instanceof HTMLElement || target === window ? target : null
+    const nextTarget = target instanceof HTMLElement || target === window
+      ? target
+      : null
     if (!nextTarget || nextTarget === currentTarget)
       return
 

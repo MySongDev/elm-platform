@@ -78,7 +78,10 @@ export function useCategoryFoods(shopId) {
           return true
         })
         updateCategory(id, {
-          foods: [...category.foods, ...added],
+          foods: [
+            ...category.foods,
+            ...added,
+          ],
           loaded: true,
           hasMore: page.has_more,
           offset: page.next_offset ?? category.offset + page.items.length,

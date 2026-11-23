@@ -110,9 +110,13 @@ export function isAuthPage(path: string): boolean {
 /** 去掉 query 与 hash，只留路径部分 */
 export function stripQuery(path: string): string {
   const cut = path.indexOf('?')
-  const noQuery = cut === -1 ? path : path.slice(0, cut)
+  const noQuery = cut === -1
+    ? path
+    : path.slice(0, cut)
   const hashCut = noQuery.indexOf('#')
-  return hashCut === -1 ? noQuery : noQuery.slice(0, hashCut)
+  return hashCut === -1
+    ? noQuery
+    : noQuery.slice(0, hashCut)
 }
 
 /**
@@ -124,7 +128,9 @@ export function stripQuery(path: string): string {
  * 多解一次会把目标自身参数里的 %26 解成 &，参数被悄悄截断。
  */
 export function normalizeRedirectTarget(redirect?: unknown): string {
-  const target = Array.isArray(redirect) ? redirect[0] : redirect
+  const target = Array.isArray(redirect)
+    ? redirect[0]
+    : redirect
 
   if (typeof target !== 'string' || !target) {
     return ''
@@ -185,7 +191,9 @@ export function withQuery(
     parts.push(`${encodeURIComponent(key)}=${encodeURIComponent(String(value))}`)
   }
 
-  return parts.length === 0 ? path : `${path}?${parts.join('&')}`
+  return parts.length === 0
+    ? path
+    : `${path}?${parts.join('&')}`
 }
 
 /**
@@ -193,7 +201,9 @@ export function withQuery(
  * 但从 `getCurrentPages()` 取到的 `$page.options` 或手拼字符串需要解析 → 本函数兜住后者。
  */
 export function parseQuery(queryString: string): Record<string, string> {
-  const raw = queryString.startsWith('?') ? queryString.slice(1) : queryString
+  const raw = queryString.startsWith('?')
+    ? queryString.slice(1)
+    : queryString
   const result: Record<string, string> = {}
 
   if (!raw) {
@@ -205,8 +215,12 @@ export function parseQuery(queryString: string): Record<string, string> {
       continue
     }
     const eq = pair.indexOf('=')
-    const key = eq === -1 ? pair : pair.slice(0, eq)
-    const value = eq === -1 ? '' : pair.slice(eq + 1)
+    const key = eq === -1
+      ? pair
+      : pair.slice(0, eq)
+    const value = eq === -1
+      ? ''
+      : pair.slice(eq + 1)
     result[decodeURIComponent(key)] = decodeURIComponent(value.replace(/\+/g, ' '))
   }
 

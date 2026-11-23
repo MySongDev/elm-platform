@@ -24,21 +24,30 @@ const saving = shallowRef(false)
 const saveError = shallowRef(false)
 let editorVersion = 0
 const { t } = useI18n()
-const title = computed(() => t(props.food ? 'crud.editTitle' : 'crud.addTitle', { title: t('commerce.food.name') }))
+const title = computed(() => t(props.food ? 'crud.editTitle' : 'crud.addTitle', {
+  title: t('commerce.food.name'),
+}))
 const rules = computed<FormRules>(() => ({
-  name: [{
-    required: true,
-    message: t('commerce.food.nameRequired'),
-    trigger: 'blur',
-  }],
-  restaurant_id: [{
-    required: true,
-    message: t('commerce.food.restaurantIdRequired'),
-    trigger: 'blur',
-  }],
+  name: [
+    {
+      required: true,
+      message: t('commerce.food.nameRequired'),
+      trigger: 'blur',
+    },
+  ],
+  restaurant_id: [
+    {
+      required: true,
+      message: t('commerce.food.restaurantIdRequired'),
+      trigger: 'blur',
+    },
+  ],
 }))
 
-watch([visible, () => props.food], ([open, food]) => {
+watch([
+  visible,
+  () => props.food,
+], ([open, food]) => {
   editorVersion++
   Object.assign(form, createFoodForm(open ? food : null))
   saving.value = false

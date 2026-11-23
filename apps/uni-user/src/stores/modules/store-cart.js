@@ -45,7 +45,9 @@ function restoreCart() {
   }
 
   return {
-    stores: Array.isArray(cached.stores) ? cached.stores : [],
+    stores: Array.isArray(cached.stores)
+      ? cached.stores
+      : [],
     pendingCheckout: cached.pendingCheckout ?? null,
     // 与 stores 同一个 key 保存：分两个 key 写会在断电时出现「车扣了但快照没消费」的错位。
     checkoutSnapshots: Array.isArray(cached.checkoutSnapshots?.snapshots)

@@ -15,7 +15,12 @@ export interface TreeNode {
  * @performance O(n)，递归访问每个节点一次。
  */
 export function flattenTree<T extends TreeNode>(items: T[]): T[] {
-  return items.flatMap(item => [item, ...((item.children as T[] | undefined) ? flattenTree(item.children as T[]) : [])])
+  return items.flatMap(item => [
+    item,
+    ...((item.children as T[] | undefined)
+      ? flattenTree(item.children as T[])
+      : []),
+  ])
 }
 
 /**
@@ -31,7 +36,9 @@ export function filterTree<T extends TreeNode>(
 ): T[] {
   return items
     .map((item) => {
-      const children = item.children ? filterTree(item.children as T[], predicate) : []
+      const children = item.children
+        ? filterTree(item.children as T[], predicate)
+        : []
       if (predicate(item) || children.length) {
         return {
           ...item,

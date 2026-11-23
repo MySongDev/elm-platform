@@ -19,7 +19,10 @@ export class RolesGuard implements CanActivate {
     ])
     const requiredPermissions = this.reflector.getAllAndOverride<string[]>(
       PERMISSIONS_KEY,
-      [context.getHandler(), context.getClass()],
+      [
+        context.getHandler(),
+        context.getClass(),
+      ],
     )
 
     if (
@@ -69,7 +72,10 @@ export class RolesGuard implements CanActivate {
     permissions?: string[] | null
   }) {
     const rolePermissions = await this.getRolePermissions(user.role)
-    return Array.from(new Set([...rolePermissions, ...(user.permissions ?? [])]))
+    return Array.from(new Set([
+      ...rolePermissions,
+      ...(user.permissions ?? []),
+    ]))
   }
 
   private async getRolePermissions(roleCode?: string | null) {

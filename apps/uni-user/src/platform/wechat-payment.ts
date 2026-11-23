@@ -68,7 +68,11 @@ export function invokeWechatPayment(params: WechatPaymentParams): Promise<Wechat
         resolve({
           launched: false,
           canceled: outcome === 'canceled',
-          message: outcome === 'canceled' ? undefined : (typeof error?.errMsg === 'string' ? error.errMsg : '支付未完成'),
+          message: outcome === 'canceled'
+            ? undefined
+            : (typeof error?.errMsg === 'string'
+                ? error.errMsg
+                : '支付未完成'),
         })
       },
     })

@@ -160,7 +160,9 @@ function resolveUrl(url: string): string {
     return url
   }
   const base = API_BASE_URL.replace(/\/+$/, '')
-  return `${base}${url.startsWith('/') ? '' : '/'}${url}`
+  return `${base}${url.startsWith('/')
+    ? ''
+    : '/'}${url}`
 }
 
 export interface TransportHandle<T = unknown> {
@@ -182,7 +184,9 @@ export function send<T = unknown>(config: TransportConfig): TransportHandle<T> {
   const query = serializeQuery(config.params)
   const baseUrl = resolveUrl(config.url)
   const finalUrl = query
-    ? `${baseUrl}${baseUrl.includes('?') ? '&' : '?'}${query}`
+    ? `${baseUrl}${baseUrl.includes('?')
+      ? '&'
+      : '?'}${query}`
     : baseUrl
 
   const promise = new Promise<TransportResponse<T>>((resolve, reject) => {
@@ -195,7 +199,9 @@ export function send<T = unknown>(config: TransportConfig): TransportHandle<T> {
       if (status < 200 || status >= 300) {
         const message = (data as { message?: unknown } | null)?.message
         reject(new TransportError({
-          message: typeof message === 'string' ? message : `Request failed with status ${status}`,
+          message: typeof message === 'string'
+            ? message
+            : `Request failed with status ${status}`,
           status,
           data,
         }))

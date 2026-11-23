@@ -38,7 +38,9 @@ describe('tenantAccessService', () => {
       boundShopIds: ['1', '2'],
     }))).toEqual({
       tenantId: 10,
-      shopId: { in: ['1', '2'] },
+      shopId: {
+        in: ['1', '2'],
+      },
     })
   })
 
@@ -91,7 +93,9 @@ describe('tenantAccessService', () => {
       boundShopIds: ['1', '2'],
     }))).toEqual({
       tenantId: 10,
-      shopId: { in: ['1', '2'] },
+      shopId: {
+        in: ['1', '2'],
+      },
     })
   })
 })

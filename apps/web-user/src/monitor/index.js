@@ -125,7 +125,9 @@ function setupRouterMonitor(router) {
 
   router.afterEach((to, from, failure) => {
     const start = to.meta[ROUTE_START_MARK]
-    const durationMs = typeof start === 'number' ? Math.round(performance.now() - start) : undefined
+    const durationMs = typeof start === 'number'
+      ? Math.round(performance.now() - start)
+      : undefined
 
     addErrorLog({
       type: 'page_view',

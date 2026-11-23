@@ -33,10 +33,12 @@ beforeEach(() => {
 })
 
 function setTopPage(route, options = {}) {
-  pages = [{
-    route,
-    options,
-  }]
+  pages = [
+    {
+      route,
+      options,
+    },
+  ]
 }
 
 describe('resolveLoginRedirect', () => {

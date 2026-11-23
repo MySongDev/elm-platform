@@ -50,10 +50,12 @@ export function toFoodPayload(form: FoodFormState, food: FoodItem | null): FoodP
     month_sales: form.month_sales,
     satisfy_rate: form.satisfy_rate,
     rating: form.rating,
-    specfoods: [{
-      price: form.price,
-      packing_fee: form.packing_fee,
-      original_price: form.original_price,
-    }],
+    specfoods: [
+      {
+        price: form.price,
+        packing_fee: form.packing_fee,
+        original_price: form.original_price,
+      },
+    ],
   }
 }

@@ -4,7 +4,9 @@ import { resolveUpstreamUrl } from '../utils/upstream-url'
 
 function appendQuery(url: URL, query: Record<string, unknown>): void {
   for (const [key, value] of Object.entries(query)) {
-    const values = Array.isArray(value) ? value : [value]
+    const values = Array.isArray(value)
+      ? value
+      : [value]
     for (const item of values.filter(item => item !== null && item !== undefined))
       url.searchParams.append(key, String(item))
   }
@@ -57,7 +59,9 @@ export class ElmUpstreamService {
     catch (error) {
       this.logger.error(
         `Elm upstream request failed for ${path}`,
-        error instanceof Error ? error.stack : String(error),
+        error instanceof Error
+          ? error.stack
+          : String(error),
       )
       throw new BadGatewayException(
         `Elm upstream request failed for ${path}`,

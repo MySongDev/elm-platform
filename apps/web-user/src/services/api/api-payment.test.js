@@ -41,22 +41,26 @@ describe('api-payment', () => {
       shopId: '101',
       shopName: '示例商家',
       deliveryFee: 5,
-      cartItems: [{
-        itemId: '1001',
-        qty: 2,
-        unitPrice: 12,
-      }],
+      cartItems: [
+        {
+          itemId: '1001',
+          qty: 2,
+          unitPrice: 12,
+        },
+      ],
     })
 
     expect(mocks.post).toHaveBeenCalledWith('/payments/alipay/wap/create', {
       shopId: '101',
       shopName: '示例商家',
       deliveryFee: 5,
-      cartItems: [{
-        itemId: '1001',
-        qty: 2,
-        unitPrice: 12,
-      }],
+      cartItems: [
+        {
+          itemId: '1001',
+          qty: 2,
+          unitPrice: 12,
+        },
+      ],
     }, PAYMENT_OPTIONS)
   })
 

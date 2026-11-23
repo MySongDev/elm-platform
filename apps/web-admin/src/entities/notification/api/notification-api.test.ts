@@ -26,7 +26,9 @@ describe('notification API adapter', () => {
   it('list passes type query param when provided', async () => {
     mockHttp.get.mockResolvedValueOnce([])
     await api.list('todo')
-    expect(mockHttp.get).toHaveBeenCalledWith(notificationEndpoints.list, { params: { type: 'todo' } })
+    expect(mockHttp.get).toHaveBeenCalledWith(notificationEndpoints.list, {
+      params: { type: 'todo' },
+    })
   })
 
   it('markAllRead delegates to PATCH /admin/notifications/read-all', async () => {
@@ -56,7 +58,9 @@ describe('notification API adapter', () => {
   it('clear delegates to DELETE /admin/notifications with type', async () => {
     mockHttp.delete.mockResolvedValueOnce({ deletedCount: 5 })
     const result = await api.clear('todo')
-    expect(mockHttp.delete).toHaveBeenCalledWith(notificationEndpoints.clear, { params: { type: 'todo' } })
+    expect(mockHttp.delete).toHaveBeenCalledWith(notificationEndpoints.clear, {
+      params: { type: 'todo' },
+    })
     expect(result.deletedCount).toBe(5)
   })
 })

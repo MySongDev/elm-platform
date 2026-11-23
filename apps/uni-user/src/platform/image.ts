@@ -48,5 +48,7 @@ export function getCarouselImageUrl(path?: string | null): string {
   if (/^(?:https?:)?\/\//.test(path) || path.startsWith('data:')) {
     return path
   }
-  return `${API_BASE_URL}/img/cdn${path.startsWith('/') ? '' : '/'}${path}`
+  return `${API_BASE_URL}/img/cdn${path.startsWith('/')
+    ? ''
+    : '/'}${path}`
 }

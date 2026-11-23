@@ -54,12 +54,16 @@ describe('filterRoutesByAccess', () => {
           {
             path: 'user',
             component: {},
-            meta: { auths: ['system:user:view'] },
+            meta: {
+              auths: ['system:user:view'],
+            },
           },
           {
             path: 'role',
             component: {},
-            meta: { auths: ['system:role:view'] },
+            meta: {
+              auths: ['system:role:view'],
+            },
           },
         ],
       },
@@ -70,7 +74,9 @@ describe('filterRoutesByAccess', () => {
           {
             path: 'online',
             component: {},
-            meta: { auths: ['monitor:online:view'] },
+            meta: {
+              auths: ['monitor:online:view'],
+            },
           },
         ],
       },

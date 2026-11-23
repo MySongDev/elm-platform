@@ -168,7 +168,9 @@ function probeMediaQuery() {
   const info = uni.getSystemInfoSync()
   uni.createSelectorQuery()
     .select('.media-probe')
-    .fields({ computedStyle: ['backgroundColor'] }, (node) => {
+    .fields({
+      computedStyle: ['backgroundColor'],
+    }, (node) => {
       const bg = (node as { backgroundColor?: string } | null)?.backgroundColor || ''
       const triggered = /255,\s*0,\s*0|rgb\(255/.test(bg)
       mediaProbe.value = `windowWidth=${info.windowWidth}px | 断点(<=360px)触发=${triggered} | bg=${bg}`

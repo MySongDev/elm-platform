@@ -141,7 +141,9 @@ export async function requestPayment(req: PaymentRequest): Promise<PaymentResult
     return {
       success: false,
       orderNo: req.orderNo ?? '',
-      message: error instanceof Error ? error.message : '发起支付失败',
+      message: error instanceof Error
+        ? error.message
+        : '发起支付失败',
     }
   }
   // #endif
@@ -177,7 +179,9 @@ export async function requestPayment(req: PaymentRequest): Promise<PaymentResult
     return {
       success: false,
       orderNo: req.orderNo ?? '',
-      message: error instanceof Error ? error.message : '支付失败',
+      message: error instanceof Error
+        ? error.message
+        : '支付失败',
     }
   }
   // #endif

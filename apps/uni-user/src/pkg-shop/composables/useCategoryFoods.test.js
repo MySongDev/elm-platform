@@ -3,7 +3,9 @@ import { effectScope, ref } from 'vue'
 import { getCategoryFoods } from '@/services/api/api-shop'
 import { useCategoryFoods } from './useCategoryFoods'
 
-vi.mock('@/services/api/api-shop', () => ({ getCategoryFoods: vi.fn() }))
+vi.mock('@/services/api/api-shop', () => ({
+  getCategoryFoods: vi.fn(),
+}))
 
 // uni-user 锁定 Vue 3.4，需在本端运行时验证会话清理，不能只依赖 H5 的 Vue 3.5 测试。
 const scopes = []
@@ -11,7 +13,10 @@ function createMenu() {
   const scope = effectScope()
   scopes.push(scope)
   const menu = scope.run(() => useCategoryFoods(ref('42')))
-  menu.resetMenu([{ id: 7 }, { id: 8 }])
+  menu.resetMenu([
+    { id: 7 },
+    { id: 8 },
+  ])
   return menu
 }
 
@@ -23,7 +28,9 @@ describe('小程序分类分页会话', () => {
     const menu = createMenu()
     expect(getCategoryFoods).not.toHaveBeenCalled()
     getCategoryFoods.mockResolvedValueOnce({
-      items: [{ item_id: 1 }],
+      items: [
+        { item_id: 1 },
+      ],
       has_more: false,
       next_offset: null,
     })
@@ -32,7 +39,9 @@ describe('小程序分类分页会话', () => {
     await request
     await menu.loadCategoryFoods(7)
     expect(getCategoryFoods).toHaveBeenCalledTimes(1)
-    expect(menu.foodMenuData.value[0].foods).toEqual([{ item_id: 1 }])
+    expect(menu.foodMenuData.value[0].foods).toEqual([
+      { item_id: 1 },
+    ])
     expect(menu.foodMenuData.value[1].loaded).toBe(false)
   })
 
@@ -59,9 +68,13 @@ describe('小程序分类分页会话', () => {
     getCategoryFoods.mockReturnValueOnce(new Promise((done) => { resolve = done }))
     const request = menu.loadCategoryFoods(7)
     await Promise.resolve()
-    menu.resetMenu([{ id: 9 }])
+    menu.resetMenu([
+      { id: 9 },
+    ])
     resolve({
-      items: [{ item_id: 1 }],
+      items: [
+        { item_id: 1 },
+      ],
       has_more: false,
       next_offset: null,
     })
@@ -73,7 +86,9 @@ describe('小程序分类分页会话', () => {
     await Promise.resolve()
     scopes[0].stop()
     resolve({
-      items: [{ item_id: 2 }],
+      items: [
+        { item_id: 2 },
+      ],
       has_more: false,
       next_offset: null,
     })

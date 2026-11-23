@@ -30,13 +30,19 @@ const form = reactive(createMenuForm())
 const saving = shallowRef(false)
 const saveError = shallowRef(false)
 let editorVersion = 0
-const title = computed(() => t(props.menu ? 'crud.editTitle' : 'crud.addTitle', { title: t('menu.menuType') }))
+const title = computed(() => t(props.menu ? 'crud.editTitle' : 'crud.addTitle', {
+  title: t('menu.menuType'),
+}))
 const rules = computed(() => createMenuFormRules(t))
 const statusOptions = computed(() => createEnabledStatusOptions(getStatusText(t)))
 // 保持原有选择范围，只排除自身；用完整树展开，搜索结果不会缩小可选父菜单。
 const parentOptions = computed(() => flattenTree(props.menus).filter(menu => menu.id !== props.menu?.id))
 
-watch([visible, () => props.menu, () => props.initialParentId], ([open, menu, initialParentId]) => {
+watch([
+  visible,
+  () => props.menu,
+  () => props.initialParentId,
+], ([open, menu, initialParentId]) => {
   editorVersion++
   saving.value = false
   if (!open)

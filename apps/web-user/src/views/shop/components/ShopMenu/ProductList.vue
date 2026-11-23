@@ -18,12 +18,22 @@ const props = defineProps({
     default: null,
   },
 })
-const emit = defineEmits(['add', 'decrease', 'scroll-category', 'load-category'])
+const emit = defineEmits([
+  'add',
+  'decrease',
+  'scroll-category',
+  'load-category',
+])
 const listRef = ref(null)
 
 // 只观察各分类已加载菜品的页尾。换页后页尾向下移动，重新观察可补齐不足一屏的小分类。
 // 隐藏/卸载商品 tab 时断开观察；失败分类由按钮重试，不因仍在可视区而无限请求。
-watch([listRef, () => props.scrollRoot, () => props.categories, () => props.activeCategoryId], (_values, _old, onCleanup) => {
+watch([
+  listRef,
+  () => props.scrollRoot,
+  () => props.categories,
+  () => props.activeCategoryId,
+], (_values, _old, onCleanup) => {
   if (!listRef.value || !props.scrollRoot || typeof IntersectionObserver === 'undefined') {
     return
   }

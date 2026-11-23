@@ -244,7 +244,9 @@ function readCachedLocation() {
     const cache = uni.getStorageSync('location')
     if (!cache)
       return {}
-    const parsed = typeof cache === 'string' ? JSON.parse(cache) : cache
+    const parsed = typeof cache === 'string'
+      ? JSON.parse(cache)
+      : cache
     return {
       latitude: parsed?.latitude ?? null,
       longitude: parsed?.longitude ?? null,
@@ -304,8 +306,12 @@ export async function request(options = {}) {
       url: config.url,
       method: config.method,
       // GET 的参数走 params（transport 序列化进 query），其余走 data（请求体）
-      params: config.method === 'GET' ? config.params : undefined,
-      data: config.method === 'GET' ? undefined : config.data,
+      params: config.method === 'GET'
+        ? config.params
+        : undefined,
+      data: config.method === 'GET'
+        ? undefined
+        : config.data,
       header: config.header,
       timeout: config.timeout ?? REQUEST_TIMEOUT,
       signal: config.signal,
@@ -339,11 +345,15 @@ export async function request(options = {}) {
     _clearDedupe(config)
 
     const method = (config.method || 'get').toLowerCase()
-    const status = error instanceof TransportError ? error.status : undefined
+    const status = error instanceof TransportError
+      ? error.status
+      : undefined
     const userMessage = resolveUserMessage(error)
 
     // 6a. 重试（仅 GET、可重试错误、未超限）
-    const retryLimit = meta.retry === false ? 0 : meta.retry ?? 0
+    const retryLimit = meta.retry === false
+      ? 0
+      : meta.retry ?? 0
     const nextRetryCount = (meta.retryCount || 0) + 1
     const canRetry
       = method === 'get'

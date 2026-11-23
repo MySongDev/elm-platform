@@ -72,7 +72,9 @@ function checkout() {
 
   savePaymentCheckoutDraft({
     shopId: 'cart-checkout',
-    shopName: selectedCount.value > 1 ? '购物车合并结算' : checkoutItems.value[0]?.shopName || '购物车结算',
+    shopName: selectedCount.value > 1
+      ? '购物车合并结算'
+      : checkoutItems.value[0]?.shopName || '购物车结算',
     deliveryFee: 0,
     totalQty: selectedQuantity.value,
     goodsAmount: Number(selectedTotal.value || 0),

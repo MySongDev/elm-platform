@@ -103,7 +103,9 @@ export const useTabsStore = defineStore('tabs', () => {
 
     if (shouldMoveActiveTab(tab)) {
       const next = getNextActiveTab(idx)
-      activeTab.value = next ? getTabKey(next) : DEFAULT_HOME_PATH
+      activeTab.value = next
+        ? getTabKey(next)
+        : DEFAULT_HOME_PATH
       return next?.fullPath ?? DEFAULT_HOME_PATH
     }
     return null
@@ -121,7 +123,9 @@ export const useTabsStore = defineStore('tabs', () => {
     )
     ensureHomeTabFirst()
     const active = tabs.value.find(t => t.fullPath === fullPath)
-    activeTab.value = active ? getTabKey(active) : fullPath
+    activeTab.value = active
+      ? getTabKey(active)
+      : fullPath
   }
 
   /**
@@ -172,7 +176,9 @@ export const useTabsStore = defineStore('tabs', () => {
     tabs.value = tabs.value.filter(t => !isTabClosable(t))
     ensureHomeTabFirst()
     const first = tabs.value[0]
-    activeTab.value = first ? getTabKey(first) : DEFAULT_HOME_PATH
+    activeTab.value = first
+      ? getTabKey(first)
+      : DEFAULT_HOME_PATH
     return first?.fullPath ?? DEFAULT_HOME_PATH
   }
 

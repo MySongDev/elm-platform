@@ -56,7 +56,9 @@ export function useSearchDialog(inputRef: Ref<HTMLInputElement | null>) {
   })
 
   const emptyText = computed(() =>
-    keyword.value.trim() ? t('header.noResult') : t('header.searchHint'),
+    keyword.value.trim()
+      ? t('header.noResult')
+      : t('header.searchHint'),
   )
 
   function close() {
@@ -117,7 +119,9 @@ export function useSearchDialog(inputRef: Ref<HTMLInputElement | null>) {
   function onGlobalKeydown(e: KeyboardEvent) {
     if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
       e.preventDefault()
-      visible.value ? close() : open()
+      visible.value
+        ? close()
+        : open()
     }
   }
 

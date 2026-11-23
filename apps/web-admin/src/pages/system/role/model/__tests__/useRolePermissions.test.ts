@@ -15,7 +15,9 @@ const menuApi = vi.hoisted(() => ({
 vi.mock('../../api', () => roleApi)
 vi.mock('@/entities/system-menu', () => menuApi)
 vi.mock('vue-i18n', () => ({
-  useI18n: () => ({ t: (key: string) => key }),
+  useI18n: () => ({
+    t: (key: string) => key,
+  }),
 }))
 
 vi.mock('element-plus', () => ({

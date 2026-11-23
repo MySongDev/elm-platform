@@ -4,7 +4,9 @@ import { createSvgIconsPlugin } from 'vite-plugin-svg-icons'
 
 export function createElmSvgIconsPlugin(iconDir: string): ReturnType<typeof createSvgIconsPlugin> {
   return createSvgIconsPlugin({
-    iconDirs: [path.resolve(cwd(), iconDir)],
+    iconDirs: [
+      path.resolve(cwd(), iconDir),
+    ],
     symbolId: 'icon-[name]',
     inject: 'body-last',
     customDomId: '__svg__icons__dom__',
@@ -23,7 +25,13 @@ export function createElmSvgIconsPlugin(iconDir: string): ReturnType<typeof crea
         {
           name: 'removeAttrs',
           params: {
-            attrs: ['fill', 'stroke', 'class', 'style', 'id'],
+            attrs: [
+              'fill',
+              'stroke',
+              'class',
+              'style',
+              'id',
+            ],
           },
         },
       ],

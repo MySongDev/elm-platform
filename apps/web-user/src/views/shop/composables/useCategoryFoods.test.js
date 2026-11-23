@@ -3,7 +3,9 @@ import { effectScope, ref } from 'vue'
 import { getCategoryFoods } from '@/services/api/api-shop'
 import { useCategoryFoods } from './useCategoryFoods'
 
-vi.mock('@/services/api/api-shop', () => ({ getCategoryFoods: vi.fn() }))
+vi.mock('@/services/api/api-shop', () => ({
+  getCategoryFoods: vi.fn(),
+}))
 
 const scopes = []
 function createMenu() {
@@ -11,7 +13,10 @@ function createMenu() {
   scopes.push(scope)
   const shopId = ref('42')
   const menu = scope.run(() => useCategoryFoods(shopId))
-  menu.resetMenu([{ id: 7 }, { id: 8 }])
+  menu.resetMenu([
+    { id: 7 },
+    { id: 8 },
+  ])
   return {
     ...menu,
     shopId,
@@ -48,13 +53,19 @@ describe('分类分页会话', () => {
     await Promise.resolve()
     expect(getCategoryFoods).toHaveBeenCalledTimes(1)
     first.resolve({
-      items: [{ item_id: 1 }, { item_id: 2 }],
+      items: [
+        { item_id: 1 },
+        { item_id: 2 },
+      ],
       has_more: true,
       next_offset: 2,
     })
     await request
     getCategoryFoods.mockResolvedValueOnce({
-      items: [{ item_id: 2 }, { item_id: 3 }],
+      items: [
+        { item_id: 2 },
+        { item_id: 3 },
+      ],
       has_more: false,
       next_offset: null,
     })
@@ -69,19 +80,25 @@ describe('分类分页会话', () => {
   it('下一页失败保留现有菜品和 offset，只允许显式重试', async () => {
     const menu = createMenu()
     getCategoryFoods.mockResolvedValueOnce({
-      items: [{ item_id: 1 }],
+      items: [
+        { item_id: 1 },
+      ],
       has_more: true,
       next_offset: 1,
     })
     await menu.loadCategoryFoods(7)
     getCategoryFoods.mockRejectedValueOnce(new Error('网络中断'))
     await menu.loadCategoryFoods(7)
-    expect(menu.foodMenuData.value[0].foods).toEqual([{ item_id: 1 }])
+    expect(menu.foodMenuData.value[0].foods).toEqual([
+      { item_id: 1 },
+    ])
     expect(menu.foodMenuData.value[0].loadError).toBe(true)
     await menu.loadCategoryFoods(7)
     expect(getCategoryFoods).toHaveBeenCalledTimes(2)
     getCategoryFoods.mockResolvedValueOnce({
-      items: [{ item_id: 2 }],
+      items: [
+        { item_id: 2 },
+      ],
       has_more: false,
       next_offset: null,
     })
@@ -99,10 +116,14 @@ describe('分类分页会话', () => {
     const oldRequest = menu.loadCategoryFoods(7)
     await Promise.resolve()
     menu.shopId.value = '43'
-    menu.resetMenu([{ id: 7 }])
+    menu.resetMenu([
+      { id: 7 },
+    ])
     const newRequest = menu.loadCategoryFoods(7)
     oldPage.resolve({
-      items: [{ item_id: 1 }],
+      items: [
+        { item_id: 1 },
+      ],
       has_more: false,
       next_offset: null,
     })
@@ -111,12 +132,16 @@ describe('分类分页会话', () => {
     expect(menu.foodMenuData.value[0].loading).toBe(true)
     expect(menu.loadCategoryFoods(7)).toBe(newRequest)
     newPage.resolve({
-      items: [{ item_id: 9 }],
+      items: [
+        { item_id: 9 },
+      ],
       has_more: false,
       next_offset: null,
     })
     await newRequest
-    expect(menu.foodMenuData.value[0].foods).toEqual([{ item_id: 9 }])
+    expect(menu.foodMenuData.value[0].foods).toEqual([
+      { item_id: 9 },
+    ])
   })
 
   it('空分类停止请求；页面销毁后在途响应不再回写', async () => {
@@ -136,7 +161,9 @@ describe('分类分页会话', () => {
     await Promise.resolve()
     menu.scope.stop()
     page.resolve({
-      items: [{ item_id: 2 }],
+      items: [
+        { item_id: 2 },
+      ],
       has_more: false,
       next_offset: null,
     })
@@ -147,7 +174,9 @@ describe('分类分页会话', () => {
   it('拒绝不前进的 offset，防止可视区检查无限取同一页', async () => {
     const menu = createMenu()
     getCategoryFoods.mockResolvedValueOnce({
-      items: [{ item_id: 1 }],
+      items: [
+        { item_id: 1 },
+      ],
       has_more: true,
       next_offset: 0,
     })

@@ -53,7 +53,9 @@ watch(
     }
     loadMore()
     getShopReviewFilters(id).then((tags) => {
-      filters.value = Array.isArray(tags) ? tags : []
+      filters.value = Array.isArray(tags)
+        ? tags
+        : []
     }).catch(() => {
       filters.value = []
     })
@@ -229,10 +231,10 @@ function onScrollToLower() {
 
 .review-item__name {
   overflow: hidden;
+  text-overflow: ellipsis;
   font-size: 26rpx;
   font-weight: 600;
   color: #222;
-  text-overflow: ellipsis;
   white-space: nowrap;
 }
 

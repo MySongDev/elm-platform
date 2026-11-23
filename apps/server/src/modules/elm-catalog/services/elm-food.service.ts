@@ -49,7 +49,11 @@ export class ElmFoodService {
       const categories = await this.prisma.foodCategory.findMany({
         where: { restaurantId },
         orderBy: { id: 'asc' },
-        include: { _count: { select: { foods: true } } },
+        include: {
+          _count: {
+            select: { foods: true },
+          },
+        },
       })
       return categories.map(category => ({
         ...toFoodCategoryResponse(category),
@@ -60,7 +64,11 @@ export class ElmFoodService {
     const categories = await this.prisma.foodCategory.findMany({
       where: { restaurantId },
       orderBy: { id: 'asc' },
-      include: { foods: { orderBy: { itemId: 'asc' } } },
+      include: {
+        foods: {
+          orderBy: { itemId: 'asc' },
+        },
+      },
     })
 
     return categories.map(category => ({
@@ -104,7 +112,9 @@ export class ElmFoodService {
     return {
       items,
       has_more: hasMore,
-      next_offset: hasMore ? offset + items.length : null,
+      next_offset: hasMore
+        ? offset + items.length
+        : null,
     }
   }
 
@@ -134,8 +144,14 @@ export class ElmFoodService {
     const rows = await this.prisma.food.findMany({
       where: {
         ...await this.buildFoodScopeWhere(context),
-        ...(restaurantId ? { restaurantId } : {}),
-        ...(keyword ? { name: { contains: keyword } } : {}),
+        ...(restaurantId
+          ? { restaurantId }
+          : {}),
+        ...(keyword
+          ? {
+              name: { contains: keyword },
+            }
+          : {}),
       },
       orderBy: { itemId: 'asc' },
       skip: Math.max(offset, 0),
@@ -176,13 +192,17 @@ export class ElmFoodService {
         satisfyCount: toNumberValue(data.satisfy_count, 0),
         ratingCount: toNumberValue(data.rating_count, 0),
         rating: toNumberValue(data.rating, 5),
-        specfoods: [{
-          name: toStringValue(data.name, '新食品'),
-          item_id: itemId,
-          restaurant_id: restaurant.id,
-          price,
-        }],
-        tenantId: context && context.dataScope !== 'ALL' ? context.tenantId : null,
+        specfoods: [
+          {
+            name: toStringValue(data.name, '新食品'),
+            item_id: itemId,
+            restaurant_id: restaurant.id,
+            price,
+          },
+        ],
+        tenantId: context && context.dataScope !== 'ALL'
+          ? context.tenantId
+          : null,
       },
     })
 
@@ -225,8 +245,11 @@ export class ElmFoodService {
         ...await this.buildFoodScopeWhere(context),
       },
     })
-    if (row)
-      await this.prisma.food.delete({ where: { itemId } })
+    if (row) {
+      await this.prisma.food.delete({
+        where: { itemId },
+      })
+    }
 
     return {
       status: 1,
@@ -267,20 +290,30 @@ export class ElmFoodService {
    */
   async getRatings(offset = 0, limit = 10, restaurantId?: number) {
     const foods = await this.prisma.food.findMany({
-      where: restaurantId ? { restaurantId } : {},
+      where: restaurantId
+        ? { restaurantId }
+        : {},
       select: { name: true },
       orderBy: { itemId: 'asc' },
       take: 20,
     })
-    const names = foods.length ? foods.map(food => food.name) : ['本店菜品']
+    const names = foods.length
+      ? foods.map(food => food.name)
+      : ['本店菜品']
 
     const list = Array.from({ length: 20 }, (_, index) => ({
       username: `用户${index + 1}`,
-      rating_star: index % 5 === 0 ? 4 : 5,
+      rating_star: index % 5 === 0
+        ? 4
+        : 5,
       rated_at: '2026-05-17',
       time_spent_desc: '30分钟送达',
-      rating_text: index % 4 === 0 ? '包装很好，味道也不错。' : '准时送达，整体满意。',
-      item_ratings: [{ food_name: names[index % names.length] }],
+      rating_text: index % 4 === 0
+        ? '包装很好，味道也不错。'
+        : '准时送达，整体满意。',
+      item_ratings: [
+        { food_name: names[index % names.length] },
+      ],
       avatar: 'default.jpg',
     }))
 
@@ -321,7 +354,9 @@ export class ElmFoodService {
     if (categories.length)
       return categories[0].id
 
-    const max = await this.prisma.foodCategory.aggregate({ _max: { id: true } })
+    const max = await this.prisma.foodCategory.aggregate({
+      _max: { id: true },
+    })
     const created = await this.prisma.foodCategory.create({
       data: {
         id: (max._max.id ?? 0) + 1,
@@ -335,7 +370,9 @@ export class ElmFoodService {
   }
 
   private async nextFoodItemId() {
-    const max = await this.prisma.food.aggregate({ _max: { itemId: true } })
+    const max = await this.prisma.food.aggregate({
+      _max: { itemId: true },
+    })
     return (max._max.itemId ?? 0) + 1
   }
 
@@ -351,8 +388,11 @@ export class ElmFoodService {
     if (filter.tenantId !== undefined)
       where.tenantId = filter.tenantId
 
-    if (filter.shopId !== undefined)
-      where.restaurantId = { in: toShopIdList(filter.shopId) }
+    if (filter.shopId !== undefined) {
+      where.restaurantId = {
+        in: toShopIdList(filter.shopId),
+      }
+    }
 
     return where
   }
@@ -369,8 +409,11 @@ export class ElmFoodService {
     if (filter.tenantId !== undefined)
       where.restaurant = { tenantId: filter.tenantId }
 
-    if (filter.shopId !== undefined)
-      where.restaurantId = { in: toShopIdList(filter.shopId) }
+    if (filter.shopId !== undefined) {
+      where.restaurantId = {
+        in: toShopIdList(filter.shopId),
+      }
+    }
 
     return where
   }

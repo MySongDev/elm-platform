@@ -7,7 +7,12 @@ import { WechatPaymentService } from './wechat/wechat-payment.service'
 
 @Module({
   imports: [OrderModule],
-  providers: [PaymentService, AlipayService, WechatPayService, WechatPaymentService],
+  providers: [
+    PaymentService,
+    AlipayService,
+    WechatPayService,
+    WechatPaymentService,
+  ],
   exports: [PaymentService, WechatPaymentService],
 })
 export class PaymentModule {}

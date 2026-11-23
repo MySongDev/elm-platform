@@ -69,7 +69,12 @@ describe('authService admin login', () => {
     const result = await service.login('admin', 'admin123', '127.0.0.1', 'Chrome')
 
     expect(prisma.user.findFirst).toHaveBeenCalledWith({
-      where: { OR: [{ username: 'admin' }, { phone: 'admin' }] },
+      where: {
+        OR: [
+          { username: 'admin' },
+          { phone: 'admin' },
+        ],
+      },
       include: {
         tenant: {
           select: {
@@ -120,7 +125,12 @@ describe('authService admin login', () => {
     await service.login('13800138000', 'admin123')
 
     expect(prisma.user.findFirst).toHaveBeenCalledWith(expect.objectContaining({
-      where: { OR: [{ username: '13800138000' }, { phone: '13800138000' }] },
+      where: {
+        OR: [
+          { username: '13800138000' },
+          { phone: '13800138000' },
+        ],
+      },
     }))
   })
 

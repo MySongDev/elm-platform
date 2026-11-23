@@ -12,7 +12,9 @@ const router = useRouter()
 const navMainRef = useTemplateRef('navMainRef')
 const navbarHeader = shallowRef(null)
 const visibleNavbarHeader = computed(() => {
-  return navbarHeader.value?.ownerRoute === route.name ? navbarHeader.value : null
+  return navbarHeader.value?.ownerRoute === route.name
+    ? navbarHeader.value
+    : null
 })
 
 const cachedSubPages = computed(() => {

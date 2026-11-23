@@ -16,8 +16,12 @@ export const addressSchema = {
       required: true,
       message: '姓名不能为空',
     },
-    { validator: v => v.length >= 2 || '姓名至少2个字符' },
-    { validator: v => v.length <= 20 || '姓名不能超过20个字符' },
+    {
+      validator: v => v.length >= 2 || '姓名至少2个字符',
+    },
+    {
+      validator: v => v.length <= 20 || '姓名不能超过20个字符',
+    },
     {
       pattern: /^[\p{Unified_Ideograph}a-zA-Z\s]+$/u,
       message: '姓名只能包含中文、英文和空格',
@@ -34,8 +38,12 @@ export const addressSchema = {
       required: true,
       message: '详细地址不能为空',
     },
-    { validator: v => v.length >= 2 || '详细地址至少2个字符' },
-    { validator: v => v.length <= 120 || '详细地址不能超过120个字符' },
+    {
+      validator: v => v.length >= 2 || '详细地址至少2个字符',
+    },
+    {
+      validator: v => v.length <= 120 || '详细地址不能超过120个字符',
+    },
   ],
   door: [
     // 选填：空值直接通过，非空时只做长度上限（对齐后端 addressDetail 的 MaxLength(120)）

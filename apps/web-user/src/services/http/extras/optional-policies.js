@@ -193,7 +193,9 @@ export function calcRetryDelayMs(attempt) {
  */
 export function shouldRetry(config, error) {
   const meta = getMeta(config)
-  const retryLimit = meta.retry === false ? 0 : meta.retry ?? 0
+  const retryLimit = meta.retry === false
+    ? 0
+    : meta.retry ?? 0
   const nextRetryCount = (meta.retryCount || 0) + 1
   const method = (config.method || 'get').toLowerCase()
 

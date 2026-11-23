@@ -28,7 +28,12 @@ const SIZE = 128
  * 需要 PNG 兜底的图标（与 generate-iconfont.mjs 的 EXCLUDE 保持一致）。
  * ⚠️ 两处清单必须同步：字体跳过谁，这里就要给谁出 PNG。
  */
-const MULTICOLOR = ['fengniao.svg', 'cart-icon.svg', 'sdk_icon_zhifubao@2x.svg', 'backtop.svg']
+const MULTICOLOR = [
+  'fengniao.svg',
+  'cart-icon.svg',
+  'sdk_icon_zhifubao@2x.svg',
+  'backtop.svg',
+]
 
 /**
  * 保留原色渲染。

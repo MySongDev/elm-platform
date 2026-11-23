@@ -61,7 +61,9 @@ const isPhoneValid = computed(() => /^1\d{10}$/.test(form.phone))
 const sendCodeText = computed(() => {
   if (sendingCode.value)
     return '发送中...'
-  return secondsLeft.value > 0 ? `重新获取(${secondsLeft.value}s)` : '获取验证码'
+  return secondsLeft.value > 0
+    ? `重新获取(${secondsLeft.value}s)`
+    : '获取验证码'
 })
 
 const validateRules = [

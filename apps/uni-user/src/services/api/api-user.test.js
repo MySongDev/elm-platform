@@ -49,7 +49,9 @@ describe('头像上传与展示契约', () => {
         statusCode: 201,
         data: envelope,
       })
-      return { abort: vi.fn() }
+      return {
+        abort: vi.fn(),
+      }
     })
 
     await expect(uploadUserAvatar('wxfile://avatar.png')).resolves.toBe(avatar)
@@ -72,14 +74,18 @@ describe('头像上传与展示契约', () => {
           statusCode: 401,
           data: JSON.stringify({ message: 'Unauthorized' }),
         })
-        return { abort: vi.fn() }
+        return {
+          abort: vi.fn(),
+        }
       })
       .mockImplementationOnce((options) => {
         options.success({
           statusCode: 201,
           data: envelope,
         })
-        return { abort: vi.fn() }
+        return {
+          abort: vi.fn(),
+        }
       })
     uni.request.mockImplementation((options) => {
       options.success({
@@ -89,7 +95,9 @@ describe('头像上传与展示契约', () => {
           data: { accessToken: 'new-token' },
         },
       })
-      return { abort: vi.fn() }
+      return {
+        abort: vi.fn(),
+      }
     })
 
     await expect(uploadUserAvatar('wxfile://avatar.png')).resolves.toBe(avatar)
@@ -112,7 +120,9 @@ describe('头像上传与展示契约', () => {
         statusCode: 400,
         data: JSON.stringify({ message: '图片大小不能超过 2MB' }),
       })
-      return { abort: vi.fn() }
+      return {
+        abort: vi.fn(),
+      }
     })
     await expect(uploadUserAvatar('wxfile://avatar.png')).rejects.toMatchObject({
       status: 400,
@@ -127,7 +137,9 @@ describe('头像上传与展示契约', () => {
         statusCode: 201,
         data: '<html>bad gateway</html>',
       })
-      return { abort: vi.fn() }
+      return {
+        abort: vi.fn(),
+      }
     })
     await expect(send({
       url: '/customer-avatar',
@@ -141,7 +153,9 @@ describe('头像上传与展示契约', () => {
   it('网络失败和超时保留统一错误标记', async () => {
     uni.uploadFile.mockImplementation((options) => {
       options.fail({ errMsg: 'uploadFile:fail timeout' })
-      return { abort: vi.fn() }
+      return {
+        abort: vi.fn(),
+      }
     })
     await expect(send({
       url: '/customer-avatar',
@@ -183,7 +197,9 @@ describe('头像上传与展示契约', () => {
           data: {},
         }),
       })
-      return { abort: vi.fn() }
+      return {
+        abort: vi.fn(),
+      }
     })
     await expect(uploadUserAvatar('wxfile://avatar.png')).resolves.toBe('')
   })

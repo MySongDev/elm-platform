@@ -198,14 +198,16 @@ async function main() {
       goodsAmount: 24,
       deliveryFee: 5,
       payableAmount: 29,
-      cartItems: [{
-        itemId: '1001',
-        skuId: '1001',
-        title: '示例商品',
-        qty: 2,
-        unitPrice: 12,
-        totalPrice: 24,
-      }],
+      cartItems: [
+        {
+          itemId: '1001',
+          skuId: '1001',
+          title: '示例商品',
+          qty: 2,
+          unitPrice: 12,
+          totalPrice: 24,
+        },
+      ],
       paidAt: new Date('2026-06-02T10:00:00.000Z'),
     },
   })

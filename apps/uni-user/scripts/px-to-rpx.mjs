@@ -147,7 +147,14 @@ const VAR_DEF_RE = /^\s*(?:--[\w-]+|\$[\w-]+)\s*:/
 const PROPERTY_RE = /^\s*(-?[a-z][\w-]*)\s*:/i
 const CALC_RE = /\bcalc\(/
 const TARGET_EXT_RE = /\.(?:vue|scss)$/
-const SKIP_DIRS = new Set(['node_modules', 'dist', 'unpackage', 'coverage', '.git', '.turbo'])
+const SKIP_DIRS = new Set([
+  'node_modules',
+  'dist',
+  'unpackage',
+  'coverage',
+  '.git',
+  '.turbo',
+])
 
 // ── CLI ─────────────────────────────────────────────────────────────────
 const DEFAULT_TARGET = fileURLToPath(new URL('../src', import.meta.url))

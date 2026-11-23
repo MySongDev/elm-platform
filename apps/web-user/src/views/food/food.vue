@@ -68,12 +68,16 @@ const activeCategoryIndex = computed(() => {
   if (!restaurantCategoryId.value || !categories.value.length)
     return 0
   const index = categories.value.findIndex(cat => cat.id === restaurantCategoryId.value)
-  return index >= 0 ? index : 0
+  return index >= 0
+    ? index
+    : 0
 })
 
 async function fetchFoodCategory() {
   const res = await getFoodCategory(CATEGORY_LOCATION.latitude, CATEGORY_LOCATION.longitude)
-  categories.value = Array.isArray(res) ? res : []
+  categories.value = Array.isArray(res)
+    ? res
+    : []
 }
 
 const sortOptions = [
@@ -111,12 +115,16 @@ const sortOptions = [
 
 async function fetchDelivery() {
   const res = await getFoodDelivery()
-  deliveryTags.value = Array.isArray(res) ? res : []
+  deliveryTags.value = Array.isArray(res)
+    ? res
+    : []
 }
 
 async function fetchFilterAttributes() {
   const res = await getFoodActivity()
-  filterAttributes.value = Array.isArray(res) ? res : []
+  filterAttributes.value = Array.isArray(res)
+    ? res
+    : []
 }
 
 function toShop(item) {
@@ -241,13 +249,13 @@ onMounted(() => {
 
 /* ========== 容器动画：首次展开 ========== */
 .container-enter-active {
-  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
   transform-origin: top;
+  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .container-leave-active {
-  transition: all 0.25s ease-in;
   transform-origin: top;
+  transition: all 0.25s ease-in;
 }
 
 .container-enter-from {
@@ -284,26 +292,26 @@ onMounted(() => {
 }
 
 .content-enter-from {
-  filter: blur(4px);
   opacity: 0;
+  filter: blur(4px);
   transform: translateX(30px) scale(0.95);
 }
 
 .content-enter-to {
-  filter: blur(0);
   opacity: 1;
+  filter: blur(0);
   transform: translateX(0) scale(1);
 }
 
 .content-leave-from {
-  filter: blur(0);
   opacity: 1;
+  filter: blur(0);
   transform: translateX(0) scale(1);
 }
 
 .content-leave-to {
-  filter: blur(4px);
   opacity: 0;
+  filter: blur(4px);
   transform: translateX(-30px) scale(0.95);
 }
 

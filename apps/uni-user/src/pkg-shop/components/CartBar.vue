@@ -39,14 +39,18 @@ const canCheckout = computed(() => props.totalQty > 0 && gap.value <= 0)
 // 按钮文案与点击反馈。
 // ⚠️ 刻意不在模板里写三元 + toFixed：小程序端模板表达式每次重渲染都重跑，
 // 且箭头函数/方法调用在 wxml 里要编译成事件代理，收敛到 script 更稳
-const btnText = computed(() => (gap.value > 0 ? `¥${gap.value.toFixed(2)} 起送` : '去结算'))
+const btnText = computed(() => (gap.value > 0
+  ? `¥${gap.value.toFixed(2)} 起送`
+  : '去结算'))
 
 function onCheckoutTap() {
   if (canCheckout.value) {
     emit('checkout')
     return
   }
-  showToast(props.totalQty > 0 ? `还差 ¥${gap.value.toFixed(2)} 起送` : '请先选购商品')
+  showToast(props.totalQty > 0
+    ? `还差 ¥${gap.value.toFixed(2)} 起送`
+    : '请先选购商品')
 }
 </script>
 

@@ -11,10 +11,12 @@ import { WechatNotifyController } from './wechat-notify.controller'
 async function createApp(handleNotification: jest.Mock) {
   const moduleRef = await Test.createTestingModule({
     controllers: [WechatNotifyController],
-    providers: [{
-      provide: WechatPaymentService,
-      useValue: { handleNotification },
-    }],
+    providers: [
+      {
+        provide: WechatPaymentService,
+        useValue: { handleNotification },
+      },
+    ],
   }).compile()
   const app = moduleRef.createNestApplication({
     rawBody: true,

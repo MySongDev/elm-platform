@@ -66,11 +66,19 @@ export function normalizeCheckoutSelection(selection: CheckoutSelection): Normal
     })
   }
 
-  const cartItems = [...items.values()].sort((left, right) => {
-    if (left.itemId !== right.itemId)
-      return left.itemId < right.itemId ? -1 : 1
-    if (left.skuId !== right.skuId)
-      return left.skuId < right.skuId ? -1 : 1
+  const cartItems = [
+    ...items.values(),
+  ].sort((left, right) => {
+    if (left.itemId !== right.itemId) {
+      return left.itemId < right.itemId
+        ? -1
+        : 1
+    }
+    if (left.skuId !== right.skuId) {
+      return left.skuId < right.skuId
+        ? -1
+        : 1
+    }
     return 0
   })
   return {

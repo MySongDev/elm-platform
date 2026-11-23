@@ -26,20 +26,36 @@ export class OrderQueryService {
   async listOrders(userId: string, limit?: unknown) {
     const take = Number.parseInt(String(limit || ''), 10)
     const orders = await (this.prisma as any).paymentOrder.findMany({
-      where: { userId: String(userId) },
-      orderBy: [{ paidAt: 'desc' }, { updatedAt: 'desc' }, { createdAt: 'desc' }],
-      take: Number.isFinite(take) && take > 0 ? take : 20,
+      where: {
+        userId: String(userId),
+      },
+      orderBy: [
+        { paidAt: 'desc' },
+        { updatedAt: 'desc' },
+        { createdAt: 'desc' },
+      ],
+      take: Number.isFinite(take) && take > 0
+        ? take
+        : 20,
     })
 
-    return { orders: orders.map((order: PaymentOrderRecord) => toOrderSummary(order)) }
+    return {
+      orders: orders.map((order: PaymentOrderRecord) => toOrderSummary(order)),
+    }
   }
 
   async listAdminOrders(limit?: unknown, context?: TenantContext, query: AdminOrderQuery = {}) {
     const take = Number.parseInt(String(limit || ''), 10)
     const orders = await (this.prisma as any).paymentOrder.findMany({
       where: this.buildOrderWhere(context, query),
-      orderBy: [{ paidAt: 'desc' }, { updatedAt: 'desc' }, { createdAt: 'desc' }],
-      take: Number.isFinite(take) && take > 0 ? take : 100,
+      orderBy: [
+        { paidAt: 'desc' },
+        { updatedAt: 'desc' },
+        { createdAt: 'desc' },
+      ],
+      take: Number.isFinite(take) && take > 0
+        ? take
+        : 100,
     })
 
     return orders.map((order: PaymentOrderRecord) => toOrderSummary(order))
@@ -52,7 +68,9 @@ export class OrderQueryService {
     this.tenantAccess.assertCanRead(context)
 
     const where = this.tenantAccess.buildScopedWhere(context, query)
-    return Object.keys(where).length ? where : undefined
+    return Object.keys(where).length
+      ? where
+      : undefined
   }
 
   async getAdminOrderDetail(orderNo: string, context?: TenantContext) {
@@ -70,7 +88,9 @@ export class OrderQueryService {
   }
 
   private async findOrder(orderNo: string, context?: TenantContext) {
-    const order = await (this.prisma as any).paymentOrder.findUnique({ where: { orderNo } })
+    const order = await (this.prisma as any).paymentOrder.findUnique({
+      where: { orderNo },
+    })
     if (!order || !isOrderAllowed(order, context, this.tenantAccess))
       throw new NotFoundException('订单不存在')
     return order as PaymentOrderRecord

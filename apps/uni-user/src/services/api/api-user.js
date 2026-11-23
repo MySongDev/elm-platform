@@ -11,14 +11,18 @@ import { authEndpoints } from './endpoints/auth.endpoints'
 
 /** 获取当前手机号用户信息 */
 export function getCustomerProfile() {
-  return get(authEndpoints.customerProfile).then(res => (res?.data && res.code === 200 ? res.data : res))
+  return get(authEndpoints.customerProfile).then(res => (res?.data && res.code === 200
+    ? res.data
+    : res))
 }
 
 /** 返回已保存的完整资料，页面用它回写 store，避免只改显示名而留下旧 nickname。 */
 export function updateCustomerNickname(nickname) {
   return put(authEndpoints.customerNickname, { nickname }, {
     loadingText: '保存用户名中...',
-  }).then(res => (res?.data && res.code === 200 ? res.data : res))
+  }).then(res => (res?.data && res.code === 200
+    ? res.data
+    : res))
 }
 
 /** 获取用户信息 */
@@ -34,14 +38,20 @@ export function uploadUserAvatar(filePath) {
     loadingText: '上传头像中...',
   }).then((res) => {
     const avatar = res?.data?.avatar
-    return typeof avatar === 'string' ? avatar.trim() : ''
+    return typeof avatar === 'string'
+      ? avatar.trim()
+      : ''
   })
 }
 
 export function signout() {
   return post(
     authEndpoints.customerLogout,
-    { refreshToken: getRefreshToken() },
-    { meta: { skipAuthRefresh: true } },
+    {
+      refreshToken: getRefreshToken(),
+    },
+    {
+      meta: { skipAuthRefresh: true },
+    },
   )
 }

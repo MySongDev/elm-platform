@@ -49,7 +49,13 @@ function isMonochrome(svgText) {
   const colors = new Set()
   for (const match of svgText.matchAll(/(?:fill|stroke)="(#[0-9a-fA-F]{3,8}|rgba?\([^)]*\))"/g)) {
     const color = match[1].toLowerCase()
-    if (!['#fff', '#ffffff', '#000', '#000000', 'none'].includes(color)) {
+    if (![
+      '#fff',
+      '#ffffff',
+      '#000',
+      '#000000',
+      'none',
+    ].includes(color)) {
       colors.add(color)
     }
   }
@@ -63,7 +69,10 @@ async function main() {
 
   for (const name of files) {
     if (EXCLUDE.has(name)) {
-      skipped.push([name, EXCLUDE.get(name)])
+      skipped.push([
+        name,
+        EXCLUDE.get(name),
+      ])
       continue
     }
     const text = readFileSync(join(SVG_DIR, name), 'utf8')
@@ -106,7 +115,13 @@ async function main() {
     //   （postinstall 是 node-gyp，本机未批准构建，且没必要）
     // - 少几种格式 = 少几十 KB 包体积
     // ⚠️ 选项名是 excludeFormat（数组）。实测 generateFonts 会被静默忽略、全格式照出。
-    excludeFormat: ['eot', 'woff', 'woff2', 'svg', 'symbol.svg'],
+    excludeFormat: [
+      'eot',
+      'woff',
+      'woff2',
+      'svg',
+      'symbol.svg',
+    ],
     css: {
       fontSize: '16px',
     },

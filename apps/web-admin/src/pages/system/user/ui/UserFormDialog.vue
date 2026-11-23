@@ -117,7 +117,10 @@ async function loadOptions(version = editorVersion) {
   }
 }
 
-watch([visible, () => props.user], ([open, user]) => {
+watch([
+  visible,
+  () => props.user,
+], ([open, user]) => {
   const version = ++editorVersion
   if (!open)
     return

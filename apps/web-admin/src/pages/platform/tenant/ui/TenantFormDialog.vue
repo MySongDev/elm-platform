@@ -38,14 +38,19 @@ const rules: FormRules = {
       trigger: 'blur',
     },
   ],
-  name: [{
-    required: true,
-    message: '请输入租户名称',
-    trigger: 'blur',
-  }],
+  name: [
+    {
+      required: true,
+      message: '请输入租户名称',
+      trigger: 'blur',
+    },
+  ],
 }
 
-watch([visible, () => props.tenant], ([open, tenant]) => {
+watch([
+  visible,
+  () => props.tenant,
+], ([open, tenant]) => {
   editorVersion++
   saving.value = false
   saveError.value = false

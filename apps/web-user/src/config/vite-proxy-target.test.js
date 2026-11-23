@@ -13,7 +13,9 @@ describe('vite proxy target', () => {
     const config = loaded?.config ?? {}
     const proxy = config.server?.proxy ?? {}
     const targets = Object.values(proxy).map(entry =>
-      typeof entry === 'string' ? entry : entry.target,
+      typeof entry === 'string'
+        ? entry
+        : entry.target,
     )
 
     expect(targets).toEqual([

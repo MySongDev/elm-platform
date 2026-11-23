@@ -21,7 +21,9 @@ const emit = defineEmits<{
 const { t } = useI18n()
 
 function displayTime(value: string | null) {
-  return value ? formatDateTime(value) : '-'
+  return value
+    ? formatDateTime(value)
+    : '-'
 }
 </script>
 

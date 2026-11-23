@@ -13,7 +13,9 @@ const modules = import.meta.glob('./modules/*.ts', {
 })
 
 const routes = Object.values(modules).flatMap((module) => {
-  return Array.isArray(module) ? module : [module]
+  return Array.isArray(module)
+    ? module
+    : [module]
 }) as RouteRecordRaw[]
 
 const constantRoutes: RouteRecordRaw[] = [
@@ -31,7 +33,10 @@ const constantRoutes: RouteRecordRaw[] = [
 
 const router = createRouter({
   history: createWebHashHistory(),
-  routes: [...routes, ...constantRoutes],
+  routes: [
+    ...routes,
+    ...constantRoutes,
+  ],
   scrollBehavior() {
     return { top: 0 }
   },
@@ -43,7 +48,9 @@ function isAuthenticated(): boolean {
 }
 
 function getFirstQueryValue(value: unknown) {
-  return Array.isArray(value) ? value[0] : value
+  return Array.isArray(value)
+    ? value[0]
+    : value
 }
 
 function resolveLoginRedirect(redirect: unknown) {

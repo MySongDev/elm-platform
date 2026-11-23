@@ -44,8 +44,12 @@ const { showBackTop, scrollToTop, setAnchor, setTarget } = useBackTop({
 })
 
 const positionStyle = computed(() => ({
-  right: typeof props.right === 'number' ? `${props.right}px` : props.right,
-  bottom: typeof props.bottom === 'number' ? `${props.bottom}px` : props.bottom,
+  right: typeof props.right === 'number'
+    ? `${props.right}px`
+    : props.right,
+  bottom: typeof props.bottom === 'number'
+    ? `${props.bottom}px`
+    : props.bottom,
 }))
 
 watch(
@@ -105,14 +109,14 @@ watch(
   color: #666;
   cursor: pointer;
   background: rgb(255 255 255 / 95%);
-  backdrop-filter: blur(4px);
   border: none;
   border-radius: 50%;
   box-shadow: 0 2px 12px rgb(0 0 0 / 12%);
+  backdrop-filter: blur(4px);
+  transform: translateZ(0);
   transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1),
     opacity 0.3s ease,
     box-shadow 0.2s ease;
-  transform: translateZ(0);
   will-change: transform, opacity;
 
   &:hover {

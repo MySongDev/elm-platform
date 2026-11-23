@@ -19,9 +19,15 @@ function createOrder(overrides: Record<string, unknown> = {}) {
     refundReason: null,
     refundRejectReason: null,
     tradeNo: '2026060222001',
-    goodsAmount: { toNumber: () => 24 },
-    deliveryFee: { toNumber: () => 5 },
-    payableAmount: { toNumber: () => 29 },
+    goodsAmount: {
+      toNumber: () => 24,
+    },
+    deliveryFee: {
+      toNumber: () => 5,
+    },
+    payableAmount: {
+      toNumber: () => 29,
+    },
     cartItems: [
       {
         name: 'Rice Set',
@@ -45,22 +51,24 @@ function createOrder(overrides: Record<string, unknown> = {}) {
 
 function createService(orderOverrides: Record<string, unknown> = {}) {
   const currentOrder = createOrder(orderOverrides)
-  const actionLogs = [{
-    id: 1,
-    orderNo: currentOrder.orderNo,
-    operatorId: '1',
-    operatorName: 'admin',
-    operatorType: 'ADMIN',
-    action: 'ACCEPT',
-    fromFulfillmentStatus: 'AWAITING_ACCEPTANCE',
-    toFulfillmentStatus: 'ACCEPTED',
-    fromRefundStatus: 'NONE',
-    toRefundStatus: 'NONE',
-    reason: null,
-    remark: null,
-    requestId: 'req-admin-1',
-    createdAt: new Date('2026-06-02T10:01:00.000Z'),
-  }]
+  const actionLogs = [
+    {
+      id: 1,
+      orderNo: currentOrder.orderNo,
+      operatorId: '1',
+      operatorName: 'admin',
+      operatorType: 'ADMIN',
+      action: 'ACCEPT',
+      fromFulfillmentStatus: 'AWAITING_ACCEPTANCE',
+      toFulfillmentStatus: 'ACCEPTED',
+      fromRefundStatus: 'NONE',
+      toRefundStatus: 'NONE',
+      reason: null,
+      remark: null,
+      requestId: 'req-admin-1',
+      createdAt: new Date('2026-06-02T10:01:00.000Z'),
+    },
+  ]
   const prisma = {
     paymentOrder: {
       findUnique: jest.fn().mockResolvedValue(currentOrder),

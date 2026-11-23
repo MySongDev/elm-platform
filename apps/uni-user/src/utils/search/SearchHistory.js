@@ -8,7 +8,9 @@ const MAX_HISTORY_COUNT = 10
 function readHistory(key) {
   const items = getStore(key)
   // getStore 解析失败会返回原字符串，搜索页面只接受历史数组。
-  return Array.isArray(items) ? items : []
+  return Array.isArray(items)
+    ? items
+    : []
 }
 
 // 去掉首尾空格后，大小写不同的搜索词仍分别保留。

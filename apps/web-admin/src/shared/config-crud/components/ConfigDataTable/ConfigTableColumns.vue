@@ -10,11 +10,15 @@ defineProps<{
 function normalizeCellText(value: unknown, emptyText?: string) {
   if (value === null || value === undefined || value === '')
     return emptyText ?? '-'
-  return typeof value === 'string' || typeof value === 'number' ? value : String(value)
+  return typeof value === 'string' || typeof value === 'number'
+    ? value
+    : String(value)
 }
 
 function getCellText(row: Row, column: ConfigTableColumn<Row>) {
-  const value = column.formatter ? column.formatter(row) : column.prop ? row[column.prop] : ''
+  const value = column.formatter
+    ? column.formatter(row)
+    : column.prop ? row[column.prop] : ''
   return normalizeCellText(value, column.emptyText)
 }
 

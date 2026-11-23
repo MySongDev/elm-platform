@@ -52,7 +52,9 @@ function enterMsite() {
 
   router.push({
     path: '/msite',
-    query: locationStore.geohash ? { geohash: locationStore.geohash } : {},
+    query: locationStore.geohash
+      ? { geohash: locationStore.geohash }
+      : {},
   })
 }
 

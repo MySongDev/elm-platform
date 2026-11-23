@@ -20,9 +20,13 @@ export function createTabCommandState(
   const index = targetFullPath
     ? tabs.findIndex(tab => tab.fullPath === targetFullPath)
     : -1
-  const targetTab = index >= 0 ? tabs[index] : undefined
+  const targetTab = index >= 0
+    ? tabs[index]
+    : undefined
   const fixed = targetTab?.fixed ?? false
-  const closable = targetTab ? isTabClosable(targetTab) : false
+  const closable = targetTab
+    ? isTabClosable(targetTab)
+    : false
   const firstNonFixed = index <= 0
     || tabs.slice(0, index).every(tab => !isTabClosable(tab))
   const lastNonFixed = index === -1

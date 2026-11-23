@@ -10,7 +10,9 @@ const PROBE_KEY = 'uni_user_batch0_probe'
  */
 export const useBatch0Store = defineStore('batch0', () => {
   const cached = getStore<{ count: number }>(PROBE_KEY)
-  const count = ref(typeof cached === 'object' && cached ? cached.count : 0)
+  const count = ref(typeof cached === 'object' && cached
+    ? cached.count
+    : 0)
   const label = ref('pinia-probe')
 
   function increment() {

@@ -42,9 +42,14 @@ export class NotificationService {
     return this.prisma.notification.findMany({
       where: {
         userId,
-        ...(type ? { type } : {}),
+        ...(type
+          ? { type }
+          : {}),
       },
-      orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
+      orderBy: [
+        { createdAt: 'desc' },
+        { id: 'desc' },
+      ],
     }) as Promise<NotificationItem[]>
   }
 
@@ -75,7 +80,9 @@ export class NotificationService {
       where: {
         userId,
         read: false,
-        ...(type ? { type } : {}),
+        ...(type
+          ? { type }
+          : {}),
       },
       data: {
         read: true,
@@ -95,7 +102,9 @@ export class NotificationService {
     if (!existing) {
       throw new NotFoundException('通知不存在')
     }
-    await this.prisma.notification.delete({ where: { id } })
+    await this.prisma.notification.delete({
+      where: { id },
+    })
     return { success: true }
   }
 
@@ -106,7 +115,9 @@ export class NotificationService {
     const result = await this.prisma.notification.deleteMany({
       where: {
         userId,
-        ...(type ? { type } : {}),
+        ...(type
+          ? { type }
+          : {}),
       },
     })
     return { deletedCount: result.count }

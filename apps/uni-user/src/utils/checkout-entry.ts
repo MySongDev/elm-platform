@@ -105,7 +105,9 @@ export function describeCrossShopCheckout(
     return null
 
   return {
-    shopIds: [...shopNames.keys()],
+    shopIds: [
+      ...shopNames.keys(),
+    ],
     shopNames: Array.from(shopNames.values(), name => name || '未命名商家'),
   }
 }
@@ -130,7 +132,9 @@ export function findPendingCheckoutSnapshot(
     && !snapshot.closed,
   )
 
-  return candidates.length > 0 ? candidates.at(-1) : null
+  return candidates.length > 0
+    ? candidates.at(-1)
+    : null
 }
 
 /**

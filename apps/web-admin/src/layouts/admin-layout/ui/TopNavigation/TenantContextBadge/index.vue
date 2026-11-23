@@ -21,7 +21,9 @@ const label = computed(() => {
     const shops = user.boundShopIds?.length
       ? `${user.boundShopIds.length} 个店铺`
       : ''
-    return `店铺运营 · ${tenantName}${shops ? ` / ${shops}` : ''}`
+    return `店铺运营 · ${tenantName}${shops
+      ? ` / ${shops}`
+      : ''}`
   }
 
   return `租户管理员 · ${tenantName}`

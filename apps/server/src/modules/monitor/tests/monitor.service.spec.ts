@@ -122,7 +122,9 @@ describe('monitor services', () => {
     await service.getLoginLogs(tenantContext())
 
     expect(prisma.loginLog.findMany).toHaveBeenCalledWith(expect.objectContaining({
-      where: { user: { tenantId: 10 } },
+      where: {
+        user: { tenantId: 10 },
+      },
     }))
   })
 
@@ -163,12 +165,14 @@ describe('monitor services', () => {
   })
 
   it('reads full system logs for platform admins', async () => {
-    const systemLogs = [{
-      id: 1,
-      level: 'info',
-      source: 'test',
-      message: 'ok',
-    }]
+    const systemLogs = [
+      {
+        id: 1,
+        level: 'info',
+        source: 'test',
+        message: 'ok',
+      },
+    ]
     const { service, prisma } = createService({
       prisma: {
         systemLog: {

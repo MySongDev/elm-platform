@@ -21,7 +21,12 @@ const props = defineProps({
   },
 })
 
-const emit = defineEmits(['toggle-store', 'toggle-product', 'increase', 'decrease'])
+const emit = defineEmits([
+  'toggle-store',
+  'toggle-product',
+  'increase',
+  'decrease',
+])
 
 const hasDeliveryInfo = computed(() => props.store.deliveryTime || props.store.distance)
 const hasReserveInfo = computed(() => props.store.reserveText || props.store.deliveryText)
@@ -123,10 +128,10 @@ const hasReserveInfo = computed(() => props.store.reserveText || props.store.del
   min-width: 0;
   margin: 0;
   overflow: hidden;
+  text-overflow: ellipsis;
   font-size: 32rpx;
   font-weight: 700;
   line-height: 1.25;
-  text-overflow: ellipsis;
   white-space: nowrap;
 }
 

@@ -51,8 +51,12 @@ async function handleUpload() {
     }
 
     // H5 的 tempFiles 可能是 File，没有 path；上传路径应从跨端的 tempFilePaths 读取。
-    const filePath = Array.isArray(chosen.tempFilePaths) ? chosen.tempFilePaths[0] : chosen.tempFilePaths
-    const file = Array.isArray(chosen.tempFiles) ? chosen.tempFiles[0] : chosen.tempFiles
+    const filePath = Array.isArray(chosen.tempFilePaths)
+      ? chosen.tempFilePaths[0]
+      : chosen.tempFilePaths
+    const file = Array.isArray(chosen.tempFiles)
+      ? chosen.tempFiles[0]
+      : chosen.tempFiles
     if (!filePath) {
       await showAlert({ content: '未获取到图片，请重新选择' })
       return

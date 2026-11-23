@@ -59,7 +59,9 @@ function createModel(rows: Row[], defaults: Row) {
     } = {}) => {
       const { where, skip = 0, take } = args
       const found = rows.filter(row => matches(row, where))
-      return take === undefined ? found.slice(skip) : found.slice(skip, skip + take)
+      return take === undefined
+        ? found.slice(skip)
+        : found.slice(skip, skip + take)
     }),
     findFirst: jest.fn(async (args: { where?: Record<string, unknown> } = {}) =>
       rows.find(row => matches(row, args.where)) ?? null),
@@ -70,7 +72,13 @@ function createModel(rows: Row[], defaults: Row) {
     aggregate: jest.fn(async (args: { _max?: Record<string, boolean> } = {}) => {
       const key = Object.keys(args._max ?? { id: true })[0]
       const values = rows.map(row => row[key]).filter((value): value is number => typeof value === 'number')
-      return { _max: { [key]: values.length ? Math.max(...values) : null } }
+      return {
+        _max: {
+          [key]: values.length
+            ? Math.max(...values)
+            : null,
+        },
+      }
     }),
     create: jest.fn(async (args: { data: Row }) => {
       const row = {

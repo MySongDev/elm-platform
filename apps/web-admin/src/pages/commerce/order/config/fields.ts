@@ -58,7 +58,12 @@ export function createOrderSearchFields(t: Translate) {
       label: t('commerce.order.refundStatus'),
       type: 'select',
       placeholder: t('commerce.order.refundStatusPlaceholder'),
-      options: createOptions(['NONE', 'REQUESTED', 'APPROVED', 'REJECTED'] as RefundStatus[], refundStatusLabelMap, t),
+      options: createOptions([
+        'NONE',
+        'REQUESTED',
+        'APPROVED',
+        'REJECTED',
+      ] as RefundStatus[], refundStatusLabelMap, t),
     },
   ] satisfies ConfigFormField[]
 }
@@ -127,7 +132,9 @@ export function createOrderTableColumns(t: Translate) {
     {
       label: t('commerce.order.paidAt'),
       minWidth: 180,
-      formatter: row => row.paidAt ? formatDateTime(row.paidAt) : '-',
+      formatter: row => row.paidAt
+        ? formatDateTime(row.paidAt)
+        : '-',
     },
     {
       label: t('commerce.order.createdAt'),

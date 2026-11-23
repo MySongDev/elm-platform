@@ -98,7 +98,9 @@ export function toText(value: unknown, fallback = ''): string {
 /** 防御性数字转换：非法输入返回 fallback，防止 NaN 污染价格/数量计算 */
 export function toNumber(value: unknown, fallback = 0): number {
   const numberValue = Number(value)
-  return Number.isFinite(numberValue) ? numberValue : fallback
+  return Number.isFinite(numberValue)
+    ? numberValue
+    : fallback
 }
 
 /** 取指定索引的规格；越界/缺规格时兜底取第一个，无规格返回空对象 */
@@ -177,7 +179,9 @@ export function productFromFood(shopId: string, food: Food, specIndex = 0, selec
     itemId: food?.item_id || food?._id,
     skuId: spec.sku_id || spec.food_id || food?.item_id,
     name: food?.name,
-    spec: specLabel ? `规格:${specLabel}` : '',
+    spec: specLabel
+      ? `规格:${specLabel}`
+      : '',
     image: getImageUrl(food?.image_path),
     price: spec.price,
     originPrice: spec.original_price,

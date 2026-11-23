@@ -58,13 +58,26 @@ describe('wechatPayService 协议边界', () => {
     expect(fetchMock).not.toHaveBeenCalled()
   })
 
-  it.each(['appId', 'appSecret', 'mchId', 'serialNo', 'privateKey', 'publicKeyId', 'publicKey', 'apiV3Key', 'notifyUrl'])('缺少 %s 时拒绝调用', (key) => {
+  it.each([
+    'appId',
+    'appSecret',
+    'mchId',
+    'serialNo',
+    'privateKey',
+    'publicKeyId',
+    'publicKey',
+    'apiV3Key',
+    'notifyUrl',
+  ])('缺少 %s 时拒绝调用', (key) => {
     settings[key] = ''
     expect(() => service.assertConfigured()).toThrow(ServiceUnavailableException)
   })
 
   it.each([
-    ['apiV3Key', '密'.repeat(32)],
+    [
+      'apiV3Key',
+      '密'.repeat(32),
+    ],
     ['notifyUrl', 'http://example.com/notify'],
     ['notifyUrl', 'https://'],
     ['notifyUrl', 'https://secret@example.com/notify'],
@@ -129,7 +142,12 @@ describe('wechatPayService 协议边界', () => {
     expect(failure.message).not.toContain('https://')
   })
 
-  it.each(['short', `${ORDER_NO}\n`, `${ORDER_NO}\r`, '订单编号不合法'])('无效订单号 %s 在调用微信前拒绝', async (orderNo) => {
+  it.each([
+    'short',
+    `${ORDER_NO}\n`,
+    `${ORDER_NO}\r`,
+    '订单编号不合法',
+  ])('无效订单号 %s 在调用微信前拒绝', async (orderNo) => {
     await expect(service.queryTrade(orderNo)).rejects.toBeInstanceOf(BadRequestException)
     await expect(service.createJsapiPayment({
       orderNo,
@@ -139,7 +157,16 @@ describe('wechatPayService 协议边界', () => {
     expect(fetchMock).not.toHaveBeenCalled()
   })
 
-  it.each([0, -1, 1.01, Number.NaN, Number.POSITIVE_INFINITY, 2_147_483_648, Number.MAX_SAFE_INTEGER, '100'])('拒绝非协议整数分 %s，不发下单请求', async (total) => {
+  it.each([
+    0,
+    -1,
+    1.01,
+    Number.NaN,
+    Number.POSITIVE_INFINITY,
+    2_147_483_648,
+    Number.MAX_SAFE_INTEGER,
+    '100',
+  ])('拒绝非协议整数分 %s，不发下单请求', async (total) => {
     await expect(service.createJsapiPayment({
       orderNo: ORDER_NO,
       subject: '餐品',
@@ -177,7 +204,11 @@ describe('wechatPayService 协议边界', () => {
     expect(verify('RSA-SHA256', Buffer.from(`wx-test-app\n${params.timeStamp}\n${params.nonceStr}\n${params.package}\n`), merchantPublicKey, Buffer.from(params.paySign, 'base64'))).toBe(true)
   })
 
-  it.each([{}, { prepay_id: 1 }, { prepay_id: 'bad\nprepay' }])('已验签但无有效prepay_id仍拒绝调起', async (data) => {
+  it.each([
+    {},
+    { prepay_id: 1 },
+    { prepay_id: 'bad\nprepay' },
+  ])('已验签但无有效prepay_id仍拒绝调起', async (data) => {
     fetchMock.mockResolvedValue(signedResponse(data))
     await expect(service.createJsapiPayment({
       orderNo: ORDER_NO,
@@ -229,8 +260,14 @@ describe('wechatPayService 协议边界', () => {
 
   it.each([
     ['wechatpay-serial', 'PUB_KEY_ID_999999'],
-    ['wechatpay-timestamp', String(NOW / 1000 - 301)],
-    ['wechatpay-timestamp', String(NOW / 1000 + 301)],
+    [
+      'wechatpay-timestamp',
+      String(NOW / 1000 - 301),
+    ],
+    [
+      'wechatpay-timestamp',
+      String(NOW / 1000 + 301),
+    ],
     ['wechatpay-timestamp', '9007199254740993'],
     ['wechatpay-timestamp', '1.5'],
     ['wechatpay-nonce', ''],
@@ -267,7 +304,9 @@ describe('wechatPayService 协议边界', () => {
         once: true,
       })
     }))
-    const result = operation === 'exchange' ? service.exchangeOpenId('test-code') : service.queryTrade(ORDER_NO)
+    const result = operation === 'exchange'
+      ? service.exchangeOpenId('test-code')
+      : service.queryTrade(ORDER_NO)
     await expect(result).rejects.toBeInstanceOf(BadGatewayException)
     expect(timeout).toHaveBeenCalledWith(8000)
   })
@@ -281,7 +320,10 @@ describe('wechatPayService 协议边界', () => {
 
   it('不含associated_data的通知按空AAD解密，支持HTTP头大小写', () => {
     const rawBody = notification(transaction(), null)
-    const headers = Object.fromEntries(Object.entries(signatureHeaders(rawBody)).map(([key, value]) => [key.toUpperCase(), value]))
+    const headers = Object.fromEntries(Object.entries(signatureHeaders(rawBody)).map(([key, value]) => [
+      key.toUpperCase(),
+      value,
+    ]))
     expect(service.decodeNotification(headers, rawBody)).toEqual(transaction())
   })
 
@@ -299,7 +341,14 @@ describe('wechatPayService 协议边界', () => {
     }, rawBody)).toThrow(BadRequestException)
   })
 
-  it.each(['tag', 'aad', 'nonce', 'algorithm', 'ciphertext', 'event'])('签名有效但通知%s损坏不能解密成功', (field) => {
+  it.each([
+    'tag',
+    'aad',
+    'nonce',
+    'algorithm',
+    'ciphertext',
+    'event',
+  ])('签名有效但通知%s损坏不能解密成功', (field) => {
     const data = JSON.parse(notification(transaction()).toString())
     if (field === 'tag') {
       const bytes = Buffer.from(data.resource.ciphertext, 'base64')
@@ -394,7 +443,11 @@ function signatureHeaders(body: Buffer, key = platformPrivateKey): Record<string
     'wechatpay-timestamp': timestamp,
     'wechatpay-nonce': nonce,
     'wechatpay-serial': 'PUB_KEY_ID_3000000001',
-    'wechatpay-signature': sign('RSA-SHA256', Buffer.concat([Buffer.from(`${timestamp}\n${nonce}\n`), body, Buffer.from('\n')]), key).toString('base64'),
+    'wechatpay-signature': sign('RSA-SHA256', Buffer.concat([
+      Buffer.from(`${timestamp}\n${nonce}\n`),
+      body,
+      Buffer.from('\n'),
+    ]), key).toString('base64'),
   }
 }
 
@@ -422,7 +475,11 @@ function notification(data: unknown, associatedData: string | null = 'transactio
   const nonce = '0123456789ab'
   const cipher = createCipheriv('aes-256-gcm', Buffer.from(API_V3_KEY), Buffer.from(nonce))
   cipher.setAAD(Buffer.from(associatedData ?? ''))
-  const ciphertext = Buffer.concat([cipher.update(JSON.stringify(data)), cipher.final(), cipher.getAuthTag()]).toString('base64')
+  const ciphertext = Buffer.concat([
+    cipher.update(JSON.stringify(data)),
+    cipher.final(),
+    cipher.getAuthTag(),
+  ]).toString('base64')
   return Buffer.from(JSON.stringify({
     event_type: 'TRANSACTION.SUCCESS',
     resource_type: 'encrypt-resource',
@@ -431,7 +488,9 @@ function notification(data: unknown, associatedData: string | null = 'transactio
       original_type: 'transaction',
       ciphertext,
       nonce,
-      ...(associatedData === null ? {} : { associated_data: associatedData }),
+      ...(associatedData === null
+        ? {}
+        : { associated_data: associatedData }),
     },
   }, null, 2))
 }

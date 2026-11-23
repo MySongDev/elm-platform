@@ -29,7 +29,9 @@ const resolvedDescription = computed(() => {
 })
 
 const resolvedActionText = computed(() => props.actionText ?? t('state.empty.clearFilter'))
-const iconComponent = computed(() => props.reason === 'no-filter-result' ? IconEpSearch : IconEpDocument)
+const iconComponent = computed(() => props.reason === 'no-filter-result'
+  ? IconEpSearch
+  : IconEpDocument)
 </script>
 
 <template>

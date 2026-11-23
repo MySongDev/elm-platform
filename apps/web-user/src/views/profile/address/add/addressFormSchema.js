@@ -4,15 +4,21 @@ export const addressSchema = {
       required: true,
       message: '姓名不能为空',
     },
-    { validator: v => v.length >= 2 || '姓名至少2个字符' },
-    { validator: v => v.length <= 20 || '姓名不能超过20个字符' },
+    {
+      validator: v => v.length >= 2 || '姓名至少2个字符',
+    },
+    {
+      validator: v => v.length <= 20 || '姓名不能超过20个字符',
+    },
     {
       pattern: /^[\p{Unified_Ideograph}a-zA-Z\s]+$/u,
       message: '姓名只能包含中文、英文和空格',
     },
   ],
   sex: [
-    { validator: v => [1, 2].includes(Number(v)) || '请选择性别' },
+    {
+      validator: v => [1, 2].includes(Number(v)) || '请选择性别',
+    },
   ],
   detail: [
     {
@@ -25,7 +31,9 @@ export const addressSchema = {
       required: true,
       message: '小区/楼宇不能为空',
     },
-    { validator: v => v.length >= 2 || '小区名称至少2个字符' },
+    {
+      validator: v => v.length >= 2 || '小区名称至少2个字符',
+    },
   ],
   phone: [
     {

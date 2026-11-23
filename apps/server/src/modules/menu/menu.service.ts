@@ -20,7 +20,12 @@ export class MenuService {
    */
   async getMenus() {
     try {
-      const list = await (this.prisma as any).menu.findMany({ orderBy: [{ sort: 'asc' }, { id: 'asc' }] })
+      const list = await (this.prisma as any).menu.findMany({
+        orderBy: [
+          { sort: 'asc' },
+          { id: 'asc' },
+        ],
+      })
       return buildTree(list)
     }
     catch {
@@ -35,7 +40,9 @@ export class MenuService {
    */
   async createMenu(dto: MenuUpsertInput) {
     try {
-      return await (this.prisma as any).menu.create({ data: this.normalizeMenu(dto) })
+      return await (this.prisma as any).menu.create({
+        data: this.normalizeMenu(dto),
+      })
     }
     catch {
       const menu = {
@@ -81,7 +88,9 @@ export class MenuService {
    */
   async deleteMenu(id: number) {
     try {
-      await (this.prisma as any).menu.delete({ where: { id } })
+      await (this.prisma as any).menu.delete({
+        where: { id },
+      })
     }
     catch {
       this.memoryMenus = this.memoryMenus.filter(item => item.id !== id && item.parentId !== id)

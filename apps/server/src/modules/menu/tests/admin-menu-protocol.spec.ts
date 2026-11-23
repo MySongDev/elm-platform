@@ -119,7 +119,9 @@ function listIndexVueFiles(dir: string): string[] {
     if (entry.isDirectory())
       return listIndexVueFiles(fullPath)
 
-    return entry.isFile() && entry.name === 'index.vue' ? [fullPath] : []
+    return entry.isFile() && entry.name === 'index.vue'
+      ? [fullPath]
+      : []
   })
 }
 
@@ -162,7 +164,9 @@ describe('admin menu protocol', () => {
 
       expect(pagePermission).toBeDefined()
       expect(pagePermission?.name).toBe(menu.name)
-      expect(pagePermission?.auths ?? []).toEqual(menu.permission ? [menu.permission] : [])
+      expect(pagePermission?.auths ?? []).toEqual(menu.permission
+        ? [menu.permission]
+        : [])
     }
   })
 
@@ -191,10 +195,12 @@ describe('admin menu protocol', () => {
     const componentKeys = readAdminPageComponentKeys()
     const missingComponents = menuPages(fallbackMenus).flatMap(menu =>
       menu.component && !componentKeys.has(menu.component)
-        ? [{
-            path: menu.path,
-            component: menu.component,
-          }]
+        ? [
+            {
+              path: menu.path,
+              component: menu.component,
+            },
+          ]
         : [],
     )
 

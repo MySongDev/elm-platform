@@ -19,7 +19,9 @@ export class RoleService {
    */
   async getRoles() {
     try {
-      return await (this.prisma as any).role.findMany({ orderBy: { id: 'asc' } })
+      return await (this.prisma as any).role.findMany({
+        orderBy: { id: 'asc' },
+      })
     }
     catch {
       return this.memoryRoles
@@ -93,7 +95,9 @@ export class RoleService {
    */
   async deleteRole(id: number) {
     try {
-      await (this.prisma as any).role.delete({ where: { id } })
+      await (this.prisma as any).role.delete({
+        where: { id },
+      })
     }
     catch {
       this.memoryRoles = this.memoryRoles.filter(item => item.id !== id)

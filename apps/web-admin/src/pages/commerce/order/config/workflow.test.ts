@@ -41,7 +41,9 @@ function createOrder(overrides: Partial<OrderItem> = {}): OrderItem {
 
 describe('order workflow config', () => {
   it('shows only backend-provided actions that the current user can perform', () => {
-    const order = createOrder({ availableActions: ['ACCEPT', 'APPROVE_REFUND'] })
+    const order = createOrder({
+      availableActions: ['ACCEPT', 'APPROVE_REFUND'],
+    })
     const visible = getVisibleOrderActions(order, permission => permission === 'commerce:order:accept')
 
     expect(visible.map(item => item.action)).toEqual(['ACCEPT'])

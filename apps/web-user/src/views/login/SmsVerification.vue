@@ -20,18 +20,28 @@ const errorMessage = ref('')
 let countdownTimer
 
 const phone = computed(() => {
-  const value = Array.isArray(route.query.phone) ? route.query.phone[0] : route.query.phone
-  return typeof value === 'string' ? value.replace(/\D/g, '').slice(0, 11) : ''
+  const value = Array.isArray(route.query.phone)
+    ? route.query.phone[0]
+    : route.query.phone
+  return typeof value === 'string'
+    ? value.replace(/\D/g, '').slice(0, 11)
+    : ''
 })
 const isPhoneValid = computed(() => /^1\d{10}$/.test(phone.value))
 const formattedPhone = computed(() => phone.value.replace(/(\d{3})(\d{4})(\d{4})/, '$1 $2 $3'))
-const resendText = computed(() => secondsLeft.value > 0 ? `重新获取(${secondsLeft.value}s)` : '重新获取')
+const resendText = computed(() => secondsLeft.value > 0
+  ? `重新获取(${secondsLeft.value}s)`
+  : '重新获取')
 
 function loginQuery() {
-  const redirect = Array.isArray(route.query.redirect) ? route.query.redirect[0] : route.query.redirect
+  const redirect = Array.isArray(route.query.redirect)
+    ? route.query.redirect[0]
+    : route.query.redirect
   return {
     phone: phone.value || undefined,
-    redirect: typeof redirect === 'string' ? redirect : undefined,
+    redirect: typeof redirect === 'string'
+      ? redirect
+      : undefined,
   }
 }
 
@@ -347,9 +357,9 @@ h1 {
 }
 
 .otp_input:focus-visible {
+  outline: none;
   background: #fff;
   border-color: #171717;
-  outline: none;
 }
 
 .verification_actions {

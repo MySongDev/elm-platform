@@ -134,7 +134,10 @@ onMounted(() => {
 })
 
 // 切评价先使旧查询失效，切回点菜再测；隐藏区的尺寸不能替换可见区缓存。
-watch([foodMenuData, () => props.active], () => {
+watch([
+  foodMenuData,
+  () => props.active,
+], () => {
   loaderBounds = []
   anchorQueryRevision += 1
   nextTick(refreshAnchors)

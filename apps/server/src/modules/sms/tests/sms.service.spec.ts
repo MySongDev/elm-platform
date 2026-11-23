@@ -14,7 +14,9 @@ describe('smsService', () => {
     const expirations = new Map<string, number>()
     const redis = {
       set: jest.fn(async (key: string, value: string | number | object, ttl?: number) => {
-        const stored = typeof value === 'object' ? JSON.stringify(value) : String(value)
+        const stored = typeof value === 'object'
+          ? JSON.stringify(value)
+          : String(value)
         store.set(key, stored)
         if (ttl !== undefined) {
           expirations.set(key, ttl)
@@ -23,7 +25,9 @@ describe('smsService', () => {
       get: jest.fn(async (key: string) => store.get(key) ?? null),
       getObject: jest.fn(async <T>(key: string) => {
         const value = store.get(key)
-        return value ? (JSON.parse(value) as T) : null
+        return value
+          ? (JSON.parse(value) as T)
+          : null
       }),
       del: jest.fn(async (key: string) => {
         store.delete(key)
@@ -41,7 +45,9 @@ describe('smsService', () => {
 
     const configService = {
       get: jest.fn((key: string, defaultValue?: unknown) =>
-        Object.prototype.hasOwnProperty.call(config, key) ? config[key] : defaultValue,
+        Object.prototype.hasOwnProperty.call(config, key)
+          ? config[key]
+          : defaultValue,
       ),
     }
 
@@ -103,7 +109,9 @@ describe('smsService', () => {
         },
         {
           provide: ConfigService,
-          useValue: { get: jest.fn() },
+          useValue: {
+            get: jest.fn(),
+          },
         },
       ],
     }).compile()

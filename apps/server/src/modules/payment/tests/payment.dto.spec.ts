@@ -11,11 +11,13 @@ describe('payment request DTOs', () => {
       shopId: '101',
       shopName: '示例商家',
       deliveryFee: 5,
-      cartItems: [{
-        itemId: '1001',
-        qty: 2,
-        unitPrice: 12,
-      }],
+      cartItems: [
+        {
+          itemId: '1001',
+          qty: 2,
+          unitPrice: 12,
+        },
+      ],
     })
 
     const errors = await validate(dto)

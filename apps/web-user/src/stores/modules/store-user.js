@@ -82,7 +82,9 @@ export const useUserStore = defineStore('user', () => {
    */
   const recordLoginSession = (response) => {
     // 登录接口返回 { code, data } 信封，令牌与 user 都在 data 内；其余调用方直接传业务对象
-    const payload = typeof response?.code === 'number' && response.data ? response.data : response
+    const payload = typeof response?.code === 'number' && response.data
+      ? response.data
+      : response
 
     persistAuthTokens({
       accessToken: payload.accessToken || payload.token,

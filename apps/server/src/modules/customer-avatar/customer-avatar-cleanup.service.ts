@@ -92,7 +92,9 @@ export class CustomerAvatarCleanupService implements OnModuleInit, OnModuleDestr
     // 库里当前所有用户引用的头像路径，命中即保留
     const inUse = new Set<string>(
       await this.prisma.customerUser.findMany({
-        where: { avatar: { not: null } },
+        where: {
+          avatar: { not: null },
+        },
         select: { avatar: true },
       }).then(rows => rows.map(r => r.avatar!).filter(Boolean)),
     )

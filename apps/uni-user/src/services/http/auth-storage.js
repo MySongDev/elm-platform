@@ -15,7 +15,9 @@ export const USER_ID_KEY = 'user_id'
 
 function toTimestamp(value) {
   const parsed = Number(value)
-  return Number.isFinite(parsed) ? parsed : 0
+  return Number.isFinite(parsed)
+    ? parsed
+    : 0
 }
 
 /**

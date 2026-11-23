@@ -42,7 +42,10 @@ async function loadLogs() {
   }
 }
 
-watch([visible, () => props.tenant], ([open, tenant]) => {
+watch([
+  visible,
+  () => props.tenant,
+], ([open, tenant]) => {
   loadVersion++
   logs.value = []
   error.value = null

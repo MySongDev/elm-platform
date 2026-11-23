@@ -20,17 +20,25 @@ describe('orderQueryService lists', () => {
       refundRejectReason: null,
       tradeNo: null,
       subject: '示例商家 外卖订单',
-      goodsAmount: { toNumber: () => 24 },
-      deliveryFee: { toNumber: () => 5 },
-      payableAmount: { toNumber: () => 29 },
-      cartItems: [{
-        itemId: '1001',
-        skuId: '1001',
-        title: '商品',
-        qty: 2,
-        unitPrice: 12,
-        totalPrice: 24,
-      }],
+      goodsAmount: {
+        toNumber: () => 24,
+      },
+      deliveryFee: {
+        toNumber: () => 5,
+      },
+      payableAmount: {
+        toNumber: () => 29,
+      },
+      cartItems: [
+        {
+          itemId: '1001',
+          skuId: '1001',
+          title: '商品',
+          qty: 2,
+          unitPrice: 12,
+          totalPrice: 24,
+        },
+      ],
       notifyPayload: null,
       queryPayload: null,
       buyerPayAmount: null,
@@ -44,7 +52,9 @@ describe('orderQueryService lists', () => {
   function createService() {
     const order = createOrder()
     const prisma = {
-      paymentOrder: { findMany: jest.fn().mockResolvedValue([order]) },
+      paymentOrder: {
+        findMany: jest.fn().mockResolvedValue([order]),
+      },
     } as any
     const realTenantAccess = new TenantAccessService()
     const tenantAccess = {
@@ -65,7 +75,11 @@ describe('orderQueryService lists', () => {
 
     expect(prisma.paymentOrder.findMany).toHaveBeenCalledWith({
       where: undefined,
-      orderBy: [{ paidAt: 'desc' }, { updatedAt: 'desc' }, { createdAt: 'desc' }],
+      orderBy: [
+        { paidAt: 'desc' },
+        { updatedAt: 'desc' },
+        { createdAt: 'desc' },
+      ],
       take: 100,
     })
     expect(result).toEqual([
@@ -145,7 +159,9 @@ describe('orderQueryService lists', () => {
     expect(prisma.paymentOrder.findMany).toHaveBeenCalledWith(expect.objectContaining({
       where: {
         tenantId: 10,
-        shopId: { in: ['1'] },
+        shopId: {
+          in: ['1'],
+        },
       },
     }))
   })
@@ -190,10 +206,18 @@ describe('orderQueryService details', () => {
       refundBaseFulfillmentStatus: null,
       refundReason: null,
       refundRejectReason: null,
-      goodsAmount: { toNumber: () => 24 },
-      deliveryFee: { toNumber: () => 5 },
-      payableAmount: { toNumber: () => 29 },
-      cartItems: [{ qty: 2 }],
+      goodsAmount: {
+        toNumber: () => 24,
+      },
+      deliveryFee: {
+        toNumber: () => 5,
+      },
+      payableAmount: {
+        toNumber: () => 29,
+      },
+      cartItems: [
+        { qty: 2 },
+      ],
       paidAt: new Date('2026-06-02T10:00:00.000Z'),
       createdAt: new Date('2026-06-02T09:55:00.000Z'),
       updatedAt: new Date('2026-06-02T10:00:00.000Z'),
@@ -204,8 +228,12 @@ describe('orderQueryService details', () => {
 
   function createService(orderOverrides: Record<string, unknown> = {}) {
     const prisma = {
-      paymentOrder: { findUnique: jest.fn().mockResolvedValue(createOrder(orderOverrides)) },
-      orderActionLog: { findMany: jest.fn().mockResolvedValue([]) },
+      paymentOrder: {
+        findUnique: jest.fn().mockResolvedValue(createOrder(orderOverrides)),
+      },
+      orderActionLog: {
+        findMany: jest.fn().mockResolvedValue([]),
+      },
     } as any
     const realTenantAccess = new TenantAccessService()
     const tenantAccess = {
@@ -231,19 +259,23 @@ describe('orderQueryService details', () => {
 
   it('returns admin order detail with available actions and action logs', async () => {
     const { service, prisma } = createService()
-    prisma.orderActionLog.findMany.mockResolvedValueOnce([{
-      id: 1,
-      action: 'ACCEPT',
-    }])
+    prisma.orderActionLog.findMany.mockResolvedValueOnce([
+      {
+        id: 1,
+        action: 'ACCEPT',
+      },
+    ])
 
     const result = await service.getAdminOrderDetail('ELMDEMO202606020001')
 
     expect(result.availableActions).toEqual(['ACCEPT'])
     expect(result.customerAvailableActions).toEqual(['REQUEST_REFUND'])
-    expect(result.actionLogs).toEqual([{
-      id: 1,
-      action: 'ACCEPT',
-    }])
+    expect(result.actionLogs).toEqual([
+      {
+        id: 1,
+        action: 'ACCEPT',
+      },
+    ])
   })
 
   it('throws when order detail does not exist', async () => {

@@ -38,7 +38,13 @@ export default {
       },
     ],
     'scale-unlimited/declaration-strict-value': [
-      ['/color/', 'fill', 'stroke', 'background-color', 'border-color'],
+      [
+        '/color/',
+        'fill',
+        'stroke',
+        'background-color',
+        'border-color',
+      ],
       {
         ignoreValues: ['currentColor', 'transparent', 'inherit'],
         message: '颜色必须使用 CSS token，例如 var(--app-text-primary)',
@@ -57,12 +63,27 @@ export default {
         ignorePseudoElements: ['v-deep', 'v-global', 'v-slotted'],
       },
     ],
-    'selector-max-compound-selectors': [4, { severity: 'warning' }],
-    'selector-max-specificity': ['0,4,0', { severity: 'warning' }],
-    'declaration-no-important': [true, { severity: 'warning' }],
+    'selector-max-compound-selectors': [
+      4,
+      { severity: 'warning' },
+    ],
+    'selector-max-specificity': [
+      '0,4,0',
+      { severity: 'warning' },
+    ],
+    'declaration-no-important': [
+      true,
+      { severity: 'warning' },
+    ],
     'keyframes-name-pattern': null,
-    'no-duplicate-selectors': [true, { severity: 'warning' }],
-    'scss/dollar-variable-pattern': ['^app-[a-z0-9-]+$', { severity: 'warning' }],
+    'no-duplicate-selectors': [
+      true,
+      { severity: 'warning' },
+    ],
+    'scss/dollar-variable-pattern': [
+      '^app-[a-z0-9-]+$',
+      { severity: 'warning' },
+    ],
     'order/order': [
       [
         'custom-properties',
@@ -73,5 +94,10 @@ export default {
       ],
     ],
   },
-  ignoreFiles: ['dist/**', 'node_modules/**', '**/*.ts', '**/*.js'],
+  ignoreFiles: [
+    'dist/**',
+    'node_modules/**',
+    '**/*.ts',
+    '**/*.js',
+  ],
 }

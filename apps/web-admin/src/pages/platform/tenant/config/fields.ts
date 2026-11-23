@@ -99,21 +99,30 @@ export function createTenantTableColumns(_t: Translate) {
     {
       label: '店铺数',
       width: 80,
-      formatter: row => row._count?.users != null ? String(row._count.users) : '-',
+      formatter: row => row._count?.users != null
+        ? String(row._count.users)
+        : '-',
     },
     {
       label: '订单数',
       width: 80,
-      formatter: row => row._count?.orders != null ? String(row._count.orders) : '-',
+      formatter: row => row._count?.orders != null
+        ? String(row._count.orders)
+        : '-',
     },
     {
       label: '创建时间',
       minWidth: 180,
-      formatter: row => row.createdAt ? new Date(row.createdAt).toLocaleString('zh-CN') : '-',
+      formatter: row => row.createdAt
+        ? new Date(row.createdAt).toLocaleString('zh-CN')
+        : '-',
     },
   ] satisfies ConfigTableColumn<TenantInfo>[]
 }
 
 export function createTenantStatusSearchOptions(): TenantListQuery['status'][] {
-  return ['', ...Object.keys(tenantStatusMap)] as TenantListQuery['status'][]
+  return [
+    '',
+    ...Object.keys(tenantStatusMap),
+  ] as TenantListQuery['status'][]
 }

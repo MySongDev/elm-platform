@@ -24,8 +24,26 @@ const DISTRICTS = [
 ]
 
 const ROAD_SUFFIXES = ['路', '街', '大道', '弄', '巷']
-const ROAD_NAMES = ['南京', '淮海', '人民', '中山', '四川', '长宁', '世纪', '张杨', '金沙江', '真北']
-const PLACE_TYPES = ['广场', '购物中心', '小区', '写字楼', '美食城', '地铁站']
+const ROAD_NAMES = [
+  '南京',
+  '淮海',
+  '人民',
+  '中山',
+  '四川',
+  '长宁',
+  '世纪',
+  '张杨',
+  '金沙江',
+  '真北',
+]
+const PLACE_TYPES = [
+  '广场',
+  '购物中心',
+  '小区',
+  '写字楼',
+  '美食城',
+  '地铁站',
+]
 
 function randomInRange(min, max) {
   return +(min + Math.random() * (max - min)).toFixed(5)

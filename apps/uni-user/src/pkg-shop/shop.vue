@@ -80,7 +80,9 @@ watch(
       shopName: shop.name,
       deliveryFee: shop.float_delivery_fee || 0,
       minAmount: shop.float_minimum_order_amount || 20,
-      deliveryTime: shop.order_lead_time ? `${shop.order_lead_time}分钟` : '',
+      deliveryTime: shop.order_lead_time
+        ? `${shop.order_lead_time}分钟`
+        : '',
       distance: shop.distance,
     })
   },

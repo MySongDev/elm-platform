@@ -60,10 +60,13 @@ describe('useNotificationStore', () => {
   })
 
   it('loadNotifications fetches and stores list once; second call is a no-op', async () => {
-    const items = [buildItem({ id: 'a' }), buildItem({
-      id: 'b',
-      type: 'todo',
-    })]
+    const items = [
+      buildItem({ id: 'a' }),
+      buildItem({
+        id: 'b',
+        type: 'todo',
+      }),
+    ]
     vi.mocked(notificationApi.list).mockResolvedValueOnce(items)
     const store = useNotificationStore()
 
@@ -82,7 +85,9 @@ describe('useNotificationStore', () => {
   })
 
   it('loadNotifications records error and keeps previous data on failure', async () => {
-    vi.mocked(notificationApi.list).mockResolvedValueOnce([buildItem()])
+    vi.mocked(notificationApi.list).mockResolvedValueOnce([
+      buildItem(),
+    ])
     const store = useNotificationStore()
     await store.loadNotifications()
 
@@ -143,7 +148,10 @@ describe('useNotificationStore', () => {
   })
 
   it('removeNotification deletes the matching item', async () => {
-    vi.mocked(notificationApi.list).mockResolvedValueOnce([buildItem({ id: 'n1' }), buildItem({ id: 'n2' })])
+    vi.mocked(notificationApi.list).mockResolvedValueOnce([
+      buildItem({ id: 'n1' }),
+      buildItem({ id: 'n2' }),
+    ])
     vi.mocked(notificationApi.remove).mockResolvedValueOnce({ success: true })
     const store = useNotificationStore()
     await store.loadNotifications()
@@ -180,7 +188,9 @@ describe('useNotificationStore', () => {
   })
 
   it('reset wipes all state', async () => {
-    vi.mocked(notificationApi.list).mockResolvedValueOnce([buildItem()])
+    vi.mocked(notificationApi.list).mockResolvedValueOnce([
+      buildItem(),
+    ])
     const store = useNotificationStore()
     await store.loadNotifications()
 

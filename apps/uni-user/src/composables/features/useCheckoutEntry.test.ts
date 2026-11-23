@@ -17,31 +17,35 @@ vi.mock('@/platform/storage', () => ({
 }))
 
 function addCartProduct(cartStore, shopId = '1', itemId = '11', quantity = 3) {
-  cartStore.stores = [{
-    id: shopId,
-    name: '示例商家',
-    deliveryFee: 0,
-    minAmount: 0,
-    deliveryTime: '',
-    distance: '',
-    reserveText: '',
-    deliveryText: '',
-    products: [{
-      id: `${shopId}-${itemId}-111`,
-      itemId,
-      skuId: '111',
-      name: '菜品',
-      spec: '',
-      image: '',
-      price: 10,
-      originPrice: 10,
-      quantity,
-      selected: true,
-      tag: '',
-      specIndex: 0,
-      food: null,
-    }],
-  }]
+  cartStore.stores = [
+    {
+      id: shopId,
+      name: '示例商家',
+      deliveryFee: 0,
+      minAmount: 0,
+      deliveryTime: '',
+      distance: '',
+      reserveText: '',
+      deliveryText: '',
+      products: [
+        {
+          id: `${shopId}-${itemId}-111`,
+          itemId,
+          skuId: '111',
+          name: '菜品',
+          spec: '',
+          image: '',
+          price: 10,
+          originPrice: 10,
+          quantity,
+          selected: true,
+          tag: '',
+          specIndex: 0,
+          food: null,
+        },
+      ],
+    },
+  ]
 }
 
 function paidOrder(orderNo) {
@@ -110,11 +114,13 @@ describe('结算快照在真实购物车 store 上的接线', () => {
     const requestId = entry.beginCheckout({
       userId: '1',
       shopId: '1',
-      cartItems: [{
-        itemId: '11',
-        skuId: '111',
-        qty: 2,
-      }],
+      cartItems: [
+        {
+          itemId: '11',
+          skuId: '111',
+          qty: 2,
+        },
+      ],
     })
     entry.bindOrder('1', requestId, 'ORDER1')
     expect(cartStore.consumePaidSnapshot('1', paidOrder('ORDER1'))).toBe('consumed')
@@ -130,11 +136,13 @@ describe('结算快照在真实购物车 store 上的接线', () => {
     const input = {
       userId: '1',
       shopId: '1',
-      cartItems: [{
-        itemId: '11',
-        skuId: '111',
-        qty: 2,
-      }],
+      cartItems: [
+        {
+          itemId: '11',
+          skuId: '111',
+          qty: 2,
+        },
+      ],
     }
     const requestId = entry.beginCheckout({
       ...input,

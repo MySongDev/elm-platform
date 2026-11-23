@@ -5,7 +5,9 @@ import { defineConfig } from 'vite'
 // ⚠️ 本文件刻意不复用 packages/vite-config：那个包依赖 catalog 的 Vite ^8，
 // 而 @dcloudio/vite-plugin-uni 的 peerDependencies 精确锁 vite 5.2.8（迁移方案 B 节）。
 export default defineConfig({
-  plugins: [uni()],
+  plugins: [
+    uni(),
+  ],
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url)),

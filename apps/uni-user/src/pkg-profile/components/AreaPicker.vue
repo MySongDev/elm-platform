@@ -24,11 +24,15 @@ const countyIdx = ref(0)
 
 function getCities(index) {
   const prefix = provinces[index]?.[0].slice(0, 2)
-  return prefix ? Object.entries(areaList.city_list).filter(([code]) => code.startsWith(prefix)) : []
+  return prefix
+    ? Object.entries(areaList.city_list).filter(([code]) => code.startsWith(prefix))
+    : []
 }
 function getCounties(province, city) {
   const prefix = getCities(province)[city]?.[0].slice(0, 4)
-  return prefix ? Object.entries(areaList.county_list).filter(([code]) => code.startsWith(prefix)) : []
+  return prefix
+    ? Object.entries(areaList.county_list).filter(([code]) => code.startsWith(prefix))
+    : []
 }
 const cities = computed(() => getCities(provinceIdx.value))
 const counties = computed(() => getCounties(provinceIdx.value, cityIdx.value))

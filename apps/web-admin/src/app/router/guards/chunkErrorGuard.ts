@@ -11,7 +11,9 @@ import NProgress from 'nprogress'
  * @description 识别常见浏览器和构建工具在 chunk 失效时抛出的动态导入错误。
  */
 function isAsyncRouteLoadError(error: unknown) {
-  const message = error instanceof Error ? error.message : String(error)
+  const message = error instanceof Error
+    ? error.message
+    : String(error)
 
   return [
     'Failed to fetch dynamically imported module',

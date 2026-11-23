@@ -27,7 +27,9 @@ function createController() {
     }),
   } as any
 
-  const orderQuery = { listOrders: jest.fn().mockResolvedValue({ orders: [] }) } as any
+  const orderQuery = {
+    listOrders: jest.fn().mockResolvedValue({ orders: [] }),
+  } as any
   return {
     controller: new PaymentController(paymentService),
     orderController: new OrderController(orderWorkflow, orderQuery),
@@ -51,11 +53,13 @@ describe('paymentController', () => {
       shopId: '101',
       shopName: '示例商家',
       deliveryFee: 5,
-      cartItems: [{
-        itemId: '1001',
-        qty: 2,
-        unitPrice: 12,
-      }],
+      cartItems: [
+        {
+          itemId: '1001',
+          qty: 2,
+          unitPrice: 12,
+        },
+      ],
     } as any, request)
 
     expect(paymentService.createAlipayWapPayment).toHaveBeenCalledWith(expect.objectContaining({

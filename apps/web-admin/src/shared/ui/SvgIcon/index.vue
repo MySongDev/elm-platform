@@ -10,7 +10,9 @@ interface Props {
 }
 
 const svgClass = computed(() => {
-  return props.iconClass ? `svg-icon ${props.iconClass}` : 'svg-icon'
+  return props.iconClass
+    ? `svg-icon ${props.iconClass}`
+    : 'svg-icon'
 })
 </script>
 

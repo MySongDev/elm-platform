@@ -25,7 +25,9 @@ export function requestIdMiddleware(
 }
 
 function resolveRequestId(value: string | string[] | undefined): string {
-  const headerValue = Array.isArray(value) ? value[0] : value
+  const headerValue = Array.isArray(value)
+    ? value[0]
+    : value
   const normalized = headerValue?.trim()
 
   return normalized || randomUUID()

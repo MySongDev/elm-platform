@@ -9,8 +9,12 @@ const axiosClient = {
   patch: vi.fn(),
   delete: vi.fn(),
   interceptors: {
-    request: { use: vi.fn() },
-    response: { use: vi.fn() },
+    request: {
+      use: vi.fn(),
+    },
+    response: {
+      use: vi.fn(),
+    },
   },
 }
 

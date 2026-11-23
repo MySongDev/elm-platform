@@ -46,7 +46,9 @@ export function useShopPageData(options) {
       if (revision !== loadRevision) {
         return
       }
-      resetMenu(Array.isArray(menuRes) ? menuRes : [])
+      resetMenu(Array.isArray(menuRes)
+        ? menuRes
+        : [])
       // 先加载首分类，再挂载连续商品流，避免占位块短暂全落入可视区而同时发出大量请求。
       await loadCategoryFoods(activeCategoryId.value)
       if (revision !== loadRevision) {

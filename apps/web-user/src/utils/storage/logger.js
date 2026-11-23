@@ -33,8 +33,12 @@ function safeStringify(value) {
 function normalizeEntry(entry = {}) {
   return Object.fromEntries(
     Object.entries(entry).map(([key, value]) => {
-      if (typeof value === 'string')
-        return [key, truncateText(value)]
+      if (typeof value === 'string') {
+        return [
+          key,
+          truncateText(value),
+        ]
+      }
 
       if (value instanceof Error) {
         return [
@@ -58,7 +62,9 @@ export function addErrorLog(entry) {
 
   const now = Date.now()
   const listText = getStore(LOG_KEY)
-  const list = Array.isArray(listText) ? listText : safeParseJson(listText || '[]', [])
+  const list = Array.isArray(listText)
+    ? listText
+    : safeParseJson(listText || '[]', [])
   const normalizedEntry = normalizeEntry(entry)
 
   const record = {

@@ -12,20 +12,24 @@ function createFood(specOverrides: Prisma.JsonObject = {}, foodOverrides: Partia
     itemId: 11,
     restaurantId: 1,
     name: '服务端商品',
-    specfoods: [{
-      sku_id: 111,
-      food_id: 1001,
-      item_id: 11,
-      restaurant_id: 1,
-      price: 12.34,
-      sold_out: false,
-      ...specOverrides,
-    }],
+    specfoods: [
+      {
+        sku_id: 111,
+        food_id: 1001,
+        item_id: 11,
+        restaurant_id: 1,
+        price: 12.34,
+        sold_out: false,
+        ...specOverrides,
+      },
+    ],
     ...foodOverrides,
   }
 }
 
-function createService(restaurantOverrides: Partial<PricingRestaurant> = {}, foods: PricingFood[] = [createFood()]) {
+function createService(restaurantOverrides: Partial<PricingRestaurant> = {}, foods: PricingFood[] = [
+  createFood(),
+]) {
   const prisma = {
     restaurant: {
       findUnique: jest.fn().mockResolvedValue({
@@ -50,11 +54,13 @@ function createService(restaurantOverrides: Partial<PricingRestaurant> = {}, foo
 function selection(qty = 2, skuId = '111'): CheckoutSelection {
   return {
     shopId: '1',
-    cartItems: [{
-      itemId: '11',
-      skuId,
-      qty,
-    }],
+    cartItems: [
+      {
+        itemId: '11',
+        skuId,
+        qty,
+      },
+    ],
   }
 }
 
@@ -65,26 +71,30 @@ describe('服务端可信订单报价', () => {
       ...selection(),
       shopName: '伪造商家',
       deliveryFee: 0,
-      cartItems: [{
-        ...selection().cartItems[0],
-        title: '伪造商品',
-        unitPrice: 0.01,
-        totalPrice: 0.02,
-        unitPriceMinor: 1,
-      }],
+      cartItems: [
+        {
+          ...selection().cartItems[0],
+          title: '伪造商品',
+          unitPrice: 0.01,
+          totalPrice: 0.02,
+          unitPriceMinor: 1,
+        },
+      ],
     }
     expect(await service.priceSelection(input)).toEqual({
       shopId: '1',
       shopName: '服务端商家',
       tenantId: 7,
-      cartItems: [{
-        itemId: '11',
-        skuId: '111',
-        qty: 2,
-        title: '服务端商品',
-        unitPriceMinor: 1234,
-        totalPriceMinor: 2468,
-      }],
+      cartItems: [
+        {
+          itemId: '11',
+          skuId: '111',
+          qty: 2,
+          title: '服务端商品',
+          unitPriceMinor: 1234,
+          totalPriceMinor: 2468,
+        },
+      ],
       goodsAmountMinor: 2468,
       deliveryFeeMinor: 235,
       payableAmountMinor: 2703,
@@ -92,7 +102,9 @@ describe('服务端可信订单报价', () => {
     expect(prisma.food.findMany).toHaveBeenCalledWith(expect.objectContaining({
       where: {
         restaurantId: 1,
-        itemId: { in: [11] },
+        itemId: {
+          in: [11],
+        },
       },
     }))
   })
@@ -118,7 +130,9 @@ describe('服务端可信订单报价', () => {
   it('拒绝不存在或外店的商品，以及本店其他商品的SKU', async () => {
     const { service: missing } = createService({}, [])
     await expect(missing.priceSelection(selection())).rejects.toBeInstanceOf(BadRequestException)
-    const { service: otherShop } = createService({}, [createFood({}, { restaurantId: 2 })])
+    const { service: otherShop } = createService({}, [
+      createFood({}, { restaurantId: 2 }),
+    ])
     await expect(otherShop.priceSelection(selection())).rejects.toBeInstanceOf(BadRequestException)
     const { service: otherSku } = createService()
     await expect(otherSku.priceSelection(selection(2, '999'))).rejects.toBeInstanceOf(BadRequestException)
@@ -129,25 +143,33 @@ describe('服务端可信订单报价', () => {
     { item_id: 12 },
     { sold_out: true },
   ])('拒绝SKU归属错位或目录明确标记售罄 %p', async (specOverride) => {
-    const { service } = createService({}, [createFood(specOverride)])
+    const { service } = createService({}, [
+      createFood(specOverride),
+    ])
     await expect(service.priceSelection(selection())).rejects.toBeInstanceOf(BadRequestException)
   })
 
   it('旧本地单规格只能使用specfoods真实item_id，不接受虚构的规格下标', async () => {
-    const { service } = createService({}, [createFood({}, {
-      specfoods: [{
-        name: '本地商品',
-        item_id: 11,
-        restaurant_id: 1,
-        price: 12.34,
-      }],
-    })])
+    const { service } = createService({}, [
+      createFood({}, {
+        specfoods: [
+          {
+            name: '本地商品',
+            item_id: 11,
+            restaurant_id: 1,
+            price: 12.34,
+          },
+        ],
+      }),
+    ])
     expect((await service.priceSelection(selection(2, '11'))).goodsAmountMinor).toBe(2468)
     await expect(service.priceSelection(selection(2, '0'))).rejects.toBeInstanceOf(BadRequestException)
   })
 
   it('没有sku_id的历史规格可使用真实food_id，但不能绕过已有sku_id', async () => {
-    const { service } = createService({}, [createFood({ sku_id: null })])
+    const { service } = createService({}, [
+      createFood({ sku_id: null }),
+    ])
     expect((await service.priceSelection(selection(2, '1001'))).goodsAmountMinor).toBe(2468)
     const { service: skuService } = createService()
     await expect(skuService.priceSelection(selection(2, '1001'))).rejects.toBeInstanceOf(BadRequestException)
@@ -158,27 +180,39 @@ describe('服务端可信订单报价', () => {
       sku_id: 111,
       price: 12.34,
     }
-    const { service: duplicate } = createService({}, [createFood({}, { specfoods: [spec, spec] })])
+    const { service: duplicate } = createService({}, [
+      createFood({}, {
+        specfoods: [spec, spec],
+      }),
+    ])
     await expect(duplicate.priceSelection(selection())).rejects.toBeInstanceOf(InternalServerErrorException)
-    const { service: noIdentity } = createService({}, [createFood({}, { specfoods: [{ price: 12.34 }] })])
+    const { service: noIdentity } = createService({}, [
+      createFood({}, {
+        specfoods: [
+          { price: 12.34 },
+        ],
+      }),
+    ])
     await expect(noIdentity.priceSelection(selection())).rejects.toBeInstanceOf(BadRequestException)
   })
 
   it('多规格只有相同item_id时拒绝选择，不能把第一项价格当成正确SKU', async () => {
-    const { service } = createService({}, [createFood({}, {
-      specfoods: [
-        {
-          item_id: 11,
-          restaurant_id: 1,
-          price: 12.34,
-        },
-        {
-          item_id: 11,
-          restaurant_id: 1,
-          price: 20,
-        },
-      ],
-    })])
+    const { service } = createService({}, [
+      createFood({}, {
+        specfoods: [
+          {
+            item_id: 11,
+            restaurant_id: 1,
+            price: 12.34,
+          },
+          {
+            item_id: 11,
+            restaurant_id: 1,
+            price: 20,
+          },
+        ],
+      }),
+    ])
     await expect(service.priceSelection(selection(2, '11'))).rejects.toBeInstanceOf(InternalServerErrorException)
   })
 
@@ -203,7 +237,9 @@ describe('服务端可信订单报价', () => {
   })
 
   it.each([null, -1, 0.001, '坏价格'])('权威SKU价格 %p 无效时拒绝，不静默归零', async (price) => {
-    const { service } = createService({}, [createFood({ price })])
+    const { service } = createService({}, [
+      createFood({ price }),
+    ])
     await expect(service.priceSelection(selection())).rejects.toBeInstanceOf(InternalServerErrorException)
   })
 
@@ -215,12 +251,16 @@ describe('服务端可信订单报价', () => {
   })
 
   it('规格小计或加配送费后超出存储上限时拒绝结算', async () => {
-    const { service: subtotal } = createService({}, [createFood({ price: '99999999.99' })])
+    const { service: subtotal } = createService({}, [
+      createFood({ price: '99999999.99' }),
+    ])
     await expect(subtotal.priceSelection(selection())).rejects.toBeInstanceOf(BadRequestException)
     const { service: payable } = createService({
       floatMinimumOrderAmount: 0,
       floatDeliveryFee: 0.01,
-    }, [createFood({ price: '99999999.99' })])
+    }, [
+      createFood({ price: '99999999.99' }),
+    ])
     await expect(payable.priceSelection(selection(1))).rejects.toBeInstanceOf(BadRequestException)
   })
 
@@ -228,7 +268,9 @@ describe('服务端可信订单报价', () => {
     const { service } = createService({
       floatMinimumOrderAmount: 0,
       floatDeliveryFee: 0,
-    }, [createFood({ price: 0 })])
+    }, [
+      createFood({ price: 0 }),
+    ])
     await expect(service.priceSelection(selection())).rejects.toBeInstanceOf(BadRequestException)
   })
 })

@@ -217,7 +217,9 @@ export class OrderWorkflowService {
   }
 
   private async findOrder(orderNo: string, context?: TenantContext) {
-    const order = await (this.prisma as any).paymentOrder.findUnique({ where: { orderNo } })
+    const order = await (this.prisma as any).paymentOrder.findUnique({
+      where: { orderNo },
+    })
     if (!order || !isOrderAllowed(order, context, this.tenantAccess))
       throw new NotFoundException('订单不存在')
     return order as PaymentOrderRecord

@@ -28,7 +28,9 @@ const props = defineProps({
 })
 
 function normalizeSize(value) {
-  return typeof value === 'number' ? `${value}rpx` : value
+  return typeof value === 'number'
+    ? `${value}rpx`
+    : value
 }
 
 const blockStyle = computed(() => {

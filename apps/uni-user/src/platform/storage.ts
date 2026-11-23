@@ -14,7 +14,9 @@ export function setStore(name: string, content: unknown): void {
   if (!name) {
     return
   }
-  const value = typeof content === 'string' ? content : JSON.stringify(content)
+  const value = typeof content === 'string'
+    ? content
+    : JSON.stringify(content)
   uni.setStorageSync(name, value)
 }
 

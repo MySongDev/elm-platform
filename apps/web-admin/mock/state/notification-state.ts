@@ -34,9 +34,16 @@ function buildSecurityLoginItem(context: SecurityLoginContext): NotificationItem
 
 function sortByCreatedAtDesc(items: NotificationItem[]): NotificationItem[] {
   return [...items].sort((a, b) => {
-    if (a.createdAt === b.createdAt)
-      return b.id < a.id ? -1 : b.id > a.id ? 1 : 0
-    return a.createdAt < b.createdAt ? 1 : -1
+    if (a.createdAt === b.createdAt) {
+      return b.id < a.id
+        ? -1
+        : b.id > a.id
+          ? 1
+          : 0
+    }
+    return a.createdAt < b.createdAt
+      ? 1
+      : -1
   })
 }
 
@@ -64,7 +71,9 @@ export const sharedNotificationMockState = {
       read: true,
       readAt: new Date().toISOString(),
     }
-    this.state = this.state.map(n => (n.id === id ? updated : n))
+    this.state = this.state.map(n => (n.id === id
+      ? updated
+      : n))
     return updated
   },
 

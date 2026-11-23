@@ -19,7 +19,9 @@ function success<T>(data: T) {
 
 function normalizePositiveInteger(value: unknown, fallback: number) {
   const parsed = Number(value)
-  return Number.isInteger(parsed) && parsed > 0 ? parsed : fallback
+  return Number.isInteger(parsed) && parsed > 0
+    ? parsed
+    : fallback
 }
 
 function normalizeProfilePatch(body: unknown): UpdateProfileParams {
@@ -27,9 +29,15 @@ function normalizeProfilePatch(body: unknown): UpdateProfileParams {
     return {}
   const value = body as Record<string, unknown>
   return {
-    ...(typeof value.username === 'string' ? { username: value.username } : {}),
-    ...(typeof value.email === 'string' || value.email === null ? { email: value.email } : {}),
-    ...(typeof value.phone === 'string' || value.phone === null ? { phone: value.phone } : {}),
+    ...(typeof value.username === 'string'
+      ? { username: value.username }
+      : {}),
+    ...(typeof value.email === 'string' || value.email === null
+      ? { email: value.email }
+      : {}),
+    ...(typeof value.phone === 'string' || value.phone === null
+      ? { phone: value.phone }
+      : {}),
   }
 }
 

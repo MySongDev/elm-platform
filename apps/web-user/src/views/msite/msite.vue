@@ -121,7 +121,9 @@ const PAGE_SIZE = 8
 const paginatedFoodList = computed(() => {
   const list = FoodCategoryList.value || []
   return Array.from(
-    { length: Math.ceil(list.length / PAGE_SIZE) },
+    {
+      length: Math.ceil(list.length / PAGE_SIZE),
+    },
     (_, i) => list.slice(i * PAGE_SIZE, (i + 1) * PAGE_SIZE),
   )
 })

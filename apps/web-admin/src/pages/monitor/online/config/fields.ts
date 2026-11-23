@@ -47,7 +47,9 @@ export function createOnlineUserTableColumns(t: Translate) {
       width: 120,
       tag: row => ({
         label: row.role,
-        type: row.role === 'admin' ? 'danger' : 'info',
+        type: row.role === 'admin'
+          ? 'danger'
+          : 'info',
       }),
     },
     {

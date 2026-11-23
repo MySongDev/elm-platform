@@ -61,7 +61,9 @@ const props = defineProps({
 /** 单色：字体类名。与 web-user 的 `#icon-${name}` 对应 `icon-${name}` */
 const fontClass = computed(() => {
   const base = `icon icon-${props.iconName}`
-  return props.iconClass ? `${base} ${props.iconClass}` : base
+  return props.iconClass
+    ? `${base} ${props.iconClass}`
+    : base
 })
 
 /**
@@ -80,7 +82,12 @@ const fontClass = computed(() => {
  * svgtofont 对这种复合路径的 advance width 计算异常 → 字形宽度被压扁
  * （实测渲染宽高比 6.75:27，严重失调）。字体分支不可用，走 PNG 兜底。
  */
-const MULTICOLOR_ICONS = new Set(['fengniao', 'cart-icon', 'sdk_icon_zhifubao', 'backtop'])
+const MULTICOLOR_ICONS = new Set([
+  'fengniao',
+  'cart-icon',
+  'sdk_icon_zhifubao',
+  'backtop',
+])
 
 const usePng = computed(() => props.multicolor || MULTICOLOR_ICONS.has(props.iconName))
 
@@ -99,7 +106,9 @@ const textStyle = computed(() => {
     style.color = props.color
   if (props.size)
     style.fontSize = props.size
-  return Object.keys(style).length > 0 ? style : undefined
+  return Object.keys(style).length > 0
+    ? style
+    : undefined
 })
 
 /**

@@ -22,7 +22,9 @@ export const useAddressStore = defineStore('address', () => {
       const result = await getAddress()
       if (version !== readVersion || !belongsToCurrentUser(owner))
         return false
-      AddressList.value = Array.isArray(result?.data) ? result.data : []
+      AddressList.value = Array.isArray(result?.data)
+        ? result.data
+        : []
       return true
     }
     catch (error) {
@@ -50,7 +52,9 @@ export const useAddressStore = defineStore('address', () => {
   async function saveAddress(id, params) {
     const owner = currentUser()
     ++readVersion
-    const result = await (id === null ? addAddress(params) : updateAddress(id, params))
+    const result = await (id === null
+      ? addAddress(params)
+      : updateAddress(id, params))
     if (belongsToCurrentUser(owner))
       commitAddress(result.data)
     return result.data

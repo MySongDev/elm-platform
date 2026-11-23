@@ -33,7 +33,9 @@ const PAYMENT_REQUEST_OPTIONS = {
  * 这里读 TransportError.data（transport 统一结构）。语义相同：后端信封里的 message。
  */
 function getResponseMessage(error) {
-  const data = error instanceof TransportError ? error.data : error?.response?.data
+  const data = error instanceof TransportError
+    ? error.data
+    : error?.response?.data
 
   if (typeof data === 'string')
     return data

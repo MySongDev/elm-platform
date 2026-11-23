@@ -19,7 +19,24 @@ describe('订单整数分金额', () => {
     expect(orderMajorToMinor(major)).toBe(minor)
   })
 
-  it.each([null, undefined, '', ' ', '1\n', '-1', -0, -1, Number.NaN, Number.POSITIVE_INFINITY, '0.001', 0.1 + 0.2, '1e2', '100000000', {}, true])(
+  it.each([
+    null,
+    undefined,
+    '',
+    ' ',
+    '1\n',
+    '-1',
+    -0,
+    -1,
+    Number.NaN,
+    Number.POSITIVE_INFINITY,
+    '0.001',
+    0.1 + 0.2,
+    '1e2',
+    '100000000',
+    {},
+    true,
+  ])(
     '拒绝坏价格或超限金额 %p，不把它归零',
     (value) => {
       expect(() => orderMajorToMinor(value)).toThrow(RangeError)
@@ -40,12 +57,24 @@ describe('订单整数分金额', () => {
     expect(() => addOrderAmountsMinor(1, Number.MAX_SAFE_INTEGER)).toThrow(RangeError)
   })
 
-  it.each([-1, -0, 0.5, Number.NaN, MAX_ORDER_STORAGE_AMOUNT_MINOR + 1])('分金额边界拒绝 %p', (value) => {
+  it.each([
+    -1,
+    -0,
+    0.5,
+    Number.NaN,
+    MAX_ORDER_STORAGE_AMOUNT_MINOR + 1,
+  ])('分金额边界拒绝 %p', (value) => {
     expect(() => assertOrderAmountMinor(value)).toThrow(RangeError)
     expect(() => orderMinorToMajorString(value)).toThrow(RangeError)
   })
 
-  it.each([0, -1, 0.5, Number.NaN, Number.MAX_SAFE_INTEGER + 1])('计算小计时拒绝无效数量 %p', (qty) => {
+  it.each([
+    0,
+    -1,
+    0.5,
+    Number.NaN,
+    Number.MAX_SAFE_INTEGER + 1,
+  ])('计算小计时拒绝无效数量 %p', (qty) => {
     expect(() => multiplyOrderAmountMinor(1, qty)).toThrow(RangeError)
   })
 })

@@ -69,14 +69,20 @@ function buildRoute(menu: BackendMenu, parentPath = ''): RouteRecordRaw | null {
     return null
 
   // 计算完整路径：绝对路径直接用，相对路径拼接父路径
-  const fullPath = menu.path.startsWith('/') ? norm(menu.path) : join(parentPath, menu.path)
+  const fullPath = menu.path.startsWith('/')
+    ? norm(menu.path)
+    : join(parentPath, menu.path)
   // 给 Vue Router 用的 path：根级保留 /，子级去掉父路径前缀
-  const routePath = parentPath ? fullPath.replace(`${norm(parentPath)}/`, '') : fullPath
+  const routePath = parentPath
+    ? fullPath.replace(`${norm(parentPath)}/`, '')
+    : fullPath
 
   const baseMeta: RouteMeta = {
     title: menu.title,
     icon: menu.icon ?? undefined,
-    auths: menu.permission ? [menu.permission] : undefined,
+    auths: menu.permission
+      ? [menu.permission]
+      : undefined,
     order: menu.sort,
   }
 
@@ -89,7 +95,9 @@ function buildRoute(menu: BackendMenu, parentPath = ''): RouteRecordRaw | null {
   // 1) 目录类型：有子节点（过滤后仍有子节点）
   if (children.length > 0) {
     const first = children[0]
-    const redirect = first.redirect ?? (first.path.startsWith('/') ? first.path : join(fullPath, first.path))
+    const redirect = first.redirect ?? (first.path.startsWith('/')
+      ? first.path
+      : join(fullPath, first.path))
 
     const alwaysShow = children.length > 1 || children.some(c => c.children?.length)
 

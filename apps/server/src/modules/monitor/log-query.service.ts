@@ -128,7 +128,9 @@ export class LogQueryService {
     if (!context.tenantId)
       return { userId: -1 } // 无租户 ID 时匹配不到任何记录
 
-    return { user: { tenantId: context.tenantId } }
+    return {
+      user: { tenantId: context.tenantId },
+    }
   }
 
   /**
@@ -185,7 +187,9 @@ export class LogQueryService {
         level: 'error',
         source: 'Prisma',
         message: '数据库连接异常',
-        detail: error instanceof Error ? error.message : String(error),
+        detail: error instanceof Error
+          ? error.message
+          : String(error),
         createdAt,
       })
     }
@@ -208,7 +212,9 @@ export class LogQueryService {
         level: 'warn',
         source: 'Redis',
         message: 'Redis 连接不可用',
-        detail: error instanceof Error ? error.message : String(error),
+        detail: error instanceof Error
+          ? error.message
+          : String(error),
         createdAt,
       })
     }

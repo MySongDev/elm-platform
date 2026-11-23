@@ -42,7 +42,9 @@ interface MerchantApplicationLog {
 
 function getId(): string {
   const id = route.params.id
-  return Array.isArray(id) ? id[0] : id
+  return Array.isArray(id)
+    ? id[0]
+    : id
 }
 
 async function fetchDetail() {

@@ -71,7 +71,9 @@ export function useLoadMore<T = any>(
     resolveReady = resolve
   })
 
-  const seen = dedupKey ? new Set() : null
+  const seen = dedupKey
+    ? new Set()
+    : null
 
   function dedup(items: T[]): T[] {
     if (!seen || !dedupKey)
@@ -115,13 +117,18 @@ export function useLoadMore<T = any>(
       if (controller.signal.aborted)
         return
 
-      const items = Array.isArray(result) ? result : (result?.list ?? [])
+      const items = Array.isArray(result)
+        ? result
+        : (result?.list ?? [])
       const hasMore = !Array.isArray(result) && result?.hasMore != null
         ? result.hasMore
         : items.length >= pageSize
 
       const newItems = dedup(items)
-      list.value = [...list.value, ...newItems]
+      list.value = [
+        ...list.value,
+        ...newItems,
+      ]
 
       page.value = nextPage
       finished.value = !hasMore || newItems.length === 0

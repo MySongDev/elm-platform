@@ -36,7 +36,9 @@ function toFinite(value: unknown): number | null {
   if (value === null || value === undefined || value === '')
     return null
   const result = Number(value)
-  return Number.isFinite(result) ? result : null
+  return Number.isFinite(result)
+    ? result
+    : null
 }
 
 /**
@@ -51,7 +53,9 @@ function formatDistance(row: Pick<Restaurant, 'latitude' | 'longitude'>, coords?
     return UPSTREAM_DISTANCE_FALLBACK
 
   const km = haversineKm(lat, lng, row.latitude, row.longitude)
-  return km < 1 ? `${Math.round(km * 1000)}米` : `${km.toFixed(1)}公里`
+  return km < 1
+    ? `${Math.round(km * 1000)}米`
+    : `${km.toFixed(1)}公里`
 }
 
 /** 商家行 → 上游 `/shopping/restaurants` 与 `/shopping/restaurant/:id` 的响应项。 */
@@ -85,7 +89,9 @@ export function toRestaurantResponse(row: Restaurant, coords?: RequestCoords) {
     description: row.description,
     // 上游有 224 条商家根本不含 delivery_mode 键，所以要「省略键」而不是给 null，
     // 否则 JSON.stringify 会多出一个 "delivery_mode":null。
-    ...(row.deliveryMode === null ? {} : { delivery_mode: row.deliveryMode }),
+    ...(row.deliveryMode === null
+      ? {}
+      : { delivery_mode: row.deliveryMode }),
     activities: row.activities,
   }
 }

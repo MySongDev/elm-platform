@@ -23,10 +23,18 @@ function createOrder(overrides: Record<string, unknown> = {}) {
     refundBaseFulfillmentStatus: null,
     refundReason: null,
     refundRejectReason: null,
-    goodsAmount: { toNumber: () => 24 },
-    deliveryFee: { toNumber: () => 5 },
-    payableAmount: { toNumber: () => 29 },
-    cartItems: [{ qty: 2 }],
+    goodsAmount: {
+      toNumber: () => 24,
+    },
+    deliveryFee: {
+      toNumber: () => 5,
+    },
+    payableAmount: {
+      toNumber: () => 29,
+    },
+    cartItems: [
+      { qty: 2 },
+    ],
     paidAt: new Date('2026-06-02T10:00:00.000Z'),
     createdAt: new Date('2026-06-02T09:55:00.000Z'),
     updatedAt: new Date('2026-06-02T10:00:00.000Z'),
@@ -302,13 +310,15 @@ describe('orderWorkflowService', () => {
   })
 
   describe('createOrder（渠道无关建单入口 POST /api/orders）', () => {
-    const cartItems = [{
-      itemId: '1001',
-      qty: 2,
-      skuId: '1001',
-      title: '经典香辣鸡腿堡套餐',
-      unitPrice: 12,
-    }]
+    const cartItems = [
+      {
+        itemId: '1001',
+        qty: 2,
+        skuId: '1001',
+        title: '经典香辣鸡腿堡套餐',
+        unitPrice: 12,
+      },
+    ]
 
     it('creates a pending order without touching any payment channel', async () => {
       const { prisma, service } = createService()

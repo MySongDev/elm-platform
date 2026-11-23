@@ -5,8 +5,12 @@ import { getBusinessMessage, isBusinessError, useLocation } from './policies'
 vi.mock('axios', () => {
   const mockRequest = vi.fn()
   const mockInterceptors = {
-    request: { use: vi.fn() },
-    response: { use: vi.fn() },
+    request: {
+      use: vi.fn(),
+    },
+    response: {
+      use: vi.fn(),
+    },
   }
   return {
     default: {
@@ -20,13 +24,17 @@ vi.mock('axios', () => {
 })
 
 // Mock 依赖
-vi.mock('@/components/common/AlterTip/index', () => ({ showAlert: vi.fn() }))
+vi.mock('@/components/common/AlterTip/index', () => ({
+  showAlert: vi.fn(),
+}))
 vi.mock('@/config', () => ({ API_BASE_URL: '/api' }))
 vi.mock('@/utils/storage/storage', () => ({
   getStore: vi.fn(),
   setStore: vi.fn(),
 }))
-vi.mock('./auth-refresh', () => ({ refreshCustomerToken: vi.fn().mockResolvedValue(null) }))
+vi.mock('./auth-refresh', () => ({
+  refreshCustomerToken: vi.fn().mockResolvedValue(null),
+}))
 vi.mock('./loading', () => ({
   startGlobalLoading: vi.fn(),
   finishGlobalLoading: vi.fn(),

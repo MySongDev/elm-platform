@@ -120,7 +120,9 @@ describe('useLocationStore', () => {
       },
     }
     vi.stubGlobal('navigator', {
-      geolocation: { getCurrentPosition: vi.fn().mockImplementation(success => success(mockPosition)) },
+      geolocation: {
+        getCurrentPosition: vi.fn().mockImplementation(success => success(mockPosition)),
+      },
     })
 
     const reverseModule = await import('@/services/api/api-city')

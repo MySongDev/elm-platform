@@ -7,11 +7,13 @@ import { TenantContextService } from '@/modules/tenant/tenant-context.service'
 import 'reflect-metadata'
 
 function createController() {
-  const paymentOrders = [{
-    orderNo: 'ELMALI202605241200000001',
-    status: 'PENDING',
-    tradeStatus: 'WAIT_BUYER_PAY',
-  }]
+  const paymentOrders = [
+    {
+      orderNo: 'ELMALI202605241200000001',
+      status: 'PENDING',
+      tradeStatus: 'WAIT_BUYER_PAY',
+    },
+  ]
   const orderQuery = {
     listAdminOrders: jest.fn().mockResolvedValue(paymentOrders),
     getAdminOrderDetail: jest.fn().mockResolvedValue({ orderNo: 'ELMALI202605241200000001' }),

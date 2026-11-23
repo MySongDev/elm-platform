@@ -10,7 +10,10 @@ export class CustomerAddressService {
   list(customerId: number) {
     return this.prisma.customerAddress.findMany({
       where: { customerId },
-      orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
+      orderBy: [
+        { createdAt: 'desc' },
+        { id: 'desc' },
+      ],
     })
   }
 
@@ -66,7 +69,11 @@ export class CustomerAddressService {
       where: {
         customerId,
         isDefault: true,
-        ...(exceptId === undefined ? {} : { NOT: { id: exceptId } }),
+        ...(exceptId === undefined
+          ? {}
+          : {
+              NOT: { id: exceptId },
+            }),
       },
       data: { isDefault: false },
     })
@@ -114,7 +121,9 @@ export class CustomerAddressService {
   remove(customerId: number, id: number) {
     return this.withLockedCustomer(customerId, async (tx) => {
       await this.findOwned(tx, customerId, id)
-      await tx.customerAddress.delete({ where: { id } })
+      await tx.customerAddress.delete({
+        where: { id },
+      })
       return { success: true }
     })
   }

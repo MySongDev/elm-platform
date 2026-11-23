@@ -14,12 +14,18 @@ export function createRealNotificationApi(http: TypedHttpClient): NotificationAp
     list: (type?: NotificationTypeFilter): Promise<NotificationItem[]> =>
       http.get<NotificationItem[]>(
         notificationEndpoints.list,
-        type ? { params: { type } } : {},
+        type
+          ? {
+              params: { type },
+            }
+          : {},
       ),
     markAllRead: (type?: NotificationTypeFilter): Promise<MarkAllReadResult> =>
       http.patch<MarkAllReadResult>(
         notificationEndpoints.markAllRead,
-        type ? { type } : {},
+        type
+          ? { type }
+          : {},
       ),
     markRead: (id: string): Promise<NotificationItem> =>
       http.patch<NotificationItem>(notificationEndpoints.markRead(id)),
@@ -28,7 +34,11 @@ export function createRealNotificationApi(http: TypedHttpClient): NotificationAp
     clear: (type?: NotificationTypeFilter): Promise<ClearResult> =>
       http.delete<ClearResult>(
         notificationEndpoints.clear,
-        type ? { params: { type } } : {},
+        type
+          ? {
+              params: { type },
+            }
+          : {},
       ),
   }
 }

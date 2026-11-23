@@ -17,7 +17,9 @@ export function setupHttpClient() {
   configureHttpClient({
     getToken: () => {
       const authStore = useAuthStore()
-      return authStore.ensureSessionValid() ? authStore.token : ''
+      return authStore.ensureSessionValid()
+        ? authStore.token
+        : ''
     },
     onUnauthorized: () => {
       const authStore = useAuthStore()

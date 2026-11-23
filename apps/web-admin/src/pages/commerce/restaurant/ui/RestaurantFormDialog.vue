@@ -25,26 +25,37 @@ const saveError = shallowRef(false)
 let editorVersion = 0
 let disposed = false
 const { t } = useI18n()
-const title = computed(() => t(props.restaurant ? 'crud.editTitle' : 'crud.addTitle', { title: t('commerce.restaurant.name') }))
+const title = computed(() => t(props.restaurant ? 'crud.editTitle' : 'crud.addTitle', {
+  title: t('commerce.restaurant.name'),
+}))
 const rules = computed<FormRules>(() => ({
-  name: [{
-    required: true,
-    message: t('commerce.restaurant.nameRequired'),
-    trigger: 'blur',
-  }],
-  address: [{
-    required: true,
-    message: t('commerce.restaurant.addressRequired'),
-    trigger: 'blur',
-  }],
-  category: [{
-    required: true,
-    message: t('commerce.restaurant.categoryRequired'),
-    trigger: 'blur',
-  }],
+  name: [
+    {
+      required: true,
+      message: t('commerce.restaurant.nameRequired'),
+      trigger: 'blur',
+    },
+  ],
+  address: [
+    {
+      required: true,
+      message: t('commerce.restaurant.addressRequired'),
+      trigger: 'blur',
+    },
+  ],
+  category: [
+    {
+      required: true,
+      message: t('commerce.restaurant.categoryRequired'),
+      trigger: 'blur',
+    },
+  ],
 }))
 
-watch([visible, () => props.restaurant], ([open, restaurant]) => {
+watch([
+  visible,
+  () => props.restaurant,
+], ([open, restaurant]) => {
   editorVersion++
   Object.assign(form, createRestaurantForm(open ? restaurant : null))
   saving.value = false

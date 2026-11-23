@@ -50,7 +50,9 @@ export function randomCsentence(min = 8, max = 20) {
 }
 
 export function randomCname() {
-  return `${pickRandom(SURNAMES)}${pickRandom(GIVEN_NAMES)}${randomBoolean() ? pickRandom(GIVEN_NAMES) : ''}`
+  return `${pickRandom(SURNAMES)}${pickRandom(GIVEN_NAMES)}${randomBoolean()
+    ? pickRandom(GIVEN_NAMES)
+    : ''}`
 }
 
 export function randomDate() {

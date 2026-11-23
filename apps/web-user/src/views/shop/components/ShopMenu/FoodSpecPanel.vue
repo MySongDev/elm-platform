@@ -147,7 +147,9 @@ function handleConfirm(event) {
     food: props.food,
     selectedSpecs: { ...selectedSpecs },
     specfood: currentSpecfood.value,
-    specIndex: specIndex >= 0 ? specIndex : 0,
+    specIndex: specIndex >= 0
+      ? specIndex
+      : 0,
     rect,
   })
   emit('close')
@@ -405,9 +407,9 @@ function handleKeydown(e) {
 .selected-label {
   margin: 0 0 12px;
   overflow: hidden;
+  text-overflow: ellipsis;
   font-size: 12px;
   color: #999;
-  text-overflow: ellipsis;
 
   // 最多一行，超长省略
   white-space: nowrap;

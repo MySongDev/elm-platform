@@ -104,7 +104,9 @@ request.interceptors.response.use(
   },
   async (error) => {
     const config = error?.config
-    const meta = config ? getMeta(config) : {}
+    const meta = config
+      ? getMeta(config)
+      : {}
     const status = error?.response?.status
     const code = error?.code
     const userMessage = resolveUserMessage(error)

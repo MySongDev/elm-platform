@@ -18,10 +18,12 @@ class FakeIntersectionObserver {
   }
 
   trigger(el, isIntersecting = true) {
-    this.callback([{
-      target: el,
-      isIntersecting,
-    }])
+    this.callback([
+      {
+        target: el,
+        isIntersecting,
+      },
+    ])
   }
 }
 

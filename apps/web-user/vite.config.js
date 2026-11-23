@@ -33,12 +33,16 @@ export default defineConfig(({ command, mode }) => {
         dts: false,
         imports: ['vue', 'vue-router', 'pinia'],
         dirs: ['./src/stores'],
-        resolvers: [VantResolver()],
+        resolvers: [
+          VantResolver(),
+        ],
       }),
       Components({
         dts: false,
         dirs: ['src/components/common'],
-        resolvers: [VantResolver()],
+        resolvers: [
+          VantResolver(),
+        ],
       }),
       createElmSvgIconsPlugin('src/icons/svg'),
     ],

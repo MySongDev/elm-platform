@@ -27,7 +27,19 @@ import { TenantController } from './tenant/admin-tenant.controller'
 
 /** 仅注册本端接口；业务 Provider 来自导入模块，避免重复实例化和反向依赖。 */
 @Module({
-  imports: [AuthModule, UserModule, RoleModule, MenuModule, DeptModule, MonitorModule, TenantModule, ElmModule, OrderModule, MerchantOnboardingModule, NotificationModule],
+  imports: [
+    AuthModule,
+    UserModule,
+    RoleModule,
+    MenuModule,
+    DeptModule,
+    MonitorModule,
+    TenantModule,
+    ElmModule,
+    OrderModule,
+    MerchantOnboardingModule,
+    NotificationModule,
+  ],
   controllers: [
     AuthController,
     UserController,

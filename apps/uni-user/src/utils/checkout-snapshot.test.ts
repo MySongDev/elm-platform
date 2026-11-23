@@ -17,11 +17,13 @@ function selection(overrides: Partial<CheckoutSnapshotInput> = {}): CheckoutSnap
     userId: 'user-a',
     requestId: 'request-a',
     shopId: '1',
-    cartItems: [{
-      itemId: '10',
-      skuId: 'sku-a',
-      qty: 2,
-    }],
+    cartItems: [
+      {
+        itemId: '10',
+        skuId: 'sku-a',
+        qty: 2,
+      },
+    ],
     ...overrides,
   }
 }
@@ -45,7 +47,9 @@ function product(overrides: Partial<CartProduct> = {}): CartProduct {
   }
 }
 
-function store(products: CartProduct[] = [product()], id = '1'): CartStore {
+function store(products: CartProduct[] = [
+  product(),
+], id = '1'): CartStore {
   return {
     id,
     name: '商家',
@@ -103,30 +107,37 @@ describe('结算快照登记与绑单', () => {
 
   it('相同选择允许重试，重复条目归并、排序不影响同键复用', () => {
     const state = registerCheckoutSnapshot(createCheckoutSnapshotState(), selection({
-      cartItems: [{
-        itemId: '20',
-        skuId: 'sku-b',
-        qty: 1,
-      }, {
-        itemId: '10',
-        skuId: 'sku-a',
-        qty: 1,
-      }, {
-        itemId: '10',
-        skuId: 'sku-a',
-        qty: 1,
-      }],
+      cartItems: [
+        {
+          itemId: '20',
+          skuId: 'sku-b',
+          qty: 1,
+        },
+        {
+          itemId: '10',
+          skuId: 'sku-a',
+          qty: 1,
+        },
+        {
+          itemId: '10',
+          skuId: 'sku-a',
+          qty: 1,
+        },
+      ],
     }))
     const retry = registerCheckoutSnapshot(state, selection({
-      cartItems: [{
-        itemId: '10',
-        skuId: 'sku-a',
-        qty: 2,
-      }, {
-        itemId: '20',
-        skuId: 'sku-b',
-        qty: 1,
-      }],
+      cartItems: [
+        {
+          itemId: '10',
+          skuId: 'sku-a',
+          qty: 2,
+        },
+        {
+          itemId: '20',
+          skuId: 'sku-b',
+          qty: 1,
+        },
+      ],
     }))
 
     expect(retry).toEqual(state)
@@ -137,25 +148,31 @@ describe('结算快照登记与绑单', () => {
   it.each([
     { shopId: '2' },
     {
-      cartItems: [{
-        itemId: '10',
-        skuId: 'sku-a',
-        qty: 3,
-      }],
+      cartItems: [
+        {
+          itemId: '10',
+          skuId: 'sku-a',
+          qty: 3,
+        },
+      ],
     },
     {
-      cartItems: [{
-        itemId: '10',
-        skuId: 'sku-b',
-        qty: 2,
-      }],
+      cartItems: [
+        {
+          itemId: '10',
+          skuId: 'sku-b',
+          qty: 2,
+        },
+      ],
     },
     {
-      cartItems: [{
-        itemId: '20',
-        skuId: 'sku-a',
-        qty: 2,
-      }],
+      cartItems: [
+        {
+          itemId: '20',
+          skuId: 'sku-a',
+          qty: 2,
+        },
+      ],
     },
   ])('同一用户与 requestId 的选择变化拒绝登记：%j', (changed) => {
     const state = boundState()
@@ -163,59 +180,79 @@ describe('结算快照登记与绑单', () => {
     expect(state.snapshots[0].orderNo).toBe('order-a')
   })
 
-  it.each([0, -1, 1.5, Number.NaN, Number.POSITIVE_INFINITY, MAX_CHECKOUT_ITEM_QTY + 1])(
+  it.each([
+    0,
+    -1,
+    1.5,
+    Number.NaN,
+    Number.POSITIVE_INFINITY,
+    MAX_CHECKOUT_ITEM_QTY + 1,
+  ])(
     '无效商品数量 %s 不能进入快照',
     (qty) => {
       expect(() => registerCheckoutSnapshot(createCheckoutSnapshotState(), selection({
-        cartItems: [{
-          itemId: '10',
-          skuId: 'sku-a',
-          qty,
-        }],
+        cartItems: [
+          {
+            itemId: '10',
+            skuId: 'sku-a',
+            qty,
+          },
+        ],
       }))).toThrow('qty')
     },
   )
 
   it('数量上限包括边界值及同键归并后的总量', () => {
     const input = selection({
-      cartItems: [{
-        itemId: '10',
-        skuId: 'sku-a',
-        qty: MAX_CHECKOUT_ITEM_QTY,
-      }],
+      cartItems: [
+        {
+          itemId: '10',
+          skuId: 'sku-a',
+          qty: MAX_CHECKOUT_ITEM_QTY,
+        },
+      ],
     })
     expect(registerCheckoutSnapshot(createCheckoutSnapshotState(), input).snapshots[0].cartItems[0].qty)
       .toBe(MAX_CHECKOUT_ITEM_QTY)
     expect(() => registerCheckoutSnapshot(createCheckoutSnapshotState(), selection({
-      cartItems: [...input.cartItems, {
-        itemId: '10',
-        skuId: 'sku-a',
-        qty: 1,
-      }],
+      cartItems: [
+        ...input.cartItems,
+        {
+          itemId: '10',
+          skuId: 'sku-a',
+          qty: 1,
+        },
+      ],
     }))).toThrow('数量不能超过')
   })
 
   it('不同 SKU 的整单合计 99 件允许登记，100 件拒绝', () => {
     const input = selection({
-      cartItems: [{
-        itemId: '10',
-        skuId: 'sku-a',
-        qty: 98,
-      }, {
-        itemId: '10',
-        skuId: 'sku-b',
-        qty: 1,
-      }],
+      cartItems: [
+        {
+          itemId: '10',
+          skuId: 'sku-a',
+          qty: 98,
+        },
+        {
+          itemId: '10',
+          skuId: 'sku-b',
+          qty: 1,
+        },
+      ],
     })
     const state = registerCheckoutSnapshot(createCheckoutSnapshotState(), input)
 
     expect(state.snapshots[0].cartItems.reduce((sum, item) => sum + item.qty, 0)).toBe(99)
     expect(() => registerCheckoutSnapshot(createCheckoutSnapshotState(), selection({
-      cartItems: [...input.cartItems, {
-        itemId: '20',
-        skuId: 'sku-c',
-        qty: 1,
-      }],
+      cartItems: [
+        ...input.cartItems,
+        {
+          itemId: '20',
+          skuId: 'sku-c',
+          qty: 1,
+        },
+      ],
     }))).toThrow('整单商品数量不能超过 99')
   })
 
@@ -225,18 +262,22 @@ describe('结算快照登记与绑单', () => {
     { shopId: 'cart-checkout' },
     { cartItems: [] },
     {
-      cartItems: [{
-        itemId: '0',
-        skuId: 'sku-a',
-        qty: 1,
-      }],
+      cartItems: [
+        {
+          itemId: '0',
+          skuId: 'sku-a',
+          qty: 1,
+        },
+      ],
     },
     {
-      cartItems: [{
-        itemId: '10',
-        skuId: '',
-        qty: 1,
-      }],
+      cartItems: [
+        {
+          itemId: '10',
+          skuId: '',
+          qty: 1,
+        },
+      ],
     },
   ])('缺身份、虚拟店铺或无效选择拒绝登记：%j', (changed) => {
     expect(() => registerCheckoutSnapshot(createCheckoutSnapshotState(), selection(changed))).toThrow()
@@ -248,11 +289,13 @@ describe('结算快照登记与绑单', () => {
       userId: identity,
       requestId: identity,
       shopId: '2147483647',
-      cartItems: [{
-        itemId: '2147483647',
-        skuId: identity,
-        qty: 1,
-      }],
+      cartItems: [
+        {
+          itemId: '2147483647',
+          skuId: identity,
+          qty: 1,
+        },
+      ],
     })
     const state = registerCheckoutSnapshot(createCheckoutSnapshotState(), input)
 
@@ -263,14 +306,21 @@ describe('结算快照登记与绑单', () => {
   })
 
   it.each(['userId', 'requestId', 'skuId'] as const)('%s 不接受首尾空白或超过 128 字符', (field) => {
-    for (const value of [' leading', 'trailing ', '\tvalue', 'x'.repeat(129)]) {
+    for (const value of [
+      ' leading',
+      'trailing ',
+      '\tvalue',
+      'x'.repeat(129),
+    ]) {
       const input = field === 'skuId'
         ? selection({
-            cartItems: [{
-              itemId: '10',
-              skuId: value,
-              qty: 1,
-            }],
+            cartItems: [
+              {
+                itemId: '10',
+                skuId: value,
+                qty: 1,
+              },
+            ],
           })
         : selection({ [field]: value })
 
@@ -279,14 +329,26 @@ describe('结算快照登记与绑单', () => {
   })
 
   it.each(['shopId', 'itemId'] as const)('%s 必须是数据库 Int 范围内的正整数字符串', (field) => {
-    for (const value of ['0', '01', '-1', '1.5', '1\n', '1\r', '1 ', '2147483648', '9'.repeat(128)]) {
+    for (const value of [
+      '0',
+      '01',
+      '-1',
+      '1.5',
+      '1\n',
+      '1\r',
+      '1 ',
+      '2147483648',
+      '9'.repeat(128),
+    ]) {
       const input = field === 'itemId'
         ? selection({
-            cartItems: [{
-              itemId: value,
-              skuId: 'sku-a',
-              qty: 1,
-            }],
+            cartItems: [
+              {
+                itemId: value,
+                skuId: 'sku-a',
+                qty: 1,
+              },
+            ],
           })
         : selection({ shopId: value })
 
@@ -310,7 +372,9 @@ describe('结算快照登记与绑单', () => {
 
   it('不同 requestId 不能重复绑定同一订单，包括消费完成之后', () => {
     const state = registerCheckoutSnapshot(boundState(), selection({ requestId: 'request-b' }))
-    const result = consumePaidCheckout(state, [store()], {
+    const result = consumePaidCheckout(state, [
+      store(),
+    ], {
       userId: 'user-a',
       order: paidOrder(),
     })
@@ -347,19 +411,24 @@ describe('结算快照登记与绑单', () => {
 
 describe('可信 PAID 摘要的精确购物车消费', () => {
   it('只扣快照数量，保留付款期间同 SKU 新增量及其他商品和商家', () => {
-    const stores = [store([
-      product({ quantity: 5 }),
-      product({
-        id: '1-10-sku-b',
-        skuId: 'sku-b',
-        quantity: 4,
-      }),
-      product({
-        id: '1-20-sku-a',
-        itemId: '20',
-        quantity: 3,
-      }),
-    ]), store([product({ quantity: 7 })], '2')]
+    const stores = [
+      store([
+        product({ quantity: 5 }),
+        product({
+          id: '1-10-sku-b',
+          skuId: 'sku-b',
+          quantity: 4,
+        }),
+        product({
+          id: '1-20-sku-a',
+          itemId: '20',
+          quantity: 3,
+        }),
+      ]),
+      store([
+        product({ quantity: 7 }),
+      ], '2'),
+    ]
     const result = consumePaidCheckout(boundState(), stores, {
       userId: 'user-a',
       order: paidOrder(),
@@ -372,7 +441,11 @@ describe('可信 PAID 摘要的精确购物车消费', () => {
   })
 
   it('付款期间减少数量只扣剩余，不产生负数，删除空商品和空店', () => {
-    const result = consumePaidCheckout(boundState(), [store([product({ quantity: 1 })])], {
+    const result = consumePaidCheckout(boundState(), [
+      store([
+        product({ quantity: 1 }),
+      ]),
+    ], {
       userId: 'user-a',
       order: paidOrder(),
     })
@@ -382,16 +455,22 @@ describe('可信 PAID 摘要的精确购物车消费', () => {
   })
 
   it('删除购买商品后不扣相同 SKU 的其他商品，并仍标记为已消费', () => {
-    const stores = [store([product({
-      id: '1-20-sku-a',
-      itemId: '20',
-      quantity: 3,
-    })])]
+    const stores = [
+      store([
+        product({
+          id: '1-20-sku-a',
+          itemId: '20',
+          quantity: 3,
+        }),
+      ]),
+    ]
     const result = consumePaidCheckout(boundState(), stores, {
       userId: 'user-a',
       order: paidOrder(),
     })
-    const later = consumePaidCheckout(result.state, [store()], {
+    const later = consumePaidCheckout(result.state, [
+      store(),
+    ], {
       userId: 'user-a',
       order: paidOrder(),
     })
@@ -404,7 +483,11 @@ describe('可信 PAID 摘要的精确购物车消费', () => {
   })
 
   it('购买店铺已删除时不扣其他店铺同商品', () => {
-    const stores = [store([product()], '2')]
+    const stores = [
+      store([
+        product(),
+      ], '2'),
+    ]
     const result = consumePaidCheckout(boundState(), stores, {
       userId: 'user-a',
       order: paidOrder(),
@@ -415,22 +498,30 @@ describe('可信 PAID 摘要的精确购物车消费', () => {
   })
 
   it('意外重复的商品记录共用扣减额度，不会各扣一次', () => {
-    const result = consumePaidCheckout(boundState(), [store([
-      product({ quantity: 1 }),
-      product({
-        id: 'duplicate',
-        quantity: 4,
-      }),
-    ])], {
+    const result = consumePaidCheckout(boundState(), [
+      store([
+        product({ quantity: 1 }),
+        product({
+          id: 'duplicate',
+          quantity: 4,
+        }),
+      ]),
+    ], {
       userId: 'user-a',
       order: paidOrder(),
     })
 
-    expect(result.stores[0].products.map(item => [item.id, item.quantity])).toEqual([['duplicate', 3]])
+    expect(result.stores[0].products.map(item => [item.id, item.quantity])).toEqual([
+      ['duplicate', 3],
+    ])
   })
 
   it('重复 PAID 不再扣，JSON 恢复已消费标记后同样不再扣', () => {
-    const first = consumePaidCheckout(boundState(), [store([product({ quantity: 5 })])], {
+    const first = consumePaidCheckout(boundState(), [
+      store([
+        product({ quantity: 5 }),
+      ]),
+    ], {
       userId: 'user-a',
       order: paidOrder(),
     })
@@ -450,7 +541,9 @@ describe('可信 PAID 摘要的精确购物车消费', () => {
 
   it.each(['PENDING', 'CLOSED', 'UNKNOWN', 'paid'])('状态 %s 不消费购物车', (status) => {
     const state = boundState()
-    const stores = [store()]
+    const stores = [
+      store(),
+    ]
     const result = consumePaidCheckout(state, stores, {
       userId: 'user-a',
       order: paidOrder({ status }),
@@ -470,7 +563,9 @@ describe('可信 PAID 摘要的精确购物车消费', () => {
     { shopId: '2' },
   ])('摘要身份或店铺与快照不匹配时不消费，并区分是否命中绑定：%j', (changed) => {
     const state = boundState()
-    const stores = [store()]
+    const stores = [
+      store(),
+    ]
     const result = consumePaidCheckout(state, stores, {
       userId: 'user-a',
       order: paidOrder(changed),
@@ -486,7 +581,9 @@ describe('可信 PAID 摘要的精确购物车消费', () => {
 
   it('未绑定订单的快照不能凭 PAID 摘要消费', () => {
     const state = registerCheckoutSnapshot(createCheckoutSnapshotState(), selection())
-    const stores = [store()]
+    const stores = [
+      store(),
+    ]
     const result = consumePaidCheckout(state, stores, {
       userId: 'user-a',
       order: paidOrder(),
@@ -502,7 +599,9 @@ describe('可信 PAID 摘要的精确购物车消费', () => {
 
   it('切换用户后到达的旧用户 PAID 不能扣当前用户的车', () => {
     const state = boundState()
-    const stores = [store()]
+    const stores = [
+      store(),
+    ]
     const result = consumePaidCheckout(state, stores, {
       userId: 'user-b',
       order: paidOrder(),
@@ -519,20 +618,24 @@ describe('可信 PAID 摘要的精确购物车消费', () => {
   it('同用户新草稿不覆盖旧单，消费旧单只标记旧快照', () => {
     const state = registerCheckoutSnapshot(boundState(), selection({
       requestId: 'request-b',
-      cartItems: [{
-        itemId: '20',
-        skuId: 'sku-a',
-        qty: 3,
-      }],
+      cartItems: [
+        {
+          itemId: '20',
+          skuId: 'sku-a',
+          qty: 3,
+        },
+      ],
     }))
-    const result = consumePaidCheckout(state, [store([
-      product(),
-      product({
-        id: '1-20-sku-a',
-        itemId: '20',
-        quantity: 3,
-      }),
-    ])], {
+    const result = consumePaidCheckout(state, [
+      store([
+        product(),
+        product({
+          id: '1-20-sku-a',
+          itemId: '20',
+          quantity: 3,
+        }),
+      ]),
+    ], {
       userId: 'user-a',
       order: paidOrder(),
     })
@@ -551,13 +654,17 @@ describe('可信 PAID 摘要的精确购物车消费', () => {
       orderNo: 'order-a',
     })
     const state = deepFreeze(bindCheckoutOrder(registered, binding))
-    const stores = deepFreeze([store([product({
-      quantity: 5,
-      food: {
-        item_id: '10',
-        name: '饭',
-      },
-    })])])
+    const stores = deepFreeze([
+      store([
+        product({
+          quantity: 5,
+          food: {
+            item_id: '10',
+            name: '饭',
+          },
+        }),
+      ]),
+    ])
     const consumeInput = deepFreeze({
       userId: 'user-a',
       order: paidOrder(),
@@ -608,15 +715,19 @@ describe('关闭结算与重试比较', () => {
         qty: 1,
       },
     ])).toBe(true)
-    expect(areCheckoutItemsEqual([{
-      itemId: '10',
-      skuId: 'sku-a',
-      qty: 1,
-    }], [{
-      itemId: '10',
-      skuId: 'sku-a',
-      qty: 2,
-    }])).toBe(false)
+    expect(areCheckoutItemsEqual([
+      {
+        itemId: '10',
+        skuId: 'sku-a',
+        qty: 1,
+      },
+    ], [
+      {
+        itemId: '10',
+        skuId: 'sku-a',
+        qty: 2,
+      },
+    ])).toBe(false)
   })
 
   it('只依据后端 CLOSED 结束快照，不扣商品且不再参与待支付复用', () => {
@@ -636,7 +747,9 @@ describe('关闭结算与重试比较', () => {
       status: 'CLOSED',
       orderNo: 'other',
     }))
-    const consumed = consumePaidCheckout(boundState(), [store()], {
+    const consumed = consumePaidCheckout(boundState(), [
+      store(),
+    ], {
       userId: 'user-a',
       order: paidOrder(),
     }).state

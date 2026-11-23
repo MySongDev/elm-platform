@@ -9,7 +9,9 @@ import { useCartStore } from '@/stores/modules/store-cart'
 
 function resolveShopId(shopId) {
   const id = shopId?.value ?? shopId
-  return id == null ? '' : String(id)
+  return id == null
+    ? ''
+    : String(id)
 }
 
 export function useShopCart(shopId) {

@@ -50,13 +50,22 @@ export default defineConfig(({ command, mode }) => {
       }),
       AutoImport({
         dts: 'src/typings/auto-imports.d.ts',
-        imports: ['vue', 'vue-router', 'pinia', 'vue-i18n'],
-        resolvers: [ElementPlusResolver()],
+        imports: [
+          'vue',
+          'vue-router',
+          'pinia',
+          'vue-i18n',
+        ],
+        resolvers: [
+          ElementPlusResolver(),
+        ],
       }),
       Components({
         dts: 'src/typings/components.d.ts',
         dirs: ['src/shared/ui', 'src/layouts/admin-layout'],
-        resolvers: [ElementPlusResolver()],
+        resolvers: [
+          ElementPlusResolver(),
+        ],
       }),
       createElmSvgIconsPlugin('src/shared/icons/svg'),
       isAnalyze && visualizer({

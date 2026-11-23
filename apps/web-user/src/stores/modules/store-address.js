@@ -18,7 +18,9 @@ export const useAddressStore = defineStore('address', () => {
 
     try {
       const res = await getAddress()
-      AddressList.value = Array.isArray(res?.data) ? res.data : []
+      AddressList.value = Array.isArray(res?.data)
+        ? res.data
+        : []
     }
     catch (error) {
       console.error(error)

@@ -144,13 +144,48 @@ describe('elm image utils', () => {
 
   describe('mIME sniffing', () => {
     it.each([
-      ['jpeg', Buffer.from([0xFF, 0xD8, 0xFF, 0xE0]), 'image/jpeg'],
-      ['png', Buffer.concat([Buffer.from([0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A]), Buffer.alloc(4)]), 'image/png'],
-      ['webp', Buffer.concat([Buffer.from('RIFF'), Buffer.from([0, 0, 0, 0]), Buffer.from('WEBP')]), 'image/webp'],
-      ['gif', Buffer.from('GIF89a', 'ascii'), 'image/gif'],
+      [
+        'jpeg',
+        Buffer.from([0xFF, 0xD8, 0xFF, 0xE0]),
+        'image/jpeg',
+      ],
+      [
+        'png',
+        Buffer.concat([
+          Buffer.from([
+            0x89,
+            0x50,
+            0x4E,
+            0x47,
+            0x0D,
+            0x0A,
+            0x1A,
+            0x0A,
+          ]),
+          Buffer.alloc(4),
+        ]),
+        'image/png',
+      ],
+      [
+        'webp',
+        Buffer.concat([
+          Buffer.from('RIFF'),
+          Buffer.from([0, 0, 0, 0]),
+          Buffer.from('WEBP'),
+        ]),
+        'image/webp',
+      ],
+      [
+        'gif',
+        Buffer.from('GIF89a', 'ascii'),
+        'image/gif',
+      ],
     ])('detects %s from magic bytes', (_label, bytes, mime) => {
       expect(sniffImageMime(bytes)).toBe(mime)
-      expect(detectImageMime(Buffer.concat([bytes, Buffer.alloc(64)]))).toBe(mime)
+      expect(detectImageMime(Buffer.concat([
+        bytes,
+        Buffer.alloc(64),
+      ]))).toBe(mime)
     })
 
     it('rejects HTML pseudo-images and empty bodies', () => {

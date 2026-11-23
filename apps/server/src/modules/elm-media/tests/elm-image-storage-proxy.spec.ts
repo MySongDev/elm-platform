@@ -17,7 +17,9 @@ import { ELM_IMAGE_MAX_BYTES, ElmImageStorageService } from '@/modules/elm-media
 import { imageAssetKey } from '@/modules/elm-media/utils/elm-image'
 
 function configService(values: Record<string, unknown>): ConfigService {
-  return { get: jest.fn((key: string) => values[key]) } as unknown as ConfigService
+  return {
+    get: jest.fn((key: string) => values[key]),
+  } as unknown as ConfigService
 }
 
 /** 手搓一个 getReader() 兼容的 body，让 downloadImage 的 readLimited 能消费。 */
@@ -51,12 +53,23 @@ function fakeResponse(status: number, bodyChunks: Array<Uint8Array | Buffer>, ok
       getReader: () => makeReader(bodyChunks),
       cancel: jest.fn(async () => {}),
     },
-    headers: { get: jest.fn(() => null) },
+    headers: {
+      get: jest.fn(() => null),
+    },
   } as unknown as Response
 }
 
 const PNG = Buffer.concat([
-  Buffer.from([0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A]),
+  Buffer.from([
+    0x89,
+    0x50,
+    0x4E,
+    0x47,
+    0x0D,
+    0x0A,
+    0x1A,
+    0x0A,
+  ]),
   Buffer.from('fakepngpayload'),
 ])
 
@@ -192,7 +205,9 @@ describe('elm image storage + proxy', () => {
     })
 
     it('classifies HTML pseudo-images as non-image-bytes and does not publish them', async () => {
-      globalThis.fetch = jest.fn().mockResolvedValue(fakeResponse(200, [Buffer.from('<html>err</html>')]))
+      globalThis.fetch = jest.fn().mockResolvedValue(fakeResponse(200, [
+        Buffer.from('<html>err</html>'),
+      ]))
       const res = await proxy.downloadImage('/x.png')
       expect(res).toEqual(expect.objectContaining({
         success: false,
@@ -204,7 +219,10 @@ describe('elm image storage + proxy', () => {
 
     it('classifies an over-size image as oversized (and does not keep the whole payload)', async () => {
       // 略超上限的 PNG 头 + 填充
-      const big = Buffer.concat([PNG, Buffer.alloc(ELM_IMAGE_MAX_BYTES + 16 - PNG.length)])
+      const big = Buffer.concat([
+        PNG,
+        Buffer.alloc(ELM_IMAGE_MAX_BYTES + 16 - PNG.length),
+      ])
       globalThis.fetch = jest.fn().mockResolvedValue(fakeResponse(200, [big]))
       const res = await proxy.downloadImage('/x.png')
       expect(res).toEqual(expect.objectContaining({

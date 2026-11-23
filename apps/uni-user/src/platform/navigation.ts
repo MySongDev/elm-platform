@@ -50,7 +50,9 @@ export function getCurrentPath(): string {
   if (!top?.route) {
     return ''
   }
-  return top.route.startsWith('/') ? top.route : `/${top.route}`
+  return top.route.startsWith('/')
+    ? top.route
+    : `/${top.route}`
 }
 
 /** 取当前页面的完整路径（含 query），用于登录后回跳 */
@@ -68,7 +70,9 @@ export function getCurrentFullPath(): string {
   if (!top?.route) {
     return ''
   }
-  const path = top.route.startsWith('/') ? top.route : `/${top.route}`
+  const path = top.route.startsWith('/')
+    ? top.route
+    : `/${top.route}`
   return withQuery(path, top.options ?? {})
 }
 
@@ -277,7 +281,9 @@ export function registerNavigationGuards(): void {
     // ⚠️ 必须返回 false 才算「中止」：拦截器链里返回 false 时框架直接返回空结果、不调底层 API。
     // 之前这里总是 return args，guard 虽然自己跳了登录，但被拦下的原跳转仍会执行，
     // 结果是登录页刚压栈就又被目标页盖掉，redirect 参数形同虚设。
-    return guard(args.url) ? args : false
+    return guard(args.url)
+      ? args
+      : false
   }
 
   // reLaunch 也要拦：404 页与支付结果页会用它回首页
@@ -305,7 +311,9 @@ export function createAuthGuard(path: string): () => void {
     }
     const current = getCurrentFullPath()
     // 栈顶路径与守卫页一致时才用完整路径；否则页面栈状态异常，退回静态路径更安全
-    redirectToLogin(stripQuery(current) === path && current ? current : path)
+    redirectToLogin(stripQuery(current) === path && current
+      ? current
+      : path)
   }
 }
 

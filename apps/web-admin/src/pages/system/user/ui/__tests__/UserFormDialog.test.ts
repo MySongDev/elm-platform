@@ -25,16 +25,40 @@ const userApi = vi.hoisted(() => ({
 const dialog = vi.hoisted(() => ({ bindings: null as DialogBindings | null }))
 
 vi.mock('@/entities/user', () => userApi)
-vi.mock('@/entities/permission', () => ({ getButtonPermissions: vi.fn().mockResolvedValue([]) }))
-vi.mock('@/entities/tenant', () => ({ getTenantList: vi.fn().mockResolvedValue([]) }))
-vi.mock('@/shared/api/request', () => ({ default: { get: vi.fn().mockResolvedValue([]) } }))
-vi.mock('element-plus', () => ({ ElMessage: { success: vi.fn() } }))
-vi.mock('vue-i18n', () => ({ useI18n: () => ({ t: (key: string) => key }) }))
+vi.mock('@/entities/permission', () => ({
+  getButtonPermissions: vi.fn().mockResolvedValue([]),
+}))
+vi.mock('@/entities/tenant', () => ({
+  getTenantList: vi.fn().mockResolvedValue([]),
+}))
+vi.mock('@/shared/api/request', () => ({
+  default: {
+    get: vi.fn().mockResolvedValue([]),
+  },
+}))
+vi.mock('element-plus', () => ({
+  ElMessage: {
+    success: vi.fn(),
+  },
+}))
+vi.mock('vue-i18n', () => ({
+  useI18n: () => ({
+    t: (key: string) => key,
+  }),
+}))
 vi.mock('@/shared/config-crud', async () => {
   const { defineComponent } = await import('vue')
   return {
     ConfigFormDialog: defineComponent({
-      props: ['model', 'visible', 'saving', 'submitDisabled', 'title', 'rules', 'onSubmit'],
+      props: [
+        'model',
+        'visible',
+        'saving',
+        'submitDisabled',
+        'title',
+        'rules',
+        'onSubmit',
+      ],
       setup(props) {
         dialog.bindings = props as unknown as DialogBindings
         return () => null
@@ -95,8 +119,20 @@ async function mountEditor(user: UserInfo | null = null) {
       'onSaved': saved,
     }),
   })
-  for (const name of ['el-alert', 'el-button', 'el-form-item', 'el-input', 'el-radio-group', 'el-radio', 'el-select', 'el-option'])
-    app.component(name, { render: () => null })
+  for (const name of [
+    'el-alert',
+    'el-button',
+    'el-form-item',
+    'el-input',
+    'el-radio-group',
+    'el-radio',
+    'el-select',
+    'el-option',
+  ]) {
+    app.component(name, {
+      render: () => null,
+    })
+  }
   app.mount({})
   disposers.push(() => app.unmount())
   await vi.waitFor(() => expect(dialog.bindings?.submitDisabled).toBe(false))

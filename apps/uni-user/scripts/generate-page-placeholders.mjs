@@ -20,35 +20,139 @@ const SRC_ROOT = fileURLToPath(new URL('../src', import.meta.url))
 /** [uni 路径（相对 src，不带 .vue）, web-user 源文件, 批次, 是否需登录, 页面标题] */
 const PAGES = [
   // ── 主包：tabBar 四页 ──
-  ['pages/msite/msite', 'views/msite/msite.vue', 'Batch 3（2 天）', false, '外卖'],
-  ['pages/search/SearchHome', 'views/search/SearchHome.vue', 'Batch 3（2 天）', false, '搜索'],
-  ['pages/cart/cart', 'views/cart/cart.vue', 'Batch 3（3 天）', false, '购物车'],
-  ['pages/profile/profile', 'views/profile/profile.vue', 'Batch 3（4 天）', false, '我的'],
-  ['pages/error/404', 'views/error/404.vue', 'Batch 3（1 天）', false, '404'],
+  [
+    'pages/msite/msite',
+    'views/msite/msite.vue',
+    'Batch 3（2 天）',
+    false,
+    '外卖',
+  ],
+  [
+    'pages/search/SearchHome',
+    'views/search/SearchHome.vue',
+    'Batch 3（2 天）',
+    false,
+    '搜索',
+  ],
+  [
+    'pages/cart/cart',
+    'views/cart/cart.vue',
+    'Batch 3（3 天）',
+    false,
+    '购物车',
+  ],
+  [
+    'pages/profile/profile',
+    'views/profile/profile.vue',
+    'Batch 3（4 天）',
+    false,
+    '我的',
+  ],
+  [
+    'pages/error/404',
+    'views/error/404.vue',
+    'Batch 3（1 天）',
+    false,
+    '404',
+  ],
 
   // ── pkg-shop ──
-  ['pkg-shop/shop', 'views/shop/shop.vue', 'Batch 3 最后一批（8-12 天，最难）', true, '商家'],
+  [
+    'pkg-shop/shop',
+    'views/shop/shop.vue',
+    'Batch 3 最后一批（8-12 天，最难）',
+    true,
+    '商家',
+  ],
 
   // ── pkg-order ──
-  ['pkg-order/order', 'views/order/order.vue', 'Batch 3（3 天）', true, '我的订单'],
-  ['pkg-order/payment', 'views/payment/payment.vue', 'Batch 3 留桩（2 天）', true, '在线支付'],
-  ['pkg-order/PaymentResult', 'views/payment/PaymentResult.vue', 'Batch 3 留桩（2 天）', true, '支付结果'],
+  [
+    'pkg-order/order',
+    'views/order/order.vue',
+    'Batch 3（3 天）',
+    true,
+    '我的订单',
+  ],
+  [
+    'pkg-order/payment',
+    'views/payment/payment.vue',
+    'Batch 3 留桩（2 天）',
+    true,
+    '在线支付',
+  ],
+  [
+    'pkg-order/PaymentResult',
+    'views/payment/PaymentResult.vue',
+    'Batch 3 留桩（2 天）',
+    true,
+    '支付结果',
+  ],
 
   // ── pkg-profile ──
-  ['pkg-profile/info', 'views/profile/info/info.vue', 'Batch 3（含在 profile 4 天内）', true, '账户信息'],
-  ['pkg-profile/setusername', 'views/profile/info/setusername.vue', 'Batch 3（同上）', true, '修改用户名'],
-  ['pkg-profile/addressHome', 'views/profile/address/addressHome.vue', 'Batch 3（同上）', true, '收货地址'],
-  ['pkg-profile/AddressAdd', 'views/profile/address/add/AddressAdd.vue', 'Batch 3（同上）★ 含 area-data 155.3 KB', true, '添加地址'],
-  ['pkg-profile/AddressDatil', 'views/profile/address/add/AddressDatil.vue', 'Batch 3（同上）', true, '地址详情'],
+  [
+    'pkg-profile/info',
+    'views/profile/info/info.vue',
+    'Batch 3（含在 profile 4 天内）',
+    true,
+    '账户信息',
+  ],
+  [
+    'pkg-profile/setusername',
+    'views/profile/info/setusername.vue',
+    'Batch 3（同上）',
+    true,
+    '修改用户名',
+  ],
+  [
+    'pkg-profile/addressHome',
+    'views/profile/address/addressHome.vue',
+    'Batch 3（同上）',
+    true,
+    '收货地址',
+  ],
+  [
+    'pkg-profile/AddressAdd',
+    'views/profile/address/add/AddressAdd.vue',
+    'Batch 3（同上）★ 含 area-data 155.3 KB',
+    true,
+    '添加地址',
+  ],
+  [
+    'pkg-profile/AddressDatil',
+    'views/profile/address/add/AddressDatil.vue',
+    'Batch 3（同上）',
+    true,
+    '地址详情',
+  ],
 
   // ── pkg-auth ──
-  ['pkg-auth/login', 'views/login/login.vue', 'Batch 3 留桩（2 天）', false, '登录'],
-  ['pkg-auth/SmsVerification', 'views/login/SmsVerification.vue', 'Batch 3 留桩（2 天）', false, '短信验证码'],
-  ['pkg-auth/forget', 'views/forget/forget.vue', 'Batch 3（1 天）', false, '忘记密码'],
+  [
+    'pkg-auth/login',
+    'views/login/login.vue',
+    'Batch 3 留桩（2 天）',
+    false,
+    '登录',
+  ],
+  [
+    'pkg-auth/SmsVerification',
+    'views/login/SmsVerification.vue',
+    'Batch 3 留桩（2 天）',
+    false,
+    '短信验证码',
+  ],
+  [
+    'pkg-auth/forget',
+    'views/forget/forget.vue',
+    'Batch 3（1 天）',
+    false,
+    '忘记密码',
+  ],
 ]
 
 function buildPlaceholder([routePath, sourceFile, batch, needsAuth, title]) {
-  const subPackage = routePath.startsWith('pages/') ? '主包' : routePath.split('/')[0]
+  const subPackage = routePath.startsWith('pages/')
+    ? '主包'
+    : routePath.split('/')[0]
   const pageName = routePath.split('/').pop()
 
   // import 分组：外部包在前、内部别名在后（perfectionist/sort-imports）；
@@ -167,6 +271,8 @@ for (const entry of PAGES) {
 console.log(`生成占位页 ${created} 个，跳过 ${skipped} 个`)
 console.log('分包归属:')
 for (const entry of PAGES) {
-  const pkg = entry[0].startsWith('pages/') ? '(主包)' : entry[0].split('/')[0]
+  const pkg = entry[0].startsWith('pages/')
+    ? '(主包)'
+    : entry[0].split('/')[0]
   console.log(`  ${pkg.padEnd(14)} ${entry[0]}`)
 }

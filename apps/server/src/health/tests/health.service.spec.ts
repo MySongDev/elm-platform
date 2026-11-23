@@ -2,7 +2,9 @@ import { HealthService } from '@/health/health.service'
 
 function createService() {
   const prisma = {
-    $queryRawUnsafe: jest.fn().mockResolvedValue([{ ok: 1 }]),
+    $queryRawUnsafe: jest.fn().mockResolvedValue([
+      { ok: 1 },
+    ]),
   } as any
   const redis = {
     ping: jest.fn().mockResolvedValue('PONG'),

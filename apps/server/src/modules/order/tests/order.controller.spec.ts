@@ -31,11 +31,13 @@ describe('orderController', () => {
       shopId: '101',
       shopName: '示例商家',
       deliveryFee: 5,
-      cartItems: [{
-        itemId: '1001',
-        qty: 2,
-        unitPrice: 12,
-      }],
+      cartItems: [
+        {
+          itemId: '1001',
+          qty: 2,
+          unitPrice: 12,
+        },
+      ],
     } as any, request)
 
     expect(orderWorkflow.createOrder).toHaveBeenCalledWith(expect.objectContaining({
@@ -59,11 +61,13 @@ describe('orderController', () => {
       userId: '999',
       shopId: '101',
       deliveryFee: 5,
-      cartItems: [{
-        itemId: '1001',
-        qty: 2,
-        unitPrice: 12,
-      }],
+      cartItems: [
+        {
+          itemId: '1001',
+          qty: 2,
+          unitPrice: 12,
+        },
+      ],
     } as any, request)
 
     expect(orderWorkflow.createOrder).toHaveBeenCalledWith(expect.objectContaining({

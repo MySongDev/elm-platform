@@ -17,17 +17,25 @@ function createOrder(overrides: Record<string, unknown> = {}) {
     refundRejectReason: null,
     tradeNo: null,
     subject: '示例商家 外卖订单',
-    goodsAmount: { toNumber: () => 24 },
-    deliveryFee: { toNumber: () => 5 },
-    payableAmount: { toNumber: () => 29 },
-    cartItems: [{
-      itemId: '1001',
-      skuId: '1001',
-      title: '商品',
-      qty: 2,
-      unitPrice: 12,
-      totalPrice: 24,
-    }],
+    goodsAmount: {
+      toNumber: () => 24,
+    },
+    deliveryFee: {
+      toNumber: () => 5,
+    },
+    payableAmount: {
+      toNumber: () => 29,
+    },
+    cartItems: [
+      {
+        itemId: '1001',
+        skuId: '1001',
+        title: '商品',
+        qty: 2,
+        unitPrice: 12,
+        totalPrice: 24,
+      },
+    ],
     notifyPayload: null,
     queryPayload: null,
     buyerPayAmount: null,
@@ -92,13 +100,15 @@ describe('paymentService', () => {
       shopId: '101',
       shopName: '示例商家',
       deliveryFee: 5,
-      cartItems: [{
-        itemId: '1001',
-        skuId: '1001',
-        title: '商品',
-        qty: 2,
-        unitPrice: 12,
-      }],
+      cartItems: [
+        {
+          itemId: '1001',
+          skuId: '1001',
+          title: '商品',
+          qty: 2,
+          unitPrice: 12,
+        },
+      ],
     })
 
     expect(prisma.paymentOrder.create).toHaveBeenCalledWith({
@@ -216,13 +226,15 @@ describe('paymentService', () => {
       shopId: '1',
       shopName: '鲜花蛋糕旗舰店',
       deliveryFee: 5,
-      cartItems: [{
-        itemId: '1001',
-        skuId: '1001',
-        title: '商品',
-        qty: 2,
-        unitPrice: 12,
-      }],
+      cartItems: [
+        {
+          itemId: '1001',
+          skuId: '1001',
+          title: '商品',
+          qty: 2,
+          unitPrice: 12,
+        },
+      ],
     })
 
     expect(prisma.restaurant.findUnique).toHaveBeenCalledWith({
@@ -245,13 +257,15 @@ describe('paymentService', () => {
       shopId: '101',
       shopName: '示例商家',
       deliveryFee: 5,
-      cartItems: [{
-        itemId: '1001',
-        skuId: '1001',
-        title: '商品',
-        qty: 1,
-        unitPrice: 12,
-      }],
+      cartItems: [
+        {
+          itemId: '1001',
+          skuId: '1001',
+          title: '商品',
+          qty: 1,
+          unitPrice: 12,
+        },
+      ],
     })
 
     expect(prisma.paymentOrder.create).toHaveBeenCalledWith({

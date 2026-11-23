@@ -15,10 +15,18 @@ const api = vi.hoisted(() => ({
   deleteCommerceFood: vi.fn(),
 }))
 vi.mock('../../api', () => api)
-vi.mock('vue-i18n', () => ({ useI18n: () => ({ t: (key: string) => key }) }))
+vi.mock('vue-i18n', () => ({
+  useI18n: () => ({
+    t: (key: string) => key,
+  }),
+}))
 vi.mock('element-plus', () => ({
-  ElMessage: { success: vi.fn() },
-  ElMessageBox: { confirm: vi.fn() },
+  ElMessage: {
+    success: vi.fn(),
+  },
+  ElMessageBox: {
+    confirm: vi.fn(),
+  },
 }))
 
 const food: FoodItem = {

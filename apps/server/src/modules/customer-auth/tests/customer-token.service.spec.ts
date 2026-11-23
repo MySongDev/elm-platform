@@ -16,7 +16,9 @@ describe('customerTokenService', () => {
       }),
       getObject: jest.fn(async (key: string) => {
         const value = store.get(key)
-        return value ? JSON.parse(value) : null
+        return value
+          ? JSON.parse(value)
+          : null
       }),
       del: jest.fn(async (key: string) => {
         store.delete(key)

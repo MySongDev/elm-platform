@@ -24,7 +24,9 @@ export class AuthController {
 
   private resolveClientIp(req: Request): string | undefined {
     const forwardedFor = req.headers['x-forwarded-for']
-    const forwardedIp = Array.isArray(forwardedFor) ? forwardedFor[0] : forwardedFor
+    const forwardedIp = Array.isArray(forwardedFor)
+      ? forwardedFor[0]
+      : forwardedFor
 
     return req.ip || forwardedIp?.split(',')[0]?.trim() || req.socket?.remoteAddress
   }

@@ -126,7 +126,9 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
    * @param ttl 过期时间（秒），可选
    */
   async set(key: string, value: string | number | object, ttl?: number): Promise<void> {
-    const val = typeof value === 'object' ? JSON.stringify(value) : String(value)
+    const val = typeof value === 'object'
+      ? JSON.stringify(value)
+      : String(value)
     if (ttl !== undefined) {
       await this.client.set(key, val, {
         expiration: {
@@ -260,7 +262,9 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
       return
     }
     this.lastErrorLogAt = now
-    const detail = error instanceof Error ? (error.stack ?? error.message) : String(error)
+    const detail = error instanceof Error
+      ? (error.stack ?? error.message)
+      : String(error)
     this.logger.error(`${message}: ${detail}`)
   }
 }

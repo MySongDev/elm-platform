@@ -39,13 +39,17 @@ const profileLink = computed(() => (isLoggedIn.value
 const displayName = computed(() => userName.value || profileCardConfig.guest.name)
 const displayDesc = computed(() => ({
   icon: profileCardConfig.guest.mobileIcon,
-  text: isLoggedIn.value ? (profileCardConfig.loggedIn.desc || '暂无绑定手机号') : profileCardConfig.guest.desc,
+  text: isLoggedIn.value
+    ? (profileCardConfig.loggedIn.desc || '暂无绑定手机号')
+    : profileCardConfig.guest.desc,
 }))
 
 const infoItems = computed(() =>
   PROFILE_ASSETS.info.map(item => ({
     to: item.route,
-    value: item.format ? item.format(userInfo.value[item.key]) : (userInfo.value[item.key] ?? 0),
+    value: item.format
+      ? item.format(userInfo.value[item.key])
+      : (userInfo.value[item.key] ?? 0),
     unit: item.unit,
     label: item.label,
     color: THEME_MAP[item.theme],

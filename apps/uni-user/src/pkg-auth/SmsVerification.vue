@@ -59,9 +59,13 @@ const isResending = ref(false)
 const errorMessage = ref('')
 let countdownTimer = null
 
-const { completeLogin } = useLoginSuccess({ redirect: () => redirect.value })
+const { completeLogin } = useLoginSuccess({
+  redirect: () => redirect.value,
+})
 
-const resendText = computed(() => (secondsLeft.value > 0 ? `重新获取(${secondsLeft.value}s)` : '重新获取'))
+const resendText = computed(() => (secondsLeft.value > 0
+  ? `重新获取(${secondsLeft.value}s)`
+  : '重新获取'))
 
 function startCountdown() {
   clearInterval(countdownTimer)

@@ -115,7 +115,9 @@ const tableColumns = [
   {
     label: '申请时间',
     minWidth: 180,
-    formatter: (row: MerchantApplication) => row.createdAt ? new Date(row.createdAt).toLocaleString('zh-CN') : '-',
+    formatter: (row: MerchantApplication) => row.createdAt
+      ? new Date(row.createdAt).toLocaleString('zh-CN')
+      : '-',
   },
 ]
 

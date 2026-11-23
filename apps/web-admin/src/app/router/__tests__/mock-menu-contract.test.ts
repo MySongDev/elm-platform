@@ -5,7 +5,12 @@ import { buildRoutes } from '../permission'
 
 /** 递归拍平菜单树，便于逐节点断言 */
 function collectMenus(nodes: UserMenuNode[]): UserMenuNode[] {
-  return nodes.flatMap(node => [node, ...(node.children ? collectMenus(node.children) : [])])
+  return nodes.flatMap(node => [
+    node,
+    ...(node.children
+      ? collectMenus(node.children)
+      : []),
+  ])
 }
 
 /**
@@ -37,10 +42,12 @@ describe('mock menu <-> router contract', () => {
     const pageModules = import.meta.glob('/src/pages/**/index.vue')
     const missing = menus.flatMap(menu =>
       menu.type === 'menu' && menu.component && !pageModules[`/src/pages/${menu.component}/index.vue`]
-        ? [{
-            path: menu.path,
-            component: menu.component,
-          }]
+        ? [
+            {
+              path: menu.path,
+              component: menu.component,
+            },
+          ]
         : [],
     )
 

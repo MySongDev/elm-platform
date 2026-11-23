@@ -8,7 +8,9 @@ type PaymentOrderRecord = Record<string, any>
  * 金额转换、旧记录的状态补全和可用操作来自同一实现，避免各端响应逐渐漂移。
  */
 export function toOrderSummary(order: PaymentOrderRecord) {
-  const cartItems = Array.isArray(order.cartItems) ? order.cartItems : []
+  const cartItems = Array.isArray(order.cartItems)
+    ? order.cartItems
+    : []
   const fulfillmentStatus = normalizeFulfillmentStatus(order)
   const refundStatus = normalizeRefundStatus(order)
 

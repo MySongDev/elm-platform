@@ -33,7 +33,9 @@ const HTTP_STATUS_MESSAGE_MAP = {
 let alertHandler = () => {}
 
 export function setAlertHandler(fn) {
-  alertHandler = typeof fn === 'function' ? fn : () => {}
+  alertHandler = typeof fn === 'function'
+    ? fn
+    : () => {}
 }
 
 /**

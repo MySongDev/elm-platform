@@ -40,7 +40,16 @@ function closePopup() {
 // ── iconfont 目视区（第 1 项的字体图标部分） ──
 // 抽几个有代表性的单色图标；backtop 同时验证 H 节的「重复实现消解」
 // （web-user 的 BackTop.vue:81-83 内联手绘了上箭头，icons/svg/backtop.svg 已有同图标）
-const fontIcons = ['cart', 'search', 'user', 'backtop', 'star', 'location', 'order', 'shop']
+const fontIcons = [
+  'cart',
+  'search',
+  'user',
+  'backtop',
+  'star',
+  'location',
+  'order',
+  'shop',
+]
 // 多色图标：SvgIcon 内部按 MULTICOLOR_ICONS 清单自动走 PNG，调用方不需传 multicolor
 const pngIcons = ['fengniao', 'cart-icon', 'sdk_icon_zhifubao']
 
@@ -92,8 +101,12 @@ async function verifyNetwork() {
     const res = await request<any>({ url: '/v1/cities' })
     const body = res.data
     // 后端 elm 端点用 rawResponse 包装，形态可能是数组或 { data: [] }
-    const list = Array.isArray(body) ? body : body?.data
-    const total = Array.isArray(list) ? list.length : 0
+    const list = Array.isArray(body)
+      ? body
+      : body?.data
+    const total = Array.isArray(list)
+      ? list.length
+      : 0
     const ok = res.status === 200 && total > 0
     networkDetail.value = ok
       ? `GET /v1/cities -> ${res.status} | ${total} 条城市 | 首条 ${JSON.stringify(list[0]).slice(0, 70)}`

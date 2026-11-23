@@ -34,7 +34,9 @@ describe('loggingInterceptor', () => {
 
   it('records successful HTTP operations into operation_logs', async () => {
     const create = jest.fn().mockResolvedValue({ id: 1 })
-    const interceptor = new LoggingInterceptor({ operationLog: { create } } as any)
+    const interceptor = new LoggingInterceptor({
+      operationLog: { create },
+    } as any)
 
     await firstValueFrom(interceptor.intercept(createContext(), createHandler({ ok: true })))
     await Promise.resolve()
@@ -69,7 +71,9 @@ describe('loggingInterceptor', () => {
           method: 'GET',
           url: '/api/admin/monitor/system-logs',
         }),
-        { handle: () => throwError(() => error) } as any,
+        {
+          handle: () => throwError(() => error),
+        } as any,
       ),
     )).rejects.toThrow('database exploded')
     await Promise.resolve()
@@ -100,7 +104,9 @@ describe('loggingInterceptor', () => {
           url: '/api/admin/monitor/system-logs',
           requestId: 'req-test-001',
         }),
-        { handle: () => throwError(() => error) } as any,
+        {
+          handle: () => throwError(() => error),
+        } as any,
       ),
     )).rejects.toThrow('database exploded')
     await Promise.resolve()
@@ -115,7 +121,9 @@ describe('loggingInterceptor', () => {
   it('includes requestId in success log output', async () => {
     const logSpy = jest.spyOn(Logger.prototype, 'log').mockImplementation(() => undefined)
     const create = jest.fn().mockResolvedValue({ id: 1 })
-    const interceptor = new LoggingInterceptor({ operationLog: { create } } as any)
+    const interceptor = new LoggingInterceptor({
+      operationLog: { create },
+    } as any)
 
     try {
       await firstValueFrom(interceptor.intercept(

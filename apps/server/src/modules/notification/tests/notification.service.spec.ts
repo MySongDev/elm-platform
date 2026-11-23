@@ -92,7 +92,10 @@ describe('notificationService', () => {
 
       expect(prisma.findMany).toHaveBeenCalledWith({
         where: { userId: 7 },
-        orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
+        orderBy: [
+          { createdAt: 'desc' },
+          { id: 'desc' },
+        ],
       })
       expect(result).toEqual([c, b, a])
     })
@@ -107,7 +110,10 @@ describe('notificationService', () => {
           userId: 7,
           type: 'todo',
         },
-        orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
+        orderBy: [
+          { createdAt: 'desc' },
+          { id: 'desc' },
+        ],
       })
     })
 
@@ -217,7 +223,9 @@ describe('notificationService', () => {
           userId: 7,
         },
       })
-      expect(prisma.delete).toHaveBeenCalledWith({ where: { id: 'n1' } })
+      expect(prisma.delete).toHaveBeenCalledWith({
+        where: { id: 'n1' },
+      })
       expect(result).toEqual({ success: true })
     })
 
@@ -235,7 +243,9 @@ describe('notificationService', () => {
 
       const result = await service.clear(7)
 
-      expect(prisma.deleteMany).toHaveBeenCalledWith({ where: { userId: 7 } })
+      expect(prisma.deleteMany).toHaveBeenCalledWith({
+        where: { userId: 7 },
+      })
       expect(result).toEqual({ deletedCount: 9 })
     })
 

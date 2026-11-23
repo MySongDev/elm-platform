@@ -28,10 +28,14 @@ export function createUserForm(user: UserInfo | null = null): UserFormState {
     phone: user?.phone ?? '',
     role: user?.role ?? 'user',
     status: user?.status ?? 'ACTIVE',
-    permissions: [...(user?.permissions ?? [])],
+    permissions: [
+      ...(user?.permissions ?? []),
+    ],
     tenantId: user?.tenant?.id ?? null,
     dataScope: user?.dataScope || 'ALL',
-    boundShopIds: [...(user?.boundShopIds ?? [])],
+    boundShopIds: [
+      ...(user?.boundShopIds ?? []),
+    ],
   }
 }
 
@@ -41,9 +45,13 @@ function getUserFields(form: UserFormState) {
     role: form.role,
     status: form.status,
     permissions: [...form.permissions],
-    tenantId: form.dataScope === 'ALL' ? null : form.tenantId,
+    tenantId: form.dataScope === 'ALL'
+      ? null
+      : form.tenantId,
     dataScope: form.dataScope,
-    boundShopIds: form.dataScope === 'SHOP' ? [...form.boundShopIds] : [],
+    boundShopIds: form.dataScope === 'SHOP'
+      ? [...form.boundShopIds]
+      : [],
   }
 }
 

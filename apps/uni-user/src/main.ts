@@ -94,7 +94,9 @@ function applyCartBadge(quantity: number, retriesLeft = 5) {
     // 微信角标上限 99，超出显示 99+
     uni.setTabBarBadge({
       index: CART_TAB_INDEX,
-      text: quantity > 99 ? '99+' : String(quantity),
+      text: quantity > 99
+        ? '99+'
+        : String(quantity),
       // ⚠️ 启动早期 tabBar 尚未渲染，setTabBarBadge 会 fail。
       // 重试几次覆盖「store 恢复早于 tabBar 就绪」的时序差。
       fail: () => {

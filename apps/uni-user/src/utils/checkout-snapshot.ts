@@ -99,10 +99,16 @@ function normalizeSelection(cartItems: readonly CheckoutItemSelection[]): Checko
     })
   }
 
-  return [...items.values()].sort((left, right) => {
+  return [
+    ...items.values(),
+  ].sort((left, right) => {
     const leftKey = itemKey(left)
     const rightKey = itemKey(right)
-    return leftKey < rightKey ? -1 : leftKey > rightKey ? 1 : 0
+    return leftKey < rightKey
+      ? -1
+      : leftKey > rightKey
+        ? 1
+        : 0
   })
 }
 
@@ -202,7 +208,9 @@ export function bindCheckoutOrder(
   return {
     snapshots: state.snapshots.map((other, otherIndex) => ({
       ...cloneSnapshot(other),
-      ...(otherIndex === index ? { orderNo: input.orderNo } : {}),
+      ...(otherIndex === index
+        ? { orderNo: input.orderNo }
+        : {}),
     })),
   }
 }
@@ -280,7 +288,10 @@ export function consumePaidCheckout(
   }
 
   // 多条车记录即使意外拥有相同商品键，也只能共享这一份扣减额度，不能每条各扣一次。
-  const remaining = new Map(snapshot.cartItems.map(item => [itemKey(item), item.qty]))
+  const remaining = new Map(snapshot.cartItems.map(item => [
+    itemKey(item),
+    item.qty,
+  ]))
   const consumedStores = nextStores.flatMap((store) => {
     if (store.id !== snapshot.shopId)
       return [store]
@@ -295,18 +306,22 @@ export function consumePaidCheckout(
       remaining.set(key, qty - deducted)
       const quantity = product.quantity - deducted
       return quantity > 0
-        ? [{
-            ...product,
-            quantity,
-          }]
+        ? [
+            {
+              ...product,
+              quantity,
+            },
+          ]
         : []
     })
 
     return products.length > 0
-      ? [{
-          ...store,
-          products,
-        }]
+      ? [
+          {
+            ...store,
+            products,
+          },
+        ]
       : []
   })
 

@@ -7,7 +7,9 @@ export const REFRESH_TOKEN_EXPIRES_AT_KEY = 'customer_refresh_token_expires_at'
 
 function toTimestamp(value) {
   const parsed = Number(value)
-  return Number.isFinite(parsed) ? parsed : 0
+  return Number.isFinite(parsed)
+    ? parsed
+    : 0
 }
 
 /**

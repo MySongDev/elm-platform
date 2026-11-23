@@ -122,7 +122,9 @@ export function useScrollManager(
       return
     const distance = Math.max(MIN_SCROLL_DISTANCE, Math.floor(el.clientWidth * SCROLL_DISTANCE_RATIO))
     el.scrollBy({
-      left: direction === 'left' ? -distance : distance,
+      left: direction === 'left'
+        ? -distance
+        : distance,
       behavior: 'smooth',
     })
   }
@@ -140,7 +142,9 @@ export function useScrollManager(
 
     e.preventDefault()
     // 触控板横滑给 deltaX，鼠标滚轮给 deltaY，取绝对值大的那个当作滚动方向
-    const offset = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY
+    const offset = Math.abs(e.deltaX) > Math.abs(e.deltaY)
+      ? e.deltaX
+      : e.deltaY
     el.scrollBy({
       left: offset,
       behavior: 'auto',

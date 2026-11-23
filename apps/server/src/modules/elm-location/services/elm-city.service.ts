@@ -39,7 +39,9 @@ export class ElmCityService {
       const latitude = Number((city.latitude + index * 0.006).toFixed(5))
       const longitude = Number((city.longitude + index * 0.006).toFixed(5))
       return {
-        name: `${safeKeyword}${index === 0 ? '' : index + 1}号店`,
+        name: `${safeKeyword}${index === 0
+          ? ''
+          : index + 1}号店`,
         address: `${city.name}市中心商圈 ${index + 1} 号`,
         latitude,
         longitude,

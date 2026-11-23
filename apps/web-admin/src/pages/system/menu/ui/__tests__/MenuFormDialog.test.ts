@@ -20,13 +20,28 @@ const api = vi.hoisted(() => ({
 }))
 const dialog = vi.hoisted(() => ({ bindings: null as Bindings | null }))
 vi.mock('@/entities/system-menu', () => api)
-vi.mock('element-plus', () => ({ ElMessage: { success: vi.fn() } }))
-vi.mock('vue-i18n', () => ({ useI18n: () => ({ t: (key: string) => key }) }))
+vi.mock('element-plus', () => ({
+  ElMessage: {
+    success: vi.fn(),
+  },
+}))
+vi.mock('vue-i18n', () => ({
+  useI18n: () => ({
+    t: (key: string) => key,
+  }),
+}))
 vi.mock('@/shared/config-crud', async () => {
   const { defineComponent } = await import('vue')
   return {
     ConfigFormDialog: defineComponent({
-      props: ['model', 'visible', 'saving', 'title', 'rules', 'onSubmit'],
+      props: [
+        'model',
+        'visible',
+        'saving',
+        'title',
+        'rules',
+        'onSubmit',
+      ],
       setup(props) {
         dialog.bindings = props as unknown as Bindings
         return () => null
@@ -75,8 +90,20 @@ function mountEditor() {
       'onUpdate:visible': (value: boolean) => { state.visible = value },
     }),
   })
-  for (const name of ['el-alert', 'el-form-item', 'el-input', 'el-input-number', 'el-select', 'el-option', 'el-radio-group', 'el-radio'])
-    app.component(name, { render: () => null })
+  for (const name of [
+    'el-alert',
+    'el-form-item',
+    'el-input',
+    'el-input-number',
+    'el-select',
+    'el-option',
+    'el-radio-group',
+    'el-radio',
+  ]) {
+    app.component(name, {
+      render: () => null,
+    })
+  }
   app.mount({})
   disposers.push(() => app.unmount())
   return {

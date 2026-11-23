@@ -13,7 +13,9 @@ export function useLoginSuccess() {
 
   // 仅接受站内绝对路径作为回跳目标，否则回落首页，杜绝开放重定向
   function resolveRedirectTarget() {
-    const redirect = Array.isArray(route.query.redirect) ? route.query.redirect[0] : route.query.redirect
+    const redirect = Array.isArray(route.query.redirect)
+      ? route.query.redirect[0]
+      : route.query.redirect
     if (typeof redirect !== 'string' || !redirect.startsWith('/') || redirect.startsWith('//') || redirect.startsWith('/login'))
       return '/msite'
 

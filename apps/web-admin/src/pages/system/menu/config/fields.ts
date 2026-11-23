@@ -69,15 +69,19 @@ export function createMenuTableColumns(t: Translate) {
 
 export function createMenuFormRules(t: Translate): FormRules {
   return {
-    title: [{
-      required: true,
-      message: t('menu.titleRequired'),
-      trigger: 'blur',
-    }],
-    path: [{
-      required: true,
-      message: t('menu.pathRequired'),
-      trigger: 'blur',
-    }],
+    title: [
+      {
+        required: true,
+        message: t('menu.titleRequired'),
+        trigger: 'blur',
+      },
+    ],
+    path: [
+      {
+        required: true,
+        message: t('menu.pathRequired'),
+        trigger: 'blur',
+      },
+    ],
   }
 }

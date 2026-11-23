@@ -38,7 +38,9 @@ async function sendSearch() {
   loadHistory()
 
   const res = await fetchShops()
-  restaurantList.value = Array.isArray(res) ? res : []
+  restaurantList.value = Array.isArray(res)
+    ? res
+    : []
 }
 
 function inputFn() {

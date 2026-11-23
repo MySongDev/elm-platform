@@ -19,7 +19,9 @@ export class AdminOrderListHttpResponseDto {
   @ApiProperty({ example: 'success' })
   message: string
 
-  @ApiProperty({ type: [AdminOrderSummaryDto] })
+  @ApiProperty({
+    type: [AdminOrderSummaryDto],
+  })
   data: AdminOrderSummaryDto[]
 
   @ApiProperty({ example: '2026-06-08T00:00:00.000Z' })

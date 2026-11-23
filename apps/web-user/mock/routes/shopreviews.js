@@ -53,10 +53,16 @@ function createReview(id) {
 
   return {
     avatar: randomImage('100x100', 'user'),
-    content: randomBoolean(85, 15) ? randomCsentence(10, 30) : '',
+    content: randomBoolean(85, 15)
+      ? randomCsentence(10, 30)
+      : '',
     date: randomDate(),
     id,
-    images: randomBoolean(25, 75) ? [randomImage('160x160', 'food')] : [],
+    images: randomBoolean(25, 75)
+      ? [
+          randomImage('160x160', 'food'),
+        ]
+      : [],
     memberBadge: {
       label: memberLabels[type],
       type,
@@ -66,7 +72,9 @@ function createReview(id) {
     productStar: randomInt(3, 5),
     purchaseTimes: randomInt(1, 8),
     relatedProduct: pickRandom(['经典提拉米苏', '意式肉酱面', '草莓蛋糕', '芒果奶冻']),
-    reply: randomBoolean() ? randomCsentence(8, 20) : null,
+    reply: randomBoolean()
+      ? randomCsentence(8, 20)
+      : null,
     source: pickRandom(['外卖', '到店', '']),
     tags: randomReviewTags(),
     usefulCount: randomInt(0, 25),
@@ -89,7 +97,9 @@ function getReviewTags() {
   return REVIEW_TAGS.map((item, index) => ({
     ...item,
     _id: `mock-review-tag-${index}`,
-    count: index === 0 ? reviews.length : randomInt(1, reviews.length),
+    count: index === 0
+      ? reviews.length
+      : randomInt(1, reviews.length),
   }))
 }
 

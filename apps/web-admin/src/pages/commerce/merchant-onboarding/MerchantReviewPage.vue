@@ -15,7 +15,9 @@ const action = route.query.action as 'APPROVE' | 'REJECT'
 
 function getId(): string {
   const id = route.params.id
-  return Array.isArray(id) ? id[0] : id
+  return Array.isArray(id)
+    ? id[0]
+    : id
 }
 
 const actionLabels = {
@@ -23,7 +25,9 @@ const actionLabels = {
   REJECT: '驳回申请',
 }
 const reasonRequired = computed(() => action === 'REJECT')
-const placeholder = computed(() => action === 'REJECT' ? '请输入驳回原因（必填）' : '请输入审核意见（选填）')
+const placeholder = computed(() => action === 'REJECT'
+  ? '请输入驳回原因（必填）'
+  : '请输入审核意见（选填）')
 
 async function handleSubmit() {
   if (reasonRequired.value && !reason.value.trim())

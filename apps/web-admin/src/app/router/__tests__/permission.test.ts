@@ -286,11 +286,13 @@ describe('permission.ts - 精简版权限路由构建器', () => {
 
     it('重复调用会先清理旧路由', () => {
       const { router, addRoute } = createRouterStub()
-      const menus = [createMenu({
-        title: 'route.a',
-        path: '/a',
-        name: 'A',
-      })]
+      const menus = [
+        createMenu({
+          title: 'route.a',
+          path: '/a',
+          name: 'A',
+        }),
+      ]
 
       registerDynamicRoutes(router, menus)
       registerDynamicRoutes(router, menus)
@@ -307,11 +309,13 @@ describe('permission.ts - 精简版权限路由构建器', () => {
       const { router, addRoute } = createRouterStub()
       addRoute.mockReturnValueOnce(remove1).mockReturnValueOnce(remove2)
 
-      registerDynamicRoutes(router, [createMenu({
-        title: 'route.a',
-        path: '/a',
-        name: 'A',
-      })])
+      registerDynamicRoutes(router, [
+        createMenu({
+          title: 'route.a',
+          path: '/a',
+          name: 'A',
+        }),
+      ])
       resetDynamicRoutes()
 
       expect(remove1).toHaveBeenCalledTimes(1)

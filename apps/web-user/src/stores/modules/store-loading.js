@@ -24,7 +24,9 @@ export const useLoadingStore = defineStore('loading', {
         text = '加载中...',
         delay = this.delay,
         minDuration = this.minDuration,
-      } = typeof options === 'string' ? { text: options } : options
+      } = typeof options === 'string'
+        ? { text: options }
+        : options
 
       this.text = text
       this.delay = delay

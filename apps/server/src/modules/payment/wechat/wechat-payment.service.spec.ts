@@ -18,17 +18,25 @@ function createOrderRecord(overrides: Record<string, unknown> = {}) {
     refundReason: null,
     refundRejectReason: null,
     subject: '示例商家 外卖订单',
-    goodsAmount: { toNumber: () => 24 },
-    deliveryFee: { toNumber: () => 5 },
-    payableAmount: { toNumber: () => 29 },
-    cartItems: [{
-      itemId: '11',
-      skuId: '111',
-      title: '商品',
-      qty: 2,
-      unitPrice: 12,
-      totalPrice: 24,
-    }],
+    goodsAmount: {
+      toNumber: () => 24,
+    },
+    deliveryFee: {
+      toNumber: () => 5,
+    },
+    payableAmount: {
+      toNumber: () => 29,
+    },
+    cartItems: [
+      {
+        itemId: '11',
+        skuId: '111',
+        title: '商品',
+        qty: 2,
+        unitPrice: 12,
+        totalPrice: 24,
+      },
+    ],
     paidAt: null,
     createdAt: new Date('2026-11-12T00:00:00.000Z'),
     updatedAt: new Date('2026-11-12T00:00:00.000Z'),
@@ -41,14 +49,16 @@ function pricedSelection() {
     shopId: '1',
     shopName: '示例商家',
     tenantId: 7,
-    cartItems: [{
-      itemId: '11',
-      skuId: '111',
-      qty: 2,
-      title: '商品',
-      unitPriceMinor: 1200,
-      totalPriceMinor: 2400,
-    }],
+    cartItems: [
+      {
+        itemId: '11',
+        skuId: '111',
+        qty: 2,
+        title: '商品',
+        unitPriceMinor: 1200,
+        totalPriceMinor: 2400,
+      },
+    ],
     goodsAmountMinor: 2400,
     deliveryFeeMinor: 500,
     payableAmountMinor: 2900,
@@ -61,10 +71,16 @@ function createService(orderRecord: Record<string, unknown> = createOrderRecord(
   const prisma = {
     paymentOrder: {
       findUnique: jest.fn().mockImplementation(({ where }: any) => {
-        if (where.checkoutRequestKey !== undefined)
-          return Promise.resolve(where.checkoutRequestKey === current.checkoutRequestKey ? current : null)
-        if (where.orderNo !== undefined)
-          return Promise.resolve(where.orderNo === current.orderNo ? current : null)
+        if (where.checkoutRequestKey !== undefined) {
+          return Promise.resolve(where.checkoutRequestKey === current.checkoutRequestKey
+            ? current
+            : null)
+        }
+        if (where.orderNo !== undefined) {
+          return Promise.resolve(where.orderNo === current.orderNo
+            ? current
+            : null)
+        }
         return Promise.resolve(null)
       }),
       create: jest.fn().mockImplementation(({ data }: any) => {
@@ -127,11 +143,13 @@ function createService(orderRecord: Record<string, unknown> = createOrderRecord(
   }
 }
 
-const cartItems = [{
-  itemId: '11',
-  skuId: '111',
-  qty: 2,
-}]
+const cartItems = [
+  {
+    itemId: '11',
+    skuId: '111',
+    qty: 2,
+  },
+]
 
 describe('wechatPaymentService 可信建单', () => {
   it('首次建单：服务端查价后按 WECHAT 渠道与 requestKey 落库，忽略客户端价格', async () => {
@@ -189,11 +207,13 @@ describe('wechatPaymentService 可信建单', () => {
       userId: '1',
       requestId: 'req-1',
       shopId: '1',
-      cartItems: [{
-        itemId: '11',
-        skuId: '111',
-        qty: 3,
-      }],
+      cartItems: [
+        {
+          itemId: '11',
+          skuId: '111',
+          qty: 3,
+        },
+      ],
     })).rejects.toThrow(ConflictException)
   })
 

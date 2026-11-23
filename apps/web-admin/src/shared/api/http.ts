@@ -96,7 +96,9 @@ export function createHttpClient(options: HttpClientOptions): TypedHttpClient {
       return response
     },
     (error) => {
-      const status = axios.isAxiosError(error) ? error.response?.status : undefined
+      const status = axios.isAxiosError(error)
+        ? error.response?.status
+        : undefined
 
       if (status === 401) {
         options.onUnauthorized?.()

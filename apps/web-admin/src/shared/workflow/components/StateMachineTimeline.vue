@@ -40,13 +40,17 @@ function getNodeColor(entry: TimelineEntry): string {
     'info': 'var(--el-color-info)',
     'primary': 'var(--el-color-primary)',
   }
-  return entry.type ? typeColorMap[entry.type] || '' : ''
+  return entry.type
+    ? typeColorMap[entry.type] || ''
+    : ''
 }
 
 function displayTime(value: string | Date | undefined) {
   if (!value)
     return '-'
-  return formatDateTime(typeof value === 'string' ? value : value.toISOString())
+  return formatDateTime(typeof value === 'string'
+    ? value
+    : value.toISOString())
 }
 </script>
 

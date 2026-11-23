@@ -23,7 +23,9 @@ export function createRestaurantCategory(id: number, name: string, subNames: str
       count: 3 + index,
       id: id + index,
       image_url: '3edf3f4ef8ed1d300896c5b9178685ebpng',
-      level: index === 0 ? 1 : 2,
+      level: index === 0
+        ? 1
+        : 2,
       name: subName,
       _id: `category-${id}-${index}`,
     })),

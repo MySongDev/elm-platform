@@ -3,7 +3,15 @@ import { BadGatewayException, BadRequestException, Injectable, ServiceUnavailabl
 import { ConfigService } from '@nestjs/config'
 
 const MAX_AMOUNT_MINOR = 2_147_483_647
-const TRADE_STATES = ['SUCCESS', 'REFUND', 'NOTPAY', 'CLOSED', 'REVOKED', 'USERPAYING', 'PAYERROR'] as const
+const TRADE_STATES = [
+  'SUCCESS',
+  'REFUND',
+  'NOTPAY',
+  'CLOSED',
+  'REVOKED',
+  'USERPAYING',
+  'PAYERROR',
+] as const
 
 type SignatureHeaders = Record<string, string | string[] | undefined>
 
@@ -36,7 +44,17 @@ export class WechatPayService {
   constructor(private readonly config: ConfigService) {}
 
   assertConfigured(): void {
-    const required = ['appId', 'appSecret', 'mchId', 'serialNo', 'privateKey', 'publicKeyId', 'publicKey', 'apiV3Key', 'notifyUrl']
+    const required = [
+      'appId',
+      'appSecret',
+      'mchId',
+      'serialNo',
+      'privateKey',
+      'publicKeyId',
+      'publicKey',
+      'apiV3Key',
+      'notifyUrl',
+    ]
     if (this.config.get<boolean>('wechatPay.enabled') !== true || required.some(key => !this.value(key).trim())) {
       throw new ServiceUnavailableException('微信支付尚未配置，请完成商户配置后重试')
     }
@@ -185,7 +203,10 @@ export class WechatPayService {
       })
       decipher.setAuthTag(ciphertext.subarray(-16))
       decipher.setAAD(Buffer.from(resource.associated_data ?? ''))
-      const plaintext = Buffer.concat([decipher.update(ciphertext.subarray(0, -16)), decipher.final()])
+      const plaintext = Buffer.concat([
+        decipher.update(ciphertext.subarray(0, -16)),
+        decipher.final(),
+      ])
       const transaction = parseTransaction(asRecord(JSON.parse(plaintext.toString('utf8'))))
       if (transaction.trade_state !== 'SUCCESS')
         throw new Error('交易状态与通知类型不符')
@@ -198,7 +219,9 @@ export class WechatPayService {
 
   private value(key: string): string {
     const value = this.config.get<unknown>(`wechatPay.${key}`, '')
-    return typeof value === 'string' ? value : ''
+    return typeof value === 'string'
+      ? value
+      : ''
   }
 
   private sign(message: string): string {
@@ -218,7 +241,11 @@ export class WechatPayService {
       // 本服务仅接受前后五分钟的报文；这不是订单幂等，重发通知仍须由业务层去重。
       if (Math.abs(Math.floor(Date.now() / 1000) - Number(timestamp)) > 300)
         throw new Error('签名已过期')
-      const message = Buffer.concat([Buffer.from(`${timestamp}\n${nonce}\n`), body, Buffer.from('\n')])
+      const message = Buffer.concat([
+        Buffer.from(`${timestamp}\n${nonce}\n`),
+        body,
+        Buffer.from('\n'),
+      ])
       if (!verify('RSA-SHA256', message, this.value('publicKey'), decodeBase64(signature)))
         throw new Error('验签失败')
     }
@@ -229,7 +256,9 @@ export class WechatPayService {
 
   private async api(method: 'GET' | 'POST', path: string, payload?: unknown): Promise<Record<string, unknown>> {
     this.assertConfigured()
-    const body = payload === undefined ? '' : JSON.stringify(payload)
+    const body = payload === undefined
+      ? ''
+      : JSON.stringify(payload)
     const timestamp = String(Math.floor(Date.now() / 1000))
     const nonce = randomBytes(16).toString('hex')
     const signature = this.sign(`${method}\n${path}\n${timestamp}\n${nonce}\n${body}\n`)

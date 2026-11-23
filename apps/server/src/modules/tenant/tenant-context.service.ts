@@ -14,7 +14,9 @@ export class TenantContextService {
       throw new ForbiddenException('后台登录状态无效')
 
     const record = await this.prisma.user.findUnique({
-      where: { id: Number(user.id) },
+      where: {
+        id: Number(user.id),
+      },
       select: {
         id: true,
         username: true,

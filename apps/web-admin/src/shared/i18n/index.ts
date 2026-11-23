@@ -66,7 +66,9 @@ export function transformI18n(message: any = ''): string {
 
   if (typeof message === 'object') {
     const locale = i18n.global.locale as string | WritableComputedRef<string>
-    const localeValue = typeof locale === 'string' ? locale : locale.value
+    const localeValue = typeof locale === 'string'
+      ? locale
+      : locale.value
     return message[localeValue] ?? ''
   }
 
@@ -92,7 +94,9 @@ export function useLocale() {
 
   function getLocale() {
     const currentLocale = i18n.global.locale as string | WritableComputedRef<string>
-    return typeof currentLocale === 'string' ? currentLocale : currentLocale.value
+    return typeof currentLocale === 'string'
+      ? currentLocale
+      : currentLocale.value
   }
 
   return {

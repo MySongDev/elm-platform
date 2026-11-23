@@ -135,7 +135,9 @@ export class MerchantOnboardingService {
       where.status = query.status
     }
 
-    const merchantName = typeof query.merchantName === 'string' ? query.merchantName.trim() : ''
+    const merchantName = typeof query.merchantName === 'string'
+      ? query.merchantName.trim()
+      : ''
     if (merchantName) {
       where.merchantName = {
         contains: merchantName,
@@ -205,7 +207,9 @@ export class MerchantOnboardingService {
   }
 
   private toMaterials(materials: unknown): ApplicationMaterial[] {
-    return Array.isArray(materials) ? materials as ApplicationMaterial[] : []
+    return Array.isArray(materials)
+      ? materials as ApplicationMaterial[]
+      : []
   }
 
   private isMerchantApplicationStatus(status: unknown): status is MerchantApplicationStatus {

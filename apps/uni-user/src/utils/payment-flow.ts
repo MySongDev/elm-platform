@@ -20,7 +20,9 @@ export interface PaymentLaunchResult {
  * 真正是否到账要由后端查单确认。把它当 PAID 会出现「没到账就清车」。
  */
 export function classifyPaymentLaunch(result: PaymentLaunchResult | null | undefined): PaymentLaunchOutcome {
-  const errMsg = typeof result?.errMsg === 'string' ? result.errMsg : ''
+  const errMsg = typeof result?.errMsg === 'string'
+    ? result.errMsg
+    : ''
 
   if (errMsg.includes('cancel'))
     return 'canceled'
@@ -56,7 +58,9 @@ export function checkPayableAmount(input: AmountCheckInput): AmountCheckResult {
   if (shown === null || server === null || server <= 0)
     return 'invalid'
 
-  return shown === server ? 'match' : 'mismatch'
+  return shown === server
+    ? 'match'
+    : 'mismatch'
 }
 
 function toMinor(value: unknown): number | null {
@@ -111,7 +115,9 @@ export function decideSettlementAction(order: {
   if (status === 'PENDING') {
     // 非微信渠道的 PENDING 在小程序端没法付款（支付宝 WAP 打不开），
     // 只能引导用户回商家重新结算，不能一直轮询等一个不会来的结果。
-    return String(order?.paymentChannel) === 'WECHAT' ? 'keep-polling' : 'needs-resubmit'
+    return String(order?.paymentChannel) === 'WECHAT'
+      ? 'keep-polling'
+      : 'needs-resubmit'
   }
 
   return 'closed'

@@ -157,7 +157,9 @@ export class ElmImageImportService {
   async importImages(options: { concurrency?: number } = {}): Promise<ImageImportResult> {
     const concurrency = options.concurrency ?? DEFAULT_CONCURRENCY
     const { refs, emptyRefs, invalidRefs, validRefs } = await this.collectReferences()
-    const entries = [...refs.values()]
+    const entries = [
+      ...refs.values(),
+    ]
 
     // 库空判定：没有任何可下载引用（前端预下载项除外）且本地也无任何资产。
     // 前端预下载项的契约路径 = 占位图（默认源）+ CDN_CATEGORY_IMAGE_TAILS（cdn 源）。
@@ -249,7 +251,9 @@ export class ElmImageImportService {
   /** check 模式：纯离线盘点本地完整度，不发任何上游请求。 */
   async checkLocal(): Promise<ImageImportResult> {
     const { refs, emptyRefs, invalidRefs, validRefs } = await this.collectReferences()
-    const entries = [...refs.values()]
+    const entries = [
+      ...refs.values(),
+    ]
 
     let localComplete = 0
     const missing: ImageFailure[] = []
@@ -372,7 +376,9 @@ export class ElmImageImportService {
     if (items.length === 0)
       return
     let cursor = 0
-    const workers = Array.from({ length: Math.min(limit, items.length) }, async () => {
+    const workers = Array.from({
+      length: Math.min(limit, items.length),
+    }, async () => {
       while (cursor < items.length) {
         const item = items[cursor++]
 

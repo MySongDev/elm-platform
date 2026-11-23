@@ -108,7 +108,11 @@ export class OrderPricingService {
     const foods = await this.prisma.food.findMany({
       where: {
         restaurantId,
-        itemId: { in: [...new Set(selection.cartItems.map(item => assertCatalogId(item.itemId)))] },
+        itemId: {
+          in: [
+            ...new Set(selection.cartItems.map(item => assertCatalogId(item.itemId))),
+          ],
+        },
       },
       select: {
         itemId: true,
@@ -117,7 +121,10 @@ export class OrderPricingService {
         specfoods: true,
       },
     })
-    const foodById = new Map(foods.map(food => [String(food.itemId), food]))
+    const foodById = new Map(foods.map(food => [
+      String(food.itemId),
+      food,
+    ]))
     const cartItems = selection.cartItems.map((item) => {
       const food = foodById.get(item.itemId)
       if (!food || food.restaurantId !== restaurantId)

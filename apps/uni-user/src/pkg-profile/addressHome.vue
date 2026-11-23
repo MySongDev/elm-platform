@@ -21,8 +21,11 @@ function goAddAddress() {
     navigateTo(ROUTES.ADDRESS_ADD)
 }
 function goEditAddress(item) {
-  if (busyId.value === null)
-    navigateTo(withQuery(ROUTES.ADDRESS_ADD, { id: String(item.id) }))
+  if (busyId.value === null) {
+    navigateTo(withQuery(ROUTES.ADDRESS_ADD, {
+      id: String(item.id),
+    }))
+  }
 }
 async function handleDelete(item) {
   if (busyId.value !== null)

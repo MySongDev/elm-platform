@@ -53,9 +53,14 @@ export class AuthService {
     const list = (await (this.prisma as any).menu.findMany({
       where: {
         status: 'ACTIVE',
-        type: { in: ['catalog', 'menu'] },
+        type: {
+          in: ['catalog', 'menu'],
+        },
       },
-      orderBy: [{ sort: 'asc' }, { id: 'asc' }],
+      orderBy: [
+        { sort: 'asc' },
+        { id: 'asc' },
+      ],
     })) as MenuNode[]
 
     const userPermissions = await this.resolveEffectivePermissions(user)
@@ -122,7 +127,12 @@ export class AuthService {
     }
 
     const user = await this.prisma.user.findFirst({
-      where: { OR: [{ username: account }, { phone: account }] },
+      where: {
+        OR: [
+          { username: account },
+          { phone: account },
+        ],
+      },
       include: {
         tenant: {
           select: {
@@ -303,7 +313,10 @@ export class AuthService {
     permissions?: string[] | null
   }) {
     const rolePermissions = await this.getRolePermissions(user.role)
-    return Array.from(new Set([...rolePermissions, ...(user.permissions ?? [])]))
+    return Array.from(new Set([
+      ...rolePermissions,
+      ...(user.permissions ?? []),
+    ]))
   }
 
   private async getRolePermissions(roleCode?: string | null) {

@@ -61,7 +61,9 @@ export class UpdateCustomerNicknameDto {
   })
   @Transform(({ obj }: { obj: Record<string, unknown> }) => {
     // 全局隐式转换会把数字变成字符串；用原始字段校验，不能把 123 当成昵称。
-    return typeof obj.nickname === 'string' ? obj.nickname.trim() : obj.nickname
+    return typeof obj.nickname === 'string'
+      ? obj.nickname.trim()
+      : obj.nickname
   })
   @IsString({ message: '用户名必须是字符串' })
   @Length(2, 24, { message: '用户名长度须在 2～24 个字符之间' })

@@ -29,7 +29,9 @@ const emit = defineEmits([
 function toggleAttr(id) {
   const arr = [...props.modelValue]
   const idx = arr.indexOf(id)
-  idx > -1 ? arr.splice(idx, 1) : arr.push(id)
+  idx > -1
+    ? arr.splice(idx, 1)
+    : arr.push(id)
   emit('update:modelValue', arr)
 }
 
@@ -41,7 +43,9 @@ const selectedDelivery = computed({
 function toggleDelivery(id) {
   const arr = [...selectedDelivery.value]
   const idx = arr.indexOf(id)
-  idx > -1 ? arr.splice(idx, 1) : arr.push(id)
+  idx > -1
+    ? arr.splice(idx, 1)
+    : arr.push(id)
   selectedDelivery.value = arr
 }
 

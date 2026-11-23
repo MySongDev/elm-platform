@@ -35,7 +35,9 @@ const visibleActions = computed(() => {
 
 function resolveLabel(label: string) {
   // 如果 label 包含 '.'，视为 i18n key，否则直接展示
-  return label.includes('.') ? t(label) : label
+  return label.includes('.')
+    ? t(label)
+    : label
 }
 
 type ButtonType = '' | 'default' | 'primary' | 'success' | 'warning' | 'info' | 'danger' | 'text'
@@ -53,7 +55,9 @@ function handleAction(action: string, item: ActionConfig) {
   if (item.confirmText) {
     ElMessageBox.confirm(
       resolveLabel(item.confirmText),
-      { type: item.danger ? 'warning' : 'info' },
+      {
+        type: item.danger ? 'warning' : 'info',
+      },
     ).then(() => {
       emit('action', action, props.record)
     }).catch(() => {})

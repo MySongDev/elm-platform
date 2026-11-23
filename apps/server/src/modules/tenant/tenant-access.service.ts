@@ -42,8 +42,16 @@ export class TenantAccessService {
 
     if (context.dataScope === 'ALL') {
       return {
-        ...(query.tenantId ? { tenantId: Number(query.tenantId) } : {}),
-        ...(query.shopId ? { shopId: String(query.shopId) } : {}),
+        ...(query.tenantId
+          ? {
+              tenantId: Number(query.tenantId),
+            }
+          : {}),
+        ...(query.shopId
+          ? {
+              shopId: String(query.shopId),
+            }
+          : {}),
       }
     }
 

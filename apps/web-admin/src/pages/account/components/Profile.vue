@@ -11,7 +11,9 @@ defineOptions({ name: 'AccountProfile' })
 const authStore = useAuthStore()
 const { t } = useI18n()
 const activePaneInfo = inject(activePaneKey)
-const sectionTitle = computed(() => activePaneInfo?.value ? transformI18n(activePaneInfo.value.label) : '')
+const sectionTitle = computed(() => activePaneInfo?.value
+  ? transformI18n(activePaneInfo.value.label)
+  : '')
 const formRef = ref<FormInstance>()
 const loading = ref(false)
 

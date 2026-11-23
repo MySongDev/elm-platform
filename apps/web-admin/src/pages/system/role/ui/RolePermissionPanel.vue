@@ -66,12 +66,17 @@ const treeProps = computed(() => ({
 
 const allMenuIds = computed(() => collectMenuIds(menuPermissionTree.value))
 const checkedCount = computed(() => currentCheckedKeys.value.length)
-const roleTitle = computed(() => selectedRole.value?.name ? `${t('role.menuPermissions')}（${selectedRole.value.name}）` : t('role.menuPermissions'))
+const roleTitle = computed(() => selectedRole.value?.name
+  ? `${t('role.menuPermissions')}（${selectedRole.value.name}）`
+  : t('role.menuPermissions'))
 const hasWildcardPermission = computed(() => selectedRole.value?.permissions.includes('*:*:*') ?? false)
 
 watch(searchValue, value => treeRef.value?.filter(value))
 
-watch([visible, () => props.role], ([open, role]) => {
+watch([
+  visible,
+  () => props.role,
+], ([open, role]) => {
   restoreVersion++
   if (open && role) {
     searchValue.value = ''
@@ -113,7 +118,9 @@ async function restoreTreeChecks() {
 function toggleSelectAll(checked: boolean | string | number) {
   if (treeDisabled.value)
     return
-  const nextKeys = checked ? allMenuIds.value : []
+  const nextKeys = checked
+    ? allMenuIds.value
+    : []
   currentCheckedKeys.value = nextKeys
   treeRef.value?.setCheckedKeys(nextKeys)
 }
@@ -145,7 +152,12 @@ function filterNode(query: string, data: Record<string, unknown>) {
 }
 
 function collectMenuIds(nodes: RoleMenuPermissionNode[]): number[] {
-  return nodes.flatMap(node => [node.id, ...(node.children ? collectMenuIds(node.children) : [])])
+  return nodes.flatMap(node => [
+    node.id,
+    ...(node.children
+      ? collectMenuIds(node.children)
+      : []),
+  ])
 }
 
 onScopeDispose(() => {
@@ -346,10 +358,10 @@ onScopeDispose(() => {
 .role-permission-panel__title {
   min-width: 0;
   overflow: hidden;
+  text-overflow: ellipsis;
   font-size: 15px;
   font-weight: 600;
   color: var(--app-text-primary);
-  text-overflow: ellipsis;
   white-space: nowrap;
 }
 

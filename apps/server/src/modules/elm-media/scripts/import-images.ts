@@ -108,7 +108,9 @@ function printSummary(result: {
     const shown = result.failures.slice(0, 20)
     line(`[elm:import:images] 失败/缺失清单（前 ${shown.length} / 共 ${result.failures.length}）：`)
     for (const f of shown) {
-      line(`  - ${f.reason}: ${f.path}（来源 ${f.sources.length} 条）${f.detail ? ` — ${f.detail}` : ''}`)
+      line(`  - ${f.reason}: ${f.path}（来源 ${f.sources.length} 条）${f.detail
+        ? ` — ${f.detail}`
+        : ''}`)
     }
     if (result.failures.length > shown.length)
       line(`  … 其余 ${result.failures.length - shown.length} 条见 import-result.json`)
@@ -128,14 +130,18 @@ async function main(): Promise<void> {
   catch (error) {
     // 数据库连不上 / 上下文初始化失败：清晰报错，退出 1，不宣称完成。
     console.error('[elm:import:images] 无法建立数据库连接或初始化上下文：')
-    console.error(error instanceof Error ? error.stack : String(error))
+    console.error(error instanceof Error
+      ? error.stack
+      : String(error))
     process.exitCode = 1
     return
   }
 
   try {
     const importer = app.get(ElmImageImportService)
-    const result = check ? await importer.checkLocal() : await importer.importImages({ concurrency })
+    const result = check
+      ? await importer.checkLocal()
+      : await importer.importImages({ concurrency })
 
     printSummary(result, startedAt)
 

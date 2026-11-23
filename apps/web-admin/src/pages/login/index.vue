@@ -22,11 +22,13 @@ const loginForm = reactive({
 })
 
 const rules: FormRules = {
-  account: [{
-    required: true,
-    message: t('login.usernameRequired'),
-    trigger: 'blur',
-  }],
+  account: [
+    {
+      required: true,
+      message: t('login.usernameRequired'),
+      trigger: 'blur',
+    },
+  ],
   password: [
     {
       required: true,

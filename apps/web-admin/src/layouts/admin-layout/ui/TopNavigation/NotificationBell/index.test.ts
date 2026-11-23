@@ -53,7 +53,9 @@ const renderer = createRenderer<HostNode, HostNode>({
   },
   insert(child, parent, anchor) {
     child.parent = parent
-    const anchorIndex = anchor ? parent.children.indexOf(anchor) : -1
+    const anchorIndex = anchor
+      ? parent.children.indexOf(anchor)
+      : -1
     if (anchorIndex === -1)
       parent.children.push(child)
     else
@@ -165,7 +167,9 @@ describe('notification bell', () => {
   it('renders localized tab labels and the empty state without loading notifications on mount', async () => {
     const root = createHostNode('root')
     app = renderer.createApp(NotificationBell as Component)
-    app.provide(ssrContextKey, { modules: new Set() })
+    app.provide(ssrContextKey, {
+      modules: new Set(),
+    })
     registerElementStubs(app)
 
     app.mount(root)

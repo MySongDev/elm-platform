@@ -52,7 +52,9 @@ export const useNotificationStore = defineStore('notification', () => {
       loaded.value = true
     }
     catch (caught) {
-      error.value = caught instanceof Error ? caught : new Error(String(caught))
+      error.value = caught instanceof Error
+        ? caught
+        : new Error(String(caught))
     }
     finally {
       loading.value = false
@@ -67,7 +69,9 @@ export const useNotificationStore = defineStore('notification', () => {
         notifications.value[idx] = updated
     }
     catch (caught) {
-      error.value = caught instanceof Error ? caught : new Error(String(caught))
+      error.value = caught instanceof Error
+        ? caught
+        : new Error(String(caught))
     }
   }
 
@@ -89,7 +93,9 @@ export const useNotificationStore = defineStore('notification', () => {
       void updatedCount
     }
     catch (caught) {
-      error.value = caught instanceof Error ? caught : new Error(String(caught))
+      error.value = caught instanceof Error
+        ? caught
+        : new Error(String(caught))
     }
   }
 
@@ -99,7 +105,9 @@ export const useNotificationStore = defineStore('notification', () => {
       notifications.value = notifications.value.filter(n => n.id !== id)
     }
     catch (caught) {
-      error.value = caught instanceof Error ? caught : new Error(String(caught))
+      error.value = caught instanceof Error
+        ? caught
+        : new Error(String(caught))
     }
   }
 
@@ -111,7 +119,9 @@ export const useNotificationStore = defineStore('notification', () => {
         : []
     }
     catch (caught) {
-      error.value = caught instanceof Error ? caught : new Error(String(caught))
+      error.value = caught instanceof Error
+        ? caught
+        : new Error(String(caught))
     }
   }
 

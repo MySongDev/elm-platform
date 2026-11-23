@@ -41,7 +41,9 @@ const password = ref('')
 const passwordVisible = ref(false)
 const agreementAccepted = ref(false)
 // ⚠️ redirect 是响应式的 ref，completeLogin 落地时读的是当时的值（onLoad 后已就绪）
-const { completeLogin } = useLoginSuccess({ redirect: () => redirect.value })
+const { completeLogin } = useLoginSuccess({
+  redirect: () => redirect.value,
+})
 
 // ⚠️ 小程序 input 的 @input 事件对象是 `e.detail.value`（与 web 的 `event.target.value` 不同）
 function handlePhoneInput(e) {
@@ -50,14 +52,20 @@ function handlePhoneInput(e) {
 
 const formattedPhone = computed(() => {
   const digits = phone.value
-  return [digits.slice(0, 3), digits.slice(3, 7), digits.slice(7, 11)].filter(Boolean).join(' ')
+  return [
+    digits.slice(0, 3),
+    digits.slice(3, 7),
+    digits.slice(7, 11),
+  ].filter(Boolean).join(' ')
 })
 const isPhoneValid = computed(() => phone.value.length === 11 && /^1\d{10}$/.test(phone.value))
 const canSubmit = computed(() =>
   isPhoneValid.value && agreementAccepted.value
   && (loginMode.value === 'sms' || password.value.length > 0),
 )
-const submitText = computed(() => (loginMode.value === 'sms' ? '获取短信验证码' : '登录'))
+const submitText = computed(() => (loginMode.value === 'sms'
+  ? '获取短信验证码'
+  : '登录'))
 
 function clearPhone() {
   phone.value = ''

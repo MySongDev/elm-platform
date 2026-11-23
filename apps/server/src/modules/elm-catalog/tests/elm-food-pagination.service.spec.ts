@@ -27,15 +27,23 @@ function createService() {
     isSelected: true,
   }
   const prisma = {
-    restaurant: { findUnique: jest.fn().mockResolvedValue({ menuSyncedAt: new Date() }) },
+    restaurant: {
+      findUnique: jest.fn().mockResolvedValue({
+        menuSyncedAt: new Date(),
+      }),
+    },
     foodCategory: {
       findFirst: jest.fn(async ({ where }) =>
-        where.id === category.id && where.restaurantId === category.restaurantId ? category : null),
-      findMany: jest.fn().mockResolvedValue([{
-        ...category,
-        _count: { foods: foods.length },
-        foods,
-      }]),
+        where.id === category.id && where.restaurantId === category.restaurantId
+          ? category
+          : null),
+      findMany: jest.fn().mockResolvedValue([
+        {
+          ...category,
+          _count: { foods: foods.length },
+          foods,
+        },
+      ]),
     },
     food: {
       findMany: jest.fn(async ({ where, skip, take }) => foods
@@ -44,7 +52,9 @@ function createService() {
         .slice(skip, skip + take)),
     },
   }
-  const importer = { importMenu: jest.fn() }
+  const importer = {
+    importMenu: jest.fn(),
+  }
   const service = new ElmFoodService(
     prisma as unknown as PrismaService,
     {} as TenantAccessService,
@@ -62,15 +72,21 @@ describe('分类菜单分页', () => {
   it('轻量菜单只读分类计数，不查询或返回菜品', async () => {
     const { service, prisma } = createService()
     const categories = await service.getMenuForApi(42, false)
-    expect(categories).toEqual([expect.objectContaining({
-      id: 7,
-      food_count: 41,
-    })])
+    expect(categories).toEqual([
+      expect.objectContaining({
+        id: 7,
+        food_count: 41,
+      }),
+    ])
     expect(categories[0]).not.toHaveProperty('foods')
     expect(prisma.foodCategory.findMany).toHaveBeenCalledWith({
       where: { restaurantId: 42 },
       orderBy: { id: 'asc' },
-      include: { _count: { select: { foods: true } } },
+      include: {
+        _count: {
+          select: { foods: true },
+        },
+      },
     })
     expect(prisma.food.findMany).not.toHaveBeenCalled()
   })

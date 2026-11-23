@@ -12,7 +12,9 @@ import { getRefreshToken, persistAuthTokens } from './auth-storage'
 let refreshPromise = null
 
 function unwrapResponse(payload) {
-  return payload?.data && payload.code === 200 ? payload.data : payload
+  return payload?.data && payload.code === 200
+    ? payload.data
+    : payload
 }
 
 function persistTokens(payload) {

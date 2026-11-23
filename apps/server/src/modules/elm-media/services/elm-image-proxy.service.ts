@@ -154,7 +154,9 @@ export class ElmImageProxyService {
       }
       this.logger.error(
         `Invalid upstream base URL for image ${target.contractPath}`,
-        error instanceof Error ? error.stack : String(error),
+        error instanceof Error
+          ? error.stack
+          : String(error),
       )
       return {
         success: false,
@@ -250,7 +252,9 @@ export class ElmImageProxyService {
       return {
         success: false,
         reason: 'network',
-        detail: error instanceof Error ? error.message : String(error),
+        detail: error instanceof Error
+          ? error.message
+          : String(error),
       }
     }
     finally {

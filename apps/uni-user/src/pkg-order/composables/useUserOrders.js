@@ -32,7 +32,9 @@ export function useUserOrders(isLoggedIn, options = {}) {
       if (currentRequest !== requestSeq)
         return
 
-      orders.value = Array.isArray(result?.orders) ? result.orders : []
+      orders.value = Array.isArray(result?.orders)
+        ? result.orders
+        : []
     }
     catch (err) {
       if (currentRequest !== requestSeq)

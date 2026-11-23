@@ -172,7 +172,9 @@ async function main() {
 
   console.log(`生成 tabBar 图标 ${generated.length} 张 → src/static/tabbar/`)
   for (const [outName, size, sourceFile, color] of generated) {
-    const flag = size > 40 * 1024 ? ' ⚠️ 超过微信 40KB 限制' : ''
+    const flag = size > 40 * 1024
+      ? ' ⚠️ 超过微信 40KB 限制'
+      : ''
     console.log(`  ${outName.padEnd(22)} ${(size / 1024).toFixed(1).padStart(6)} KB  ← ${sourceFile} @ ${color}${flag}`)
   }
 

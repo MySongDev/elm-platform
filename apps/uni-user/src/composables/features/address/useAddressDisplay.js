@@ -7,7 +7,9 @@ export function getContactName(item = {}) {
   return item.name || item.username || '收货人'
 }
 export function getContactGender(item = {}) {
-  return item.sex === 2 || item.sex === '2' ? '女士' : '先生'
+  return item.sex === 2 || item.sex === '2'
+    ? '女士'
+    : '先生'
 }
 export function getContactPhone(item = {}) {
   return maskPhone(item.phone)

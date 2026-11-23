@@ -157,7 +157,9 @@ const KNOWN_SOURCES: Array<{
  * - 相对路径 → 按 expectedNamespace 补成契约路径，并做 tail 校验。
  */
 export function resolveDbImageRef(rawValue: unknown, expectedNamespace: ImageNamespace): DbImageRefResult {
-  const value = (rawValue === null || rawValue === undefined ? '' : String(rawValue)).trim()
+  const value = (rawValue === null || rawValue === undefined
+    ? ''
+    : String(rawValue)).trim()
   if (!value) {
     return {
       ok: false,
@@ -237,7 +239,9 @@ export function resolveDbImageRef(rawValue: unknown, expectedNamespace: ImageNam
 
 /** 契约路径 = 命名空间前缀 + 规范化尾。default: `/tail`，cdn: `/cdn/tail`。 */
 function toContractPath(tail: `/${string}`, namespace: ImageNamespace): `/${string}` {
-  return (namespace === 'cdn' ? `/cdn${tail}` : tail) as `/${string}`
+  return (namespace === 'cdn'
+    ? `/cdn${tail}`
+    : tail) as `/${string}`
 }
 
 /** 契约路径 → 文件键（sha256）。文件键包含 `/cdn/` 前缀，两个命名空间同名尾路径不串图。 */
@@ -264,14 +268,22 @@ export interface ResolvedImageTarget {
 export function resolveContractPath(contractPath: string): ResolvedImageTarget {
   const isCdn = contractPath.startsWith('/cdn/')
   // cdn 前缀取掉后剩下的就是 tail；否则整段就是 tail
-  const tailCandidate = isCdn ? contractPath.slice(4) : contractPath
+  const tailCandidate = isCdn
+    ? contractPath.slice(4)
+    : contractPath
   const tail = normalizeImageTail(tailCandidate)
   return {
-    contractPath: (isCdn ? `/cdn${tail}` : tail) as `/${string}`,
+    contractPath: (isCdn
+      ? `/cdn${tail}`
+      : tail) as `/${string}`,
     namespace: isCdn ? 'cdn' : 'default',
     isCdn,
-    upstreamPath: (isCdn ? tail : `/img${tail}`) as `/${string}`,
-    key: imageAssetKey((isCdn ? `/cdn${tail}` : tail) as `/${string}`),
+    upstreamPath: (isCdn
+      ? tail
+      : `/img${tail}`) as `/${string}`,
+    key: imageAssetKey((isCdn
+      ? `/cdn${tail}`
+      : tail) as `/${string}`),
   }
 }
 
@@ -286,7 +298,16 @@ export function resolveContractPath(contractPath: string): ResolvedImageTarget {
  * 前 12 字节不足以判定（例如网络刚给来 3 字节的分块）时返回 null，
  * 调用方应继续累积字节再判定 —— 不要据此误判为「非图片」。
  */
-const PNG_SIGNATURE = Buffer.from([0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A])
+const PNG_SIGNATURE = Buffer.from([
+  0x89,
+  0x50,
+  0x4E,
+  0x47,
+  0x0D,
+  0x0A,
+  0x1A,
+  0x0A,
+])
 
 export function sniffImageMime(head: Buffer): string | null {
   if (head.length >= 3 && head[0] === 0xFF && head[1] === 0xD8 && head[2] === 0xFF)

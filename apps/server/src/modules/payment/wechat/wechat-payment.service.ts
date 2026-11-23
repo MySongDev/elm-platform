@@ -26,7 +26,9 @@ type PaymentOrderRecord = Record<string, any>
 
 /** 把落库的 cartItems（含标题/元金额）还原成只含身份与数量的结算选择，用于幂等比较。 */
 function toStoredSelection(order: PaymentOrderRecord): CheckoutSelection {
-  const items = Array.isArray(order.cartItems) ? order.cartItems : []
+  const items = Array.isArray(order.cartItems)
+    ? order.cartItems
+    : []
   return {
     shopId: String(order.shopId ?? ''),
     cartItems: items.map((item: any) => ({
@@ -282,13 +284,19 @@ export class WechatPaymentService {
     if (typeof paidMinor !== 'number' || paidMinor !== expectedMinor)
       throw new BadRequestException('微信交易金额与订单应付金额不一致')
 
-    const paidAt = transaction.success_time ? new Date(transaction.success_time) : null
+    const paidAt = transaction.success_time
+      ? new Date(transaction.success_time)
+      : null
     const data = {
       status: 'PAID',
       tradeStatus: 'SUCCESS',
       tradeNo: transaction.transaction_id ?? order.tradeNo,
-      paidAt: paidAt && !Number.isNaN(paidAt.getTime()) ? paidAt : (order.paidAt ?? new Date()),
-      ...(source === 'notify' ? { notifyPayload: transaction } : { queryPayload: transaction }),
+      paidAt: paidAt && !Number.isNaN(paidAt.getTime())
+        ? paidAt
+        : (order.paidAt ?? new Date()),
+      ...(source === 'notify'
+        ? { notifyPayload: transaction }
+        : { queryPayload: transaction }),
     }
 
     const settled = await (this.prisma as any).$transaction(async (tx: any) => {
@@ -377,7 +385,9 @@ export class WechatPaymentService {
   }
 
   private async findOrder(orderNo: string) {
-    const order = await (this.prisma as any).paymentOrder.findUnique({ where: { orderNo } })
+    const order = await (this.prisma as any).paymentOrder.findUnique({
+      where: { orderNo },
+    })
     if (!order)
       throw new NotFoundException('订单不存在')
     return order as PaymentOrderRecord

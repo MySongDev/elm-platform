@@ -76,7 +76,9 @@ export function useOrderManagement() {
       }
     }
     catch (error) {
-      ElMessage.error(error instanceof Error ? error.message : t('commerce.order.conflictMessage'))
+      ElMessage.error(error instanceof Error
+        ? error.message
+        : t('commerce.order.conflictMessage'))
     }
     finally {
       actionSaving.value = false
@@ -96,7 +98,9 @@ export function useOrderManagement() {
       await table.fetchRows()
     }
     catch (error) {
-      ElMessage.error(error instanceof Error ? error.message : t('commerce.order.conflictMessage'))
+      ElMessage.error(error instanceof Error
+        ? error.message
+        : t('commerce.order.conflictMessage'))
     }
     finally {
       actionSaving.value = false

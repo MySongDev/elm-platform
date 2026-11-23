@@ -14,7 +14,9 @@ class FakeIntersectionObserver {
   disconnect = vi.fn()
 
   trigger(isIntersecting) {
-    this.callback([{ isIntersecting }])
+    this.callback([
+      { isIntersecting },
+    ])
   }
 }
 

@@ -113,7 +113,9 @@ export function hasPermission(userPermissions: string[], required: string | stri
   if (userPermissions.includes('*:*:*'))
     return true
 
-  const requiredList = Array.isArray(required) ? required : [required]
+  const requiredList = Array.isArray(required)
+    ? required
+    : [required]
   // 检查 requiredList 数组里的每一项，是否全都存在于 userPermissions 数组中。如果是，返回 true；只要有一项不在，就返回 false。
   return requiredList.every(p => userPermissions.includes(p))
 }

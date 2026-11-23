@@ -60,7 +60,9 @@ function mapType(type) {
     return 'text'
   if (type === 'tel')
     return 'number'
-  return ['text', 'number', 'idcard', 'digit'].includes(type) ? type : 'text'
+  return ['text', 'number', 'idcard', 'digit'].includes(type)
+    ? type
+    : 'text'
 }
 
 function handleInput(event) {

@@ -53,7 +53,9 @@ interface UpstreamCategoryEntry {
 
 function toFiniteNumber(value: unknown, fallback: number) {
   const result = Number(value)
-  return Number.isFinite(result) ? result : fallback
+  return Number.isFinite(result)
+    ? result
+    : fallback
 }
 
 function toStringSafe(value: unknown, fallback = '') {
@@ -63,11 +65,15 @@ function toStringSafe(value: unknown, fallback = '') {
 }
 
 function toJsonArray(value: unknown): Prisma.InputJsonValue {
-  return (Array.isArray(value) ? value : []) as Prisma.InputJsonValue
+  return (Array.isArray(value)
+    ? value
+    : []) as Prisma.InputJsonValue
 }
 
 function toJsonObject(value: unknown): Prisma.InputJsonValue {
-  return (value && typeof value === 'object' && !Array.isArray(value) ? value : {}) as Prisma.InputJsonValue
+  return (value && typeof value === 'object' && !Array.isArray(value)
+    ? value
+    : {}) as Prisma.InputJsonValue
 }
 
 /**
@@ -155,7 +161,9 @@ export class ElmUpstreamImportService {
   /** 全量导入首页分类入口（16 条）。sortOrder 固化上游的数组顺序。 */
   async importCategoryEntries() {
     const entries = await this.upstream.get<UpstreamCategoryEntry[]>('/v2/index_entry')
-    const list = Array.isArray(entries) ? entries : []
+    const list = Array.isArray(entries)
+      ? entries
+      : []
     const syncedAt = new Date()
 
     await this.prisma.$transaction(
@@ -187,16 +195,24 @@ export class ElmUpstreamImportService {
     const payload = await this.upstream.get<unknown>('/shopping/v2/menu', {
       restaurant_id: restaurantId,
     })
-    const categories = Array.isArray(payload) ? payload as UpstreamFoodCategory[] : []
+    const categories = Array.isArray(payload)
+      ? payload as UpstreamFoodCategory[]
+      : []
     const syncedAt = new Date()
 
     await this.prisma.$transaction(async (tx) => {
       // 全量替换：先清掉该店既有菜单，避免上游删掉的分类/菜品在本地残留。
-      await tx.food.deleteMany({ where: { restaurantId } })
-      await tx.foodCategory.deleteMany({ where: { restaurantId } })
+      await tx.food.deleteMany({
+        where: { restaurantId },
+      })
+      await tx.foodCategory.deleteMany({
+        where: { restaurantId },
+      })
 
       for (const category of categories) {
-        const foods = Array.isArray(category.foods) ? category.foods : []
+        const foods = Array.isArray(category.foods)
+          ? category.foods
+          : []
         const categoryId = toFiniteNumber(category.id, 0)
 
         await tx.foodCategory.create({
@@ -218,8 +234,11 @@ export class ElmUpstreamImportService {
           restaurantId,
           syncedAt,
         ))
-        for (let i = 0; i < foodRows.length; i += PAGE_SIZE)
-          await tx.food.createMany({ data: foodRows.slice(i, i + PAGE_SIZE) })
+        for (let i = 0; i < foodRows.length; i += PAGE_SIZE) {
+          await tx.food.createMany({
+            data: foodRows.slice(i, i + PAGE_SIZE),
+          })
+        }
       }
 
       // ⚠️ 必须记录同步时间：否则"上游该店本来就无菜单"会被反复当成"还没同步"，
@@ -262,7 +281,9 @@ export class ElmUpstreamImportService {
       where: { menuSyncedAt: null },
       select: { id: true },
       orderBy: { id: 'asc' },
-      ...(options.limit ? { take: options.limit } : {}),
+      ...(options.limit
+        ? { take: options.limit }
+        : {}),
     })
 
     if (!pending.length) {
@@ -302,7 +323,9 @@ export class ElmUpstreamImportService {
           // 单店失败不中断整批：记下来，末尾汇总，重跑会自然重试这一家
           result.failed++
           this.logger.warn(
-            `商家 ${current.id} 菜单导入失败：${error instanceof Error ? error.message : String(error)}`,
+            `商家 ${current.id} 菜单导入失败：${error instanceof Error
+              ? error.message
+              : String(error)}`,
           )
         }
 
@@ -315,7 +338,9 @@ export class ElmUpstreamImportService {
       }
     }
 
-    await Promise.all(Array.from({ length: Math.min(concurrency, pending.length) }, worker))
+    await Promise.all(Array.from({
+      length: Math.min(concurrency, pending.length),
+    }, worker))
 
     this.logger.log(
       `菜单预导完成：成功 ${result.imported}（其中无菜单 ${result.empty}）`
@@ -372,7 +397,9 @@ export class ElmUpstreamImportService {
       ratingCount: toFiniteNumber(row.rating_count, 0),
       rating: toFiniteNumber(row.rating, 0),
       promotionInfo: toStringSafe(row.promotion_info),
-      openingHours: Array.isArray(row.opening_hours) ? (row.opening_hours as string[]).map(String) : [],
+      openingHours: Array.isArray(row.opening_hours)
+        ? (row.opening_hours as string[]).map(String)
+        : [],
       isNew: Boolean(row.is_new),
       isPremium: Boolean(row.is_premium),
       imagePath: toStringSafe(row.image_path),

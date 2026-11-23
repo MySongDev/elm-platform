@@ -25,7 +25,9 @@ export class WechatNotifyController {
       )
     }
     catch (error) {
-      this.logger.error('微信支付通知处理异常', error instanceof Error ? error.stack : String(error))
+      this.logger.error('微信支付通知处理异常', error instanceof Error
+        ? error.stack
+        : String(error))
     }
 
     if (!ok)

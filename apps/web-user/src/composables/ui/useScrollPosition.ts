@@ -14,7 +14,9 @@ export function useScrollPosition(containerRef: Ref<HTMLElement | null> | null =
 
   const load = (): number => {
     const raw = sessionStorage.getItem(`scroll:${key}`)
-    return raw ? Number.parseInt(raw, 10) : 0
+    return raw
+      ? Number.parseInt(raw, 10)
+      : 0
   }
 
   const getScrollTop = (): number => {

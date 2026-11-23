@@ -43,7 +43,12 @@ export class CreateUserDto {
     example: 'user',
     required: false,
   })
-  @IsIn(['admin', 'user', 'tenant_admin', 'shop_operator'])
+  @IsIn([
+    'admin',
+    'user',
+    'tenant_admin',
+    'shop_operator',
+  ])
   @IsOptional()
   role?: 'admin' | 'user' | 'tenant_admin' | 'shop_operator'
 
@@ -129,7 +134,12 @@ export class UpdateUserDto {
     example: 'user',
     required: false,
   })
-  @IsIn(['admin', 'user', 'tenant_admin', 'shop_operator'])
+  @IsIn([
+    'admin',
+    'user',
+    'tenant_admin',
+    'shop_operator',
+  ])
   @IsOptional()
   role?: 'admin' | 'user' | 'tenant_admin' | 'shop_operator'
 

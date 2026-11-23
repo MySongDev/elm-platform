@@ -457,6 +457,10 @@ export function getDevMockUserMenus(): UserMenuNode[] {
 function cloneMenus(menus: UserMenuNode[]): UserMenuNode[] {
   return menus.map(menu => ({
     ...menu,
-    ...(menu.children ? { children: cloneMenus(menu.children) } : {}),
+    ...(menu.children
+      ? {
+          children: cloneMenus(menu.children),
+        }
+      : {}),
   }))
 }

@@ -12,7 +12,9 @@ class MemoryStorage {
   }
 
   getItem(key) {
-    return this.store.has(key) ? this.store.get(key) : null
+    return this.store.has(key)
+      ? this.store.get(key)
+      : null
   }
 
   key(index) {

@@ -104,12 +104,16 @@ export function toPrice(value: unknown) {
   const amount = typeof decimalLike?.toNumber === 'function'
     ? decimalLike.toNumber()
     : Number.parseFloat(String(value))
-  return Number.isFinite(amount) ? Number(amount.toFixed(2)) : 0
+  return Number.isFinite(amount)
+    ? Number(amount.toFixed(2))
+    : 0
 }
 
 function toQty(value: unknown) {
   const qty = Number.parseInt(String(value), 10)
-  return Number.isFinite(qty) && qty > 0 ? qty : 0
+  return Number.isFinite(qty) && qty > 0
+    ? qty
+    : 0
 }
 
 export function buildOrderSubject(shopName: string) {
@@ -160,7 +164,9 @@ export function buildOrderDraft(input: OrderDraftInput): OrderDraft {
     deliveryFee,
     goodsAmount,
     payableAmount: toPrice(goodsAmount + deliveryFee),
-    shopId: input.shopId ? String(input.shopId) : null,
+    shopId: input.shopId
+      ? String(input.shopId)
+      : null,
     shopName: String(input.shopName || '饿了么订单'),
     userId: String(input.userId || ''),
   }

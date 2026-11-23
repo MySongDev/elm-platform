@@ -50,7 +50,9 @@ export class ElmRestaurantService {
 
   /** `/shopping/restaurant/:shopId`。实测上游的列表项与详情字段完全一致，故同一装配函数。 */
   async getByIdForApi(shopId: number) {
-    const row = await this.prisma.restaurant.findUnique({ where: { id: shopId } })
+    const row = await this.prisma.restaurant.findUnique({
+      where: { id: shopId },
+    })
     if (!row)
       throw new NotFoundException('餐馆不存在')
 
@@ -73,7 +75,16 @@ export class ElmRestaurantService {
       where: {
         ...this.buildScopeWhere(context),
         ...(keyword
-          ? { OR: [{ name: { contains: keyword } }, { category: { contains: keyword } }] }
+          ? {
+              OR: [
+                {
+                  name: { contains: keyword },
+                },
+                {
+                  category: { contains: keyword },
+                },
+              ],
+            }
           : {}),
       },
       orderBy: { id: 'asc' },
@@ -89,7 +100,11 @@ export class ElmRestaurantService {
     const rows = await this.prisma.restaurant.findMany({
       where: {
         ...this.buildScopeWhere(context),
-        ...(keyword ? { name: { contains: keyword } } : {}),
+        ...(keyword
+          ? {
+              name: { contains: keyword },
+            }
+          : {}),
       },
       orderBy: { id: 'asc' },
       take: MAX_PAGE_SIZE,
@@ -99,7 +114,9 @@ export class ElmRestaurantService {
   }
 
   async countRestaurants(context?: TenantContext) {
-    return this.prisma.restaurant.count({ where: this.buildScopeWhere(context) })
+    return this.prisma.restaurant.count({
+      where: this.buildScopeWhere(context),
+    })
   }
 
   async getRestaurant(id: number, context?: TenantContext) {
@@ -147,7 +164,9 @@ export class ElmRestaurantService {
         floatDeliveryFee: deliveryFee,
         floatMinimumOrderAmount: toNumberValue(data.float_minimum_order_amount, 20),
         piecewiseAgentFee: { tips: `配送费约¥${deliveryFee}` },
-        tenantId: context && context.dataScope !== 'ALL' ? context.tenantId : null,
+        tenantId: context && context.dataScope !== 'ALL'
+          ? context.tenantId
+          : null,
         // 管理端创建的商家不是上游数据，标记出来，避免将来重新导入时被当成上游行覆盖。
         source: 'local',
       },
@@ -198,8 +217,11 @@ export class ElmRestaurantService {
         ...this.buildScopeWhere(context),
       },
     })
-    if (row)
-      await this.prisma.restaurant.delete({ where: { id } })
+    if (row) {
+      await this.prisma.restaurant.delete({
+        where: { id },
+      })
+    }
 
     return {
       status: 1,
@@ -208,7 +230,9 @@ export class ElmRestaurantService {
   }
 
   private async nextRestaurantId() {
-    const max = await this.prisma.restaurant.aggregate({ _max: { id: true } })
+    const max = await this.prisma.restaurant.aggregate({
+      _max: { id: true },
+    })
     return (max._max.id ?? 0) + 1
   }
 
@@ -232,8 +256,11 @@ export class ElmRestaurantService {
     if (filter.tenantId !== undefined)
       where.tenantId = filter.tenantId
 
-    if (filter.shopId !== undefined)
-      where.id = { in: toShopIdList(filter.shopId) }
+    if (filter.shopId !== undefined) {
+      where.id = {
+        in: toShopIdList(filter.shopId),
+      }
+    }
 
     return where
   }

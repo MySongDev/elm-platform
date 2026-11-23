@@ -121,7 +121,9 @@ export class LoggingInterceptor implements NestInterceptor {
 
       await (this.prisma as any).systemLog.create({
         data: {
-          level: status >= 500 ? 'error' : 'warn',
+          level: status >= 500
+            ? 'error'
+            : 'warn',
           source: `${method} ${path}`,
           message: error?.message || `HTTP ${status}`,
           detail,
@@ -138,7 +140,9 @@ export class LoggingInterceptor implements NestInterceptor {
   }
 
   private resolveHeaderValue(value: string | string[] | undefined): string | undefined {
-    const headerValue = Array.isArray(value) ? value[0] : value
+    const headerValue = Array.isArray(value)
+      ? value[0]
+      : value
     const normalized = headerValue?.trim()
 
     return normalized || undefined
@@ -150,12 +154,16 @@ export class LoggingInterceptor implements NestInterceptor {
 
   private resolveUsername(request: HttpRequestLike): string {
     const bodyAccount = request.body?.account ?? request.body?.username
-    return request.user?.username || (typeof bodyAccount === 'string' ? bodyAccount : 'anonymous')
+    return request.user?.username || (typeof bodyAccount === 'string'
+      ? bodyAccount
+      : 'anonymous')
   }
 
   private resolveIp(request: HttpRequestLike): string | null {
     const forwardedFor = request.headers?.['x-forwarded-for']
-    const forwardedIp = Array.isArray(forwardedFor) ? forwardedFor[0] : forwardedFor
+    const forwardedIp = Array.isArray(forwardedFor)
+      ? forwardedFor[0]
+      : forwardedFor
     return forwardedIp?.split(',')[0]?.trim() || request.ip || null
   }
 

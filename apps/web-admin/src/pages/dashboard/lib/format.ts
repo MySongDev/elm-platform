@@ -11,6 +11,8 @@ export function formatDashboardPercent(value: number) {
 }
 
 export function formatDashboardTrend(value: number) {
-  const prefix = value > 0 ? '+' : ''
+  const prefix = value > 0
+    ? '+'
+    : ''
   return `${prefix}${formatDashboardPercent(value)}`
 }

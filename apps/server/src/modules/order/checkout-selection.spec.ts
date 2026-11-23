@@ -9,11 +9,13 @@ import {
 function selection(qty = 1, shopId = '1'): CheckoutSelection {
   return {
     shopId,
-    cartItems: [{
-      itemId: '11',
-      skuId: '111',
-      qty,
-    }],
+    cartItems: [
+      {
+        itemId: '11',
+        skuId: '111',
+        qty,
+      },
+    ],
   }
 }
 
@@ -68,12 +70,22 @@ describe('结算选择与用户隔离键', () => {
     expect(JSON.stringify(input)).toBe(original)
   })
 
-  it.each([0, -1, 1.5, Number.NaN, Number.POSITIVE_INFINITY, MAX_CHECKOUT_ITEM_QTY + 1, '1'])('拒绝无效数量 %p', (qty) => {
+  it.each([
+    0,
+    -1,
+    1.5,
+    Number.NaN,
+    Number.POSITIVE_INFINITY,
+    MAX_CHECKOUT_ITEM_QTY + 1,
+    '1',
+  ])('拒绝无效数量 %p', (qty) => {
     const input = selection()
-    input.cartItems = [{
-      ...input.cartItems[0],
-      qty: qty as number,
-    }]
+    input.cartItems = [
+      {
+        ...input.cartItems[0],
+        qty: qty as number,
+      },
+    ]
     expect(() => normalizeCheckoutSelection(input)).toThrow(RangeError)
   })
 
@@ -85,15 +97,26 @@ describe('结算选择与用户隔离键', () => {
     })).toThrow(RangeError)
     expect(() => normalizeCheckoutSelection({
       shopId: '1',
-      cartItems: [item, {
-        ...item,
-        skuId: '112',
-      }],
+      cartItems: [
+        item,
+        {
+          ...item,
+          skuId: '112',
+        },
+      ],
     })).toThrow(RangeError)
     expect(normalizeCheckoutSelection(selection(MAX_CHECKOUT_ITEM_QTY)).cartItems[0].qty).toBe(MAX_CHECKOUT_ITEM_QTY)
   })
 
-  it.each(['0', '01', '-1', '1.5', ' 1', '1\n', '2147483648'])('拒绝非本地正整数商家ID %s', (shopId) => {
+  it.each([
+    '0',
+    '01',
+    '-1',
+    '1.5',
+    ' 1',
+    '1\n',
+    '2147483648',
+  ])('拒绝非本地正整数商家ID %s', (shopId) => {
     expect(() => normalizeCheckoutSelection(selection(1, shopId))).toThrow(RangeError)
   })
 
@@ -102,13 +125,18 @@ describe('结算选择与用户隔离键', () => {
       shopId: '1',
       cartItems: [],
     })).toThrow(RangeError)
-    for (const patch of [{ itemId: '01' }, { skuId: '' }]) {
+    for (const patch of [
+      { itemId: '01' },
+      { skuId: '' },
+    ]) {
       expect(() => normalizeCheckoutSelection({
         ...selection(),
-        cartItems: [{
-          ...selection().cartItems[0],
-          ...patch,
-        }],
+        cartItems: [
+          {
+            ...selection().cartItems[0],
+            ...patch,
+          },
+        ],
       })).toThrow(RangeError)
     }
   })
@@ -125,11 +153,13 @@ describe('结算选择与用户隔离键', () => {
     const original = {
       ...selection(2),
       shopName: '旧商家名',
-      cartItems: [{
-        ...selection(2).cartItems[0],
-        title: '旧标题',
-        unitPriceMinor: 100,
-      }],
+      cartItems: [
+        {
+          ...selection(2).cartItems[0],
+          title: '旧标题',
+          unitPriceMinor: 100,
+        },
+      ],
     }
     const retry = {
       ...selection(),
@@ -147,17 +177,21 @@ describe('结算选择与用户隔离键', () => {
     expect(areCheckoutSelectionsEqual(original, selection(2, '2'))).toBe(false)
     expect(areCheckoutSelectionsEqual(original, {
       ...selection(2),
-      cartItems: [{
-        ...selection(2).cartItems[0],
-        skuId: '112',
-      }],
+      cartItems: [
+        {
+          ...selection(2).cartItems[0],
+          skuId: '112',
+        },
+      ],
     })).toBe(false)
     expect(areCheckoutSelectionsEqual(original, {
       ...selection(2),
-      cartItems: [{
-        ...selection(2).cartItems[0],
-        itemId: '12',
-      }],
+      cartItems: [
+        {
+          ...selection(2).cartItems[0],
+          itemId: '12',
+        },
+      ],
     })).toBe(false)
   })
 })

@@ -9,7 +9,9 @@ defineOptions({ name: 'AccountManagement' })
 const authStore = useAuthStore()
 const { t } = useI18n()
 const activePaneInfo = inject(activePaneKey)
-const sectionTitle = computed(() => activePaneInfo?.value ? transformI18n(activePaneInfo.value.label) : '')
+const sectionTitle = computed(() => activePaneInfo?.value
+  ? transformI18n(activePaneInfo.value.label)
+  : '')
 
 const list = computed(() => [
   {
@@ -20,9 +22,13 @@ const list = computed(() => [
   {
     title: t('accountManagement.phone'),
     illustrate: authStore.userInfo?.phone
-      ? t('accountManagement.phoneBound', { phone: authStore.userInfo.phone.replace(/(\d{3})\d{4}(\d{4})/, '$1****$2') })
+      ? t('accountManagement.phoneBound', {
+          phone: authStore.userInfo.phone.replace(/(\d{3})\d{4}(\d{4})/, '$1****$2'),
+        })
       : t('accountManagement.phoneUnbound'),
-    button: authStore.userInfo?.phone ? t('common.edit') : t('common.bind'),
+    button: authStore.userInfo?.phone
+      ? t('common.edit')
+      : t('common.bind'),
   },
   {
     title: t('accountManagement.securityQuestion'),
@@ -32,9 +38,13 @@ const list = computed(() => [
   {
     title: t('accountManagement.backupEmail'),
     illustrate: authStore.userInfo?.email
-      ? t('accountManagement.emailBound', { email: authStore.userInfo.email.replace(/(.{2}).+(@.+)/, '$1***$2') })
+      ? t('accountManagement.emailBound', {
+          email: authStore.userInfo.email.replace(/(.{2}).+(@.+)/, '$1***$2'),
+        })
       : t('accountManagement.emailUnbound'),
-    button: authStore.userInfo?.email ? t('common.edit') : t('common.bind'),
+    button: authStore.userInfo?.email
+      ? t('common.edit')
+      : t('common.bind'),
   },
 ])
 

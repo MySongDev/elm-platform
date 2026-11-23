@@ -15,7 +15,9 @@ const editorTests = [
 ]
 
 export default defineConfig({
-  plugins: [vue()],
+  plugins: [
+    vue(),
+  ],
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url)),
@@ -29,7 +31,10 @@ export default defineConfig({
         test: {
           name: 'unit',
           include: ['src/**/*.{test,spec}.ts', 'mock/**/*.test.ts'],
-          exclude: [...configDefaults.exclude, ...editorTests],
+          exclude: [
+            ...configDefaults.exclude,
+            ...editorTests,
+          ],
         },
       },
       {

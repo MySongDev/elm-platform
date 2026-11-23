@@ -34,7 +34,9 @@ function readEnv(): Record<string, string | undefined> {
     }
   }
   catch (error) {
-    return { error: String(error) }
+    return {
+      error: String(error),
+    }
   }
 }
 

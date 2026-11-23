@@ -46,7 +46,9 @@ const tagOptions = ['常用', '家', '公司', '学校', '其他']
 
 onLoad(async (options) => {
   isEdit.value = options?.id !== undefined
-  uni.setNavigationBarTitle({ title: isEdit.value ? '编辑地址' : '新增地址' })
+  uni.setNavigationBarTitle({
+    title: isEdit.value ? '编辑地址' : '新增地址',
+  })
   try {
     if (isEdit.value) {
       const id = Number(options.id)
@@ -98,7 +100,9 @@ function toApiPayload() {
     tag: form.tag,
     tagType: editingAddress.value?.tagType ?? 2,
     poiType: editingAddress.value?.poiType ?? 0,
-    geohash: isEdit.value ? editingAddress.value.geohash : locationStore.geohash || '',
+    geohash: isEdit.value
+      ? editingAddress.value.geohash
+      : locationStore.geohash || '',
     isDefault: form.isDefault,
   }
 }

@@ -45,7 +45,9 @@ export function createNotificationMockRoutes(): MockMethod[] {
           return success(sharedNotificationMockState.list(type))
         }
         catch (err) {
-          return failure(400, err instanceof Error ? err.message : '请求失败')
+          return failure(400, err instanceof Error
+            ? err.message
+            : '请求失败')
         }
       },
     },
@@ -59,7 +61,9 @@ export function createNotificationMockRoutes(): MockMethod[] {
           return success({ updatedCount })
         }
         catch (err) {
-          return failure(400, err instanceof Error ? err.message : '请求失败')
+          return failure(400, err instanceof Error
+            ? err.message
+            : '请求失败')
         }
       },
     },
@@ -73,7 +77,9 @@ export function createNotificationMockRoutes(): MockMethod[] {
         catch (err) {
           if (err instanceof MockNotificationNotFound)
             return failure(404, err.message)
-          return failure(500, err instanceof Error ? err.message : '请求失败')
+          return failure(500, err instanceof Error
+            ? err.message
+            : '请求失败')
         }
       },
     },
@@ -88,7 +94,9 @@ export function createNotificationMockRoutes(): MockMethod[] {
         catch (err) {
           if (err instanceof MockNotificationNotFound)
             return failure(404, err.message)
-          return failure(500, err instanceof Error ? err.message : '请求失败')
+          return failure(500, err instanceof Error
+            ? err.message
+            : '请求失败')
         }
       },
     },
@@ -102,7 +110,9 @@ export function createNotificationMockRoutes(): MockMethod[] {
           return success({ deletedCount })
         }
         catch (err) {
-          return failure(400, err instanceof Error ? err.message : '请求失败')
+          return failure(400, err instanceof Error
+            ? err.message
+            : '请求失败')
         }
       },
     },
