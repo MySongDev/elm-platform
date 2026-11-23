@@ -7,7 +7,7 @@ import { Permissions } from '@/shared/config/access'
 import AdminSearchForm from '@/shared/ui/AdminSearchForm/index.vue'
 import AdminTablePage from '@/shared/ui/AdminTablePage/index.vue'
 import { createFoodSearchFields, createFoodTableColumns } from './config/fields'
-import { useFoodManagement } from './model/useFoodManagement'
+import { useFoodList } from './model/useFoodList'
 import FoodFormDialog from './ui/FoodFormDialog.vue'
 
 defineOptions({ name: 'CommerceFoodView' })
@@ -15,32 +15,33 @@ defineOptions({ name: 'CommerceFoodView' })
 const { t } = useI18n()
 const searchFields = computed(() => createFoodSearchFields(t))
 const tableColumns = computed(() => createFoodTableColumns(t))
+const editingFood = shallowRef<FoodItem | null>(null)
+const dialogVisible = shallowRef(false)
 const {
   loading,
-  saving,
-  dialogVisible,
+  error,
   query,
-  form,
-  isEdit,
-  rules,
   filteredData,
   resetQuery,
-  openCreateDialog,
-  openEditDialog,
-  fetchRows,
-  submitForm,
+  fetchFoods,
   handleDelete,
-} = useFoodManagement()
+} = useFoodList()
+
+function openCreateDialog() {
+  editingFood.value = null
+  dialogVisible.value = true
+}
 
 function handleEditRow(row: unknown) {
-  openEditDialog(row as FoodItem)
+  editingFood.value = row as FoodItem
+  dialogVisible.value = true
 }
 
 function handleDeleteRow(row: unknown) {
   handleDelete(row as FoodItem)
 }
 
-onMounted(fetchRows)
+onMounted(fetchFoods)
 </script>
 
 <template>
@@ -50,7 +51,8 @@ onMounted(fetchRows)
       <AdminTablePage
         :title="t('commerce.food.title')"
         :loading="loading"
-        @refresh="fetchRows"
+        :error="error"
+        @refresh="fetchFoods"
       >
         <template #search>
           <AdminSearchForm
@@ -87,11 +89,8 @@ onMounted(fetchRows)
 
       <FoodFormDialog
         v-model:visible="dialogVisible"
-        v-model:form="form"
-        :saving="saving"
-        :is-edit="isEdit"
-        :rules="rules"
-        @submit="submitForm"
+        :food="editingFood"
+        @saved="fetchFoods"
       />
     </div>
   </div>
